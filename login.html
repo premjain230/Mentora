@@ -227,5 +227,26 @@ for(let i=0;i<28;i++){
   pc.appendChild(p);
 }
 </script>
+  <script type="module">
+  import { signIn, googleSignIn, forgotPassword } from "./auth.js";
+
+  document.querySelector(".btn").addEventListener("click", () => signIn());
+  document.querySelector(".btn-google").addEventListener("click", () => googleSignIn());
+  document.querySelector(".forgot").addEventListener("click", (e) => {
+    e.preventDefault();
+    forgotPassword();
+  });
+</script>
+<script type="module">
+  import { signIn, googleSignIn, forgotPassword } from "./auth.js";
+
+  document.querySelector(".btn").addEventListener("click", () => signIn());
+  document.querySelector(".btn-google").addEventListener("click", () => googleSignIn());
+  document.querySelector(".forgot").addEventListener("click", (e) => {
+    e.preventDefault();
+    forgotPassword();
+  });
+</script>
+
 </body>
 </html>
