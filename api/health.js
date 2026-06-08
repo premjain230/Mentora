@@ -15,6 +15,7 @@ module.exports = async function handler(req, res) {
     service: "mentora-ai-api",
     timestamp: new Date().toISOString(),
     providers: {
+      groq: Boolean(process.env.GROQ_API_KEY),
       openai: Boolean(process.env.OPENAI_API_KEY),
       gemini: Boolean(process.env.GEMINI_API_KEY),
     },
