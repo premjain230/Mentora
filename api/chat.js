@@ -50,18 +50,22 @@ function normalizeMessages(body) {
   return [];
 }
 
-async function callOpenAI(messages) {
-  const apiKey = process.env.OPENAI_API_KEY;
-  if (!apiKey) return null;
+async function callGroq(messages) {
+  const apiKey = process.env.GROQ_API_KEY;
+  if (!apiKey) {
+    const err = new Error("GROQ_API_KEY is not configured.");
+    err.statusCode = 500;
+    throw err;
+  }
 
-  const response = await fetch("https://api.openai.com/v1/chat/completions", {
+  const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
     method: "POST",
     headers: {
       "Authorization": `Bearer ${apiKey}`,
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
-      model: process.env.OPENAI_MODEL || "gpt-4.1-mini",
+      model: process.env.GROQ_MODEL || "llama-3.3-70b-versatile",
       messages: [{ role: "system", content: SYSTEM_PROMPT }, ...messages],
       temperature: 0.6,
       max_tokens: 1600,
@@ -70,59 +74,19 @@ async function callOpenAI(messages) {
 
   const data = await response.json().catch(() => ({}));
   if (!response.ok) {
-    const err = new Error(data?.error?.message || `OpenAI request failed with status ${response.status}`);
+    const err = new Error(data?.error?.message || `Groq request failed with status ${response.status}`);
     err.statusCode = response.status >= 500 ? 502 : 400;
     throw err;
   }
 
   const reply = data?.choices?.[0]?.message?.content?.trim();
   if (!reply) {
-    const err = new Error("OpenAI returned an empty response.");
+    const err = new Error("Groq returned an empty response.");
     err.statusCode = 502;
     throw err;
   }
 
-  return { provider: "openai", reply };
-}
-
-async function callGemini(messages) {
-  const apiKey = process.env.GEMINI_API_KEY;
-  if (!apiKey) return null;
-
-  const contents = messages.map((message) => ({
-    role: message.role === "assistant" ? "model" : "user",
-    parts: [{ text: message.content }],
-  }));
-
-  const model = process.env.GEMINI_MODEL || "gemini-2.0-flash";
-  const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent?key=${encodeURIComponent(apiKey)}`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      systemInstruction: { parts: [{ text: SYSTEM_PROMPT }] },
-      contents,
-      generationConfig: {
-        temperature: 0.6,
-        maxOutputTokens: 1600,
-      },
-    }),
-  });
-
-  const data = await response.json().catch(() => ({}));
-  if (!response.ok) {
-    const err = new Error(data?.error?.message || `Gemini request failed with status ${response.status}`);
-    err.statusCode = response.status >= 500 ? 502 : 400;
-    throw err;
-  }
-
-  const reply = data?.candidates?.[0]?.content?.parts?.map((part) => part.text || "").join("").trim();
-  if (!reply) {
-    const err = new Error("Gemini returned an empty response.");
-    err.statusCode = 502;
-    throw err;
-  }
-
-  return { provider: "gemini", reply };
+  return { provider: "groq", reply };
 }
 
 module.exports = async function handler(req, res) {
@@ -135,6 +99,10 @@ module.exports = async function handler(req, res) {
 
   if (!rateLimit(req, res, { name: "chat", limit: 20 })) return;
 
+  if (!process.env.GROQ_API_KEY) {
+    return res.status(500).json({ error: "GROQ_API_KEY is not configured." });
+  }
+
   try {
     const body = await readJsonBody(req);
     const messages = normalizeMessages(body);
@@ -143,12 +111,8 @@ module.exports = async function handler(req, res) {
       return res.status(400).json({ error: "A non-empty message or messages array is required." });
     }
 
-    if (!process.env.OPENAI_API_KEY && !process.env.GEMINI_API_KEY) {
-      return res.status(500).json({ error: "No AI provider is configured on the server." });
-    }
-
     const startedAt = Date.now();
-    const result = (await callOpenAI(messages)) || (await callGemini(messages));
+    const result = await callGroq(messages);
 
     console.info(JSON.stringify({
       level: "info",
@@ -162,4 +126,5 @@ module.exports = async function handler(req, res) {
   } catch (err) {
     return sendError(req, res, err, "Mentora could not generate a response right now.");
   }
+};
 };
