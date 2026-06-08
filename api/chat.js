@@ -50,6 +50,41 @@ function normalizeMessages(body) {
   return [];
 }
 
+async function callGroq(messages) {
+  const apiKey = process.env.GROQ_API_KEY;
+  if (!apiKey) return null;
+
+  const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+    method: "POST",
+    headers: {
+      "Authorization": `Bearer ${apiKey}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      model: process.env.GROQ_MODEL || "llama-3.3-70b-versatile",
+      messages: [{ role: "system", content: SYSTEM_PROMPT }, ...messages],
+      temperature: 0.6,
+      max_tokens: 1600,
+    }),
+  });
+
+  const data = await response.json().catch(() => ({}));
+  if (!response.ok) {
+    const err = new Error(data?.error?.message || `Groq request failed with status ${response.status}`);
+    err.statusCode = response.status >= 500 ? 502 : 400;
+    throw err;
+  }
+
+  const reply = data?.choices?.[0]?.message?.content?.trim();
+  if (!reply) {
+    const err = new Error("Groq returned an empty response.");
+    err.statusCode = 502;
+    throw err;
+  }
+
+  return { provider: "groq", reply };
+}
+
 async function callOpenAI(messages) {
   const apiKey = process.env.OPENAI_API_KEY;
   if (!apiKey) return null;
@@ -143,12 +178,12 @@ module.exports = async function handler(req, res) {
       return res.status(400).json({ error: "A non-empty message or messages array is required." });
     }
 
-    if (!process.env.OPENAI_API_KEY && !process.env.GEMINI_API_KEY) {
+    if (!process.env.GROQ_API_KEY && !process.env.OPENAI_API_KEY && !process.env.GEMINI_API_KEY) {
       return res.status(500).json({ error: "No AI provider is configured on the server." });
     }
 
     const startedAt = Date.now();
-    const result = (await callOpenAI(messages)) || (await callGemini(messages));
+    const result = (await callGroq(messages)) || (await callOpenAI(messages)) || (await callGemini(messages));
 
     console.info(JSON.stringify({
       level: "info",
