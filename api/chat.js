@@ -127,4 +127,4 @@ module.exports = async function handler(req, res) {
     return sendError(req, res, err, "Mentora could not generate a response right now.");
   }
 };
-};
+
