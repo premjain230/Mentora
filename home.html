@@ -2,9 +2,9 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Mentora AI</title>
-<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   :root {
@@ -24,11 +24,9 @@
     --font-mono: 'Space Mono', monospace;
   }
   body { font-family: var(--font-main); background: var(--bg-base); color: var(--text-primary); height: 100vh; display: flex; overflow: hidden; }
-
-  /* SIDEBAR */
-  .sidebar { width: 240px; min-width: 240px; background: var(--bg-sidebar); border-right: 1px solid var(--border); display: flex; flex-direction: column; position: relative; z-index: 10; }
+  .sidebar { width: 240px; min-width: 240px; background: var(--bg-sidebar); border-right: 1px solid var(--border); display: flex; flex-direction: column; }
   .logo-area { padding: 22px 20px 18px; border-bottom: 1px solid var(--border); }
-  .logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+  .logo { display: flex; align-items: center; gap: 10px; }
   .logo-icon { width: 34px; height: 34px; background: linear-gradient(135deg, var(--accent), var(--accent2)); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 17px; }
   .logo-text { font-size: 17px; font-weight: 700; color: var(--text-primary); letter-spacing: -0.3px; }
   .logo-text span { color: var(--accent2); }
@@ -42,9 +40,8 @@
   .nav-icon { width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
   .nav-badge { margin-left: auto; background: var(--accent3); color: white; font-size: 10px; font-weight: 600; padding: 2px 6px; border-radius: 20px; font-family: var(--font-mono); }
   .nav-badge.green { background: var(--accent2); color: #0a0b0f; }
-  .sidebar-bottom { padding: 12px 10px; border-top: 1px solid var(--border); position: relative; }
-  .user-card { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 10px; cursor: pointer; transition: all 0.18s; }
-  .user-card:hover { background: rgba(255,255,255,0.04); }
+  .sidebar-bottom { padding: 12px 10px; border-top: 1px solid var(--border); }
+  .user-card { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 10px; }
   .signout-btn { width: calc(100% - 20px); margin: 0 10px 8px; padding: 8px 14px; background: rgba(255,107,107,0.08); border: 1px solid rgba(255,107,107,0.2); color: var(--accent3); font-family: var(--font-main); font-size: 12px; border-radius: 8px; cursor: pointer; transition: all 0.18s; }
   .signout-btn:hover { background: rgba(255,107,107,0.15); }
   .avatar { width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg, #6c63ff, #00d4aa); display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 600; flex-shrink: 0; overflow: hidden; }
@@ -52,47 +49,40 @@
   .user-info { flex: 1; min-width: 0; }
   .user-name { font-size: 13px; font-weight: 500; color: var(--text-primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .user-plan { font-size: 11px; color: var(--accent2); font-weight: 500; }
-
-  /* MAIN */
   .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; background: var(--bg-base); }
   .topbar { display: flex; align-items: center; justify-content: space-between; padding: 16px 28px; border-bottom: 1px solid var(--border); }
-  .topbar-left { display: flex; align-items: center; gap: 12px; }
-  .model-selector { display: flex; align-items: center; gap: 7px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; padding: 6px 12px; font-size: 13px; color: var(--text-secondary); cursor: pointer; transition: all 0.18s; user-select: none; }
-  .model-selector:hover { border-color: var(--border-hover); color: var(--text-primary); }
+  .model-selector { display: flex; align-items: center; gap: 7px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; padding: 6px 12px; font-size: 13px; color: var(--text-secondary); user-select: none; }
   .model-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--accent2); }
-
-  /* CHAT */
   .chat-area { flex: 1; overflow-y: auto; padding: 40px 60px 20px; display: flex; flex-direction: column; gap: 28px; }
-  .chat-area::-webkit-scrollbar { width: 4px; }
-  .chat-area::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+  .chat-area::-webkit-scrollbar, .nav-section::-webkit-scrollbar { width: 4px; }
+  .chat-area::-webkit-scrollbar-thumb, .nav-section::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
   .welcome { display: flex; flex-direction: column; align-items: center; text-align: center; padding: 40px 20px 20px; gap: 16px; max-width: 680px; margin: 0 auto; width: 100%; }
   .welcome-icon { width: 64px; height: 64px; background: linear-gradient(135deg, rgba(108,99,255,0.2), rgba(0,212,170,0.2)); border: 1px solid rgba(108,99,255,0.3); border-radius: 20px; display: flex; align-items: center; justify-content: center; font-size: 28px; margin-bottom: 6px; }
   .welcome h1 { font-size: 30px; font-weight: 700; letter-spacing: -0.5px; background: linear-gradient(135deg, #f0f0f8 40%, var(--accent2)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
   .welcome p { font-size: 15px; color: var(--text-secondary); max-width: 440px; line-height: 1.7; font-weight: 300; }
   .suggestion-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; width: 100%; max-width: 640px; margin-top: 8px; }
-  .suggestion-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 14px; padding: 16px 18px; cursor: pointer; text-align: left; transition: all 0.2s; position: relative; overflow: hidden; }
+  .suggestion-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 14px; padding: 16px 18px; cursor: pointer; text-align: left; transition: all 0.2s; }
   .suggestion-card:hover { border-color: rgba(108,99,255,0.3); background: #1e2130; transform: translateY(-1px); }
   .sug-icon { font-size: 20px; margin-bottom: 8px; display: block; }
   .sug-title { font-size: 13.5px; font-weight: 500; color: var(--text-primary); margin-bottom: 4px; }
   .sug-desc { font-size: 12px; color: var(--text-muted); }
-
-  /* INPUT */
   .input-area { padding: 16px 60px 24px; border-top: 1px solid var(--border); }
   .input-box { max-width: 720px; margin: 0 auto; background: var(--bg-input); border: 1px solid var(--border); border-radius: 16px; padding: 14px 16px; display: flex; align-items: flex-end; gap: 10px; transition: border-color 0.2s; }
   .input-box:focus-within { border-color: rgba(108,99,255,0.4); }
   .input-box textarea { flex: 1; background: transparent; border: none; outline: none; color: var(--text-primary); font-family: var(--font-main); font-size: 14.5px; resize: none; line-height: 1.5; min-height: 24px; max-height: 140px; overflow-y: auto; }
   .input-box textarea::placeholder { color: var(--text-muted); }
   .input-actions { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
-  .attach-btn { width: 32px; height: 32px; border-radius: 8px; background: transparent; border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--text-muted); transition: all 0.18s; }
-  .attach-btn svg { width: 15px; height: 15px; }
   .send-btn { width: 36px; height: 36px; border-radius: 10px; background: var(--accent); border: none; display: flex; align-items: center; justify-content: center; cursor: pointer; color: white; transition: all 0.18s; flex-shrink: 0; }
   .send-btn:hover { background: #7b73ff; transform: scale(1.04); }
+  .send-btn:disabled { opacity: 0.55; cursor: not-allowed; transform: none; }
   .send-btn svg { width: 16px; height: 16px; }
   .input-footer { display: flex; justify-content: center; margin-top: 10px; font-size: 11.5px; color: var(--text-muted); gap: 20px; max-width: 720px; margin-left: auto; margin-right: auto; }
   .input-footer span { display: flex; align-items: center; gap: 5px; }
-  .input-footer svg { width: 12px; height: 12px; }
-
-  /* AI message markdown */
+  .message-row { display: flex; padding: 0 20px; }
+  .message-row.user { justify-content: flex-end; }
+  .message-row.assistant { gap: 12px; align-items: flex-start; }
+  .user-bubble { background: #1e2130; border: 1px solid rgba(255,255,255,0.08); border-radius: 14px 14px 4px 14px; padding: 12px 16px; max-width: 72%; font-size: 14px; line-height: 1.65; color: #f0f0f8; word-break: break-word; white-space: pre-wrap; }
+  .assistant-avatar { width: 30px; height: 30px; flex-shrink: 0; background: linear-gradient(135deg,#6c63ff,#00d4aa); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 14px; margin-top: 2px; }
   .ai-bubble { flex: 1; font-size: 14px; line-height: 1.75; color: #e8ecf0; word-break: break-word; }
   .ai-bubble h1 { font-size: 18px; font-weight: 700; margin: 14px 0 8px; color: #f0f0f8; }
   .ai-bubble h2 { font-size: 16px; font-weight: 600; margin: 12px 0 6px; color: #f0f0f8; border-bottom: 1px solid rgba(255,255,255,0.07); padding-bottom: 4px; }
@@ -100,34 +90,30 @@
   .ai-bubble strong { color: #f0f0f8; font-weight: 600; }
   .ai-bubble ul, .ai-bubble ol { padding-left: 20px; margin: 6px 0; }
   .ai-bubble li { margin: 4px 0; }
-  .ai-bubble code { background: rgba(108,99,255,0.15); border-radius: 4px; padding: 2px 6px; font-family: 'Space Mono', monospace; font-size: 12px; color: #a78bfa; }
+  .ai-bubble code { background: rgba(108,99,255,0.15); border-radius: 4px; padding: 2px 6px; font-family: var(--font-mono); font-size: 12px; color: #a78bfa; }
   .ai-bubble pre { background: #1a1d27; border: 1px solid rgba(255,255,255,0.07); border-radius: 10px; padding: 14px 16px; overflow-x: auto; margin: 10px 0; }
   .ai-bubble pre code { background: none; padding: 0; color: #e8ecf0; font-size: 12.5px; }
   .ai-bubble hr { border: none; border-top: 1px solid rgba(255,255,255,0.08); margin: 14px 0; }
   .ai-bubble p { margin: 6px 0; }
-
   @keyframes mentoraDot { 0%,80%,100%{ transform:translateY(0);opacity:.4; } 40%{ transform:translateY(-5px);opacity:1; } }
-  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
-
-  .nav-section::-webkit-scrollbar { width: 3px; }
-  .nav-section::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+  @media (max-width: 820px) {
+    .sidebar { display: none; }
+    .chat-area { padding: 24px 14px 16px; }
+    .input-area { padding: 14px; }
+    .suggestion-grid { grid-template-columns: 1fr; }
+    .user-bubble { max-width: 88%; }
+  }
 </style>
 </head>
 <body>
-
 <aside class="sidebar">
   <div class="logo-area">
-    <div class="logo">
-      <div class="logo-icon">🎓</div>
-      <span class="logo-text">Mentora<span> AI</span></span>
-    </div>
+    <div class="logo"><div class="logo-icon">🎓</div><span class="logo-text">Mentora<span> AI</span></span></div>
   </div>
-
   <button class="new-chat-btn" id="newChatBtn">
     <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
     New Chat
   </button>
-
   <nav class="nav-section">
     <div class="nav-label">Main</div>
     <div class="nav-item active" onclick="setActive(this)"><span class="nav-icon">💬</span>Chat</div>
@@ -141,414 +127,233 @@
     <div class="nav-item" onclick="setActive(this)"><span class="nav-icon">👤</span>Profile</div>
     <div class="nav-item" onclick="setActive(this)"><span class="nav-icon">⚙️</span>Settings</div>
   </nav>
-
   <div class="sidebar-bottom">
-    <button class="signout-btn" id="signOutBtn">🚪 Sign out</button>
-    <div class="user-card">
-      <div class="avatar" id="userAvatar">G</div>
-      <div class="user-info">
-        <div class="user-name" id="userName">Guest</div>
-        <div class="user-plan" id="userPlan">Free Plan</div>
-      </div>
-    </div>
+    <button class="signout-btn" id="signOutBtn">Sign out</button>
+    <div class="user-card"><div class="avatar" id="userAvatar">G</div><div class="user-info"><div class="user-name" id="userName">Guest</div><div class="user-plan" id="userPlan">Free Plan</div></div></div>
   </div>
 </aside>
 
 <main class="main">
-  <div class="topbar">
-    <div class="topbar-left">
-      <div class="model-selector">
-        <span class="model-dot"></span>
-        Mentora
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
-      </div>
-    </div>
-    <div class="topbar-right"></div>
-  </div>
-
-  <div class="chat-area" id="chatArea">
-    <div class="welcome" id="welcomeScreen">
-      <div class="welcome-icon">🎓</div>
-      <h1>Learn smarter, not harder.</h1>
-      <p>Your AI study companion — ask anything, analyze documents, or plan your academic journey with Mentora.</p>
-      <div class="suggestion-grid">
-        <div class="suggestion-card" onclick="fillPrompt('Explain quantum entanglement step by step')"><span class="sug-icon">⚛️</span><div class="sug-title">Explain quantum entanglement</div><div class="sug-desc">Physics concept, step by step</div></div>
-        <div class="suggestion-card" onclick="fillPrompt('Summarize my PDF notes and highlight key points')"><span class="sug-icon">📝</span><div class="sug-title">Summarize my PDF notes</div><div class="sug-desc">Upload and analyze documents</div></div>
-        <div class="suggestion-card" onclick="fillPrompt('Build a study plan for my upcoming exams')"><span class="sug-icon">🗓️</span><div class="sug-title">Build a study plan</div><div class="sug-desc">For my upcoming exam schedule</div></div>
-        <div class="suggestion-card" onclick="fillPrompt('Help me solve a calculus problem')"><span class="sug-icon">🧮</span><div class="sug-title">Solve this math problem</div><div class="sug-desc">Calculus, algebra, stats &amp; more</div></div>
-      </div>
-    </div>
-  </div>
-
+  <div class="topbar"><div class="model-selector"><span class="model-dot"></span>Mentora</div></div>
+  <div class="chat-area" id="chatArea"></div>
   <div class="input-area">
     <div class="input-box">
-      <textarea id="chatInput" rows="1" placeholder="Ask Mentora anything — explain, analyze, or plan your study…"
-        oninput="this.style.height='auto';this.style.height=this.scrollHeight+'px'"
-        onkeydown="handleKey(event)"></textarea>
+      <textarea id="chatInput" rows="1" placeholder="Ask Mentora anything - explain, analyze, or plan your study..." oninput="resizeInput(this)" onkeydown="handleKey(event)"></textarea>
       <div class="input-actions">
-        <div class="attach-btn" title="Attach file">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
-        </div>
-        <button class="send-btn" title="Send" onclick="sendMessage()">
+        <button class="send-btn" id="sendBtn" title="Send" onclick="sendMessage()">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
         </button>
       </div>
     </div>
-    <div class="input-footer">
-      <span>
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-        Encrypted &amp; private
-      </span>
-      <span>Mentora can make mistakes — verify important answers</span>
-    </div>
+    <div class="input-footer"><span>Encrypted in transit</span><span>Mentora can make mistakes - verify important answers</span></div>
   </div>
 </main>
 
-<!-- Non-module helpers -->
 <script>
 function setActive(el) {
-  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach((n) => n.classList.remove('active'));
   el.classList.add('active');
+}
+function resizeInput(input) {
+  input.style.height = 'auto';
+  input.style.height = input.scrollHeight + 'px';
 }
 function fillPrompt(text) {
   const input = document.getElementById('chatInput');
   input.value = text;
-  input.style.height = 'auto';
-  input.style.height = input.scrollHeight + 'px';
+  resizeInput(input);
   input.focus();
 }
 function handleKey(e) {
   if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
 }
-// sendMessage is defined in module below and assigned to window
 </script>
 
 <script type="module">
-// ── Firebase ──────────────────────────────────────────────────────────────────
-import { initializeApp }      from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { auth, db } from "./firebase-config.js";
 import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-import { getFirestore, collection, addDoc, doc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { collection, addDoc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-const app = initializeApp({
-  apiKey: "AIzaSyC--GsipEZSX-W3-eBFWrLhiEC9McOmrW0",
-  authDomain: "mentora-c6dca.firebaseapp.com",
-  projectId: "mentora-c6dca",
-  storageBucket: "mentora-c6dca.firebasestorage.app",
-  messagingSenderId: "388015722291",
-  appId: "1:388015722291:web:5fd20e48390a96caf13846",
-});
-const auth = getAuth(app);
-const db   = getFirestore(app);
-
-// ── Auth guard ────────────────────────────────────────────────────────────────
-let currentUser   = null;
+const authInstance = auth || getAuth();
+let currentUser = null;
 let activeChatRef = null;
+let history = [];
+let sending = false;
 
-onAuthStateChanged(auth, (user) => {
-  if (!user) { window.location.href = "login.html"; return; }
+onAuthStateChanged(authInstance, (user) => {
+  if (!user) {
+    window.location.href = "login.html";
+    return;
+  }
+
   currentUser = user;
-
   const name = user.displayName || user.email?.split("@")[0] || "Guest";
   document.getElementById("userName").textContent = name;
 
-  const av = document.getElementById("userAvatar");
+  const avatar = document.getElementById("userAvatar");
   if (user.photoURL) {
-    av.innerHTML = `<img src="${user.photoURL}" alt="${name}"/>`;
+    avatar.innerHTML = `<img src="${escapeAttr(user.photoURL)}" alt="${escapeAttr(name)}" />`;
   } else {
-    av.textContent = name.charAt(0).toUpperCase();
+    avatar.textContent = name.charAt(0).toUpperCase();
   }
 });
 
 document.getElementById("signOutBtn").onclick = async () => {
-  await signOut(auth);
+  await signOut(authInstance);
   window.location.href = "login.html";
 };
 
-// ── Groq AI ───────────────────────────────────────────────────────────────────
-const GROQ_KEY = "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";
-const GROQ_URL = "https://api.groq.com/openai/v1/chat/completions";
-const SYSTEM = `
-You are Mentora, an advanced AI teacher, tutor, and learning companion.
+document.getElementById("newChatBtn").onclick = () => resetChat();
 
-Your goal is to help students understand concepts deeply, solve problems correctly, improve academic performance, and become independent learners.
-
-You can teach:
-
-• Mathematics
-• Physics
-• Chemistry
-• Biology
-• Computer Science
-• English
-• History
-• Geography
-• Economics
-• School Subjects (Grades 1–12)
-• JEE Preparation
-• NEET Preparation
-• Olympiads
-• Competitive Exams
-• General Knowledge
-
-Teaching Principles:
-
-1. Teach concepts from first principles.
-2. Adapt explanations to the student's level.
-3. Break difficult topics into simple steps.
-4. Use examples and analogies.
-5. Encourage understanding instead of memorization.
-6. Identify misconceptions and correct them.
-7. Build strong foundations before advanced topics.
-8. Make learning engaging and interactive.
-
-Response Style:
-
-• Use markdown formatting.
-• Use ## headings.
-• Use **bold** for important concepts.
-• Use bullet points for clarity.
-• Use tables when useful.
-• Use code blocks only for programming topics.
-
-When Solving Problems:
-
-• Show every important step.
-• Explain why each step is performed.
-• Highlight formulas used.
-• Verify the final answer.
-
-When Teaching Concepts:
-
-1. Give intuition.
-2. Explain the theory.
-3. Provide examples.
-4. Give practice questions.
-5. Mention common mistakes.
-
-When Preparing for Exams:
-
-• Focus on high-yield concepts.
-• Provide shortcuts where appropriate.
-• Suggest revision strategies.
-• Create quizzes and mock questions.
-• Track conceptual weaknesses.
-
-You have access to web search.
-
-Use web search when:
-
-* The user asks for recent information, news, current events, or trends.
-* The user asks about universities, colleges, courses, admissions, cutoffs, fees, or exam updates.
-* The user asks for the latest scientific discoveries or research.
-* The user asks for information that may have changed over time.
-* Additional sources would improve accuracy.
-
-When using web search:
-
-1. Search reliable and authoritative sources first.
-2. Compare information from multiple sources when possible.
-3. Cite sources clearly.
-4. Distinguish between facts and opinions.
-5. If information cannot be verified, state the uncertainty.
-
-Do not use web search for:
-
-* Basic mathematics.
-* General concepts already known.
-* Simple explanations that do not require external information.
-
-Prioritize accuracy, reliability, and transparency.
-
-
-Never give unnecessarily complicated explanations when a simpler explanation would help the student learn better.
-
-Teaching Rules:
-
-- Never assume prior knowledge.
-- Start with intuition before formal definitions.
-- Ask questions frequently.
-- Adapt based on student responses.
-- Detect confusion and explain differently.
-- Use stories, analogies, and visuals.
-- Teach step-by-step.
-- Focus on understanding, not memorization.
-- After every concept, check comprehension.
-- Give hints before revealing answers.
-- Personalize difficulty level automatically.
-
-Your mission is to make learning clear, enjoyable, and effective. 
-`;
-
-
-let history   = [];
-let streaming = false;
-
-async function callGroq(bubble) {
-  const res = await fetch(GROQ_URL, {
-    method: "POST",
-    headers: { "Content-Type": "application/json", "Authorization": `Bearer ${GROQ_KEY}` },
-    body: JSON.stringify({
-      model: "llama-3.3-70b-versatile",
-      messages: [{ role: "system", content: SYSTEM }, ...history],
-      max_tokens: 2048,
-      temperature: 0.65,
-      stream: true,
-    }),
-  });
-
-  if (!res.ok) {
-    const e = await res.json().catch(() => ({}));
-    throw new Error(e?.error?.message || `Groq API error ${res.status}`);
-  }
-
-  const reader  = res.body.getReader();
-  const decoder = new TextDecoder();
-  let full = "", buf = "";
-
-  while (true) {
-    const { done, value } = await reader.read();
-    if (done) break;
-    buf += decoder.decode(value, { stream: true });
-    const lines = buf.split("\n");
-    buf = lines.pop();
-    for (const line of lines) {
-      const s = line.replace(/^data: /, "").trim();
-      if (!s || s === "[DONE]") continue;
-      try {
-        const delta = JSON.parse(s).choices?.[0]?.delta?.content || "";
-        if (delta) {
-          full += delta;
-          bubble.innerHTML = renderMd(full) +
-            `<span style="display:inline-block;width:2px;height:14px;background:#6c63ff;border-radius:2px;margin-left:2px;vertical-align:middle;animation:blink .7s step-end infinite;"></span>`;
-          document.getElementById("chatArea").scrollTop = 99999;
-        }
-      } catch {}
-    }
-  }
-  bubble.innerHTML = renderMd(full);
-  document.getElementById("chatArea").scrollTop = 99999;
-  return full;
+function welcomeMarkup() {
+  return `
+    <div class="welcome" id="welcomeScreen">
+      <div class="welcome-icon">🎓</div>
+      <h1>Learn smarter, not harder.</h1>
+      <p>Your AI study companion - ask anything, analyze ideas, or plan your academic journey with Mentora.</p>
+      <div class="suggestion-grid">
+        <div class="suggestion-card" onclick="fillPrompt('Explain quantum entanglement step by step')"><span class="sug-icon">⚛️</span><div class="sug-title">Explain quantum entanglement</div><div class="sug-desc">Physics concept, step by step</div></div>
+        <div class="suggestion-card" onclick="fillPrompt('Summarize my notes and highlight key points')"><span class="sug-icon">📝</span><div class="sug-title">Summarize my notes</div><div class="sug-desc">Turn rough notes into clarity</div></div>
+        <div class="suggestion-card" onclick="fillPrompt('Build a study plan for my upcoming exams')"><span class="sug-icon">🗓️</span><div class="sug-title">Build a study plan</div><div class="sug-desc">For my upcoming exam schedule</div></div>
+        <div class="suggestion-card" onclick="fillPrompt('Help me solve a calculus problem')"><span class="sug-icon">🧮</span><div class="sug-title">Solve this math problem</div><div class="sug-desc">Calculus, algebra, stats and more</div></div>
+      </div>
+    </div>`;
 }
 
-// ── Markdown ──────────────────────────────────────────────────────────────────
-function renderMd(text) {
-  // Store code blocks first to prevent processing their contents
-  const codeBlocks = [];
-  let h = text.replace(/```[\w]*\n?([\s\S]*?)```/g, (_, c) => {
-    codeBlocks.push(c.trim());
-    return `%%CODE${codeBlocks.length - 1}%%`;
-  });
-
-  // Escape HTML outside code blocks
-  h = h.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
-
-  // Restore code blocks
-  h = h.replace(/%%CODE(\d+)%%/g, (_, i) =>
-    `<pre><code>${codeBlocks[i].replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")}</code></pre>`
-  );
-
-  h = h
-    .replace(/`([^`]+)`/g, `<code>$1</code>`)
-    .replace(/^### (.+)$/gm, `<h3>$1</h3>`)
-    .replace(/^## (.+)$/gm,  `<h2>$1</h2>`)
-    .replace(/^# (.+)$/gm,   `<h1>$1</h1>`)
-    .replace(/\*\*(.+?)\*\*/g, `<strong>$1</strong>`)
-    .replace(/\*(.+?)\*/g,     `<em>$1</em>`)
-    .replace(/^[*\-] (.+)$/gm, `<li>$1</li>`)
-    .replace(/^\d+\. (.+)$/gm, `<li>$1</li>`)
-    .replace(/^---$/gm,        `<hr>`)
-    .replace(/\n/g,            `<br>`);
-  return h;
+function resetChat() {
+  history = [];
+  activeChatRef = null;
+  document.getElementById("chatArea").innerHTML = welcomeMarkup();
 }
 
-// ── Chat UI ───────────────────────────────────────────────────────────────────
 function appendUser(text) {
-  const ca = document.getElementById("chatArea");
-  const d  = document.createElement("div");
-  d.style.cssText = "display:flex;justify-content:flex-end;padding:0 20px;";
-  d.innerHTML = `<div style="background:#1e2130;border:1px solid rgba(255,255,255,0.08);border-radius:14px 14px 4px 14px;padding:12px 16px;max-width:72%;font-size:14px;line-height:1.65;color:#f0f0f8;word-break:break-word;">${text.replace(/</g,"&lt;")}</div>`;
-  ca.appendChild(d);
-  ca.scrollTop = 99999;
+  const row = document.createElement("div");
+  row.className = "message-row user";
+  const bubble = document.createElement("div");
+  bubble.className = "user-bubble";
+  bubble.textContent = text;
+  row.appendChild(bubble);
+  appendRow(row);
 }
 
 function createAiBubble() {
-  const ca   = document.getElementById("chatArea");
-  const wrap = document.createElement("div");
-  wrap.style.cssText = "display:flex;gap:12px;padding:0 20px;align-items:flex-start;";
+  const row = document.createElement("div");
+  row.className = "message-row assistant";
+  row.innerHTML = `<div class="assistant-avatar">🎓</div>`;
   const bubble = document.createElement("div");
   bubble.className = "ai-bubble";
   bubble.innerHTML = `<span style="display:inline-flex;gap:4px;align-items:center;height:22px;">
-    ${[0,180,360].map(d => `<span style="width:6px;height:6px;border-radius:50%;background:#6c63ff;display:inline-block;animation:mentoraDot 1.2s ease-in-out ${d}ms infinite;"></span>`).join("")}
+    ${[0,180,360].map((delay) => `<span style="width:6px;height:6px;border-radius:50%;background:#6c63ff;display:inline-block;animation:mentoraDot 1.2s ease-in-out ${delay}ms infinite;"></span>`).join("")}
   </span>`;
-  wrap.innerHTML = `<div style="width:30px;height:30px;flex-shrink:0;background:linear-gradient(135deg,#6c63ff,#00d4aa);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;margin-top:2px;">🎓</div>`;
-  wrap.appendChild(bubble);
-  ca.appendChild(wrap);
-  ca.scrollTop = 99999;
+  row.appendChild(bubble);
+  appendRow(row);
   return bubble;
 }
 
-// ── Firestore ─────────────────────────────────────────────────────────────────
+function appendRow(row) {
+  const chatArea = document.getElementById("chatArea");
+  const welcome = document.getElementById("welcomeScreen");
+  if (welcome) welcome.remove();
+  chatArea.appendChild(row);
+  chatArea.scrollTop = chatArea.scrollHeight;
+}
+
+async function callMentora() {
+  const response = await fetch("/api/chat", {
+    method: "POST",
+    headers: { "Content-Type": "application/json", "Accept": "application/json" },
+    credentials: "same-origin",
+    body: JSON.stringify({ messages: history }),
+  });
+
+  const data = await response.json().catch(() => ({}));
+  if (!response.ok) {
+    throw new Error(data.error || `Mentora API error ${response.status}`);
+  }
+
+  if (!data.reply) {
+    throw new Error("Mentora returned an empty response.");
+  }
+
+  return data.reply;
+}
+
 async function saveMsg(role, content) {
   if (!currentUser) return;
   if (!activeChatRef) {
-    activeChatRef = await addDoc(
-      collection(db, "users", currentUser.uid, "chats"),
-      { title: content.slice(0, 60), createdAt: serverTimestamp(), updatedAt: serverTimestamp() }
-    );
+    activeChatRef = await addDoc(collection(db, "users", currentUser.uid, "chats"), {
+      title: content.slice(0, 60),
+      createdAt: serverTimestamp(),
+      updatedAt: serverTimestamp(),
+    });
   }
+
   await addDoc(collection(activeChatRef, "messages"), { role, content, ts: serverTimestamp() });
   await setDoc(activeChatRef, { updatedAt: serverTimestamp() }, { merge: true });
 }
 
-// ── sendMessage (exposed globally) ───────────────────────────────────────────
-window.sendMessage = async function () {
-  if (streaming) return;
+window.sendMessage = async function sendMessage() {
+  if (sending) return;
   const input = document.getElementById("chatInput");
-  const text  = input.value.trim();
+  const sendBtn = document.getElementById("sendBtn");
+  const text = input.value.trim();
   if (!text) return;
 
   input.value = "";
   input.style.height = "auto";
-
-  const welcome = document.getElementById("welcomeScreen");
-  if (welcome) welcome.remove();
-
   appendUser(text);
   history.push({ role: "user", content: text });
-  saveMsg("user", text);
+  saveMsg("user", text).catch(console.error);
 
   const bubble = createAiBubble();
-  streaming = true;
+  sending = true;
+  sendBtn.disabled = true;
+
   try {
-    const reply = await callGroq(bubble);
+    const reply = await callMentora();
+    bubble.innerHTML = renderMd(reply);
     history.push({ role: "assistant", content: reply });
-    saveMsg("assistant", reply);
+    saveMsg("assistant", reply).catch(console.error);
   } catch (err) {
-    bubble.innerHTML = `<span style="color:#ff6b6b;">⚠ ${err.message}</span>`;
+    bubble.innerHTML = `<span style="color:#ff6b6b;">${escapeHtml(err.message)}</span>`;
   } finally {
-    streaming = false;
+    sending = false;
+    sendBtn.disabled = false;
+    document.getElementById("chatArea").scrollTop = document.getElementById("chatArea").scrollHeight;
   }
 };
 
-// ── New Chat ──────────────────────────────────────────────────────────────────
-window.handleNewChat = function () {
-  history = [];
-  activeChatRef = null;
-  document.getElementById("chatArea").innerHTML = `
-    <div class="welcome" id="welcomeScreen">
-      <div class="welcome-icon">🎓</div>
-      <h1>Learn smarter, not harder.</h1>
-      <p>Your AI study companion — ask anything, analyze documents, or plan your academic journey with Mentora.</p>
-      <div class="suggestion-grid">
-        <div class="suggestion-card" onclick="fillPrompt('Explain quantum entanglement step by step')"><span class="sug-icon">⚛️</span><div class="sug-title">Explain quantum entanglement</div><div class="sug-desc">Physics concept, step by step</div></div>
-        <div class="suggestion-card" onclick="fillPrompt('Summarize my PDF notes and highlight key points')"><span class="sug-icon">📝</span><div class="sug-title">Summarize my PDF notes</div><div class="sug-desc">Upload and analyze documents</div></div>
-        <div class="suggestion-card" onclick="fillPrompt('Build a study plan for my upcoming exams')"><span class="sug-icon">🗓️</span><div class="sug-title">Build a study plan</div><div class="sug-desc">For my upcoming exam schedule</div></div>
-        <div class="suggestion-card" onclick="fillPrompt('Help me solve a calculus problem')"><span class="sug-icon">🧮</span><div class="sug-title">Solve this math problem</div><div class="sug-desc">Calculus, algebra, stats &amp; more</div></div>
-      </div>
-    </div>`;
-};
+function renderMd(text) {
+  const codeBlocks = [];
+  let html = text.replace(/```[\w-]*\n?([\s\S]*?)```/g, (_, code) => {
+    codeBlocks.push(code.trim());
+    return `%%CODE${codeBlocks.length - 1}%%`;
+  });
 
-document.getElementById("newChatBtn").onclick = window.handleNewChat;
+  html = escapeHtml(html);
+  html = html.replace(/%%CODE(\d+)%%/g, (_, index) => `<pre><code>${escapeHtml(codeBlocks[index])}</code></pre>`);
+  html = html
+    .replace(/`([^`]+)`/g, "<code>$1</code>")
+    .replace(/^### (.+)$/gm, "<h3>$1</h3>")
+    .replace(/^## (.+)$/gm, "<h2>$1</h2>")
+    .replace(/^# (.+)$/gm, "<h1>$1</h1>")
+    .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
+    .replace(/^[-*] (.+)$/gm, "<li>$1</li>")
+    .replace(/^---$/gm, "<hr>")
+    .replace(/\n/g, "<br>");
+
+  return html;
+}
+
+function escapeHtml(value) {
+  return String(value).replace(/[&<>"]/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[char]));
+}
+
+function escapeAttr(value) {
+  return escapeHtml(value).replace(/'/g, "&#39;");
+}
+
+resetChat();
 </script>
 </body>
 </html>
