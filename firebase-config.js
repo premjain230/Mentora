@@ -1,21 +1,27 @@
-// ── firebase-config.js ──
-// Shared Firebase initialization. Import this in all other JS files.
+// Shared Firebase initialization. Values are served by a Vercel Function so they are
+// not committed in source. Firebase client config is still delivered to the browser
+// at runtime because the Firebase web SDK requires it.
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getAuth, GoogleAuthProvider } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 import { getFirestore } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-const firebaseConfig = {
-  apiKey: "AIzaSyC--GsipEZSX-W3-eBFWrLhiEC9McOmrW0",
-  authDomain: "mentora-c6dca.firebaseapp.com",
-  projectId: "mentora-c6dca",
-  storageBucket: "mentora-c6dca.firebasestorage.app",
-  messagingSenderId: "388015722291",
-  appId: "1:388015722291:web:5fd20e48390a96caf13846",
-  measurementId: "G-ET1SWBG3W4",
-};
+async function loadFirebaseConfig() {
+  const response = await fetch("/api/firebase-config", {
+    method: "GET",
+    headers: { "Accept": "application/json" },
+    credentials: "same-origin",
+  });
 
-const app = initializeApp(firebaseConfig);
+  if (!response.ok) {
+    throw new Error("Firebase configuration is unavailable.");
+  }
+
+  return response.json();
+}
+
+const app = initializeApp(await loadFirebaseConfig());
+
 export const auth = getAuth(app);
 export const db = getFirestore(app);
 export const googleProvider = new GoogleAuthProvider();
