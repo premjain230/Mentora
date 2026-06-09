@@ -1,0 +1,36 @@
+name: Daily Mentora Audit
+
+on:
+schedule:
+- cron: '30 11 * * *'
+workflow_dispatch:
+
+jobs:
+audit:
+runs-on: ubuntu-latest
+
+```
+steps:
+  - name: Checkout Repository
+    uses: actions/checkout@v4
+
+  - name: Show Project Structure
+    run: |
+      echo "Checking project..."
+      ls -la
+      find . -type f | head -100
+
+  - name: Check JavaScript Syntax
+    run: |
+      find . -name "*.js" -exec node --check {} \;
+
+  - name: Scan For Secrets
+    run: |
+      grep -R "AIza" . || true
+      grep -R "gsk_" . || true
+      grep -R "sk-" . || true
+
+  - name: Generate Report
+    run: |
+      echo "Audit completed"
+```
