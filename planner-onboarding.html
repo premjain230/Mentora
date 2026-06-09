@@ -254,9 +254,9 @@ input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 18p
 <div class="toast" id="toast"></div>
 
 <script type="module">
-import { auth } from "../firebase/firebase-config.js";
+import { auth } from "./firebase-config.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-import { saveExamProfile, saveStudyPlan, createTasksFromPlan, logEvent } from "../firebase/planner-db.js";
+import { saveExamProfile, saveStudyPlan, createTasksFromPlan, logEvent } from "./planner-db.js";
 
 // ── Auth guard ───────────────────────────────────────────────
 onAuthStateChanged(auth, (user) => {
