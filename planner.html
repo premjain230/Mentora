@@ -39,8 +39,11 @@ body { font-family: var(--font-main); background: var(--bg-base); color: var(--t
 .nav-item:hover { background: rgba(255,255,255,0.04); color: var(--text-primary); }
 .nav-item.active { background: rgba(108,99,255,0.1); color: var(--text-primary); border-color: rgba(108,99,255,0.2); }
 .nav-icon { width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
+/* ── Nav badge ───────────────────────────────────────────── */
+.nav-badge { margin-left: auto; font-size: 10px; font-weight: 700; padding: 2px 7px; border-radius: 20px; background: rgba(108,99,255,0.15); color: var(--accent); }
+.nav-badge.green { background: rgba(0,212,170,0.12); color: var(--accent2); }
 .sidebar-bottom { padding: 12px 10px; border-top: 1px solid var(--border); }
-.signout-btn { width: calc(100% - 0px); padding: 8px 14px; background: rgba(255,107,107,0.08); border: 1px solid rgba(255,107,107,0.2); color: var(--accent3); font-family: var(--font-main); font-size: 12px; border-radius: 8px; cursor: pointer; transition: all 0.18s; }
+.signout-btn { width: 100%; padding: 8px 14px; background: rgba(255,107,107,0.08); border: 1px solid rgba(255,107,107,0.2); color: var(--accent3); font-family: var(--font-main); font-size: 12px; border-radius: 8px; cursor: pointer; transition: all 0.18s; }
 .signout-btn:hover { background: rgba(255,107,107,0.15); }
 .user-card { display: flex; align-items: center; gap: 10px; padding: 8px 4px 12px; }
 .avatar { width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg,#6c63ff,#00d4aa); display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 600; flex-shrink: 0; overflow: hidden; }
@@ -212,6 +215,7 @@ body { font-family: var(--font-main); background: var(--bg-base); color: var(--t
 </head>
 <body>
 
+<!-- ── Sidebar ─────────────────────────────────────────────── -->
 <div class="sidebar">
   <div class="logo-area">
     <div class="logo">
@@ -219,80 +223,82 @@ body { font-family: var(--font-main); background: var(--bg-base); color: var(--t
       <div class="logo-text">Mento<span>ra</span></div>
     </div>
   </div>
+
   <nav class="nav-section">
+    <div class="nav-label">Learn</div>
+    <div class="nav-item active" onclick="setActive(this)">
+      <span class="nav-icon">💬</span>
+      AI Tutor
+    </div>
+    <div class="nav-item" onclick="setActive(this)">
+      <span class="nav-icon">🔍</span>
+      Analyze
+      <span class="nav-badge green">AI</span>
+    </div>
+    <div class="nav-item" onclick="window.location.href='planner.html'">
+      <span class="nav-icon">📅</span>
+      Study Planner
+    </div>
 
-  <div class="nav-label">Learn</div>
+    <div class="nav-label">Library</div>
+    <div class="nav-item" onclick="setActive(this)">
+      <span class="nav-icon">📄</span>
+      My Documents
+    </div>
+    <div class="nav-item" onclick="setActive(this)">
+      <span class="nav-icon">🧠</span>
+      Knowledge Base
+    </div>
+    <div class="nav-item" onclick="setActive(this)">
+      <span class="nav-icon">📊</span>
+      Progress
+      <span class="nav-badge">3</span>
+    </div>
 
-  <div class="nav-item active" onclick="setActive(this)">
-    <span class="nav-icon">💬</span>
-    AI Tutor
+    <div class="nav-label">Planner</div>
+    <div class="nav-item" onclick="window.location.href='planner.html#today'">
+      <span class="nav-icon">✅</span>
+      Today's Tasks
+    </div>
+    <div class="nav-item" onclick="window.location.href='planner.html#weekly'">
+      <span class="nav-icon">🗓️</span>
+      Weekly Plan
+    </div>
+    <div class="nav-item" onclick="window.location.href='planner.html#milestones'">
+      <span class="nav-icon">🏆</span>
+      Milestones
+    </div>
+    <div class="nav-item" onclick="window.location.href='planner.html#progress'">
+      <span class="nav-icon">📈</span>
+      Analytics
+    </div>
+
+    <div class="nav-label">Account</div>
+    <div class="nav-item" onclick="setActive(this)">
+      <span class="nav-icon">👤</span>
+      Profile
+    </div>
+    <div class="nav-item" onclick="setActive(this)">
+      <span class="nav-icon">⚙️</span>
+      Settings
+    </div>
+  </nav>
+
+  <!-- Sidebar bottom: user card + sign out -->
+  <div class="sidebar-bottom">
+    <div class="user-card">
+      <div class="avatar" id="sidebarAvatar"></div>
+      <div class="user-info">
+        <div class="user-name" id="sidebarName">Student</div>
+        <div class="user-plan">Pro Plan</div>
+      </div>
+    </div>
+    <button class="signout-btn" id="signoutBtn">Sign out</button>
   </div>
+</div>
+<!-- ── End Sidebar ──────────────────────────────────────────── -->
 
-  <div class="nav-item" onclick="setActive(this)">
-    <span class="nav-icon">🔍</span>
-    Analyze
-    <span class="nav-badge green">AI</span>
-  </div>
-
-  <div class="nav-item" onclick="window.location.href='planner.html'">
-    <span class="nav-icon">📅</span>
-    Study Planner
-  </div>
-
-  <div class="nav-label">Library</div>
-
-  <div class="nav-item" onclick="setActive(this)">
-    <span class="nav-icon">📄</span>
-    My Documents
-  </div>
-
-  <div class="nav-item" onclick="setActive(this)">
-    <span class="nav-icon">🧠</span>
-    Knowledge Base
-  </div>
-
-  <div class="nav-item" onclick="setActive(this)">
-    <span class="nav-icon">📊</span>
-    Progress
-    <span class="nav-badge">3</span>
-  </div>
-
-  <div class="nav-label">Planner</div>
-
-  <div class="nav-item" onclick="window.location.href='planner.html#today'">
-    <span class="nav-icon">✅</span>
-    Today's Tasks
-  </div>
-
-  <div class="nav-item" onclick="window.location.href='planner.html#weekly'">
-    <span class="nav-icon">🗓️</span>
-    Weekly Plan
-  </div>
-
-  <div class="nav-item" onclick="window.location.href='planner.html#milestones'">
-    <span class="nav-icon">🏆</span>
-    Milestones
-  </div>
-
-  <div class="nav-item" onclick="window.location.href='planner.html#progress'">
-    <span class="nav-icon">📈</span>
-    Analytics
-  </div>
-
-  <div class="nav-label">Account</div>
-
-  <div class="nav-item" onclick="setActive(this)">
-    <span class="nav-icon">👤</span>
-    Profile
-  </div>
-
-  <div class="nav-item" onclick="setActive(this)">
-    <span class="nav-icon">⚙️</span>
-    Settings
-  </div>
-
-</nav>
-
+<!-- ── Main ──────────────────────────────────────────────────── -->
 <div class="main">
   <div class="topbar">
     <div class="topbar-title">📅 Study Planner</div>
@@ -313,7 +319,9 @@ body { font-family: var(--font-main); background: var(--bg-base); color: var(--t
     <!-- Dynamically populated -->
   </div>
 </div>
+<!-- ── End Main ───────────────────────────────────────────────── -->
 
+<!-- ── Replan Modal ───────────────────────────────────────────── -->
 <div class="modal-overlay" id="replanModal">
   <div class="modal">
     <div class="modal-title">🔄 Smart Replan</div>
