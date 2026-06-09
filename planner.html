@@ -336,12 +336,12 @@ body { font-family: var(--font-main); background: var(--bg-base); color: var(--t
 <div class="toast" id="toast"></div>
 
 <script type="module">
-import { auth } from "../firebase/firebase-config.js";
+import { auth } from "./firebase-config.js";
 import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 import {
   getActivePlan, getTasksByPlan, getProgress,
   updateTaskStatus, updateStreak, getExamProfile, logEvent
-} from "../firebase/planner-db.js";
+} from "../api/planner-db.js";
 
 // ── App state ────────────────────────────────────────────────
 let appState = {
