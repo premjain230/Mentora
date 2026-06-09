@@ -1,0 +1,1069 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Study Planner — Mentora</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg-base: #0a0b0f;
+  --bg-sidebar: #0f1117;
+  --bg-card: #1a1d27;
+  --bg-input: #1e2130;
+  --accent: #6c63ff;
+  --accent2: #00d4aa;
+  --accent3: #ff6b6b;
+  --accent4: #f59e0b;
+  --border: rgba(255,255,255,0.07);
+  --border-hover: rgba(108,99,255,0.4);
+  --text-primary: #f0f0f8;
+  --text-secondary: #8b8fa8;
+  --text-muted: #4a4d62;
+  --font-main: 'Sora', sans-serif;
+  --font-mono: 'Space Mono', monospace;
+}
+body { font-family: var(--font-main); background: var(--bg-base); color: var(--text-primary); height: 100vh; display: flex; overflow: hidden; }
+
+/* ── Sidebar ─────────────────────────────────────────────── */
+.sidebar { width: 240px; min-width: 240px; background: var(--bg-sidebar); border-right: 1px solid var(--border); display: flex; flex-direction: column; }
+.logo-area { padding: 22px 20px 18px; border-bottom: 1px solid var(--border); }
+.logo { display: flex; align-items: center; gap: 10px; }
+.logo-icon { width: 34px; height: 34px; background: linear-gradient(135deg, var(--accent), var(--accent2)); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 17px; }
+.logo-text { font-size: 17px; font-weight: 700; letter-spacing: -0.3px; }
+.logo-text span { color: var(--accent2); }
+.nav-section { padding: 6px 10px; flex: 1; overflow-y: auto; }
+.nav-label { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); padding: 12px 8px 6px; }
+.nav-item { display: flex; align-items: center; gap: 11px; padding: 10px 12px; border-radius: 10px; cursor: pointer; font-size: 13.5px; color: var(--text-secondary); transition: all 0.18s; margin-bottom: 2px; border: 1px solid transparent; text-decoration: none; }
+.nav-item:hover { background: rgba(255,255,255,0.04); color: var(--text-primary); }
+.nav-item.active { background: rgba(108,99,255,0.1); color: var(--text-primary); border-color: rgba(108,99,255,0.2); }
+.nav-icon { width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
+.sidebar-bottom { padding: 12px 10px; border-top: 1px solid var(--border); }
+.signout-btn { width: calc(100% - 0px); padding: 8px 14px; background: rgba(255,107,107,0.08); border: 1px solid rgba(255,107,107,0.2); color: var(--accent3); font-family: var(--font-main); font-size: 12px; border-radius: 8px; cursor: pointer; transition: all 0.18s; }
+.signout-btn:hover { background: rgba(255,107,107,0.15); }
+.user-card { display: flex; align-items: center; gap: 10px; padding: 8px 4px 12px; }
+.avatar { width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg,#6c63ff,#00d4aa); display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 600; flex-shrink: 0; overflow: hidden; }
+.avatar img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
+.user-info { flex: 1; min-width: 0; }
+.user-name { font-size: 13px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.user-plan { font-size: 11px; color: var(--accent2); font-weight: 500; }
+
+/* ── Main ────────────────────────────────────────────────── */
+.main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+.topbar { display: flex; align-items: center; justify-content: space-between; padding: 16px 28px; border-bottom: 1px solid var(--border); flex-shrink: 0; }
+.topbar-title { font-size: 16px; font-weight: 600; display: flex; align-items: center; gap: 10px; }
+.topbar-right { display: flex; align-items: center; gap: 10px; }
+.btn-sm { font-family: var(--font-main); font-size: 12px; font-weight: 600; padding: 7px 14px; border-radius: 8px; cursor: pointer; border: none; transition: all 0.18s; }
+.btn-outline { background: transparent; border: 1px solid var(--border); color: var(--text-secondary); }
+.btn-outline:hover { border-color: rgba(108,99,255,0.4); color: var(--accent); }
+.btn-accent { background: var(--accent); color: white; }
+.btn-accent:hover { background: #7b73ff; }
+.btn-teal { background: rgba(0,212,170,0.12); border: 1px solid rgba(0,212,170,0.25); color: var(--accent2); }
+.btn-teal:hover { background: rgba(0,212,170,0.2); }
+
+/* ── Tab bar ────────────────────────────────────────────── */
+.tab-bar { display: flex; align-items: center; gap: 4px; padding: 12px 28px 0; border-bottom: 1px solid var(--border); flex-shrink: 0; }
+.tab { padding: 9px 16px; font-size: 13px; font-weight: 500; color: var(--text-muted); cursor: pointer; border-bottom: 2px solid transparent; transition: all 0.18s; user-select: none; }
+.tab:hover { color: var(--text-secondary); }
+.tab.active { color: var(--text-primary); border-bottom-color: var(--accent); }
+
+/* ── Scrollable content ──────────────────────────────────── */
+.content { flex: 1; overflow-y: auto; padding: 24px 28px; }
+.content::-webkit-scrollbar { width: 4px; }
+.content::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+/* ── Stat cards ──────────────────────────────────────────── */
+.stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 24px; }
+.stat-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 16px; padding: 18px 20px; }
+.stat-label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-muted); margin-bottom: 10px; }
+.stat-val { font-size: 28px; font-weight: 700; font-family: var(--font-mono); letter-spacing: -1px; }
+.stat-sub { font-size: 12px; color: var(--text-secondary); margin-top: 4px; }
+.stat-card.accent-purple .stat-val { color: var(--accent); }
+.stat-card.accent-teal .stat-val { color: var(--accent2); }
+.stat-card.accent-amber .stat-val { color: var(--accent4); }
+.stat-card.accent-red .stat-val { color: var(--accent3); }
+
+/* ── Countdown banner ────────────────────────────────────── */
+.countdown-banner { background: linear-gradient(135deg, rgba(108,99,255,0.12), rgba(0,212,170,0.08)); border: 1px solid rgba(108,99,255,0.2); border-radius: 16px; padding: 20px 24px; margin-bottom: 24px; display: flex; align-items: center; gap: 20px; }
+.countdown-days { font-size: 48px; font-weight: 700; font-family: var(--font-mono); color: var(--accent); letter-spacing: -2px; line-height: 1; }
+.countdown-info { flex: 1; }
+.countdown-title { font-size: 16px; font-weight: 600; margin-bottom: 4px; }
+.countdown-sub { font-size: 13px; color: var(--text-secondary); }
+.countdown-progress { display: flex; flex-direction: column; gap: 6px; min-width: 180px; }
+.cprog-label { display: flex; justify-content: space-between; font-size: 11px; color: var(--text-muted); }
+.cprog-bar { height: 5px; background: rgba(255,255,255,0.06); border-radius: 99px; }
+.cprog-fill { height: 100%; border-radius: 99px; background: linear-gradient(90deg, var(--accent), var(--accent2)); }
+
+/* ── Two-column layout ───────────────────────────────────── */
+.two-col { display: grid; grid-template-columns: 1fr 340px; gap: 20px; }
+.section-title { font-size: 13px; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.7px; margin-bottom: 14px; display: flex; align-items: center; justify-content: space-between; }
+
+/* ── Task list ───────────────────────────────────────────── */
+.task-list { display: flex; flex-direction: column; gap: 8px; }
+.task-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 14px; padding: 14px 16px; display: flex; align-items: center; gap: 14px; transition: border-color 0.18s; }
+.task-card:hover { border-color: rgba(108,99,255,0.2); }
+.task-card.completed { opacity: 0.5; }
+.task-card.completed .task-topic { text-decoration: line-through; color: var(--text-muted); }
+.task-check { width: 22px; height: 22px; border-radius: 6px; border: 2px solid var(--border); display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; transition: all 0.18s; background: transparent; }
+.task-check:hover { border-color: var(--accent2); }
+.task-check.done { background: var(--accent2); border-color: var(--accent2); }
+.task-check.done::after { content: "✓"; font-size: 12px; color: #0a0b0f; font-weight: 700; }
+.task-body { flex: 1; min-width: 0; }
+.task-subject { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.6px; margin-bottom: 2px; }
+.task-topic { font-size: 14px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.task-meta { display: flex; align-items: center; gap: 8px; margin-top: 4px; }
+.task-dur { font-size: 11px; color: var(--text-muted); font-family: var(--font-mono); }
+.task-type { font-size: 10px; padding: 2px 7px; border-radius: 20px; font-weight: 600; }
+.task-type.learn { background: rgba(108,99,255,0.15); color: var(--accent); }
+.task-type.revise { background: rgba(0,212,170,0.12); color: var(--accent2); }
+.task-type.practice { background: rgba(245,158,11,0.12); color: var(--accent4); }
+.task-type.test { background: rgba(255,107,107,0.12); color: var(--accent3); }
+.task-priority { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+.task-priority.high { background: var(--accent3); }
+.task-priority.medium { background: var(--accent4); }
+.task-priority.low { background: var(--text-muted); }
+.task-actions { display: flex; gap: 6px; flex-shrink: 0; }
+.task-btn { padding: 5px 10px; font-size: 11px; font-family: var(--font-main); border-radius: 6px; cursor: pointer; transition: all 0.15s; border: 1px solid var(--border); background: transparent; color: var(--text-muted); }
+.task-btn:hover { color: var(--text-primary); border-color: rgba(255,255,255,0.15); }
+.task-btn.skip:hover { color: var(--accent3); border-color: rgba(255,107,107,0.3); }
+
+/* ── Missed tasks alert ──────────────────────────────────── */
+.missed-alert { background: rgba(255,107,107,0.06); border: 1px solid rgba(255,107,107,0.2); border-radius: 14px; padding: 14px 18px; display: flex; align-items: center; gap: 14px; margin-bottom: 18px; }
+.missed-alert-icon { font-size: 22px; flex-shrink: 0; }
+.missed-alert-body { flex: 1; }
+.missed-alert-title { font-size: 13px; font-weight: 600; color: var(--accent3); margin-bottom: 2px; }
+.missed-alert-sub { font-size: 12px; color: var(--text-secondary); }
+.btn-replan { padding: 7px 14px; font-size: 12px; font-family: var(--font-main); font-weight: 600; background: rgba(255,107,107,0.12); border: 1px solid rgba(255,107,107,0.3); color: var(--accent3); border-radius: 8px; cursor: pointer; transition: all 0.18s; white-space: nowrap; }
+.btn-replan:hover { background: rgba(255,107,107,0.2); }
+
+/* ── Subject progress panel ──────────────────────────────── */
+.subject-panel { background: var(--bg-card); border: 1px solid var(--border); border-radius: 16px; padding: 20px; }
+.subject-row { display: flex; flex-direction: column; gap: 14px; }
+.subj-item { }
+.subj-head { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 6px; }
+.subj-name { font-size: 13px; font-weight: 500; }
+.subj-pct { font-size: 12px; color: var(--text-muted); font-family: var(--font-mono); }
+.subj-bar { height: 4px; background: rgba(255,255,255,0.06); border-radius: 99px; }
+.subj-fill { height: 100%; border-radius: 99px; transition: width 0.6s ease; }
+
+/* ── Milestones ──────────────────────────────────────────── */
+.milestone-list { display: flex; flex-direction: column; gap: 10px; }
+.milestone-item { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 14px 16px; display: flex; gap: 14px; }
+.milestone-week { font-size: 11px; font-family: var(--font-mono); color: var(--accent); background: rgba(108,99,255,0.1); padding: 3px 8px; border-radius: 6px; white-space: nowrap; height: fit-content; }
+.milestone-goal { font-size: 13.5px; font-weight: 500; margin-bottom: 6px; }
+.milestone-checks { display: flex; flex-direction: column; gap: 3px; }
+.milestone-check { font-size: 12px; color: var(--text-secondary); display: flex; align-items: center; gap: 7px; }
+.milestone-check::before { content: "·"; color: var(--accent2); font-size: 16px; line-height: 1; }
+
+/* ── Weekly view ─────────────────────────────────────────── */
+.week-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 10px; }
+.week-day { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 12px 10px; min-height: 160px; }
+.week-day-label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.6px; color: var(--text-muted); margin-bottom: 10px; text-align: center; }
+.week-day.today { border-color: rgba(108,99,255,0.35); }
+.week-day.today .week-day-label { color: var(--accent); }
+.week-session { background: rgba(108,99,255,0.1); border-radius: 6px; padding: 6px 8px; margin-bottom: 5px; font-size: 11px; }
+.week-session .ws-subject { font-weight: 600; color: var(--accent); font-size: 10px; text-transform: uppercase; }
+.week-session .ws-topic { color: var(--text-secondary); margin-top: 2px; line-height: 1.3; }
+.week-session.revise { background: rgba(0,212,170,0.08); }
+.week-session.revise .ws-subject { color: var(--accent2); }
+.week-session.practice { background: rgba(245,158,11,0.08); }
+.week-session.practice .ws-subject { color: var(--accent4); }
+.week-session.test { background: rgba(255,107,107,0.08); }
+.week-session.test .ws-subject { color: var(--accent3); }
+
+/* ── Empty state ─────────────────────────────────────────── */
+.empty-state { text-align: center; padding: 60px 20px; }
+.empty-icon { font-size: 48px; margin-bottom: 16px; }
+.empty-title { font-size: 18px; font-weight: 600; margin-bottom: 8px; }
+.empty-sub { font-size: 14px; color: var(--text-secondary); margin-bottom: 24px; line-height: 1.6; }
+
+/* ── Loading skeleton ────────────────────────────────────── */
+.skeleton { background: linear-gradient(90deg, rgba(255,255,255,0.04) 25%, rgba(255,255,255,0.07) 50%, rgba(255,255,255,0.04) 75%); background-size: 200% 100%; animation: shimmer 1.4s infinite; border-radius: 8px; }
+@keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
+
+/* ── Toast ───────────────────────────────────────────────── */
+.toast { position: fixed; bottom: 28px; right: 28px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 12px 18px; font-size: 13px; z-index: 999; transform: translateY(20px); opacity: 0; transition: all 0.3s; pointer-events: none; max-width: 320px; }
+.toast.show { transform: translateY(0); opacity: 1; }
+.toast.success { border-color: rgba(0,212,170,0.4); color: var(--accent2); }
+.toast.error { border-color: rgba(255,107,107,0.4); color: var(--accent3); }
+
+/* ── Replan modal ────────────────────────────────────────── */
+.modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); z-index: 200; display: flex; align-items: center; justify-content: center; padding: 20px; opacity: 0; pointer-events: none; transition: opacity 0.2s; }
+.modal-overlay.show { opacity: 1; pointer-events: all; }
+.modal { background: var(--bg-card); border: 1px solid var(--border); border-radius: 20px; padding: 28px; width: 100%; max-width: 480px; }
+.modal-title { font-size: 18px; font-weight: 700; margin-bottom: 8px; }
+.modal-sub { font-size: 13px; color: var(--text-secondary); line-height: 1.6; margin-bottom: 22px; }
+.modal-actions { display: flex; gap: 10px; justify-content: flex-end; }
+
+@media (max-width: 1100px) { .two-col { grid-template-columns: 1fr; } }
+@media (max-width: 960px) { .stats-row { grid-template-columns: repeat(2,1fr); } .week-grid { grid-template-columns: repeat(4,1fr); } }
+@media (max-width: 720px) {
+  .sidebar { display: none; }
+  .content { padding: 16px; }
+  .topbar { padding: 12px 16px; }
+  .tab-bar { padding: 10px 16px 0; overflow-x: auto; }
+  .stats-row { grid-template-columns: repeat(2,1fr); }
+  .week-grid { grid-template-columns: repeat(2,1fr); }
+  .countdown-banner { flex-wrap: wrap; }
+  .countdown-progress { min-width: 100%; }
+}
+</style>
+</head>
+<body>
+
+<div class="sidebar">
+  <div class="logo-area">
+    <div class="logo">
+      <div class="logo-icon">🧠</div>
+      <div class="logo-text">Mento<span>ra</span></div>
+    </div>
+  </div>
+  <nav class="nav-section">
+
+  <div class="nav-label">Learn</div>
+
+  <div class="nav-item active" onclick="setActive(this)">
+    <span class="nav-icon">💬</span>
+    AI Tutor
+  </div>
+
+  <div class="nav-item" onclick="setActive(this)">
+    <span class="nav-icon">🔍</span>
+    Analyze
+    <span class="nav-badge green">AI</span>
+  </div>
+
+  <div class="nav-item" onclick="window.location.href='planner.html'">
+    <span class="nav-icon">📅</span>
+    Study Planner
+  </div>
+
+  <div class="nav-label">Library</div>
+
+  <div class="nav-item" onclick="setActive(this)">
+    <span class="nav-icon">📄</span>
+    My Documents
+  </div>
+
+  <div class="nav-item" onclick="setActive(this)">
+    <span class="nav-icon">🧠</span>
+    Knowledge Base
+  </div>
+
+  <div class="nav-item" onclick="setActive(this)">
+    <span class="nav-icon">📊</span>
+    Progress
+    <span class="nav-badge">3</span>
+  </div>
+
+  <div class="nav-label">Planner</div>
+
+  <div class="nav-item" onclick="window.location.href='planner.html#today'">
+    <span class="nav-icon">✅</span>
+    Today's Tasks
+  </div>
+
+  <div class="nav-item" onclick="window.location.href='planner.html#weekly'">
+    <span class="nav-icon">🗓️</span>
+    Weekly Plan
+  </div>
+
+  <div class="nav-item" onclick="window.location.href='planner.html#milestones'">
+    <span class="nav-icon">🏆</span>
+    Milestones
+  </div>
+
+  <div class="nav-item" onclick="window.location.href='planner.html#progress'">
+    <span class="nav-icon">📈</span>
+    Analytics
+  </div>
+
+  <div class="nav-label">Account</div>
+
+  <div class="nav-item" onclick="setActive(this)">
+    <span class="nav-icon">👤</span>
+    Profile
+  </div>
+
+  <div class="nav-item" onclick="setActive(this)">
+    <span class="nav-icon">⚙️</span>
+    Settings
+  </div>
+
+</nav>
+
+<div class="main">
+  <div class="topbar">
+    <div class="topbar-title">📅 Study Planner</div>
+    <div class="topbar-right">
+      <button class="btn-sm btn-outline" onclick="window.location.href='/planner-onboarding.html'">New Plan</button>
+      <button class="btn-sm btn-teal" id="replanBtn" onclick="openReplanModal()" style="display:none">🔄 Replan</button>
+    </div>
+  </div>
+
+  <div class="tab-bar">
+    <div class="tab active" data-tab="today" onclick="switchTab('today')">Today</div>
+    <div class="tab" data-tab="weekly" onclick="switchTab('weekly')">Weekly</div>
+    <div class="tab" data-tab="progress" onclick="switchTab('progress')">Progress</div>
+    <div class="tab" data-tab="milestones" onclick="switchTab('milestones')">Milestones</div>
+  </div>
+
+  <div class="content" id="mainContent">
+    <!-- Dynamically populated -->
+  </div>
+</div>
+
+<div class="modal-overlay" id="replanModal">
+  <div class="modal">
+    <div class="modal-title">🔄 Smart Replan</div>
+    <div class="modal-sub" id="replanModalSub">You have missed tasks. Mentora will generate a catch-up schedule that prioritises what you missed without overloading your remaining days.</div>
+    <div class="modal-actions">
+      <button class="btn-sm btn-outline" onclick="closeReplanModal()">Cancel</button>
+      <button class="btn-sm btn-accent" id="confirmReplanBtn" onclick="executeReplan()">Generate Catch-up Plan</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script type="module">
+import { auth } from "../firebase/firebase-config.js";
+import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import {
+  getActivePlan, getTasksByPlan, getProgress,
+  updateTaskStatus, updateStreak, getExamProfile, logEvent
+} from "../firebase/planner-db.js";
+
+// ── App state ────────────────────────────────────────────────
+let appState = {
+  user: null,
+  profile: null,
+  plan: null,
+  tasks: [],
+  progress: null,
+  currentTab: "today",
+};
+
+// ── Auth guard + init ────────────────────────────────────────
+onAuthStateChanged(auth, async (user) => {
+  if (!user) { window.location.replace("/index.html"); return; }
+  appState.user = user;
+
+  // Populate sidebar
+  const name = user.displayName || user.email || "Student";
+  document.getElementById("sidebarName").textContent = name;
+  const av = document.getElementById("sidebarAvatar");
+  if (user.photoURL) {
+    const img = document.createElement("img");
+    img.src = user.photoURL;
+    img.alt = name;
+    av.appendChild(img);
+  } else {
+    av.textContent = name.charAt(0).toUpperCase();
+  }
+
+  await loadPlannerData();
+});
+
+document.getElementById("signoutBtn").addEventListener("click", async () => {
+  await signOut(auth);
+  window.location.replace("/index.html");
+});
+
+// ── Load all data ────────────────────────────────────────────
+async function loadPlannerData() {
+  showSkeleton();
+  try {
+    const [profile, plan, progress] = await Promise.all([
+      getExamProfile(),
+      getActivePlan(),
+      getProgress(),
+    ]);
+
+    appState.profile = profile;
+    appState.plan = plan;
+    appState.progress = progress;
+
+    if (!plan) {
+      renderNoPlan();
+      return;
+    }
+
+    const tasks = await getTasksByPlan(plan.planId);
+    appState.tasks = tasks;
+
+    const missedCount = countMissedTasks(tasks);
+    if (missedCount > 0) {
+      document.getElementById("replanBtn").style.display = "flex";
+    }
+
+    renderTab(appState.currentTab);
+  } catch (err) {
+    console.error("Failed to load planner data:", err);
+    document.getElementById("mainContent").innerHTML = `<div class="empty-state"><div class="empty-icon">⚠️</div><div class="empty-title">Could not load your plan</div><div class="empty-sub">${escText(err.message)}</div></div>`;
+  }
+}
+
+// ── Tab switching ────────────────────────────────────────────
+window.switchTab = function(tab) {
+  appState.currentTab = tab;
+  document.querySelectorAll(".tab").forEach((t) => {
+    t.classList.toggle("active", t.dataset.tab === tab);
+  });
+  renderTab(tab);
+};
+
+function renderTab(tab) {
+  if (!appState.plan) { renderNoPlan(); return; }
+  if (tab === "today") renderToday();
+  else if (tab === "weekly") renderWeekly();
+  else if (tab === "progress") renderProgress();
+  else if (tab === "milestones") renderMilestones();
+}
+
+// ── Helpers ──────────────────────────────────────────────────
+
+// Safe text — never use innerHTML with user data
+function escText(str) {
+  const d = document.createElement("div");
+  d.textContent = String(str || "");
+  return d.innerHTML;
+}
+
+function subjectColor(idx) {
+  const colors = ["#6c63ff","#00d4aa","#f59e0b","#ff6b6b","#a78bfa","#34d399","#60a5fa","#f472b6"];
+  return colors[idx % colors.length];
+}
+
+function daysUntil(dateStr) {
+  const diff = new Date(dateStr) - new Date();
+  return Math.max(0, Math.ceil(diff / (1000 * 60 * 60 * 24)));
+}
+
+function countMissedTasks(tasks) {
+  const today = new Date().toISOString().split("T")[0];
+  return tasks.filter((t) => t.status === "pending" && t.scheduledDate && t.scheduledDate < today).length;
+}
+
+function getTodaysTasks(tasks) {
+  const today = new Date().toISOString().split("T")[0];
+  return tasks.filter((t) => {
+    if (t.scheduledDate) return t.scheduledDate === today;
+    // Fallback: show first week's pending tasks if no date set
+    return t.week === 1 && t.status === "pending";
+  });
+}
+
+function getCompletionRate(tasks) {
+  if (!tasks.length) return 0;
+  const done = tasks.filter((t) => t.status === "completed").length;
+  return Math.round((done / tasks.length) * 100);
+}
+
+function getTotalHours(progress) {
+  return ((progress?.totalMinutesStudied || 0) / 60).toFixed(1);
+}
+
+// ── Skeleton loader ──────────────────────────────────────────
+function showSkeleton() {
+  const c = document.getElementById("mainContent");
+  c.innerHTML = `
+    <div class="stats-row">
+      ${Array(4).fill('<div class="stat-card"><div class="skeleton" style="height:16px;width:60%;margin-bottom:12px"></div><div class="skeleton" style="height:36px;width:50%"></div></div>').join("")}
+    </div>
+    <div class="skeleton" style="height:100px;border-radius:16px;margin-bottom:24px"></div>
+    <div style="display:flex;flex-direction:column;gap:10px">
+      ${Array(4).fill('<div class="skeleton" style="height:68px;border-radius:14px"></div>').join("")}
+    </div>`;
+}
+
+// ── No plan state ────────────────────────────────────────────
+function renderNoPlan() {
+  document.getElementById("mainContent").innerHTML = `
+    <div class="empty-state">
+      <div class="empty-icon">📋</div>
+      <div class="empty-title">No study plan yet</div>
+      <div class="empty-sub">Let Mentora build a personalised daily schedule based on your exam, subjects, and available time.</div>
+      <button class="btn-sm btn-accent" onclick="window.location.href='/planner-onboarding.html'" style="padding:11px 24px;font-size:14px">✨ Create My Plan</button>
+    </div>`;
+}
+
+// ══════════════════════════════════════════════════════════════
+// TODAY TAB
+// ══════════════════════════════════════════════════════════════
+function renderToday() {
+  const { plan, tasks, progress, profile } = appState;
+  const todayTasks = getTodaysTasks(tasks);
+  const missedCount = countMissedTasks(tasks);
+  const completionRate = getCompletionRate(tasks);
+  const daysLeft = profile?.examDate ? daysUntil(profile.examDate) : plan?.daysUntilExam || 0;
+  const totalDays = profile?.examDate && profile?.startDate
+    ? Math.ceil((new Date(profile.examDate) - new Date(profile.startDate)) / 86400000)
+    : daysLeft;
+  const elapsed = totalDays - daysLeft;
+  const elapsedPct = totalDays > 0 ? Math.min(100, Math.round((elapsed / totalDays) * 100)) : 0;
+
+  const frag = document.createDocumentFragment();
+  const wrap = document.createElement("div");
+
+  // Stats row
+  const statsEl = document.createElement("div");
+  statsEl.className = "stats-row";
+  statsEl.innerHTML = `
+    <div class="stat-card accent-purple">
+      <div class="stat-label">Completion</div>
+      <div class="stat-val">${completionRate}%</div>
+      <div class="stat-sub">${tasks.filter(t=>t.status==="completed").length} of ${tasks.length} tasks</div>
+    </div>
+    <div class="stat-card accent-teal">
+      <div class="stat-label">Study Streak</div>
+      <div class="stat-val">${progress?.currentStreak || 0}<span style="font-size:16px">🔥</span></div>
+      <div class="stat-sub">days in a row</div>
+    </div>
+    <div class="stat-card accent-amber">
+      <div class="stat-label">Total Hours</div>
+      <div class="stat-val">${getTotalHours(progress)}</div>
+      <div class="stat-sub">hrs studied so far</div>
+    </div>
+    <div class="stat-card accent-red">
+      <div class="stat-label">Days Left</div>
+      <div class="stat-val">${daysLeft}</div>
+      <div class="stat-sub">until ${profile?.examType || "exam"}</div>
+    </div>`;
+  wrap.appendChild(statsEl);
+
+  // Countdown banner
+  const banner = document.createElement("div");
+  banner.className = "countdown-banner";
+  banner.innerHTML = `
+    <div class="countdown-days">${daysLeft}</div>
+    <div class="countdown-info">
+      <div class="countdown-title">Days until ${escText(profile?.examType || "your exam")}</div>
+      <div class="countdown-sub">${escText(plan?.summary || "Keep going — consistency beats intensity.")}</div>
+    </div>
+    <div class="countdown-progress">
+      <div class="cprog-label"><span>Plan progress</span><span>${elapsedPct}%</span></div>
+      <div class="cprog-bar"><div class="cprog-fill" style="width:${elapsedPct}%"></div></div>
+      <div class="cprog-label" style="margin-top:6px"><span>Today done</span><span>${todayTasks.filter(t=>t.status==="completed").length}/${todayTasks.length} tasks</span></div>
+      <div class="cprog-bar"><div class="cprog-fill" style="width:${todayTasks.length ? Math.round(todayTasks.filter(t=>t.status==="completed").length/todayTasks.length*100) : 0}%"></div></div>
+    </div>`;
+  wrap.appendChild(banner);
+
+  // Missed alert
+  if (missedCount > 0) {
+    const alert = document.createElement("div");
+    alert.className = "missed-alert";
+    const alertIcon = document.createElement("span");
+    alertIcon.className = "missed-alert-icon";
+    alertIcon.textContent = "⚠️";
+    const alertBody = document.createElement("div");
+    alertBody.className = "missed-alert-body";
+    const alertTitle = document.createElement("div");
+    alertTitle.className = "missed-alert-title";
+    alertTitle.textContent = `${missedCount} task${missedCount > 1 ? "s" : ""} missed`;
+    const alertSub = document.createElement("div");
+    alertSub.className = "missed-alert-sub";
+    alertSub.textContent = "Mentora can rebuild your schedule around what was missed.";
+    alertBody.appendChild(alertTitle);
+    alertBody.appendChild(alertSub);
+    const replanBtn = document.createElement("button");
+    replanBtn.className = "btn-replan";
+    replanBtn.textContent = "🔄 Replan";
+    replanBtn.addEventListener("click", openReplanModal);
+    alert.appendChild(alertIcon);
+    alert.appendChild(alertBody);
+    alert.appendChild(replanBtn);
+    wrap.appendChild(alert);
+  }
+
+  // Two-column layout
+  const twoCol = document.createElement("div");
+  twoCol.className = "two-col";
+
+  // Left: today's tasks
+  const left = document.createElement("div");
+  const taskHeader = document.createElement("div");
+  taskHeader.className = "section-title";
+  const taskLabel = document.createElement("span");
+  taskLabel.textContent = "Today's Sessions";
+  taskHeader.appendChild(taskLabel);
+  left.appendChild(taskHeader);
+
+  if (todayTasks.length === 0) {
+    const emptyMsg = document.createElement("div");
+    emptyMsg.style.cssText = "text-align:center;padding:40px 20px;color:var(--text-muted);font-size:14px";
+    emptyMsg.textContent = "No sessions scheduled for today. Check the weekly tab or create a new plan.";
+    left.appendChild(emptyMsg);
+  } else {
+    const taskList = document.createElement("div");
+    taskList.className = "task-list";
+    for (const task of todayTasks) {
+      taskList.appendChild(buildTaskCard(task));
+    }
+    left.appendChild(taskList);
+  }
+  twoCol.appendChild(left);
+
+  // Right: subject progress
+  const right = document.createElement("div");
+  const subjectHeader = document.createElement("div");
+  subjectHeader.className = "section-title";
+  subjectHeader.textContent = "Subject Progress";
+  right.appendChild(subjectHeader);
+
+  const subjectPanel = document.createElement("div");
+  subjectPanel.className = "subject-panel";
+  const subjectRow = document.createElement("div");
+  subjectRow.className = "subject-row";
+
+  const allocation = plan?.subjectAllocation || {};
+  const subjectHours = progress?.subjectHours || {};
+  const subjects = Object.keys(allocation).length > 0 ? Object.keys(allocation) : (appState.profile?.subjects || []);
+
+  subjects.forEach((subj, idx) => {
+    const alloc = allocation[subj];
+    const studiedHrs = subjectHours[subj] || 0;
+    const targetHrs = alloc?.weeklyHours ? alloc.weeklyHours * 4 : 20;
+    const pct = Math.min(100, Math.round((studiedHrs / targetHrs) * 100));
+    const color = subjectColor(idx);
+
+    const item = document.createElement("div");
+    item.className = "subj-item";
+
+    const head = document.createElement("div");
+    head.className = "subj-head";
+
+    const nameEl = document.createElement("span");
+    nameEl.className = "subj-name";
+    nameEl.textContent = subj;
+
+    const pctEl = document.createElement("span");
+    pctEl.className = "subj-pct";
+    pctEl.textContent = `${pct}%`;
+
+    head.appendChild(nameEl);
+    head.appendChild(pctEl);
+
+    const bar = document.createElement("div");
+    bar.className = "subj-bar";
+    const fill = document.createElement("div");
+    fill.className = "subj-fill";
+    fill.style.width = `${pct}%`;
+    fill.style.background = color;
+    bar.appendChild(fill);
+
+    item.appendChild(head);
+    item.appendChild(bar);
+    subjectRow.appendChild(item);
+  });
+
+  subjectPanel.appendChild(subjectRow);
+  right.appendChild(subjectPanel);
+  twoCol.appendChild(right);
+  wrap.appendChild(twoCol);
+
+  const content = document.getElementById("mainContent");
+  content.innerHTML = "";
+  content.appendChild(wrap);
+}
+
+// ── Build a task card (DOM — no innerHTML with user data) ────
+function buildTaskCard(task) {
+  const card = document.createElement("div");
+  card.className = "task-card" + (task.status === "completed" ? " completed" : "");
+  card.id = `task-${task.taskId}`;
+
+  const check = document.createElement("div");
+  check.className = "task-check" + (task.status === "completed" ? " done" : "");
+  check.setAttribute("role", "checkbox");
+  check.setAttribute("aria-checked", task.status === "completed");
+  check.addEventListener("click", () => handleTaskComplete(task.taskId));
+
+  const body = document.createElement("div");
+  body.className = "task-body";
+
+  const subj = document.createElement("div");
+  subj.className = "task-subject";
+  subj.style.color = subjectColor(appState.profile?.subjects?.indexOf(task.subject) || 0);
+  subj.textContent = task.subject;
+
+  const topic = document.createElement("div");
+  topic.className = "task-topic";
+  topic.textContent = task.topic;
+
+  const meta = document.createElement("div");
+  meta.className = "task-meta";
+
+  const dur = document.createElement("span");
+  dur.className = "task-dur";
+  dur.textContent = `${task.durationMinutes}min`;
+
+  const typeEl = document.createElement("span");
+  typeEl.className = `task-type ${task.type || "learn"}`;
+  typeEl.textContent = task.type || "learn";
+
+  const prio = document.createElement("div");
+  prio.className = `task-priority ${task.priority || "medium"}`;
+  prio.title = `${task.priority || "medium"} priority`;
+
+  meta.appendChild(dur);
+  meta.appendChild(typeEl);
+  meta.appendChild(prio);
+
+  body.appendChild(subj);
+  body.appendChild(topic);
+  body.appendChild(meta);
+
+  const actions = document.createElement("div");
+  actions.className = "task-actions";
+
+  if (task.status !== "completed" && task.status !== "skipped") {
+    const skipBtn = document.createElement("button");
+    skipBtn.className = "task-btn skip";
+    skipBtn.textContent = "Skip";
+    skipBtn.addEventListener("click", () => handleTaskSkip(task.taskId));
+    actions.appendChild(skipBtn);
+  }
+
+  card.appendChild(check);
+  card.appendChild(body);
+  card.appendChild(actions);
+  return card;
+}
+
+// ── Task actions ─────────────────────────────────────────────
+async function handleTaskComplete(taskId) {
+  const task = appState.tasks.find((t) => t.taskId === taskId);
+  if (!task || task.status === "completed") return;
+
+  try {
+    await updateTaskStatus(taskId, "completed");
+    task.status = "completed";
+    await updateStreak();
+    await logEvent("task_completed", { subject: task.subject });
+
+    // Update UI in place
+    const card = document.getElementById(`task-${taskId}`);
+    if (card) {
+      card.classList.add("completed");
+      const check = card.querySelector(".task-check");
+      if (check) check.classList.add("done");
+    }
+
+    // Refresh stats without full reload
+    appState.progress = await import("../firebase/planner-db.js").then(m => m.getProgress());
+    showToast("✅ Task completed!", "success");
+  } catch (err) {
+    showToast("Could not update task.", "error");
+    console.error(err);
+  }
+}
+
+async function handleTaskSkip(taskId) {
+  const task = appState.tasks.find((t) => t.taskId === taskId);
+  if (!task) return;
+
+  try {
+    await updateTaskStatus(taskId, "skipped");
+    task.status = "skipped";
+    await logEvent("task_skipped", { subject: task.subject });
+
+    const card = document.getElementById(`task-${taskId}`);
+    if (card) card.style.opacity = "0.4";
+
+    showToast("Task skipped.", "");
+  } catch (err) {
+    showToast("Could not skip task.", "error");
+    console.error(err);
+  }
+}
+
+// ══════════════════════════════════════════════════════════════
+// WEEKLY TAB
+// ══════════════════════════════════════════════════════════════
+function renderWeekly() {
+  const { plan } = appState;
+  const weeklyPlan = plan?.weeklyPlan || [];
+
+  const content = document.getElementById("mainContent");
+  content.innerHTML = "";
+
+  if (weeklyPlan.length === 0) {
+    content.innerHTML = '<div class="empty-state"><div class="empty-icon">📅</div><div class="empty-title">No weekly plan data</div></div>';
+    return;
+  }
+
+  const today = new Date().toLocaleDateString("en-US", { weekday: "long" });
+
+  for (const week of weeklyPlan) {
+    const section = document.createElement("div");
+    section.style.marginBottom = "28px";
+
+    const header = document.createElement("div");
+    header.className = "section-title";
+    const weekLabel = document.createElement("span");
+    weekLabel.textContent = `Week ${week.week} — ${week.theme || ""}`;
+    header.appendChild(weekLabel);
+    section.appendChild(header);
+
+    const grid = document.createElement("div");
+    grid.className = "week-grid";
+
+    for (const day of week.days || []) {
+      const col = document.createElement("div");
+      col.className = "week-day" + (day.day === today ? " today" : "");
+
+      const dayLabel = document.createElement("div");
+      dayLabel.className = "week-day-label";
+      dayLabel.textContent = (day.day || "").slice(0, 3).toUpperCase();
+      col.appendChild(dayLabel);
+
+      for (const session of day.sessions || []) {
+        const s = document.createElement("div");
+        s.className = `week-session ${session.type || "learn"}`;
+
+        const subj = document.createElement("div");
+        subj.className = "ws-subject";
+        subj.textContent = session.subject;
+
+        const topic = document.createElement("div");
+        topic.className = "ws-topic";
+        topic.textContent = `${session.topic} (${session.durationMinutes}m)`;
+
+        s.appendChild(subj);
+        s.appendChild(topic);
+        col.appendChild(s);
+      }
+
+      grid.appendChild(col);
+    }
+
+    section.appendChild(grid);
+    content.appendChild(section);
+  }
+}
+
+// ══════════════════════════════════════════════════════════════
+// PROGRESS TAB
+// ══════════════════════════════════════════════════════════════
+function renderProgress() {
+  const { tasks, progress, profile } = appState;
+  const content = document.getElementById("mainContent");
+  content.innerHTML = "";
+
+  const wrap = document.createElement("div");
+
+  // Stats
+  const statsEl = document.createElement("div");
+  statsEl.className = "stats-row";
+  const completed = tasks.filter(t => t.status === "completed").length;
+  const skipped = tasks.filter(t => t.status === "skipped").length;
+  const pending = tasks.filter(t => t.status === "pending").length;
+
+  statsEl.innerHTML = `
+    <div class="stat-card accent-teal">
+      <div class="stat-label">Completed</div>
+      <div class="stat-val">${completed}</div>
+      <div class="stat-sub">tasks done</div>
+    </div>
+    <div class="stat-card accent-amber">
+      <div class="stat-label">Hours Studied</div>
+      <div class="stat-val">${getTotalHours(progress)}</div>
+      <div class="stat-sub">total hrs</div>
+    </div>
+    <div class="stat-card accent-purple">
+      <div class="stat-label">Streak</div>
+      <div class="stat-val">${progress?.currentStreak || 0}🔥</div>
+      <div class="stat-sub">best: ${progress?.longestStreak || 0} days</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Skipped</div>
+      <div class="stat-val" style="color:var(--text-secondary)">${skipped}</div>
+      <div class="stat-sub">${pending} pending</div>
+    </div>`;
+  wrap.appendChild(statsEl);
+
+  // Subject hours breakdown
+  const subjectHours = progress?.subjectHours || {};
+  if (Object.keys(subjectHours).length > 0) {
+    const header = document.createElement("div");
+    header.className = "section-title";
+    header.textContent = "Hours by Subject";
+    wrap.appendChild(header);
+
+    const panel = document.createElement("div");
+    panel.className = "subject-panel";
+    const row = document.createElement("div");
+    row.className = "subject-row";
+
+    const maxHrs = Math.max(...Object.values(subjectHours));
+    Object.entries(subjectHours).forEach(([subj, hrs], idx) => {
+      const pct = maxHrs > 0 ? Math.round((hrs / maxHrs) * 100) : 0;
+
+      const item = document.createElement("div");
+      item.className = "subj-item";
+      const head = document.createElement("div");
+      head.className = "subj-head";
+      const nameEl = document.createElement("span");
+      nameEl.className = "subj-name";
+      nameEl.textContent = subj;
+      const hrsEl = document.createElement("span");
+      hrsEl.className = "subj-pct";
+      hrsEl.textContent = `${hrs.toFixed(1)}h`;
+      head.appendChild(nameEl);
+      head.appendChild(hrsEl);
+      const bar = document.createElement("div");
+      bar.className = "subj-bar";
+      const fill = document.createElement("div");
+      fill.className = "subj-fill";
+      fill.style.width = `${pct}%`;
+      fill.style.background = subjectColor(idx);
+      bar.appendChild(fill);
+      item.appendChild(head);
+      item.appendChild(bar);
+      row.appendChild(item);
+    });
+
+    panel.appendChild(row);
+    wrap.appendChild(panel);
+  }
+
+  content.appendChild(wrap);
+}
+
+// ══════════════════════════════════════════════════════════════
+// MILESTONES TAB
+// ══════════════════════════════════════════════════════════════
+function renderMilestones() {
+  const { plan } = appState;
+  const milestones = plan?.milestones || [];
+  const content = document.getElementById("mainContent");
+  content.innerHTML = "";
+
+  if (milestones.length === 0) {
+    content.innerHTML = '<div class="empty-state"><div class="empty-icon">🏆</div><div class="empty-title">No milestones yet</div></div>';
+    return;
+  }
+
+  const header = document.createElement("div");
+  header.className = "section-title";
+  header.textContent = "Plan Milestones";
+  content.appendChild(header);
+
+  const list = document.createElement("div");
+  list.className = "milestone-list";
+
+  for (const m of milestones) {
+    const item = document.createElement("div");
+    item.className = "milestone-item";
+
+    const weekLabel = document.createElement("div");
+    weekLabel.className = "milestone-week";
+    weekLabel.textContent = `Week ${m.week}`;
+
+    const body = document.createElement("div");
+    const goal = document.createElement("div");
+    goal.className = "milestone-goal";
+    goal.textContent = m.goal;
+    body.appendChild(goal);
+
+    const checks = document.createElement("div");
+    checks.className = "milestone-checks";
+    for (const cp of m.checkpoints || []) {
+      const c = document.createElement("div");
+      c.className = "milestone-check";
+      c.textContent = cp;
+      checks.appendChild(c);
+    }
+    body.appendChild(checks);
+
+    item.appendChild(weekLabel);
+    item.appendChild(body);
+    list.appendChild(item);
+  }
+
+  content.appendChild(list);
+}
+
+// ══════════════════════════════════════════════════════════════
+// REPLAN MODAL
+// ══════════════════════════════════════════════════════════════
+window.openReplanModal = function() {
+  const missed = countMissedTasks(appState.tasks);
+  document.getElementById("replanModalSub").textContent =
+    `You have ${missed} missed task${missed !== 1 ? "s" : ""}. Mentora will generate a 3-day catch-up schedule without overloading your remaining study time.`;
+  document.getElementById("replanModal").classList.add("show");
+};
+
+window.closeReplanModal = function() {
+  document.getElementById("replanModal").classList.remove("show");
+};
+
+window.executeReplan = async function() {
+  const btn = document.getElementById("confirmReplanBtn");
+  btn.disabled = true;
+  btn.textContent = "Generating…";
+
+  const { profile, tasks } = appState;
+  const missedTasks = tasks.filter(
+    (t) => t.status === "pending" && t.scheduledDate && t.scheduledDate < new Date().toISOString().split("T")[0]
+  ).slice(0, 50);
+
+  try {
+    const user = auth.currentUser;
+    const idToken = await user.getIdToken();
+
+    const res = await fetch("/api/replan", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${idToken}`,
+      },
+      credentials: "same-origin",
+      body: JSON.stringify({
+        missedTasks: missedTasks.map((t) => ({
+          subject: t.subject,
+          topic: t.topic,
+          durationMinutes: t.durationMinutes,
+        })),
+        dailyHours: profile?.dailyHours || 6,
+        examDate: profile?.examDate || "",
+        examType: profile?.examType || "",
+      }),
+    });
+
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.error || "Replan failed.");
+    }
+
+    const data = await res.json();
+    closeReplanModal();
+    await logEvent("replan_generated", { missedCount: missedTasks.length });
+    showToast("✅ Catch-up plan generated! Check your weekly view.", "success");
+
+    // Store replan advice in console for now — could be shown in a dedicated UI
+    console.info("Replan advice:", data?.catchUpPlan?.advice);
+
+    // Reload to reflect any new schedule
+    await loadPlannerData();
+  } catch (err) {
+    showToast(err.message || "Could not generate catch-up plan.", "error");
+    console.error(err);
+  } finally {
+    btn.disabled = false;
+    btn.textContent = "Generate Catch-up Plan";
+  }
+};
+
+// ── Toast ─────────────────────────────────────────────────────
+function showToast(msg, type = "") {
+  const t = document.getElementById("toast");
+  t.textContent = msg;
+  t.className = `toast show${type ? " " + type : ""}`;
+  setTimeout(() => { t.className = "toast"; }, 3200);
+}
+</script>
+</body>
+</html>

@@ -1,29 +1,14 @@
 {
-  "version": 2,
   "functions": {
-    "api/chat.js": {
+    "functions/*.js": {
+      "memory": 256,
       "maxDuration": 30
-    },
-    "api/health.js": {
-      "maxDuration": 10
-    },
-    "api/firebase-config.js": {
-      "maxDuration": 10
     }
   },
-  "headers": [
-    {
-      "source": "/api/(.*)",
-      "headers": [
-        {
-          "key": "X-Content-Type-Options",
-          "value": "nosniff"
-        },
-        {
-          "key": "Referrer-Policy",
-          "value": "strict-origin-when-cross-origin"
-        }
-      ]
-    }
+  "rewrites": [
+    { "source": "/api/chat",            "destination": "/functions/chat" },
+    { "source": "/api/firebase-config", "destination": "/functions/firebase-config" },
+    { "source": "/api/generate-plan",   "destination": "/functions/generate-plan" },
+    { "source": "/api/replan",          "destination": "/functions/replan" }
   ]
 }
