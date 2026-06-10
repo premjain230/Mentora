@@ -226,62 +226,65 @@ body { font-family: var(--font-main); background: var(--bg-base); color: var(--t
 
   <nav class="nav-section">
     <div class="nav-label">Learn</div>
-    <div class="nav-item active" onclick="setActive(this)">
+    <!-- FIX: "AI Tutor" renamed to "Chat", links to home.html, not active on planner page -->
+    <a class="nav-item" href="home.html">
       <span class="nav-icon">💬</span>
-      AI Tutor
-    </div>
-    <div class="nav-item" onclick="setActive(this)">
+      Chat
+    </a>
+    <a class="nav-item" href="analyze.html">
       <span class="nav-icon">🔍</span>
       Analyze
       <span class="nav-badge green">AI</span>
-    </div>
-    <div class="nav-item" onclick="window.location.href='planner.html'">
+    </a>
+    <!-- Study Planner link is this page — marked active via JS on load -->
+    <a class="nav-item" id="nav-planner" href="planner.html">
       <span class="nav-icon">📅</span>
       Study Planner
-    </div>
+    </a>
 
     <div class="nav-label">Library</div>
-    <div class="nav-item" onclick="setActive(this)">
+    <a class="nav-item" href="documents.html">
       <span class="nav-icon">📄</span>
       My Documents
-    </div>
-    <div class="nav-item" onclick="setActive(this)">
+    </a>
+    <a class="nav-item" href="knowledge.html">
       <span class="nav-icon">🧠</span>
       Knowledge Base
-    </div>
-    <div class="nav-item" onclick="setActive(this)">
+    </a>
+    <a class="nav-item" href="progress.html">
       <span class="nav-icon">📊</span>
       Progress
       <span class="nav-badge">3</span>
-    </div>
+    </a>
 
     <div class="nav-label">Planner</div>
-    <div class="nav-item" onclick="window.location.href='planner.html#today'">
+    <!-- FIX: these now call switchTab() directly instead of navigating to hash URLs -->
+    <div class="nav-item" id="nav-today" onclick="switchTabAndHighlight('today')">
       <span class="nav-icon">✅</span>
       Today's Tasks
     </div>
-    <div class="nav-item" onclick="window.location.href='planner.html#weekly'">
+    <div class="nav-item" id="nav-weekly" onclick="switchTabAndHighlight('weekly')">
       <span class="nav-icon">🗓️</span>
       Weekly Plan
     </div>
-    <div class="nav-item" onclick="window.location.href='planner.html#milestones'">
+    <div class="nav-item" id="nav-milestones" onclick="switchTabAndHighlight('milestones')">
       <span class="nav-icon">🏆</span>
       Milestones
     </div>
-    <div class="nav-item" onclick="window.location.href='planner.html#progress'">
+    <div class="nav-item" id="nav-progress" onclick="switchTabAndHighlight('progress')">
       <span class="nav-icon">📈</span>
       Analytics
     </div>
 
     <div class="nav-label">Account</div>
-    <div class="nav-item" onclick="setActive(this)">
+    <a class="nav-item" href="profile.html">
       <span class="nav-icon">👤</span>
       Profile
-    </div>
-    <div class="nav-item" onclick="setActive(this)">
+    </a>
+    <a class="nav-item" href="settings.html">
       <span class="nav-icon">⚙️</span>
       Settings
-    </div>
+    </a>
   </nav>
 
   <!-- Sidebar bottom: user card + sign out -->
@@ -309,10 +312,10 @@ body { font-family: var(--font-main); background: var(--bg-base); color: var(--t
   </div>
 
   <div class="tab-bar">
-    <div class="tab active" data-tab="today" onclick="switchTab('today')">Today</div>
-    <div class="tab" data-tab="weekly" onclick="switchTab('weekly')">Weekly</div>
-    <div class="tab" data-tab="progress" onclick="switchTab('progress')">Progress</div>
-    <div class="tab" data-tab="milestones" onclick="switchTab('milestones')">Milestones</div>
+    <div class="tab active" data-tab="today" onclick="switchTabAndHighlight('today')">Today</div>
+    <div class="tab" data-tab="weekly" onclick="switchTabAndHighlight('weekly')">Weekly</div>
+    <div class="tab" data-tab="progress" onclick="switchTabAndHighlight('progress')">Progress</div>
+    <div class="tab" data-tab="milestones" onclick="switchTabAndHighlight('milestones')">Milestones</div>
   </div>
 
   <div class="content" id="mainContent">
@@ -352,6 +355,9 @@ let appState = {
   progress: null,
   currentTab: "today",
 };
+
+// Keep a ref to getProgress so handleTaskComplete can call it
+let _getProgress = getProgress;
 
 // ── Auth guard + init ────────────────────────────────────────
 onAuthStateChanged(auth, async (user) => {
@@ -413,14 +419,37 @@ async function loadPlannerData() {
   }
 }
 
-// ── Tab switching ────────────────────────────────────────────
-window.switchTab = function(tab) {
+// ── Tab switching — called from BOTH the tab bar AND sidebar nav ──
+// FIX: unified function that syncs tabs + sidebar nav highlight
+window.switchTabAndHighlight = function(tab) {
   appState.currentTab = tab;
+
+  // Update top tab bar
   document.querySelectorAll(".tab").forEach((t) => {
     t.classList.toggle("active", t.dataset.tab === tab);
   });
+
+  // Update sidebar planner nav items
+  const sidebarMap = {
+    today: "nav-today",
+    weekly: "nav-weekly",
+    milestones: "nav-milestones",
+    progress: "nav-progress",
+  };
+  ["nav-today","nav-weekly","nav-milestones","nav-progress"].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.classList.remove("active");
+  });
+  if (sidebarMap[tab]) {
+    const activeEl = document.getElementById(sidebarMap[tab]);
+    if (activeEl) activeEl.classList.add("active");
+  }
+
   renderTab(tab);
 };
+
+// Keep backward compat — switchTab still works if called anywhere
+window.switchTab = window.switchTabAndHighlight;
 
 function renderTab(tab) {
   if (!appState.plan) { renderNoPlan(); return; }
@@ -431,8 +460,6 @@ function renderTab(tab) {
 }
 
 // ── Helpers ──────────────────────────────────────────────────
-
-// Safe text — never use innerHTML with user data
 function escText(str) {
   const d = document.createElement("div");
   d.textContent = String(str || "");
@@ -441,7 +468,7 @@ function escText(str) {
 
 function subjectColor(idx) {
   const colors = ["#6c63ff","#00d4aa","#f59e0b","#ff6b6b","#a78bfa","#34d399","#60a5fa","#f472b6"];
-  return colors[idx % colors.length];
+  return colors[Math.max(0, idx) % colors.length];
 }
 
 function daysUntil(dateStr) {
@@ -458,7 +485,6 @@ function getTodaysTasks(tasks) {
   const today = new Date().toISOString().split("T")[0];
   return tasks.filter((t) => {
     if (t.scheduledDate) return t.scheduledDate === today;
-    // Fallback: show first week's pending tasks if no date set
     return t.week === 1 && t.status === "pending";
   });
 }
@@ -497,6 +523,11 @@ function renderNoPlan() {
     </div>`;
 }
 
+// ── Highlight default sidebar item on page load ──────────────
+// FIX: mark "Study Planner" and "Today's Tasks" as active on load
+document.getElementById("nav-planner").classList.add("active");
+document.getElementById("nav-today").classList.add("active");
+
 // ══════════════════════════════════════════════════════════════
 // TODAY TAB
 // ══════════════════════════════════════════════════════════════
@@ -512,7 +543,6 @@ function renderToday() {
   const elapsed = totalDays - daysLeft;
   const elapsedPct = totalDays > 0 ? Math.min(100, Math.round((elapsed / totalDays) * 100)) : 0;
 
-  const frag = document.createDocumentFragment();
   const wrap = document.createElement("div");
 
   // Stats row
@@ -537,7 +567,7 @@ function renderToday() {
     <div class="stat-card accent-red">
       <div class="stat-label">Days Left</div>
       <div class="stat-val">${daysLeft}</div>
-      <div class="stat-sub">until ${profile?.examType || "exam"}</div>
+      <div class="stat-sub">until ${escText(profile?.examType || "exam")}</div>
     </div>`;
   wrap.appendChild(statsEl);
 
@@ -627,7 +657,9 @@ function renderToday() {
 
   const allocation = plan?.subjectAllocation || {};
   const subjectHours = progress?.subjectHours || {};
-  const subjects = Object.keys(allocation).length > 0 ? Object.keys(allocation) : (appState.profile?.subjects || []);
+  const subjects = Object.keys(allocation).length > 0
+    ? Object.keys(allocation)
+    : (appState.profile?.subjects || []);
 
   subjects.forEach((subj, idx) => {
     const alloc = allocation[subj];
@@ -638,21 +670,16 @@ function renderToday() {
 
     const item = document.createElement("div");
     item.className = "subj-item";
-
     const head = document.createElement("div");
     head.className = "subj-head";
-
     const nameEl = document.createElement("span");
     nameEl.className = "subj-name";
     nameEl.textContent = subj;
-
     const pctEl = document.createElement("span");
     pctEl.className = "subj-pct";
     pctEl.textContent = `${pct}%`;
-
     head.appendChild(nameEl);
     head.appendChild(pctEl);
-
     const bar = document.createElement("div");
     bar.className = "subj-bar";
     const fill = document.createElement("div");
@@ -660,7 +687,6 @@ function renderToday() {
     fill.style.width = `${pct}%`;
     fill.style.background = color;
     bar.appendChild(fill);
-
     item.appendChild(head);
     item.appendChild(bar);
     subjectRow.appendChild(item);
@@ -676,7 +702,7 @@ function renderToday() {
   content.appendChild(wrap);
 }
 
-// ── Build a task card (DOM — no innerHTML with user data) ────
+// ── Build a task card ────────────────────────────────────────
 function buildTaskCard(task) {
   const card = document.createElement("div");
   card.className = "task-card" + (task.status === "completed" ? " completed" : "");
@@ -693,7 +719,9 @@ function buildTaskCard(task) {
 
   const subj = document.createElement("div");
   subj.className = "task-subject";
-  subj.style.color = subjectColor(appState.profile?.subjects?.indexOf(task.subject) || 0);
+  // FIX: use indexOf safely — subjects array may not exist
+  const subjectIdx = appState.profile?.subjects?.indexOf(task.subject) ?? 0;
+  subj.style.color = subjectColor(subjectIdx >= 0 ? subjectIdx : 0);
   subj.textContent = task.subject;
 
   const topic = document.createElement("div");
@@ -755,12 +783,12 @@ async function handleTaskComplete(taskId) {
     const card = document.getElementById(`task-${taskId}`);
     if (card) {
       card.classList.add("completed");
-      const check = card.querySelector(".task-check");
-      if (check) check.classList.add("done");
+      const checkEl = card.querySelector(".task-check");
+      if (checkEl) checkEl.classList.add("done");
     }
 
-    // Refresh stats without full reload
-    appState.progress = await import("../firebase/planner-db.js").then(m => m.getProgress());
+    // FIX: use the already-imported getProgress, not a dynamic import with wrong path
+    appState.progress = await _getProgress();
     showToast("✅ Task completed!", "success");
   } catch (err) {
     showToast("Could not update task.", "error");
@@ -856,19 +884,18 @@ function renderWeekly() {
 // PROGRESS TAB
 // ══════════════════════════════════════════════════════════════
 function renderProgress() {
-  const { tasks, progress, profile } = appState;
+  const { tasks, progress } = appState;
   const content = document.getElementById("mainContent");
   content.innerHTML = "";
 
   const wrap = document.createElement("div");
 
-  // Stats
-  const statsEl = document.createElement("div");
-  statsEl.className = "stats-row";
   const completed = tasks.filter(t => t.status === "completed").length;
   const skipped = tasks.filter(t => t.status === "skipped").length;
   const pending = tasks.filter(t => t.status === "pending").length;
 
+  const statsEl = document.createElement("div");
+  statsEl.className = "stats-row";
   statsEl.innerHTML = `
     <div class="stat-card accent-teal">
       <div class="stat-label">Completed</div>
@@ -892,7 +919,6 @@ function renderProgress() {
     </div>`;
   wrap.appendChild(statsEl);
 
-  // Subject hours breakdown
   const subjectHours = progress?.subjectHours || {};
   if (Object.keys(subjectHours).length > 0) {
     const header = document.createElement("div");
@@ -1014,8 +1040,9 @@ window.executeReplan = async function() {
   btn.textContent = "Generating…";
 
   const { profile, tasks } = appState;
+  const today = new Date().toISOString().split("T")[0];
   const missedTasks = tasks.filter(
-    (t) => t.status === "pending" && t.scheduledDate && t.scheduledDate < new Date().toISOString().split("T")[0]
+    (t) => t.status === "pending" && t.scheduledDate && t.scheduledDate < today
   ).slice(0, 50);
 
   try {
@@ -1051,10 +1078,7 @@ window.executeReplan = async function() {
     await logEvent("replan_generated", { missedCount: missedTasks.length });
     showToast("✅ Catch-up plan generated! Check your weekly view.", "success");
 
-    // Store replan advice in console for now — could be shown in a dedicated UI
     console.info("Replan advice:", data?.catchUpPlan?.advice);
-
-    // Reload to reflect any new schedule
     await loadPlannerData();
   } catch (err) {
     showToast(err.message || "Could not generate catch-up plan.", "error");
