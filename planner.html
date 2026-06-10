@@ -185,7 +185,7 @@ body { font-family: var(--font-main); background: var(--bg-base); color: var(--t
 .skeleton { background: linear-gradient(90deg, rgba(255,255,255,0.04) 25%, rgba(255,255,255,0.07) 50%, rgba(255,255,255,0.04) 75%); background-size: 200% 100%; animation: shimmer 1.4s infinite; border-radius: 8px; }
 @keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
 
-/* ── Toast ──────────────��────────────────────────────────── */
+/* ── Toast ──────────────���────────────────────────────────── */
 .toast { position: fixed; bottom: 28px; right: 28px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 12px 18px; font-size: 13px; z-index: 999; transform: translateY(20px); opacity: 0; transition: all 0.3s; pointer-events: none; max-width: 320px; }
 .toast.show { transform: translateY(0); opacity: 1; }
 .toast.success { border-color: rgba(0,212,170,0.4); color: var(--accent2); }
@@ -1099,5 +1099,7 @@ function showToast(msg, type = "") {
 </script>
   <!-- Vercel Web Analytics -->
   <script type="module" src="/analytics.js"></script>
+  <!-- Vercel Speed Insights -->
+  <script type="module" src="/speed-insights.js"></script>
 </body>
 </html>
