@@ -7,10 +7,15 @@
     "build": "echo 'No build step required for vanilla HTML'",
     "test": "echo 'No tests specified'"
   },
-  "keywords": ["ai", "mentora", "education"],
+  "keywords": [
+    "ai",
+    "mentora",
+    "education"
+  ],
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@vercel/analytics": "^1.4.1"
+    "@vercel/analytics": "^1.4.1",
+    "@vercel/speed-insights": "^2.0.0"
   }
 }
