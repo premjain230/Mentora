@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Take Quiz · Mentora AI</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --bg-base:#0a0b0f; --bg-sidebar:#0f1117; --bg-card:#1a1d27; --bg-input:#1e2130;
+  --accent:#6c63ff; --accent2:#00d4aa; --accent3:#ff6b6b; --accent4:#ffd166;
+  --border:rgba(255,255,255,0.07); --border-hover:rgba(108,99,255,0.4);
+  --text-primary:#f0f0f8; --text-secondary:#8b8fa8; --text-muted:#4a4d62;
+  --font-main:'Sora',sans-serif; --font-mono:'Space Mono',monospace;
+}
+body{font-family:var(--font-main);background:var(--bg-base);color:var(--text-primary);min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:32px 16px;}
+.wrap{width:100%;max-width:680px;}
+.topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;}
+.logo{display:flex;align-items:center;gap:10px;}
+.logo-icon{width:34px;height:34px;background:linear-gradient(135deg,var(--accent),var(--accent2));border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:17px;}
+.logo-text{font-size:17px;font-weight:700;}
+.logo-text span{color:var(--accent2);}
+.back-link{font-size:13px;color:var(--text-secondary);text-decoration:none;display:flex;align-items:center;gap:6px;}
+.back-link:hover{color:var(--text-primary);}
+
+/* Setup form */
+.panel{background:var(--bg-card);border:1px solid var(--border);border-radius:16px;padding:24px;}
+.panel h2{font-size:18px;font-weight:700;margin-bottom:6px;}
+.panel p.sub{font-size:13px;color:var(--text-secondary);margin-bottom:20px;}
+.field{margin-bottom:14px;}
+.field label{font-size:12px;font-weight:600;color:var(--text-secondary);display:block;margin-bottom:6px;text-transform:uppercase;letter-spacing:0.5px;}
+.field input,.field select{
+  width:100%;background:var(--bg-input);border:1px solid var(--border);border-radius:10px;
+  padding:11px 14px;color:var(--text-primary);font-family:var(--font-main);font-size:14px;outline:none;
+  transition:border-color .2s;
+}
+.field input:focus,.field select:focus{border-color:var(--border-hover);}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.btn{
+  background:var(--accent);color:#fff;border:none;border-radius:10px;padding:12px 20px;
+  font-family:var(--font-main);font-size:14px;font-weight:600;cursor:pointer;transition:all .18s;
+}
+.btn:hover{background:#7b73ff;transform:translateY(-1px);}
+.btn.secondary{background:transparent;border:1px solid var(--border);color:var(--text-secondary);}
+.btn.secondary:hover{color:var(--text-primary);border-color:var(--border-hover);}
+.btn:disabled{opacity:.5;cursor:not-allowed;transform:none;}
+
+/* Question card */
+.q-meta{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;font-size:12px;color:var(--text-muted);font-family:var(--font-mono);}
+.progress-track{height:6px;background:rgba(255,255,255,0.06);border-radius:4px;overflow:hidden;margin-bottom:20px;}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:4px;transition:width .3s;}
+.q-text{font-size:16px;font-weight:600;line-height:1.6;margin-bottom:18px;}
+.options{display:flex;flex-direction:column;gap:10px;}
+.option{
+  background:var(--bg-input);border:1px solid var(--border);border-radius:10px;padding:12px 16px;
+  font-size:14px;cursor:pointer;transition:all .15s;display:flex;align-items:center;gap:10px;
+}
+.option:hover{border-color:var(--border-hover);}
+.option.selected{border-color:var(--accent);background:rgba(108,99,255,0.1);}
+.option .key{
+  width:24px;height:24px;border-radius:6px;background:rgba(255,255,255,0.05);display:flex;align-items:center;justify-content:center;
+  font-family:var(--font-mono);font-size:12px;font-weight:700;flex-shrink:0;color:var(--text-secondary);
+}
+.option.selected .key{background:var(--accent);color:#fff;}
+.nav-row{display:flex;justify-content:space-between;margin-top:22px;gap:10px;}
+
+/* Result */
+.result-icon{font-size:48px;text-align:center;margin-bottom:8px;}
+.result-score{font-family:var(--font-mono);font-size:40px;font-weight:700;text-align:center;color:var(--accent2);}
+.result-sub{text-align:center;color:var(--text-secondary);font-size:13px;margin-top:4px;margin-bottom:20px;}
+.result-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:22px;}
+.rstat{background:var(--bg-input);border:1px solid var(--border);border-radius:10px;padding:12px;text-align:center;}
+.rstat .v{font-family:var(--font-mono);font-size:18px;font-weight:700;}
+.rstat .l{font-size:11px;color:var(--text-muted);margin-top:2px;}
+.saving{font-size:12px;color:var(--text-muted);text-align:center;margin-top:10px;}
+
+@media(max-width:480px){.row2{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="topbar">
+    <div class="logo"><div class="logo-icon">🎓</div><span class="logo-text">Mentora<span> AI</span></span></div>
+    <a href="home.html" class="back-link">← Back to chat</a>
+  </div>
+
+  <!-- ── Step 1: Setup ─────────────────────────────────────────────── -->
+  <div class="panel" id="setupPanel">
+    <h2>Take a Quiz</h2>
+    <p class="sub">Choose a subject and topic. Questions are generated locally — no AI API used.</p>
+
+    <div class="row2">
+      <div class="field">
+        <label>Subject</label>
+        <select id="subjectSelect"></select>
+      </div>
+      <div class="field">
+        <label>Topic</label>
+        <select id="topicSelect"></select>
+      </div>
+    </div>
+    <div class="field">
+      <label>Number of Questions</label>
+      <select id="countSelect">
+        <option value="5">5</option>
+        <option value="10" selected>10</option>
+        <option value="15">15</option>
+      </select>
+    </div>
+    <button class="btn" id="startBtn" style="width:100%;margin-top:6px;">Start Quiz</button>
+  </div>
+
+  <!-- ── Step 2: Question ─────────────────────────────────────────── -->
+  <div class="panel" id="quizPanel" style="display:none;">
+    <div class="q-meta">
+      <span id="qCounter">Question 1 / 10</span>
+      <span id="qTopicLabel">Subject · Topic</span>
+    </div>
+    <div class="progress-track"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+    <div class="q-text" id="qText"></div>
+    <div class="options" id="optionsList"></div>
+    <div class="nav-row">
+      <button class="btn secondary" id="quitBtn">Quit</button>
+      <button class="btn" id="nextBtn" disabled>Next</button>
+    </div>
+  </div>
+
+  <!-- ── Step 3: Result ───────────────────────────────────────────── -->
+  <div class="panel" id="resultPanel" style="display:none;">
+    <div class="result-icon" id="resultEmoji">🎉</div>
+    <div class="result-score" id="resultScore">0%</div>
+    <div class="result-sub" id="resultSub">Great effort!</div>
+    <div class="result-stats">
+      <div class="rstat"><div class="v" id="rCorrect">0</div><div class="l">Correct</div></div>
+      <div class="rstat"><div class="v" id="rIncorrect">0</div><div class="l">Incorrect</div></div>
+      <div class="rstat"><div class="v" id="rTotal">0</div><div class="l">Total</div></div>
+    </div>
+    <div class="row2">
+      <button class="btn secondary" id="retakeBtn">Retake</button>
+      <a class="btn" href="analyze.html" style="text-align:center;text-decoration:none;">View Analysis</a>
+    </div>
+    <div class="saving" id="savingMsg">Saving attempt…</div>
+  </div>
+</div>
+
+<script type="module">
+import { auth, db } from "./firebase-config.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const authInstance = auth || getAuth();
+let currentUser = null;
+onAuthStateChanged(authInstance, (user) => {
+  if (!user) { window.location.href = "login.html"; return; }
+  currentUser = user;
+});
+
+/* ─────────────────────────────────────────────────────────────────────
+ * LOCAL QUESTION BANK — no external/AI APIs.
+ * Organized by Subject → Topic → array of questions.
+ * Add more entries here to expand coverage. Each question:
+ * { q: "...", options: ["A","B","C","D"], answer: 0-based index }
+ * ─────────────────────────────────────────────────────────────────── */
+const BANK = {
+  Physics: {
+    Kinematics: [
+      { q:"What is the SI unit of velocity?", options:["m/s","m/s²","kg·m/s","Newton"], answer:0 },
+      { q:"A body moving with constant velocity has zero:", options:["Speed","Displacement","Acceleration","Distance"], answer:2 },
+      { q:"Distance covered per unit time is called:", options:["Velocity","Speed","Acceleration","Momentum"], answer:1 },
+      { q:"The slope of a displacement-time graph gives:", options:["Acceleration","Velocity","Force","Energy"], answer:1 },
+      { q:"If a car decelerates uniformly, its acceleration is:", options:["Positive","Zero","Negative","Infinite"], answer:2 },
+      { q:"Free fall acceleration on Earth is approximately:", options:["8.9 m/s²","9.8 m/s²","10.8 m/s²","6.6 m/s²"], answer:1 },
+      { q:"Which equation relates v, u, a, t?", options:["v = u + at","v = u - at²","v² = u + 2as","v = ut²"], answer:0 },
+      { q:"A scalar quantity has:", options:["Magnitude and direction","Only direction","Only magnitude","Neither"], answer:2 },
+      { q:"The area under a velocity-time graph gives:", options:["Acceleration","Displacement","Force","Speed"], answer:1 },
+      { q:"Uniform acceleration means acceleration is:", options:["Changing","Zero","Constant","Random"], answer:2 },
+      { q:"Which is a vector quantity?", options:["Mass","Speed","Displacement","Time"], answer:2 },
+      { q:"Negative acceleration is also called:", options:["Retardation","Velocity","Momentum","Inertia"], answer:0 },
+    ],
+    "Laws of Motion": [
+      { q:"Newton's First Law is also called the law of:", options:["Inertia","Gravitation","Energy","Motion"], answer:0 },
+      { q:"F = ma represents Newton's:", options:["First Law","Second Law","Third Law","Zeroth Law"], answer:1 },
+      { q:"Every action has an equal and opposite reaction — this is Newton's:", options:["First Law","Second Law","Third Law","None"], answer:2 },
+      { q:"SI unit of force is:", options:["Joule","Newton","Watt","Pascal"], answer:1 },
+      { q:"Momentum is the product of:", options:["Mass and velocity","Mass and acceleration","Force and time","Force and distance"], answer:0 },
+      { q:"An object at rest stays at rest unless acted upon by:", options:["Gravity only","An external force","Friction only","Time"], answer:1 },
+      { q:"The law of conservation of momentum applies to:", options:["Open systems only","Isolated systems","Rotating bodies only","None"], answer:1 },
+      { q:"Friction acts in a direction:", options:["Same as motion","Opposite to motion","Perpendicular to motion","Random"], answer:1 },
+      { q:"Impulse equals change in:", options:["Velocity","Momentum","Force","Mass"], answer:1 },
+      { q:"Heavier objects fall faster than lighter ones in vacuum:", options:["True","False","Depends on shape","Depends on color"], answer:1 },
+    ],
+  },
+  Chemistry: {
+    "Atomic Structure": [
+      { q:"The nucleus of an atom contains:", options:["Electrons only","Protons and neutrons","Protons only","Neutrons only"], answer:1 },
+      { q:"The charge on an electron is:", options:["Positive","Negative","Neutral","Variable"], answer:1 },
+      { q:"Isotopes have the same number of:", options:["Neutrons","Protons","Electrons and neutrons","Mass number"], answer:1 },
+      { q:"Atomic number equals the number of:", options:["Neutrons","Protons","Protons + neutrons","Electrons + neutrons"], answer:1 },
+      { q:"Which subatomic particle has negligible mass?", options:["Proton","Neutron","Electron","Nucleus"], answer:2 },
+      { q:"The maximum electrons in the K-shell is:", options:["2","8","18","32"], answer:0 },
+      { q:"Who proposed the planetary model of the atom?", options:["Dalton","Bohr","Thomson","Rutherford"], answer:1 },
+      { q:"An ion with a negative charge is called:", options:["Cation","Anion","Isotope","Radical"], answer:1 },
+      { q:"Which particle was discovered using the gold foil experiment?", options:["Electron","Neutron","Nucleus","Photon"], answer:2 },
+      { q:"Mass number = protons +", options:["Electrons","Neutrons","Ions","Isotopes"], answer:1 },
+    ],
+    "Chemical Bonding": [
+      { q:"Ionic bonds form by transfer of:", options:["Neutrons","Protons","Electrons","Photons"], answer:2 },
+      { q:"A covalent bond involves:", options:["Sharing of electrons","Transfer of electrons","Loss of protons","Gain of neutrons"], answer:0 },
+      { q:"Water (H2O) has what type of bond?", options:["Ionic","Covalent","Metallic","Hydrogen only"], answer:1 },
+      { q:"NaCl is an example of a:", options:["Covalent compound","Ionic compound","Metallic compound","Network solid"], answer:1 },
+      { q:"A double bond consists of how many shared electron pairs?", options:["1","2","3","4"], answer:1 },
+      { q:"Metallic bonding involves a 'sea' of:", options:["Protons","Neutrons","Electrons","Ions only"], answer:2 },
+      { q:"Which element commonly forms hydrogen bonds with hydrogen?", options:["Carbon","Oxygen","Sulfur","Sodium"], answer:1 },
+      { q:"The octet rule refers to atoms wanting:", options:["2 electrons","8 valence electrons","8 protons","8 neutrons"], answer:1 },
+    ],
+  },
+  Biology: {
+    "Cell Biology": [
+      { q:"The powerhouse of the cell is the:", options:["Nucleus","Mitochondria","Ribosome","Golgi body"], answer:1 },
+      { q:"Which organelle synthesizes proteins?", options:["Ribosome","Lysosome","Vacuole","Nucleolus"], answer:0 },
+      { q:"The cell membrane is mainly composed of:", options:["Cellulose","Phospholipids","Chitin","Starch"], answer:1 },
+      { q:"DNA is found primarily in the:", options:["Cytoplasm","Nucleus","Mitochondria","Cell wall"], answer:1 },
+      { q:"Plant cells, unlike animal cells, have a:", options:["Nucleus","Cell wall","Mitochondria","Cell membrane"], answer:1 },
+      { q:"Which organelle is responsible for photosynthesis?", options:["Chloroplast","Mitochondria","Nucleus","Ribosome"], answer:0 },
+      { q:"Lysosomes are known as the cell's:", options:["Powerhouse","Suicide bags","Control center","Storage units"], answer:1 },
+      { q:"The process of cell division in somatic cells is called:", options:["Meiosis","Mitosis","Osmosis","Diffusion"], answer:1 },
+      { q:"Which structure controls what enters and exits the cell?", options:["Cell wall","Cell membrane","Nucleus","Cytoplasm"], answer:1 },
+      { q:"Ribosomes are found:", options:["Only in nucleus","Free in cytoplasm or on ER","Only in mitochondria","Only in chloroplasts"], answer:1 },
+    ],
+    Genetics: [
+      { q:"The basic unit of heredity is called a:", options:["Chromosome","Gene","Allele","Genome"], answer:1 },
+      { q:"Humans typically have how many chromosomes?", options:["44","46","48","23"], answer:1 },
+      { q:"A cross between two heterozygous parents gives what ratio (Mendel)?", options:["1:1","3:1","9:3:3:1","1:2:1"], answer:1 },
+      { q:"DNA stands for:", options:["Deoxyribonucleic acid","Dinucleic acid","Diribose acid","Deoxy nuclear acid"], answer:0 },
+      { q:"An organism's genetic makeup is its:", options:["Phenotype","Genotype","Karyotype","Allele"], answer:1 },
+      { q:"Dominant alleles are represented by:", options:["Lowercase letters","Uppercase letters","Numbers","Symbols only"], answer:1 },
+      { q:"Sex chromosomes in humans are:", options:["XX and XY","AA and BB","XY only","ZZ and ZW"], answer:0 },
+      { q:"A change in DNA sequence is called a:", options:["Mutation","Mitosis","Meiosis","Replication"], answer:0 },
+    ],
+  },
+  Mathematics: {
+    Algebra: [
+      { q:"Solve: 2x + 4 = 10. x =", options:["2","3","4","5"], answer:1 },
+      { q:"The value of (a+b)² is:", options:["a²+b²","a²+2ab+b²","a²-b²","2ab"], answer:1 },
+      { q:"If x² = 49, x =", options:["±7","7 only","-7 only","49"], answer:0 },
+      { q:"The roots of x² - 5x + 6 = 0 are:", options:["2,3","1,6","-2,-3","2,-3"], answer:0 },
+      { q:"Simplify: 3x + 2x", options:["5x","6x","x","5x²"], answer:0 },
+      { q:"The degree of polynomial 4x³+2x-1 is:", options:["1","2","3","4"], answer:2 },
+      { q:"If f(x)=2x+1, f(3) =", options:["5","6","7","8"], answer:2 },
+      { q:"A linear equation in one variable has degree:", options:["0","1","2","Variable"], answer:1 },
+    ],
+    Trigonometry: [
+      { q:"sin(90°) =", options:["0","1","-1","Undefined"], answer:1 },
+      { q:"cos(0°) =", options:["0","1","-1","Undefined"], answer:1 },
+      { q:"tan(45°) =", options:["0","1","√3","Undefined"], answer:1 },
+      { q:"sin²θ + cos²θ =", options:["0","1","2","tan θ"], answer:1 },
+      { q:"The value of sin(180°) is:", options:["1","-1","0","Undefined"], answer:2 },
+      { q:"In a right triangle, the longest side is the:", options:["Adjacent","Opposite","Hypotenuse","Base"], answer:2 },
+      { q:"tan θ = sin θ /", options:["cos θ","sec θ","cot θ","csc θ"], answer:0 },
+      { q:"cos(90° - θ) =", options:["cos θ","sin θ","tan θ","-sin θ"], answer:1 },
+    ],
+  },
+};
+
+const subjectSelect = document.getElementById("subjectSelect");
+const topicSelect   = document.getElementById("topicSelect");
+
+Object.keys(BANK).forEach(subject => {
+  const opt = document.createElement("option");
+  opt.value = subject; opt.textContent = subject;
+  subjectSelect.appendChild(opt);
+});
+function populateTopics() {
+  topicSelect.innerHTML = "";
+  Object.keys(BANK[subjectSelect.value]).forEach(topic => {
+    const opt = document.createElement("option");
+    opt.value = topic; opt.textContent = topic;
+    topicSelect.appendChild(opt);
+  });
+}
+subjectSelect.onchange = populateTopics;
+populateTopics();
+
+/* ── Quiz state ─────────────────────────────────────────────────────*/
+let questions = [];
+let current = 0;
+let selectedIdx = null;
+let correctCount = 0;
+let answers = [];
+let subject = "", topic = "";
+
+const setupPanel  = document.getElementById("setupPanel");
+const quizPanel   = document.getElementById("quizPanel");
+const resultPanel = document.getElementById("resultPanel");
+
+document.getElementById("startBtn").onclick = () => {
+  subject = subjectSelect.value;
+  topic   = topicSelect.value;
+  const count = parseInt(document.getElementById("countSelect").value, 10);
+  const pool = [...BANK[subject][topic]];
+
+  // Shuffle and pick `count` questions (or all if fewer available)
+  shuffle(pool);
+  questions = pool.slice(0, Math.min(count, pool.length));
+
+  current = 0; correctCount = 0; answers = [];
+  setupPanel.style.display = "none";
+  quizPanel.style.display = "block";
+  renderQuestion();
+};
+
+function renderQuestion() {
+  selectedIdx = null;
+  const q = questions[current];
+  document.getElementById("qCounter").textContent = `Question ${current + 1} / ${questions.length}`;
+  document.getElementById("qTopicLabel").textContent = `${subject} · ${topic}`;
+  document.getElementById("progressFill").style.width = `${(current / questions.length) * 100}%`;
+  document.getElementById("qText").textContent = q.q;
+  document.getElementById("nextBtn").disabled = true;
+  document.getElementById("nextBtn").textContent = current === questions.length - 1 ? "Finish" : "Next";
+
+  const optsEl = document.getElementById("optionsList");
+  optsEl.innerHTML = "";
+  q.options.forEach((opt, i) => {
+    const div = document.createElement("div");
+    div.className = "option";
+    div.innerHTML = `<span class="key">${String.fromCharCode(65 + i)}</span><span>${opt}</span>`;
+    div.onclick = () => selectOption(i, div);
+    optsEl.appendChild(div);
+  });
+}
+
+function selectOption(i, el) {
+  document.querySelectorAll("#optionsList .option").forEach(o => o.classList.remove("selected"));
+  el.classList.add("selected");
+  selectedIdx = i;
+  document.getElementById("nextBtn").disabled = false;
+}
+
+document.getElementById("nextBtn").onclick = () => {
+  const q = questions[current];
+  const isCorrect = selectedIdx === q.answer;
+  if (isCorrect) correctCount++;
+  answers.push({ q: q.q, selected: selectedIdx, correct: q.answer, isCorrect });
+
+  if (current < questions.length - 1) {
+    current++;
+    renderQuestion();
+  } else {
+    finishQuiz();
+  }
+};
+
+document.getElementById("quitBtn").onclick = () => {
+  if (confirm("Quit this quiz? Your progress won't be saved.")) {
+    location.reload();
+  }
+};
+
+document.getElementById("retakeBtn").onclick = () => location.reload();
+
+async function finishQuiz() {
+  quizPanel.style.display = "none";
+  resultPanel.style.display = "block";
+
+  const total = questions.length;
+  const incorrect = total - correctCount;
+  const pct = Math.round((correctCount / total) * 100);
+
+  document.getElementById("resultEmoji").textContent = pct >= 75 ? "🎉" : pct >= 50 ? "👍" : "💪";
+  document.getElementById("resultScore").textContent = pct + "%";
+  document.getElementById("resultSub").textContent =
+    pct >= 75 ? "Excellent work!" : pct >= 50 ? "Good effort, keep practising!" : "Review this topic and try again!";
+  document.getElementById("rCorrect").textContent = correctCount;
+  document.getElementById("rIncorrect").textContent = incorrect;
+  document.getElementById("rTotal").textContent = total;
+
+  // ── Save attempt to Firestore (matches schema used by analyze.html) ─
+  const savingEl = document.getElementById("savingMsg");
+  try {
+    if (!currentUser) throw new Error("Not signed in");
+    await addDoc(collection(db, "users", currentUser.uid, "quizAttempts"), {
+      subject,
+      topic,
+      title: `${topic} Quiz`,
+      totalQ: total,
+      correct: correctCount,
+      incorrect,
+      skipped: 0,
+      score: correctCount,
+      maxScore: total,
+      takenAt: serverTimestamp(),
+    });
+    savingEl.textContent = "✅ Saved — visible in Quiz Analysis";
+  } catch (err) {
+    console.error(err);
+    savingEl.textContent = "⚠️ Could not save attempt: " + err.message;
+  }
+}
+
+function shuffle(arr) {
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+}
+</script>
+</body>
+</html>
