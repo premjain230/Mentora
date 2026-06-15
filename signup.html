@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8"/> 
+<meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Mentora — Sign Up</title>
+<title>Aquila AI — Sign Up</title>
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
 <style>
 :root{
@@ -43,15 +43,12 @@ body.hovering #cur-ring{width:48px;height:48px;border-color:rgba(167,139,250,0.5
 .particle{position:absolute;border-radius:50%;animation:pfloat var(--dur) ease-in-out infinite var(--del)}
 @keyframes pfloat{0%{transform:translateY(0) translateX(0);opacity:0}15%{opacity:var(--op)}85%{opacity:var(--op)}100%{transform:translateY(-110px) translateX(var(--drift));opacity:0}}
 
-/* page */
 .page{position:relative;z-index:10;display:flex;width:100vw;height:100vh;align-items:center;justify-content:center}
 
-/* divider */
 .divider-v{width:1px;height:68vh;flex-shrink:0;position:relative;background:linear-gradient(to bottom,transparent,var(--border2) 25%,var(--border2) 75%,transparent)}
 .divider-v .scan{position:absolute;left:0;width:1px;height:56px;background:linear-gradient(to bottom,transparent,var(--cyan),transparent);animation:scan 4s ease-in-out infinite}
 @keyframes scan{0%{top:5%}50%{top:70%}100%{top:5%}}
 
-/* panels */
 .panel{flex:1;max-width:520px;padding:0 60px;display:flex;flex-direction:column;justify-content:center;height:100vh;overflow-y:auto}
 .panel::-webkit-scrollbar{display:none}
 .panel-left{animation:fadeL .9s cubic-bezier(.22,1,.36,1) .12s both}
@@ -59,18 +56,15 @@ body.hovering #cur-ring{width:48px;height:48px;border-color:rgba(167,139,250,0.5
 @keyframes fadeL{from{opacity:0;transform:translateX(-28px)}to{opacity:1;transform:translateX(0)}}
 @keyframes fadeR{from{opacity:0;transform:translateX(28px)}to{opacity:1;transform:translateX(0)}}
 
-/* logo */
 .logo{display:flex;align-items:center;gap:11px;margin-bottom:36px}
 .logo svg{width:36px;height:36px}
 .logo-name{font-size:19px;font-weight:700;letter-spacing:-0.03em}
 .logo-name span{color:var(--accent2)}
 
-/* form side (RIGHT) */
 .form-hdr{margin-bottom:26px}
 .form-hdr h2{font-size:26px;font-weight:700;letter-spacing:-0.04em;margin-bottom:6px}
 .form-hdr p{font-size:13px;color:var(--sub)}
 
-/* two-col name row */
 .row2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
 
 .field{margin-bottom:15px;position:relative}
@@ -84,7 +78,6 @@ body.hovering #cur-ring{width:48px;height:48px;border-color:rgba(167,139,250,0.5
 .eye{position:absolute;right:14px;top:37px;cursor:pointer;color:var(--sub);font-size:14px;line-height:1;transition:color .2s;user-select:none}
 .eye:hover{color:var(--accent2)}
 
-/* password strength */
 .strength-wrap{margin-top:7px}
 .strength-bars{display:flex;gap:4px;margin-bottom:4px}
 .sbar{flex:1;height:3px;border-radius:99px;background:var(--border2);transition:background .35s}
@@ -94,7 +87,6 @@ body.hovering #cur-ring{width:48px;height:48px;border-color:rgba(167,139,250,0.5
 .sbar.s4{background:var(--cyan)}
 .strength-label{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.1em;color:var(--sub);transition:color .35s}
 
-/* terms */
 .terms-row{display:flex;align-items:flex-start;gap:9px;margin-bottom:20px;margin-top:4px}
 .terms-row input{accent-color:var(--accent);width:13px;height:13px;flex-shrink:0;margin-top:2px}
 .terms-row span{font-size:12px;color:var(--sub);line-height:1.6}
@@ -119,7 +111,6 @@ body.hovering #cur-ring{width:48px;height:48px;border-color:rgba(167,139,250,0.5
 .foot a{color:var(--accent2);text-decoration:none;font-weight:500;transition:color .2s}
 .foot a:hover{color:#fff}
 
-/* brand side (LEFT) */
 .tag-line{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--cyan);letter-spacing:.2em;text-transform:uppercase;display:flex;align-items:center;gap:9px;margin-bottom:20px}
 .tag-line::before{content:'';width:22px;height:1px;background:var(--cyan);flex-shrink:0}
 .headline{font-size:clamp(30px,3.5vw,46px);font-weight:700;line-height:1.1;letter-spacing:-0.045em;margin-bottom:20px}
@@ -127,7 +118,6 @@ body.hovering #cur-ring{width:48px;height:48px;border-color:rgba(167,139,250,0.5
 .headline .dim{color:rgba(240,238,255,0.28);font-weight:300;display:block}
 .desc{font-size:13.5px;color:var(--sub);line-height:1.85;max-width:340px;margin-bottom:36px}
 
-/* steps */
 .steps-label{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--sub);letter-spacing:.15em;text-transform:uppercase;margin-bottom:16px}
 .steps{display:flex;flex-direction:column;gap:12px;max-width:360px}
 .step{display:flex;align-items:flex-start;gap:14px}
@@ -135,7 +125,6 @@ body.hovering #cur-ring{width:48px;height:48px;border-color:rgba(167,139,250,0.5
 .step-body strong{display:block;font-size:13px;font-weight:600;margin-bottom:2px}
 .step-body span{font-size:12px;color:var(--sub);line-height:1.5}
 
-/* social proof */
 .proof{margin-top:36px;display:flex;align-items:center;gap:14px}
 .avatars{display:flex}
 .avatar{width:28px;height:28px;border-radius:50%;border:2px solid var(--bg);margin-left:-8px;font-size:11px;display:flex;align-items:center;justify-content:center;font-weight:600}
@@ -167,7 +156,7 @@ body.hovering #cur-ring{width:48px;height:48px;border-color:rgba(167,139,250,0.5
         <path d="M12.5 19.5 L23.5 19.5" stroke="#06d6cf" stroke-width="1.5" stroke-linecap="round"/>
         <circle cx="18" cy="9" r="2.2" fill="#7c6aff"/>
       </svg>
-      <div class="logo-name">Ment<span>ora</span></div>
+      <div class="logo-name">Aqui<span>la AI</span></div>
     </div>
 
     <div class="form-hdr">
@@ -178,22 +167,22 @@ body.hovering #cur-ring{width:48px;height:48px;border-color:rgba(167,139,250,0.5
     <div class="row2">
       <div class="field">
         <label>First name</label>
-        <input type="text" placeholder="Alex" autocomplete="given-name"/>
+        <input type="text" id="firstName" placeholder="Alex" autocomplete="given-name"/>
       </div>
       <div class="field">
         <label>Last name</label>
-        <input type="text" placeholder="Chen" autocomplete="family-name"/>
+        <input type="text" id="lastName" placeholder="Chen" autocomplete="family-name"/>
       </div>
     </div>
 
     <div class="field">
       <label>Email address</label>
-      <input type="email" placeholder="you@example.com" autocomplete="email"/>
+      <input type="email" id="emailF" placeholder="you@example.com" autocomplete="email"/>
     </div>
 
     <div class="field">
       <label>I am a…</label>
-      <select>
+      <select id="examF">
         <option value="" disabled selected>Select your role</option>
         <option>High school student</option>
         <option>Undergraduate student</option>
@@ -221,7 +210,7 @@ body.hovering #cur-ring{width:48px;height:48px;border-color:rgba(167,139,250,0.5
 
     <div class="terms-row">
       <input type="checkbox" id="terms"/>
-      <span>I agree to Mentora's <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>. I'm ready to learn smarter.</span>
+      <span>I agree to Aquila AI's <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>. I'm ready to learn smarter.</span>
     </div>
 
     <button class="btn"><div class="shine"></div>Create free account →</button>
@@ -233,7 +222,7 @@ body.hovering #cur-ring{width:48px;height:48px;border-color:rgba(167,139,250,0.5
       Continue with Google
     </button>
 
-    <div class="foot">Already have an account? <a href="signin.html">Sign in →</a></div>
+    <div class="foot">Already have an account? <a href="login.html">Sign in →</a></div>
   </div>
 
   <div class="divider-v"><div class="scan"></div></div>
@@ -246,7 +235,7 @@ body.hovering #cur-ring{width:48px;height:48px;border-color:rgba(167,139,250,0.5
       <span class="hl">study partner</span>
       <span class="dim">awaits you.</span>
     </h1>
-    <p class="desc">Mentora adapts to how you learn — whether you need to chat through a concept, schedule your week, or review your progress. It's free to start.</p>
+    <p class="desc">Aquila AI adapts to how you learn — whether you need to chat through a concept, schedule your week, or review your progress. It's free to start.</p>
 
     <div class="steps-label">How it works</div>
     <div class="steps">
@@ -254,7 +243,7 @@ body.hovering #cur-ring{width:48px;height:48px;border-color:rgba(167,139,250,0.5
         <div class="step-num">01</div>
         <div class="step-body">
           <strong>Create your profile</strong>
-          <span>Tell Mentora who you are and what you're studying.</span>
+          <span>Tell Aquila who you are and what you're studying.</span>
         </div>
       </div>
       <div class="step">
@@ -268,7 +257,7 @@ body.hovering #cur-ring{width:48px;height:48px;border-color:rgba(167,139,250,0.5
         <div class="step-num">03</div>
         <div class="step-body">
           <strong>Learn with AI</strong>
-          <span>Chat, listen, analyse, and grow. Mentora is with you every step.</span>
+          <span>Chat, listen, analyse, and grow. Aquila AI is with you every step.</span>
         </div>
       </div>
     </div>
@@ -281,7 +270,7 @@ body.hovering #cur-ring{width:48px;height:48px;border-color:rgba(167,139,250,0.5
         <div class="avatar av4">M</div>
       </div>
       <div class="proof-txt">
-        <strong>12,000+ students</strong> already learning with Mentora<br/>
+        <strong>12,000+ students</strong> already learning with Aquila AI<br/>
         Join them — it takes less than a minute.
       </div>
     </div>
@@ -346,28 +335,20 @@ for(let i=0;i<28;i++){
   pc.appendChild(p);
 }
 </script>
-  <script type="module">
-  import { signUp, googleSignIn } from "./auth.js";
 
-  document.querySelector(".btn").addEventListener("click", () => signUp());
-  document.querySelector(".btn-google").addEventListener("click", () => googleSignIn());
+<script type="module">
+import { signUp, googleSignIn } from "./auth.js";
+document.querySelector(".btn").addEventListener("click", () => signUp());
+document.querySelector(".btn-google").addEventListener("click", () => googleSignIn());
 </script>
-  <!-- first name input → add id="firstName" -->
-<input type="text" id="firstName" placeholder="First name" .../>
 
-<!-- last name input → add id="lastName" -->
-<input type="text" id="lastName" placeholder="Last name" .../>
-
-<!-- email input → add id="emailF" -->
-<input type="email" id="emailF" placeholder="you@example.com" .../>
-
-<!-- password input → already has id="pwdF" ✓ -->
-
-<!-- exam select → add id="examF" -->
-<select id="examF">...</select>
-  <!-- Vercel Web Analytics -->
-  <script type="module" src="/analytics.js"></script>
-  <!-- Vercel Speed Insights -->
-  <script type="module" src="/speed-insights.js"></script>
+<script type="module">
+  import { inject } from 'https://esm.sh/@vercel/analytics';
+  inject();
+</script>
+<script type="module">
+  import { injectSpeedInsights } from 'https://esm.sh/@vercel/speed-insights';
+  injectSpeedInsights();
+</script>
 </body>
 </html>
