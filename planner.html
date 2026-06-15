@@ -39,7 +39,6 @@ body { font-family: var(--font-main); background: var(--bg-base); color: var(--t
 .nav-item:hover { background: rgba(255,255,255,0.04); color: var(--text-primary); }
 .nav-item.active { background: rgba(108,99,255,0.1); color: var(--text-primary); border-color: rgba(108,99,255,0.2); }
 .nav-icon { width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
-/* ── Nav badge ───────────────────────────────────────────── */
 .nav-badge { margin-left: auto; font-size: 10px; font-weight: 700; padding: 2px 7px; border-radius: 20px; background: rgba(108,99,255,0.15); color: var(--accent); }
 .nav-badge.green { background: rgba(0,212,170,0.12); color: var(--accent2); }
 .sidebar-bottom { padding: 12px 10px; border-top: 1px solid var(--border); }
@@ -185,7 +184,7 @@ body { font-family: var(--font-main); background: var(--bg-base); color: var(--t
 .skeleton { background: linear-gradient(90deg, rgba(255,255,255,0.04) 25%, rgba(255,255,255,0.07) 50%, rgba(255,255,255,0.04) 75%); background-size: 200% 100%; animation: shimmer 1.4s infinite; border-radius: 8px; }
 @keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
 
-/* ── Toast ──────────────��────────────────────────────────── */
+/* ── Toast ───────────────────────────────────────────────── */
 .toast { position: fixed; bottom: 28px; right: 28px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 12px 18px; font-size: 13px; z-index: 999; transform: translateY(20px); opacity: 0; transition: all 0.3s; pointer-events: none; max-width: 320px; }
 .toast.show { transform: translateY(0); opacity: 1; }
 .toast.success { border-color: rgba(0,212,170,0.4); color: var(--accent2); }
@@ -198,6 +197,15 @@ body { font-family: var(--font-main); background: var(--bg-base); color: var(--t
 .modal-title { font-size: 18px; font-weight: 700; margin-bottom: 8px; }
 .modal-sub { font-size: 13px; color: var(--text-secondary); line-height: 1.6; margin-bottom: 22px; }
 .modal-actions { display: flex; gap: 10px; justify-content: flex-end; }
+
+/* ── Delete plan modal ───────────────────────────────────── */
+.modal-danger .modal-title { color: var(--accent3); }
+.btn-danger { background: rgba(255,107,107,0.15); border: 1px solid rgba(255,107,107,0.4); color: var(--accent3); font-family: var(--font-main); font-size: 12px; font-weight: 600; padding: 7px 14px; border-radius: 8px; cursor: pointer; transition: all 0.18s; }
+.btn-danger:hover { background: rgba(255,107,107,0.3); border-color: rgba(255,107,107,0.6); }
+.btn-danger:disabled { opacity: 0.5; cursor: not-allowed; }
+.delete-warning { background: rgba(255,107,107,0.06); border: 1px solid rgba(255,107,107,0.18); border-radius: 10px; padding: 12px 14px; font-size: 12px; color: var(--text-secondary); line-height: 1.7; margin-bottom: 20px; }
+.delete-warning strong { color: var(--accent3); display: block; margin-bottom: 4px; }
+.delete-stat { display: inline-flex; align-items: center; gap: 6px; background: rgba(255,107,107,0.08); border: 1px solid rgba(255,107,107,0.15); border-radius: 6px; padding: 3px 10px; font-size: 12px; font-family: var(--font-mono); color: var(--accent3); margin-top: 8px; }
 
 @media (max-width: 1100px) { .two-col { grid-template-columns: 1fr; } }
 @media (max-width: 960px) { .stats-row { grid-template-columns: repeat(2,1fr); } .week-grid { grid-template-columns: repeat(4,1fr); } }
@@ -226,7 +234,6 @@ body { font-family: var(--font-main); background: var(--bg-base); color: var(--t
 
   <nav class="nav-section">
     <div class="nav-label">Learn</div>
-    <!-- FIX: "AI Tutor" renamed to "Chat", links to home.html, not active on planner page -->
     <a class="nav-item" href="home.html">
       <span class="nav-icon">💬</span>
       Chat
@@ -236,16 +243,12 @@ body { font-family: var(--font-main); background: var(--bg-base); color: var(--t
       Analyze
       <span class="nav-badge green">AI</span>
     </a>
-    <!-- Study Planner link is this page — marked active via JS on load -->
     <a class="nav-item" id="nav-planner" href="planner.html">
       <span class="nav-icon">📅</span>
       Study Planner
     </a>
 
-
-
     <div class="nav-label">Planner</div>
-    <!-- FIX: these now call switchTab() directly instead of navigating to hash URLs -->
     <div class="nav-item" id="nav-today" onclick="switchTabAndHighlight('today')">
       <span class="nav-icon">✅</span>
       Today's Tasks
@@ -274,7 +277,6 @@ body { font-family: var(--font-main); background: var(--bg-base); color: var(--t
     </a>
   </nav>
 
-  <!-- Sidebar bottom: user card + sign out -->
   <div class="sidebar-bottom">
     <div class="user-card">
       <div class="avatar" id="sidebarAvatar"></div>
@@ -295,6 +297,8 @@ body { font-family: var(--font-main); background: var(--bg-base); color: var(--t
     <div class="topbar-right">
       <button class="btn-sm btn-outline" onclick="window.location.href='/planner-onboarding.html'">New Plan</button>
       <button class="btn-sm btn-teal" id="replanBtn" onclick="openReplanModal()" style="display:none">🔄 Replan</button>
+      <!-- NEW: Delete Plan button — shown only when a plan is loaded -->
+      <button class="btn-sm btn-danger" id="deletePlanBtn" onclick="openDeleteModal()" style="display:none">🗑️ Delete Plan</button>
     </div>
   </div>
 
@@ -323,6 +327,25 @@ body { font-family: var(--font-main); background: var(--bg-base); color: var(--t
   </div>
 </div>
 
+<!-- ── Delete Plan Modal ──────────────────────────────────────── -->
+<div class="modal-overlay" id="deletePlanModal">
+  <div class="modal modal-danger">
+    <div class="modal-title">🗑️ Delete Study Plan</div>
+    <div class="modal-sub">This will permanently remove your active plan and all its data from Aquila.</div>
+    <div class="delete-warning">
+      <strong>⚠️ This action cannot be undone.</strong>
+      All scheduled sessions, weekly schedule, and milestone data will be permanently erased.
+      Your study streak and total hours logged will be preserved.
+      <br>
+      <span class="delete-stat" id="deleteTaskCount">0 tasks</span> will be deleted.
+    </div>
+    <div class="modal-actions">
+      <button class="btn-sm btn-outline" onclick="closeDeleteModal()">Cancel</button>
+      <button class="btn-danger" id="confirmDeleteBtn" onclick="executeDeletePlan()">Yes, Delete Plan</button>
+    </div>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <script type="module">
@@ -343,7 +366,6 @@ let appState = {
   currentTab: "today",
 };
 
-// Keep a ref to getProgress so handleTaskComplete can call it
 let _getProgress = getProgress;
 
 // ── Auth guard + init ────────────────────────────────────────
@@ -351,7 +373,6 @@ onAuthStateChanged(auth, async (user) => {
   if (!user) { window.location.replace("/index.html"); return; }
   appState.user = user;
 
-  // Populate sidebar
   const name = user.displayName || user.email || "Student";
   document.getElementById("sidebarName").textContent = name;
   const av = document.getElementById("sidebarAvatar");
@@ -399,6 +420,9 @@ async function loadPlannerData() {
       document.getElementById("replanBtn").style.display = "flex";
     }
 
+    // Show delete button now that we confirmed a plan exists
+    document.getElementById("deletePlanBtn").style.display = "flex";
+
     renderTab(appState.currentTab);
   } catch (err) {
     console.error("Failed to load planner data:", err);
@@ -406,17 +430,14 @@ async function loadPlannerData() {
   }
 }
 
-// ── Tab switching — called from BOTH the tab bar AND sidebar nav ──
-// FIX: unified function that syncs tabs + sidebar nav highlight
+// ── Tab switching ────────────────────────────────────────────
 window.switchTabAndHighlight = function(tab) {
   appState.currentTab = tab;
 
-  // Update top tab bar
   document.querySelectorAll(".tab").forEach((t) => {
     t.classList.toggle("active", t.dataset.tab === tab);
   });
 
-  // Update sidebar planner nav items
   const sidebarMap = {
     today: "nav-today",
     weekly: "nav-weekly",
@@ -435,7 +456,6 @@ window.switchTabAndHighlight = function(tab) {
   renderTab(tab);
 };
 
-// Keep backward compat — switchTab still works if called anywhere
 window.switchTab = window.switchTabAndHighlight;
 
 function renderTab(tab) {
@@ -511,7 +531,6 @@ function renderNoPlan() {
 }
 
 // ── Highlight default sidebar item on page load ──────────────
-// FIX: mark "Study Planner" and "Today's Tasks" as active on load
 document.getElementById("nav-planner").classList.add("active");
 document.getElementById("nav-today").classList.add("active");
 
@@ -532,7 +551,6 @@ function renderToday() {
 
   const wrap = document.createElement("div");
 
-  // Stats row
   const statsEl = document.createElement("div");
   statsEl.className = "stats-row";
   statsEl.innerHTML = `
@@ -558,7 +576,6 @@ function renderToday() {
     </div>`;
   wrap.appendChild(statsEl);
 
-  // Countdown banner
   const banner = document.createElement("div");
   banner.className = "countdown-banner";
   banner.innerHTML = `
@@ -575,7 +592,6 @@ function renderToday() {
     </div>`;
   wrap.appendChild(banner);
 
-  // Missed alert
   if (missedCount > 0) {
     const alert = document.createElement("div");
     alert.className = "missed-alert";
@@ -602,11 +618,9 @@ function renderToday() {
     wrap.appendChild(alert);
   }
 
-  // Two-column layout
   const twoCol = document.createElement("div");
   twoCol.className = "two-col";
 
-  // Left: today's tasks
   const left = document.createElement("div");
   const taskHeader = document.createElement("div");
   taskHeader.className = "section-title";
@@ -630,7 +644,6 @@ function renderToday() {
   }
   twoCol.appendChild(left);
 
-  // Right: subject progress
   const right = document.createElement("div");
   const subjectHeader = document.createElement("div");
   subjectHeader.className = "section-title";
@@ -706,7 +719,6 @@ function buildTaskCard(task) {
 
   const subj = document.createElement("div");
   subj.className = "task-subject";
-  // FIX: use indexOf safely — subjects array may not exist
   const subjectIdx = appState.profile?.subjects?.indexOf(task.subject) ?? 0;
   subj.style.color = subjectColor(subjectIdx >= 0 ? subjectIdx : 0);
   subj.textContent = task.subject;
@@ -766,7 +778,6 @@ async function handleTaskComplete(taskId) {
     await updateStreak();
     await logEvent("task_completed", { subject: task.subject });
 
-    // Update UI in place
     const card = document.getElementById(`task-${taskId}`);
     if (card) {
       card.classList.add("completed");
@@ -774,7 +785,6 @@ async function handleTaskComplete(taskId) {
       if (checkEl) checkEl.classList.add("done");
     }
 
-    // FIX: use the already-imported getProgress, not a dynamic import with wrong path
     appState.progress = await _getProgress();
     showToast("✅ Task completed!", "success");
   } catch (err) {
@@ -1064,7 +1074,6 @@ window.executeReplan = async function() {
     closeReplanModal();
     await logEvent("replan_generated", { missedCount: missedTasks.length });
     showToast("✅ Catch-up plan generated! Check your weekly view.", "success");
-
     console.info("Replan advice:", data?.catchUpPlan?.advice);
     await loadPlannerData();
   } catch (err) {
@@ -1073,6 +1082,51 @@ window.executeReplan = async function() {
   } finally {
     btn.disabled = false;
     btn.textContent = "Generate Catch-up Plan";
+  }
+};
+
+// ══════════════════════════════════════════════════════════════
+// DELETE PLAN MODAL
+// ══════════════════════════════════════════════════════════════
+window.openDeleteModal = function() {
+  const count = appState.tasks.length;
+  const el = document.getElementById("deleteTaskCount");
+  el.textContent = `${count} task${count !== 1 ? "s" : ""}`;
+  document.getElementById("deletePlanModal").classList.add("show");
+};
+
+window.closeDeleteModal = function() {
+  document.getElementById("deletePlanModal").classList.remove("show");
+};
+
+window.executeDeletePlan = async function() {
+  const btn = document.getElementById("confirmDeleteBtn");
+  btn.disabled = true;
+  btn.textContent = "Deleting…";
+
+  try {
+    // Dynamically import deletePlan from planner-db.js
+    const { deletePlan } = await import("./planner-db.js");
+    await deletePlan(appState.plan.planId);
+
+    await logEvent("plan_deleted", { planId: appState.plan.planId });
+
+    // Hide the delete button immediately
+    document.getElementById("deletePlanBtn").style.display = "none";
+    document.getElementById("replanBtn").style.display = "none";
+
+    closeDeleteModal();
+    showToast("🗑️ Plan deleted successfully.", "");
+
+    // Small delay so user sees the toast, then go to onboarding
+    setTimeout(() => {
+      window.location.href = "/planner-onboarding.html";
+    }, 1400);
+  } catch (err) {
+    showToast(err.message || "Could not delete plan.", "error");
+    console.error(err);
+    btn.disabled = false;
+    btn.textContent = "Yes, Delete Plan";
   }
 };
 
