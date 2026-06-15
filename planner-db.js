@@ -345,3 +345,23 @@ export async function logEvent(type, metadata = {}) {
     metadata, // Keep shallow — no PII
   });
 }
+import { doc, deleteDoc, collection, query, where, getDocs, writeBatch } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { db, auth } from "./firebase-config.js";
+
+export async function deletePlan(planId) {
+  const uid = auth.currentUser.uid;
+  const batch = writeBatch(db);
+
+  // Delete all tasks for this plan
+  const tasksQ = query(
+    collection(db, "users", uid, "tasks"),
+    where("planId", "==", planId)
+  );
+  const taskSnap = await getDocs(tasksQ);
+  taskSnap.forEach(d => batch.delete(d.ref));
+
+  // Delete the plan doc
+  batch.delete(doc(db, "users", uid, "plans", planId));
+
+  await batch.commit();
+}
