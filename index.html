@@ -1,69 +1,42 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" /> <!-- SEO IMPROVEMENT -->
-<meta name="viewport" content="width=device-width, initial-scale=1.0" /> <!-- SEO IMPROVEMENT -->
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <meta name="google-site-verification" content="QjBlgyH6XzD8rehRkb-vkXlhlXw9cNO6MMUfFW6GAis" />
 
-<!-- SEO IMPROVEMENT: Title optimized for target keywords (≈58 chars) -->
-<title>Mentora AI – AI Study Assistant & Tutor for JEE, NEET, Boards</title>
+<title>Aquila AI – AI Study Assistant & Tutor for JEE, NEET, Boards</title>
 
-<!-- SEO IMPROVEMENT: Meta description ≈155 chars -->
-<meta name="description" content="Mentora AI is your personal AI tutor and study planner — get AI quiz generators, smart flashcards, and personalized learning for JEE, NEET & Board exams." />
+<meta name="description" content="Aquila AI is your personal AI tutor and study planner — get AI quiz generators, smart flashcards, and personalized learning for JEE, NEET & Board exams." />
 
-<!-- SEO IMPROVEMENT -->
-<meta name="keywords" content="AI learning platform, AI study assistant, AI tutor, AI quiz generator, AI flashcards, personalized learning, student productivity, study planner, Mentora AI, JEE preparation, NEET preparation, Board exam preparation" />
+<meta name="keywords" content="AI learning platform, AI study assistant, AI tutor, AI quiz generator, AI flashcards, personalized learning, student productivity, study planner, Aquila AI, JEE preparation, NEET preparation, Board exam preparation" />
 
-<!-- SEO IMPROVEMENT -->
 <meta name="robots" content="index, follow" />
-<meta name="author" content="Mentora AI" />
+<meta name="author" content="Aquila AI" />
 <meta http-equiv="content-language" content="en" />
 
-<!-- SEO IMPROVEMENT: Canonical URL (update to actual domain) -->
-<link rel="canonical" href="https://mentora-ai.vercel.app/" />
-
-<!-- SEO IMPROVEMENT: Sitemap & robots references -->
+<link rel="canonical" href="https://aquila-ai.vercel.app/" />
 <link rel="sitemap" type="application/xml" href="/sitemap.xml" />
 
-<!-- SEO IMPROVEMENT: Open Graph tags -->
-<meta property="og:title" content="Mentora AI – AI Study Assistant & Tutor for JEE, NEET, Boards" />
+<meta property="og:title" content="Aquila AI – AI Study Assistant & Tutor for JEE, NEET, Boards" />
 <meta property="og:description" content="AI-powered study companion with quiz generators, flashcards, study planner and personalized learning for competitive exam aspirants." />
 <meta property="og:type" content="website" />
-<meta property="og:image" content="https://mentora-ai.vercel.app/og-image.png" />
-<meta property="og:url" content="https://mentora-ai.vercel.app/" />
-<meta property="og:site_name" content="Mentora AI" />
+<meta property="og:image" content="https://aquila-ai.vercel.app/og-image.png" />
+<meta property="og:url" content="https://aquila-ai.vercel.app/" />
+<meta property="og:site_name" content="Aquila AI" />
 
-<!-- SEO IMPROVEMENT: Twitter Card tags -->
 <meta name="twitter:card" content="summary_large_image" />
-<meta name="twitter:title" content="Mentora AI – AI Study Assistant & Tutor for JEE, NEET, Boards" />
-<meta name="twitter:description" content="AI tutor, AI quiz generator & flashcards for personalized learning. Build your study plan with Mentora AI." />
-<meta name="twitter:image" content="https://mentora-ai.vercel.app/og-image.png" />
+<meta name="twitter:title" content="Aquila AI – AI Study Assistant & Tutor for JEE, NEET, Boards" />
+<meta name="twitter:description" content="AI tutor, AI quiz generator & flashcards for personalized learning. Build your study plan with Aquila AI." />
+<meta name="twitter:image" content="https://aquila-ai.vercel.app/og-image.png" />
 
-<!-- SEO IMPROVEMENT: Preconnect to font origins for performance -->
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 
 <style>
-  /* ============================================================
-     MENTORA AI — Design tokens
-     Palette: --bg #07090d, --surface #0d1117, --ink #eef2f6,
-              --muted #8b97a8, --cyan #00d4ff, --violet #a78bfa,
-              --line rgba(255,255,255,0.07)
-     Type: Display = "Sora" (geometric, confident, used for headings
-            & the wordmark — distinct from generic Inter/Poppins),
-           Body = "Inter" (neutral, highly legible at small sizes),
-           Mono/Utility = "JetBrains Mono" (badges, eyebrows, code-ish
-            labels — nods to the "study/exam" precision angle)
-     Signature: a live "neural syllabus" constellation in the hero —
-       nodes (subjects: Physics/Chem/Math/Bio) connected by animated
-       lines that pulse, visually mapping the platform's actual job:
-       turning a sprawling syllabus into a connected, navigable plan.
-     ============================================================ */
-
   @import url('https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
-
   html { scroll-behavior: smooth; }
 
   body, .nb-root {
@@ -96,7 +69,6 @@
     --violet: #a78bfa;
     --cyan-glow: rgba(0,212,255,0.35);
     --violet-glow: rgba(167,139,250,0.30);
-
     --nb-bg: rgba(8, 10, 16, 0.78);
     --nb-border: rgba(255,255,255,0.07);
     --nb-accent: #00d4ff;
@@ -124,7 +96,6 @@
     overflow-x: hidden;
   }
 
-  /* ── Ambient background layer (fixed, behind everything) ── */
   .ambient {
     position: fixed;
     inset: 0;
@@ -148,7 +119,6 @@
     opacity: 0.6;
   }
 
-  /* ── NAV ── */
   .navbar {
     width: 100%;
     max-width: 1280px;
@@ -226,9 +196,7 @@
     transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
   }
 
-  .logo:hover .logo-icon svg {
-    transform: rotate(90deg) scale(1.08);
-  }
+  .logo:hover .logo-icon svg { transform: rotate(90deg) scale(1.08); }
 
   .logo-text {
     font-family: 'Sora', sans-serif;
@@ -244,63 +212,6 @@
   @keyframes fadeUp {
     from { opacity: 0; transform: translateY(10px); }
     to   { opacity: 1; transform: translateY(0); }
-  }
-
-  .dropdown {
-    position: absolute;
-    top: calc(100% + 12px);
-    left: 50%;
-    transform: translateX(-50%) translateY(-8px) scale(0.96);
-    opacity: 0;
-    pointer-events: none;
-    min-width: 200px;
-    background: rgba(13, 17, 23, 0.97);
-    border: 1px solid rgba(255,255,255,0.08);
-    border-radius: 12px;
-    padding: 8px;
-    backdrop-filter: blur(24px);
-    box-shadow: 0 20px 60px rgba(0,0,0,0.6), 0 0 0 1px rgba(0,212,255,0.05);
-    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-    z-index: 100;
-  }
-
-  .has-dropdown:hover .dropdown {
-    opacity: 1;
-    pointer-events: all;
-    transform: translateX(-50%) translateY(0) scale(1);
-  }
-
-  .dropdown a {
-    display: flex !important;
-    align-items: center;
-    gap: 10px;
-    padding: 9px 12px !important;
-    border-radius: 8px;
-    font-size: 13px;
-    color: var(--muted);
-    border: 1px solid transparent !important;
-    transition: all 0.18s;
-  }
-
-  .dropdown a:hover {
-    color: #fff;
-    background: rgba(0,212,255,0.08) !important;
-    border-color: rgba(0,212,255,0.15) !important;
-    transform: translateX(4px);
-  }
-
-  .dropdown-dot {
-    width: 6px; height: 6px;
-    border-radius: 50%;
-    background: var(--cyan);
-    opacity: 0.5;
-    flex-shrink: 0;
-    transition: opacity 0.18s, box-shadow 0.18s;
-  }
-
-  .dropdown a:hover .dropdown-dot {
-    opacity: 1;
-    box-shadow: 0 0 8px var(--cyan);
   }
 
   .nav-actions {
@@ -383,18 +294,12 @@
     z-index: 1;
   }
 
-  .btn-cta:hover::after {
-    left: 140%;
-  }
-
+  .btn-cta:hover::after { left: 140%; }
   .btn-cta:hover {
     transform: scale(1.04);
     box-shadow: 0 0 28px rgba(0,212,255,0.5), 0 4px 16px rgba(0,212,255,0.3);
   }
-
-  .btn-cta:active {
-    transform: scale(0.98);
-  }
+  .btn-cta:active { transform: scale(0.98); }
 
   .search-btn {
     width: 38px; height: 38px;
@@ -414,7 +319,6 @@
     box-shadow: 0 0 16px rgba(0,212,255,0.15);
   }
 
-  /* ── HERO ── */
   .preview-area {
     width: 100%;
     max-width: 1280px;
@@ -439,8 +343,7 @@
     pointer-events: none;
   }
 
-  .grid-bg { display: none; } /* superseded by .ambient::after */
-
+  .grid-bg { display: none; }
   .hero-copy { position: relative; z-index: 2; }
 
   .badge {
@@ -570,7 +473,6 @@
     transform: translateY(-2px);
   }
 
-  /* Trust row replaces old absolute label-note */
   .trust-row {
     display: flex;
     align-items: center;
@@ -578,9 +480,7 @@
     animation: fadeUp 0.7s 0.98s both;
   }
 
-  .trust-avatars {
-    display: flex;
-  }
+  .trust-avatars { display: flex; }
 
   .trust-avatars span {
     width: 30px; height: 30px;
@@ -607,12 +507,8 @@
     line-height: 1.5;
   }
 
-  .label-note strong {
-    color: var(--text);
-    font-weight: 600;
-  }
+  .label-note strong { color: var(--text); font-weight: 600; }
 
-  /* ── Hero visual: Neural Syllabus Constellation (signature element) ── */
   .hero-visual {
     position: relative;
     z-index: 2;
@@ -640,16 +536,7 @@
     animation: dashFlow 14s linear infinite;
   }
 
-  @keyframes dashFlow {
-    to { stroke-dashoffset: -280; }
-  }
-
-  .const-pulse {
-    fill: none;
-    stroke: var(--cyan);
-    stroke-width: 2;
-    opacity: 0;
-  }
+  @keyframes dashFlow { to { stroke-dashoffset: -280; } }
 
   .const-node {
     transform-box: fill-box;
@@ -673,10 +560,7 @@
     stroke-width: 1;
   }
 
-  .const-node circle.node-glow {
-    fill: var(--cyan);
-    opacity: 0.18;
-  }
+  .const-node circle.node-glow { fill: var(--cyan); opacity: 0.18; }
 
   .const-node text {
     font-family: 'JetBrains Mono', monospace;
@@ -697,7 +581,6 @@
     fill: #fff;
   }
 
-  /* ── PROOF / LOGO STRIP ── */
   .proof-strip {
     width: 100%;
     max-width: 1280px;
@@ -725,11 +608,7 @@
     white-space: nowrap;
   }
 
-  .proof-tags {
-    display: flex;
-    gap: 12px;
-    flex-wrap: wrap;
-  }
+  .proof-tags { display: flex; gap: 12px; flex-wrap: wrap; }
 
   .proof-tag {
     font-family: 'Sora', sans-serif;
@@ -749,7 +628,6 @@
     transform: translateY(-2px);
   }
 
-  /* ── FEATURES SECTION ── */
   .section {
     width: 100%;
     max-width: 1280px;
@@ -776,11 +654,7 @@
     margin-bottom: 16px;
   }
 
-  .eyebrow::before {
-    content: '';
-    width: 18px; height: 1px;
-    background: var(--violet);
-  }
+  .eyebrow::before { content: ''; width: 18px; height: 1px; background: var(--violet); }
 
   .section-title {
     font-family: 'Sora', sans-serif;
@@ -792,11 +666,7 @@
     margin-bottom: 14px;
   }
 
-  .section-sub {
-    font-size: 15.5px;
-    color: var(--muted);
-    line-height: 1.7;
-  }
+  .section-sub { font-size: 15.5px; color: var(--muted); line-height: 1.7; }
 
   .reveal {
     opacity: 0;
@@ -804,10 +674,7 @@
     transition: opacity 0.7s cubic-bezier(0.16,1,0.3,1), transform 0.7s cubic-bezier(0.16,1,0.3,1);
   }
 
-  .reveal.is-visible {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  .reveal.is-visible { opacity: 1; transform: translateY(0); }
 
   .feature-grid {
     display: grid;
@@ -840,12 +707,7 @@
     pointer-events: none;
   }
 
-  .feature-card:hover {
-    transform: translateY(-4px);
-    border-color: transparent;
-    box-shadow: 0 16px 40px rgba(0,0,0,0.35);
-  }
-
+  .feature-card:hover { transform: translateY(-4px); border-color: transparent; box-shadow: 0 16px 40px rgba(0,0,0,0.35); }
   .feature-card:hover::before { opacity: 1; }
 
   .feature-icon {
@@ -878,13 +740,8 @@
     letter-spacing: -0.01em;
   }
 
-  .feature-card p {
-    font-size: 14px;
-    line-height: 1.7;
-    color: var(--muted);
-  }
+  .feature-card p { font-size: 14px; line-height: 1.7; color: var(--muted); }
 
-  /* ── HOW IT WORKS / STEPS ── */
   .steps {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -895,12 +752,7 @@
     background: var(--surface);
   }
 
-  .step {
-    padding: 36px 32px;
-    border-right: 1px solid var(--line);
-    position: relative;
-  }
-
+  .step { padding: 36px 32px; border-right: 1px solid var(--line); position: relative; }
   .step:last-child { border-right: none; }
 
   .step-num {
@@ -921,13 +773,8 @@
     letter-spacing: -0.01em;
   }
 
-  .step p {
-    font-size: 14px;
-    color: var(--muted);
-    line-height: 1.7;
-  }
+  .step p { font-size: 14px; color: var(--muted); line-height: 1.7; }
 
-  /* ── CTA BANNER ── */
   .cta-banner {
     width: 100%;
     max-width: 1280px;
@@ -967,12 +814,8 @@
     line-height: 1.7;
   }
 
-  .cta-banner .hero-ctas {
-    justify-content: center;
-    margin-bottom: 0;
-  }
+  .cta-banner .hero-ctas { justify-content: center; margin-bottom: 0; }
 
-  /* ── FOOTER ── */
   .site-footer {
     width: 100%;
     max-width: 1280px;
@@ -1030,7 +873,16 @@
     color: var(--muted-2);
   }
 
-  /* ── Responsive ── */
+  .sr-only {
+    position: absolute;
+    width: 1px; height: 1px;
+    padding: 0; margin: -1px;
+    overflow: hidden;
+    clip: rect(0,0,0,0);
+    white-space: nowrap;
+    border: 0;
+  }
+
   @media (max-width: 980px) {
     .preview-area { grid-template-columns: 1fr; text-align: center; padding-top: 64px; }
     .hero-copy { display: flex; flex-direction: column; align-items: center; }
@@ -1046,70 +898,58 @@
 
   @media (max-width: 640px) {
     .navbar { margin: 10px 12px 0; padding: 0 12px; height: 60px; }
-
-    /* SEO/MOBILE IMPROVEMENT: keep Get Started usable, hide only text on Login */
     .nav-actions { gap: 8px; }
     .nav-actions .btn-ghost span { display: none; }
     .nav-actions .btn-ghost a { padding: 8px 10px; }
     .nav-actions .btn-cta a { padding: 8px 14px; font-size: 12.5px; }
     .nav-actions .btn-cta span { display: none; }
-
     .preview-area { padding: 40px 18px 48px; gap: 32px; }
     .hero-title { font-size: clamp(28px, 9vw, 40px); }
     .hero-sub { font-size: 15px; padding: 0 4px; }
-
     .hero-ctas { flex-direction: column; align-items: stretch; gap: 12px; }
-    .hero-ctas .cta-primary,
-    .hero-ctas .cta-secondary { width: 100%; }
-
+    .hero-ctas .cta-primary, .hero-ctas .cta-secondary { width: 100%; }
     .trust-row { flex-direction: column; align-items: center; gap: 10px; text-align: center; }
-
     .hero-visual { max-width: 280px; }
-
     .feature-grid { grid-template-columns: 1fr; }
     .section { padding: 56px 18px; }
     .section-head { margin-bottom: 36px; }
-
     .proof-strip { padding: 0 18px 40px; }
     .proof-strip-inner { flex-direction: column; align-items: flex-start; gap: 14px; }
     .proof-tags { gap: 8px; }
     .proof-tag { font-size: 12.5px; padding: 7px 14px; }
-
     .cta-banner { padding: 0 18px; margin-bottom: 56px; }
     .cta-banner-inner { padding: 40px 20px; }
     .cta-banner .hero-ctas { width: 100%; }
-
     .site-footer { padding: 36px 18px 48px; }
     .footer-grid { grid-template-columns: 1fr; gap: 28px; }
     .footer-bottom { flex-direction: column; align-items: flex-start; text-align: left; }
   }
 </style>
 
-<!-- SEO IMPROVEMENT: JSON-LD structured data for Organization, WebSite, SoftwareApplication, FAQPage -->
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
   "@graph": [
     {
       "@type": "Organization",
-      "name": "Mentora AI",
-      "url": "https://mentora-ai.vercel.app/",
-      "logo": "https://mentora-ai.vercel.app/logo.png",
-      "description": "Mentora AI is an AI-powered study companion platform for JEE, NEET, and Board exam aspirants."
+      "name": "Aquila AI",
+      "url": "https://aquila-ai.vercel.app/",
+      "logo": "https://aquila-ai.vercel.app/logo.png",
+      "description": "Aquila AI is an AI-powered study companion platform for JEE, NEET, and Board exam aspirants."
     },
     {
       "@type": "WebSite",
-      "name": "Mentora AI",
-      "url": "https://mentora-ai.vercel.app/",
+      "name": "Aquila AI",
+      "url": "https://aquila-ai.vercel.app/",
       "potentialAction": {
         "@type": "SearchAction",
-        "target": "https://mentora-ai.vercel.app/search?q={search_term_string}",
+        "target": "https://aquila-ai.vercel.app/search?q={search_term_string}",
         "query-input": "required name=search_term_string"
       }
     },
     {
       "@type": "SoftwareApplication",
-      "name": "Mentora AI",
+      "name": "Aquila AI",
       "applicationCategory": "EducationalApplication",
       "operatingSystem": "Web",
       "description": "AI study assistant offering AI tutor support, AI quiz generator, AI flashcards, study planner, and personalized learning for JEE, NEET, and Board exam preparation.",
@@ -1118,33 +958,33 @@
         "price": "0",
         "priceCurrency": "INR"
       },
-      "url": "https://mentora-ai.vercel.app/"
+      "url": "https://aquila-ai.vercel.app/"
     },
     {
       "@type": "FAQPage",
       "mainEntity": [
         {
           "@type": "Question",
-          "name": "What is Mentora AI?",
+          "name": "What is Aquila AI?",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "Mentora AI is an AI-powered study companion that helps students prepare for JEE, NEET, and Board exams with personalized learning, AI tutoring, quiz generation, and flashcards."
+            "text": "Aquila AI is an AI-powered study companion that helps students prepare for JEE, NEET, and Board exams with personalized learning, AI tutoring, quiz generation, and flashcards."
           }
         },
         {
           "@type": "Question",
-          "name": "Does Mentora AI create a study planner?",
+          "name": "Does Aquila AI create a study planner?",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "Yes, Mentora AI generates a personalized study planner based on your syllabus, exam date, and weak areas, and adapts it as you progress."
+            "text": "Yes, Aquila AI generates a personalized study planner based on your syllabus, exam date, and weak areas, and adapts it as you progress."
           }
         },
         {
           "@type": "Question",
-          "name": "Is Mentora AI free to use?",
+          "name": "Is Aquila AI free to use?",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "Mentora AI offers free access to its core AI tutor, study planner, and quiz generator features for students."
+            "text": "Aquila AI offers free access to its core AI tutor, study planner, and quiz generator features for students."
           }
         }
       ]
@@ -1159,12 +999,11 @@
 
 <div class="nb-root">
 
-  <!-- SEO IMPROVEMENT: semantic <header> wrapping nav -->
   <header>
     <nav class="navbar" aria-label="Main navigation">
-      <a class="logo" href="/" aria-label="Mentora AI home">
+      <a class="logo" href="/" aria-label="Aquila AI home">
         <div class="logo-icon">
-          <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Mentora AI logo">
+          <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Aquila AI logo">
             <rect x="2" y="2" width="12" height="12" rx="2" fill="#00d4ff" opacity="0.9"/>
             <rect x="18" y="2" width="12" height="12" rx="2" fill="#a78bfa" opacity="0.9"/>
             <rect x="2" y="18" width="12" height="12" rx="2" fill="#a78bfa" opacity="0.9"/>
@@ -1172,24 +1011,20 @@
             <rect x="10" y="10" width="12" height="12" rx="2" fill="rgba(0,212,255,0.25)" stroke="#00d4ff" stroke-width="0.8"/>
           </svg>
         </div>
-        <span class="logo-text">MENTORA AI</span>
+        <span class="logo-text">AQUILA AI</span>
       </a>
 
       <div class="nav-actions">
-        <button class="search-btn" aria-label="Search Mentora AI">
+        <button class="search-btn" aria-label="Search Aquila AI">
           <i class="ti ti-search" aria-hidden="true"></i>
         </button>
-
-        <!-- FIX: anchor now wraps the full clickable button area -->
-        <div class="btn-ghost" aria-label="Login to Mentora AI">
+        <div class="btn-ghost" aria-label="Login to Aquila AI">
           <a href="login.html">
             <i class="ti ti-user" aria-hidden="true"></i>
             <span>Log in</span>
           </a>
         </div>
-
-        <!-- FIX: anchor now wraps the full clickable button area, href works on all CTAs -->
-        <div class="btn-cta" aria-label="Get started with Mentora AI for free">
+        <div class="btn-cta" aria-label="Get started with Aquila AI for free">
           <a href="signup.html">
             <i class="ti ti-bolt" aria-hidden="true"></i>
             <span>Get Started</span>
@@ -1199,7 +1034,6 @@
     </nav>
   </header>
 
-  <!-- SEO IMPROVEMENT: semantic <main> + <section> wrapping hero -->
   <main>
     <section class="preview-area" aria-labelledby="hero-heading">
       <div class="grid-bg" aria-hidden="true"></div>
@@ -1210,26 +1044,22 @@
           Powered by advanced AI
         </div>
 
-        <!-- SEO IMPROVEMENT: H1 rewritten with target keywords, kept visual styling -->
         <h1 class="hero-title" id="hero-heading">
           Your AI study assistant<br>for <span>smarter learning</span>
         </h1>
 
-        <!-- SEO IMPROVEMENT: descriptive sub-copy with keyword coverage -->
         <p class="hero-sub">
-          Mentora AI is your personal AI tutor and study planner. It understands your full syllabus, generates AI quizzes and flashcards, tracks your weak areas, and helps you study like a topper for JEE, NEET, and Board Exams.
+          Aquila AI is your personal AI tutor and study planner. It understands your full syllabus, generates AI quizzes and flashcards, tracks your weak areas, and helps you study like a topper for JEE, NEET, and Board Exams.
         </p>
 
         <div class="hero-ctas">
-          <!-- FIX: Start for Free now links to signup -->
-          <a class="cta-primary" href="signup.html" aria-label="Start using Mentora AI for free">Start for Free</a>
-          <a class="cta-secondary" href="#" aria-label="Watch Mentora AI demo video">
+          <a class="cta-primary" href="signup.html" aria-label="Start using Aquila AI for free">Start for Free</a>
+          <a class="cta-secondary" href="#" aria-label="Watch Aquila AI demo video">
             Watch Demo
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
           </a>
         </div>
 
-        <!-- SEO IMPROVEMENT: hidden h2 retained for screen readers, plus visible context -->
         <h2 class="sr-only">AI-powered personalized learning platform for competitive exam students</h2>
 
         <div class="trust-row">
@@ -1238,11 +1068,10 @@
             <span>NE</span>
             <span>12</span>
           </div>
-          <span class="label-note">Built for <strong>JEE</strong>, <strong>NEET</strong> &amp; <strong>Board</strong> aspirants — join students learning smarter with Mentora AI.</span>
+          <span class="label-note">Built for <strong>JEE</strong>, <strong>NEET</strong> &amp; <strong>Board</strong> aspirants — join students learning smarter with Aquila AI.</span>
         </div>
       </div>
 
-      <!-- Signature element: Neural Syllabus Constellation -->
       <div class="hero-visual" aria-hidden="true">
         <div class="constellation-wrap">
           <svg viewBox="0 0 480 480" xmlns="http://www.w3.org/2000/svg">
@@ -1253,21 +1082,18 @@
               </linearGradient>
             </defs>
 
-            <!-- connecting lines from center to each subject node -->
             <path class="const-line" d="M240,240 C200,180 150,140 100,100" />
             <path class="const-line" d="M240,240 C300,180 350,140 400,90" />
             <path class="const-line" d="M240,240 C180,300 140,350 90,400" />
             <path class="const-line" d="M240,240 C300,300 350,350 410,390" />
             <path class="const-line" d="M240,240 C240,180 240,120 240,60" />
 
-            <!-- center node: Mentora -->
             <g class="const-node const-center" transform="translate(240,240)">
               <circle class="node-glow" r="46"/>
               <circle class="node-bg" r="34"/>
-              <text y="1">Mentora</text>
+              <text y="1">Aquila</text>
             </g>
 
-            <!-- subject nodes -->
             <g class="const-node" transform="translate(100,100)">
               <circle class="node-glow" r="34"/>
               <circle class="node-bg" r="26"/>
@@ -1298,7 +1124,6 @@
       </div>
     </section>
 
-    <!-- Proof / exam strip -->
     <section class="proof-strip" aria-label="Exams supported">
       <div class="proof-strip-inner">
         <span class="proof-label">Trusted for exam prep across</span>
@@ -1311,12 +1136,11 @@
       </div>
     </section>
 
-    <!-- Features -->
     <section class="section" aria-labelledby="features-heading">
       <div class="section-head reveal">
         <span class="eyebrow">Core features</span>
         <h2 class="section-title" id="features-heading">Everything a topper's toolkit needs, in one place</h2>
-        <p class="section-sub">Mentora AI brings together tutoring, planning, practice, and progress tracking — so you spend less time organising and more time studying.</p>
+        <p class="section-sub">Aquila AI brings together tutoring, planning, practice, and progress tracking — so you spend less time organising and more time studying.</p>
       </div>
 
       <div class="feature-grid">
@@ -1333,7 +1157,7 @@
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11H3v10h6V11Z"/><path d="M15 4H9v17h6V4Z"/><path d="M21 8h-6v13h6V8Z"/></svg>
           </div>
           <h3>Smart Study Planner</h3>
-          <p>Tell Mentora your exam date and weak topics — it builds a day-by-day plan and reshuffles automatically as your progress changes.</p>
+          <p>Tell Aquila your exam date and weak topics — it builds a day-by-day plan and reshuffles automatically as your progress changes.</p>
         </div>
 
         <div class="feature-card reveal">
@@ -1370,18 +1194,17 @@
       </div>
     </section>
 
-    <!-- How it works -->
     <section class="section" aria-labelledby="how-heading" style="padding-top:0;">
       <div class="section-head reveal">
         <span class="eyebrow">How it works</span>
         <h2 class="section-title" id="how-heading">From syllabus to score, in three steps</h2>
-        <p class="section-sub">Mentora AI maps your exam, your timeline, and your habits into a single adaptive study system.</p>
+        <p class="section-sub">Aquila AI maps your exam, your timeline, and your habits into a single adaptive study system.</p>
       </div>
 
       <div class="steps reveal">
         <div class="step">
           <span class="step-num">01 / SET UP</span>
-          <h3>Tell Mentora your exam</h3>
+          <h3>Tell Aquila your exam</h3>
           <p>Pick JEE, NEET, or your Board, set your exam date, and mark the topics you find toughest.</p>
         </div>
         <div class="step">
@@ -1392,32 +1215,29 @@
         <div class="step">
           <span class="step-num">03 / IMPROVE</span>
           <h3>Track and adapt</h3>
-          <p>Mentora watches your quiz scores and study streaks, then adjusts your plan to focus where it matters most.</p>
+          <p>Aquila watches your quiz scores and study streaks, then adjusts your plan to focus where it matters most.</p>
         </div>
       </div>
     </section>
 
-    <!-- CTA banner -->
     <section class="cta-banner reveal" aria-labelledby="cta-heading">
       <div class="cta-banner-inner">
         <h2 id="cta-heading">Start studying smarter today</h2>
-        <p>Create your free Mentora AI account and get a personalized study plan in minutes.</p>
+        <p>Create your free Aquila AI account and get a personalized study plan in minutes.</p>
         <div class="hero-ctas">
-          <!-- FIX: links to signup -->
-          <a class="cta-primary" href="signup.html" aria-label="Sign up for Mentora AI for free">Start for Free</a>
-          <a class="cta-secondary" href="login.html" aria-label="Login to your Mentora AI account">Log in</a>
+          <a class="cta-primary" href="signup.html" aria-label="Sign up for Aquila AI for free">Start for Free</a>
+          <a class="cta-secondary" href="login.html" aria-label="Login to your Aquila AI account">Log in</a>
         </div>
       </div>
     </section>
   </main>
 
-  <!-- Footer -->
   <footer class="site-footer">
     <div class="footer-grid">
       <div class="footer-brand">
-        <a class="logo" href="/" aria-label="Mentora AI home">
+        <a class="logo" href="/" aria-label="Aquila AI home">
           <div class="logo-icon">
-            <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Mentora AI logo">
+            <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Aquila AI logo">
               <rect x="2" y="2" width="12" height="12" rx="2" fill="#00d4ff" opacity="0.9"/>
               <rect x="18" y="2" width="12" height="12" rx="2" fill="#a78bfa" opacity="0.9"/>
               <rect x="2" y="18" width="12" height="12" rx="2" fill="#a78bfa" opacity="0.9"/>
@@ -1425,7 +1245,7 @@
               <rect x="10" y="10" width="12" height="12" rx="2" fill="rgba(0,212,255,0.25)" stroke="#00d4ff" stroke-width="0.8"/>
             </svg>
           </div>
-          <span class="logo-text">MENTORA AI</span>
+          <span class="logo-text">AQUILA AI</span>
         </a>
         <p>An AI-powered study companion for JEE, NEET, and Board exam aspirants — personalized plans, AI tutoring, quizzes, and flashcards in one place.</p>
       </div>
@@ -1452,26 +1272,12 @@
       </div>
     </div>
     <div class="footer-bottom">
-      <span>&copy; 2026 Mentora AI. All rights reserved.</span>
+      <span>&copy; 2026 Aquila AI. All rights reserved.</span>
       <span>AI study assistant, AI tutor, AI quiz generator, AI flashcards, and study planner for JEE, NEET, and Board exam students.</span>
     </div>
   </footer>
 </div>
 
-<!-- SEO IMPROVEMENT: visually-hidden utility class for sr-only content -->
-<style>
-.sr-only {
-  position: absolute;
-  width: 1px; height: 1px;
-  padding: 0; margin: -1px;
-  overflow: hidden;
-  clip: rect(0,0,0,0);
-  white-space: nowrap;
-  border: 0;
-}
-</style>
-
-<!-- Scroll-reveal animation script (no logic touched, purely visual) -->
 <script>
 (function () {
   if (!('IntersectionObserver' in window)) {
@@ -1493,15 +1299,12 @@
     io.observe(el);
   });
 
-  // Stagger feature cards
   document.querySelectorAll('.feature-grid .feature-card').forEach(function (el, i) {
     el.style.transitionDelay = (i * 70) + 'ms';
   });
 })();
 </script>
 
-<!-- FIX: Vercel Analytics & Speed Insights via CDN (esm.sh) instead of bare module
-     specifier "@vercel/speed-insights" which the browser cannot resolve. -->
 <script type="module">
   import { inject } from 'https://esm.sh/@vercel/analytics';
   inject();
