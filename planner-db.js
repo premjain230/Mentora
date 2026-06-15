@@ -1,7 +1,5 @@
 // firebase/planner-db.js
 // All Firestore read/write operations for the Study Planner feature.
-// Import { auth, db } from this same firebase/ directory.
-// Uses Firebase 10.x modular SDK — matches existing firebase-config.js.
 
 import {
   doc,
@@ -10,7 +8,6 @@ import {
   getDoc,
   getDocs,
   updateDoc,
-  deleteDoc,
   query,
   where,
   orderBy,
@@ -18,6 +15,7 @@ import {
   serverTimestamp,
   increment,
   writeBatch,
+  deleteDoc,
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 import { db, auth } from "./firebase-config.js";
@@ -29,7 +27,7 @@ function requireAuth() {
   return user;
 }
 
-// ── Sanitise a plain string (XSS prevention before Firestore) ─
+// ── Sanitise a plain string ───────────────────────────────────
 function clean(str, max = 200) {
   if (typeof str !== "string") return "";
   return str.replace(/<[^>]*>/g, "").trim().slice(0, max);
@@ -39,17 +37,13 @@ function clean(str, max = 200) {
 // USER PROFILE
 // ══════════════════════════════════════════════════════════════
 
-/**
- * Save or update the student's exam profile.
- * Stored at users/{uid} — merged so existing fields are preserved.
- */
 export async function saveExamProfile(profile) {
   const user = requireAuth();
 
   const safe = {
     uid: user.uid,
     name: clean(profile.name, 100),
-    examType: profile.examType, // validated server-side on plan generation
+    examType: profile.examType,
     targetScore: clean(profile.targetScore || "", 100),
     subjects: (profile.subjects || []).slice(0, 10).map((s) => clean(s, 80)),
     dailyHours: Math.min(18, Math.max(1, Number(profile.dailyHours) || 4)),
@@ -64,9 +58,6 @@ export async function saveExamProfile(profile) {
   return safe;
 }
 
-/**
- * Load the student's exam profile.
- */
 export async function getExamProfile() {
   const user = requireAuth();
   const snap = await getDoc(doc(db, "users", user.uid));
@@ -77,10 +68,6 @@ export async function getExamProfile() {
 // STUDY PLANS
 // ══════════════════════════════════════════════════════════════
 
-/**
- * Save an AI-generated plan returned by /api/generate-plan.
- * The raw plan JSON is stored alongside metadata.
- */
 export async function saveStudyPlan(planData) {
   const user = requireAuth();
   const planRef = doc(collection(db, "studyPlans"));
@@ -96,7 +83,7 @@ export async function saveStudyPlan(planData) {
     subjectAllocation: planData.subjectAllocation || {},
     revisionSchedule: planData.revisionSchedule || {},
     milestones: planData.milestones || [],
-    status: "active", // active | completed | archived
+    status: "active",
     createdAt: serverTimestamp(),
     updatedAt: serverTimestamp(),
   };
@@ -105,11 +92,9 @@ export async function saveStudyPlan(planData) {
   return record;
 }
 
-/**
- * Get the user's most recent active plan.
- */
 export async function getActivePlan() {
   const user = requireAuth();
+
   const q = query(
     collection(db, "studyPlans"),
     where("userId", "==", user.uid),
@@ -119,33 +104,28 @@ export async function getActivePlan() {
   );
 
   const snap = await getDocs(q);
-  if (snap.empty) return null;
-  return snap.docs[0].data();
+  return snap.empty ? null : snap.docs[0].data();
 }
 
-/**
- * Archive a plan (soft-delete).
- */
 export async function archivePlan(planId) {
   const user = requireAuth();
   const ref = doc(db, "studyPlans", planId);
-  const snap = await getDoc(ref);
 
+  const snap = await getDoc(ref);
   if (!snap.exists() || snap.data().userId !== user.uid) {
     throw new Error("Plan not found.");
   }
 
-  await updateDoc(ref, { status: "archived", updatedAt: serverTimestamp() });
+  await updateDoc(ref, {
+    status: "archived",
+    updatedAt: serverTimestamp(),
+  });
 }
 
 // ══════════════════════════════════════════════════════════════
 // TASKS
 // ══════════════════════════════════════════════════════════════
 
-/**
- * Bulk-create tasks from a generated weekly plan.
- * Uses a batch write — all or nothing.
- */
 export async function createTasksFromPlan(planId, weeklyPlan) {
   const user = requireAuth();
   const batch = writeBatch(db);
@@ -155,6 +135,7 @@ export async function createTasksFromPlan(planId, weeklyPlan) {
     for (const day of week.days || []) {
       for (const session of day.sessions || []) {
         const ref = doc(collection(db, "tasks"));
+
         const task = {
           taskId: ref.id,
           planId,
@@ -163,18 +144,22 @@ export async function createTasksFromPlan(planId, weeklyPlan) {
           day: clean(day.day, 20),
           subject: clean(session.subject, 100),
           topic: clean(session.topic, 200),
-          durationMinutes: Math.min(480, Math.max(5, Number(session.durationMinutes) || 60)),
+          durationMinutes: Math.min(
+            480,
+            Math.max(5, Number(session.durationMinutes) || 60)
+          ),
           type: ["learn", "revise", "practice", "test"].includes(session.type)
             ? session.type
             : "learn",
           priority: ["high", "medium", "low"].includes(session.priority)
             ? session.priority
             : "medium",
-          status: "pending", // pending | completed | skipped | rescheduled
+          status: "pending",
           scheduledDate: day.date || null,
           completedAt: null,
           createdAt: serverTimestamp(),
         };
+
         batch.set(ref, task);
         tasks.push(task);
       }
@@ -185,27 +170,24 @@ export async function createTasksFromPlan(planId, weeklyPlan) {
   return tasks;
 }
 
-/**
- * Get all tasks for a plan, ordered by week then creation.
- */
 export async function getTasksByPlan(planId) {
   const user = requireAuth();
+
   const q = query(
     collection(db, "tasks"),
     where("userId", "==", user.uid),
     where("planId", "==", planId),
     orderBy("createdAt", "asc")
   );
+
   const snap = await getDocs(q);
   return snap.docs.map((d) => d.data());
 }
 
-/**
- * Get today's pending tasks.
- */
 export async function getTodaysTasks(planId) {
   const user = requireAuth();
   const today = new Date().toISOString().split("T")[0];
+
   const q = query(
     collection(db, "tasks"),
     where("userId", "==", user.uid),
@@ -213,18 +195,18 @@ export async function getTodaysTasks(planId) {
     where("scheduledDate", "==", today),
     orderBy("createdAt", "asc")
   );
+
   const snap = await getDocs(q);
   return snap.docs.map((d) => d.data());
 }
 
-/**
- * Update task status: complete / skip / reschedule.
- */
 export async function updateTaskStatus(taskId, status, newDate = null) {
   const user = requireAuth();
 
   const validStatuses = ["completed", "skipped", "rescheduled", "pending"];
-  if (!validStatuses.includes(status)) throw new Error("Invalid status.");
+  if (!validStatuses.includes(status)) {
+    throw new Error("Invalid status.");
+  }
 
   const ref = doc(db, "tasks", taskId);
   const snap = await getDoc(ref);
@@ -243,20 +225,15 @@ export async function updateTaskStatus(taskId, status, newDate = null) {
 
   await updateDoc(ref, update);
 
-  // Update progress counters
   await _updateProgressCounters(user.uid, snap.data(), status);
 
   return { taskId, status };
 }
 
 // ══════════════════════════════════════════════════════════════
-// PROGRESS  (written via client for non-sensitive stats)
-// Sensitive stats like total XP should be backend-only.
+// PROGRESS
 // ══════════════════════════════════════════════════════════════
 
-/**
- * Internal: update progress document when a task status changes.
- */
 async function _updateProgressCounters(uid, task, newStatus) {
   const ref = doc(db, "progress", uid);
 
@@ -274,30 +251,26 @@ async function _updateProgressCounters(uid, task, newStatus) {
     updates.tasksSkipped = increment(1);
   }
 
-  // Upsert — create if doesn't exist yet
   await setDoc(ref, updates, { merge: true });
 }
 
-/**
- * Get progress document for the current user.
- */
 export async function getProgress() {
   const user = requireAuth();
   const snap = await getDoc(doc(db, "progress", user.uid));
-  return snap.exists() ? snap.data() : { tasksCompleted: 0, totalMinutesStudied: 0, subjectHours: {} };
+
+  return snap.exists()
+    ? snap.data()
+    : { tasksCompleted: 0, totalMinutesStudied: 0, subjectHours: {} };
 }
 
-/**
- * Update study streak (call once per day when first task is completed).
- */
 export async function updateStreak() {
   const user = requireAuth();
   const ref = doc(db, "progress", user.uid);
   const snap = await getDoc(ref);
+
   const data = snap.exists() ? snap.data() : {};
 
   const today = new Date().toISOString().split("T")[0];
-  const lastStudied = data.lastStudiedDate || "";
 
   const yesterday = new Date();
   yesterday.setDate(yesterday.getDate() - 1);
@@ -305,12 +278,10 @@ export async function updateStreak() {
 
   let newStreak = data.currentStreak || 0;
 
-  if (lastStudied === today) return; // Already updated today
-  if (lastStudied === yesterdayStr) {
-    newStreak += 1;
-  } else {
-    newStreak = 1; // Streak broken
-  }
+  if (data.lastStudiedDate === today) return newStreak;
+
+  if (data.lastStudiedDate === yesterdayStr) newStreak += 1;
+  else newStreak = 1;
 
   await setDoc(
     ref,
@@ -327,13 +298,9 @@ export async function updateStreak() {
 }
 
 // ══════════════════════════════════════════════════════════════
-// ANALYTICS  (immutable event log)
+// ANALYTICS
 // ══════════════════════════════════════════════════════════════
 
-/**
- * Log a planner event for analytics.
- * Events are immutable — no update/delete allowed (enforced by Firestore rules).
- */
 export async function logEvent(type, metadata = {}) {
   const user = requireAuth();
   const ref = doc(collection(db, "analytics", user.uid, "events"));
@@ -342,26 +309,31 @@ export async function logEvent(type, metadata = {}) {
     eventId: ref.id,
     type: clean(type, 50),
     timestamp: serverTimestamp(),
-    metadata, // Keep shallow — no PII
+    metadata,
   });
 }
-import { doc, deleteDoc, collection, query, where, getDocs, writeBatch } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-import { db, auth } from "./firebase-config.js";
+
+// ══════════════════════════════════════════════════════════════
+// DELETE PLAN (FIXED STRUCTURE)
+// ══════════════════════════════════════════════════════════════
 
 export async function deletePlan(planId) {
-  const uid = auth.currentUser.uid;
+  const user = requireAuth();
+
   const batch = writeBatch(db);
 
-  // Delete all tasks for this plan
+  // delete tasks from global tasks collection
   const tasksQ = query(
-    collection(db, "users", uid, "tasks"),
-    where("planId", "==", planId)
+    collection(db, "tasks"),
+    where("planId", "==", planId),
+    where("userId", "==", user.uid)
   );
-  const taskSnap = await getDocs(tasksQ);
-  taskSnap.forEach(d => batch.delete(d.ref));
 
-  // Delete the plan doc
-  batch.delete(doc(db, "users", uid, "plans", planId));
+  const taskSnap = await getDocs(tasksQ);
+  taskSnap.forEach((d) => batch.delete(d.ref));
+
+  // delete plan from studyPlans collection (consistent with rest of file)
+  batch.delete(doc(db, "studyPlans", planId));
 
   await batch.commit();
 }
