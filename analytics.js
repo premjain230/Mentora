@@ -1,18 +1,12 @@
 // Vercel Web Analytics initialization
-// This script initializes Vercel Web Analytics using the script injection method
-// Recommended for vanilla HTML/JavaScript projects
+// This script initializes Vercel Web Analytics using the inject() function
+// Recommended approach for vanilla HTML/JavaScript projects per official docs
 
-(function() {
-  // Initialize the Vercel Analytics queue
-  window.va = window.va || function () {
-    (window.vaq = window.vaq || []).push(arguments);
-  };
+import { inject } from '@vercel/analytics';
 
-  // Load the Vercel Analytics script
-  var script = document.createElement('script');
-  script.defer = true;
-  script.src = 'https://cdn.vercel-insights.com/v1/script.js';
-  
-  // Append to head
-  document.head.appendChild(script);
-})();
+// Initialize Vercel Web Analytics
+// The inject() function will automatically handle script loading and tracking
+inject({
+  mode: 'production', // Use 'auto' to automatically switch between production and development
+  debug: false, // Set to true for debugging in development
+});
