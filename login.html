@@ -12,14 +12,17 @@
   --cyan:#06d6cf;--pink:#f472b6;
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-html,body{height:100%;overflow:hidden}
-body{background:var(--bg);font-family:'Sora',sans-serif;color:var(--text);display:flex;align-items:center;justify-content:center;min-height:100vh;position:relative}
+html{height:100%}
+body{background:var(--bg);font-family:'Sora',sans-serif;color:var(--text);min-height:100vh;position:relative}
 
-/* cursor */
-#cur-dot{position:fixed;width:6px;height:6px;background:#fff;border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);transition:width .2s,height .2s,background .2s}
-#cur-ring{position:fixed;width:32px;height:32px;border:1.5px solid rgba(124,106,255,0.7);border-radius:50%;pointer-events:none;z-index:9998;transform:translate(-50%,-50%);transition:width .25s,height .25s,border-color .25s,opacity .25s}
-body.hovering #cur-dot{width:8px;height:8px;background:var(--accent2)}
-body.hovering #cur-ring{width:48px;height:48px;border-color:rgba(167,139,250,0.5)}
+/* cursor — desktop only */
+@media(pointer:fine){
+  #cur-dot{position:fixed;width:6px;height:6px;background:#fff;border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);transition:width .2s,height .2s,background .2s}
+  #cur-ring{position:fixed;width:32px;height:32px;border:1.5px solid rgba(124,106,255,0.7);border-radius:50%;pointer-events:none;z-index:9998;transform:translate(-50%,-50%);transition:width .25s,height .25s,border-color .25s,opacity .25s}
+  body.hovering #cur-dot{width:8px;height:8px;background:var(--accent2)}
+  body.hovering #cur-ring{width:48px;height:48px;border-color:rgba(167,139,250,0.5)}
+}
+@media(pointer:coarse){#cur-dot,#cur-ring{display:none}}
 
 .grid-bg{position:fixed;inset:0;pointer-events:none;z-index:0;
   background-image:linear-gradient(rgba(124,106,255,0.035) 1px,transparent 1px),linear-gradient(90deg,rgba(124,106,255,0.035) 1px,transparent 1px);
@@ -43,78 +46,101 @@ body.hovering #cur-ring{width:48px;height:48px;border-color:rgba(167,139,250,0.5
 .particle{position:absolute;border-radius:50%;animation:pfloat var(--dur) ease-in-out infinite var(--del)}
 @keyframes pfloat{0%{transform:translateY(0) translateX(0);opacity:0}15%{opacity:var(--op)}85%{opacity:var(--op)}100%{transform:translateY(-110px) translateX(var(--drift));opacity:0}}
 
-/* page */
-.page{position:relative;z-index:10;display:flex;width:100vw;height:100vh;align-items:center;justify-content:center}
+/* ── LAYOUT ── */
+.page{
+  position:relative;z-index:10;
+  display:flex;width:100%;min-height:100vh;
+  align-items:center;justify-content:center;
+}
 
-/* divider */
+/* Desktop: side-by-side */
+@media(min-width:900px){
+  body{overflow:hidden}
+  .page{height:100vh}
+  .panel{flex:1;max-width:520px;padding:0 70px;display:flex;flex-direction:column;justify-content:center;height:100vh}
+  .divider-v{display:block}
+  .brand-panel{animation:fadeL .9s cubic-bezier(.22,1,.36,1) both}
+  .form-panel{animation:fadeR .9s cubic-bezier(.22,1,.36,1) .12s both}
+}
+
+/* Mobile: stacked, form first */
+@media(max-width:899px){
+  .page{flex-direction:column;align-items:stretch}
+  .panel{width:100%;max-width:100%;padding:32px 20px}
+  .form-panel{order:1;padding-top:40px}
+  .brand-panel{order:2;padding-bottom:48px;border-top:1px solid var(--border2)}
+  .divider-v{display:none}
+}
+
+@keyframes fadeL{from{opacity:0;transform:translateX(-28px)}to{opacity:1;transform:translateX(0)}}
+@keyframes fadeR{from{opacity:0;transform:translateX(28px)}to{opacity:1;transform:translateX(0)}}
+
 .divider-v{width:1px;height:68vh;flex-shrink:0;position:relative;background:linear-gradient(to bottom,transparent,var(--border2) 25%,var(--border2) 75%,transparent)}
 .divider-v .scan{position:absolute;left:0;width:1px;height:56px;background:linear-gradient(to bottom,transparent,var(--accent),transparent);animation:scan 4s ease-in-out infinite}
 @keyframes scan{0%{top:5%}50%{top:70%}100%{top:5%}}
 
-/* panels */
-.panel{flex:1;max-width:520px;padding:0 70px;display:flex;flex-direction:column;justify-content:center;height:100vh}
-.panel-left{animation:fadeL .9s cubic-bezier(.22,1,.36,1) both}
-.panel-right{animation:fadeR .9s cubic-bezier(.22,1,.36,1) .12s both}
-@keyframes fadeL{from{opacity:0;transform:translateX(-28px)}to{opacity:1;transform:translateX(0)}}
-@keyframes fadeR{from{opacity:0;transform:translateX(28px)}to{opacity:1;transform:translateX(0)}}
-
-/* logo */
-.logo{display:flex;align-items:center;gap:11px;margin-bottom:52px}
-.logo svg{width:36px;height:36px}
+/* ── LOGO ── */
+.logo{display:flex;align-items:center;gap:11px;margin-bottom:44px}
+.logo svg{width:36px;height:36px;flex-shrink:0}
 .logo-name{font-size:19px;font-weight:700;letter-spacing:-0.03em}
 .logo-name span{color:var(--accent2)}
 
-/* brand side */
+/* ── BRAND PANEL ── */
 .tag-line{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--accent);letter-spacing:.2em;text-transform:uppercase;display:flex;align-items:center;gap:9px;margin-bottom:22px}
 .tag-line::before{content:'';width:22px;height:1px;background:var(--accent);flex-shrink:0}
-.headline{font-size:clamp(34px,4vw,52px);font-weight:700;line-height:1.08;letter-spacing:-0.045em;margin-bottom:22px}
+
+.headline{font-size:clamp(28px,5vw,52px);font-weight:700;line-height:1.08;letter-spacing:-0.045em;margin-bottom:18px}
 .headline .hl{background:linear-gradient(130deg,var(--accent),var(--cyan));-webkit-background-clip:text;-webkit-text-fill-color:transparent;display:block}
 .headline .dim{color:rgba(240,238,255,0.3);font-weight:300;display:block}
-.desc{font-size:14px;color:var(--sub);line-height:1.85;max-width:340px;margin-bottom:44px}
+
+.desc{font-size:14px;color:var(--sub);line-height:1.85;max-width:340px;margin-bottom:32px}
 
 .feat-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;max-width:400px}
-.feat{background:var(--s2);border:1px solid var(--border);border-radius:13px;padding:15px 16px;display:flex;align-items:flex-start;gap:11px;transition:border-color .25s,transform .25s;cursor:default}
+@media(max-width:899px){.feat-grid{max-width:100%}}
+
+.feat{background:var(--s2);border:1px solid var(--border);border-radius:13px;padding:14px 15px;display:flex;align-items:flex-start;gap:11px;transition:border-color .25s,transform .25s;cursor:default}
 .feat:hover{border-color:var(--border2);transform:translateY(-2px)}
 .feat-ico{width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0}
 .fi1{background:rgba(124,106,255,0.15)}.fi2{background:rgba(6,214,207,0.12)}.fi3{background:rgba(244,114,182,0.12)}.fi4{background:rgba(251,191,36,0.1)}
 .feat-txt strong{display:block;font-size:12px;font-weight:600;margin-bottom:2px}
 .feat-txt span{font-size:11px;color:var(--sub)}
 
-/* form side */
-.form-hdr{margin-bottom:36px}
+/* ── FORM PANEL ── */
+.form-hdr{margin-bottom:30px}
 .form-hdr h2{font-size:27px;font-weight:700;letter-spacing:-0.04em;margin-bottom:7px}
 .form-hdr p{font-size:13px;color:var(--sub)}
 
-.field{margin-bottom:18px;position:relative}
+.field{margin-bottom:16px;position:relative}
 .field label{display:block;font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:500;color:var(--sub);letter-spacing:.14em;text-transform:uppercase;margin-bottom:8px}
-.field input{width:100%;background:#09081a;border:1px solid var(--border2);border-radius:11px;color:var(--text);font-family:'Sora',sans-serif;font-size:14px;padding:14px 17px;outline:none;transition:border-color .22s,box-shadow .22s,background .22s;caret-color:var(--accent)}
+.field input{width:100%;background:#09081a;border:1px solid var(--border2);border-radius:11px;color:var(--text);font-family:'Sora',sans-serif;font-size:16px;/* 16px prevents iOS auto-zoom */padding:14px 17px;outline:none;transition:border-color .22s,box-shadow .22s,background .22s;caret-color:var(--accent)}
 .field input::placeholder{color:#282640}
 .field input:focus{border-color:rgba(124,106,255,.55);background:#0b0a1c;box-shadow:0 0 0 4px rgba(124,106,255,.09),inset 0 1px 0 rgba(255,255,255,.03)}
-.eye{position:absolute;right:15px;top:39px;cursor:pointer;color:var(--sub);font-size:15px;line-height:1;transition:color .2s;user-select:none}
+
+.eye{position:absolute;right:15px;top:39px;cursor:pointer;color:var(--sub);font-size:15px;line-height:1;transition:color .2s;user-select:none;padding:6px;/* larger tap target */}
 .eye:hover{color:var(--accent2)}
 
-.opt-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:26px}
+.opt-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:22px;flex-wrap:wrap;gap:8px}
 .rem{display:flex;align-items:center;gap:8px;cursor:pointer}
-.rem input{accent-color:var(--accent);width:13px;height:13px}
+.rem input{accent-color:var(--accent);width:16px;height:16px}
 .rem span{font-size:13px;color:var(--sub)}
 .forgot{font-size:13px;color:var(--accent2);text-decoration:none;transition:color .2s}
 .forgot:hover{color:#fff}
 
-.btn{width:100%;padding:15px;border-radius:11px;border:none;background:linear-gradient(135deg,#6555ff,#9a7bff);color:#fff;font-family:'Sora',sans-serif;font-size:14px;font-weight:600;cursor:pointer;position:relative;overflow:hidden;transition:transform .18s,box-shadow .18s;letter-spacing:.02em}
+.btn{width:100%;padding:15px;border-radius:11px;border:none;background:linear-gradient(135deg,#6555ff,#9a7bff);color:#fff;font-family:'Sora',sans-serif;font-size:15px;font-weight:600;cursor:pointer;position:relative;overflow:hidden;transition:transform .18s,box-shadow .18s;letter-spacing:.02em;touch-action:manipulation}
 .btn:hover{transform:translateY(-2px);box-shadow:0 14px 42px rgba(101,85,255,.42)}
 .btn:active{transform:translateY(0)}
 .btn .shine{position:absolute;top:0;left:-100%;width:55%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.14),transparent);transform:skewX(-18deg);animation:shine 3.5s ease-in-out infinite 1.2s}
 @keyframes shine{0%,100%{left:-100%}45%,55%{left:140%}}
 
-.or-row{display:flex;align-items:center;gap:13px;margin:20px 0}
+.or-row{display:flex;align-items:center;gap:13px;margin:18px 0}
 .or-l{flex:1;height:1px;background:var(--border)}
 .or-t{font-family:'JetBrains Mono',monospace;font-size:10px;color:#2a2845;letter-spacing:.12em}
 
-.btn-google{width:100%;padding:13px;border-radius:11px;border:1px solid var(--border2);background:transparent;color:#7070a0;font-family:'Sora',sans-serif;font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;transition:border-color .2s,color .2s,background .2s}
+.btn-google{width:100%;padding:13px;border-radius:11px;border:1px solid var(--border2);background:transparent;color:#7070a0;font-family:'Sora',sans-serif;font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;transition:border-color .2s,color .2s,background .2s;touch-action:manipulation}
 .btn-google:hover{border-color:rgba(124,106,255,.35);color:var(--text);background:rgba(255,255,255,.02)}
 .btn-google svg{width:17px;height:17px;flex-shrink:0}
 
-.foot{text-align:center;margin-top:26px;font-size:13px;color:var(--sub)}
+.foot{text-align:center;margin-top:22px;font-size:13px;color:var(--sub)}
 .foot a{color:var(--accent2);text-decoration:none;font-weight:500;transition:color .2s}
 .foot a:hover{color:#fff}
 </style>
@@ -128,8 +154,9 @@ body.hovering #cur-ring{width:48px;height:48px;border-color:rgba(167,139,250,0.5
 <div class="particles" id="pts"></div>
 
 <div class="page">
-  <!-- LEFT: brand -->
-  <div class="panel panel-left">
+
+  <!-- BRAND PANEL -->
+  <div class="panel brand-panel">
     <div class="logo">
       <svg viewBox="0 0 36 36" fill="none">
         <rect width="36" height="36" rx="9" fill="rgba(124,106,255,0.15)"/>
@@ -158,8 +185,8 @@ body.hovering #cur-ring{width:48px;height:48px;border-color:rgba(167,139,250,0.5
 
   <div class="divider-v"><div class="scan"></div></div>
 
-  <!-- RIGHT: form -->
-  <div class="panel panel-right">
+  <!-- FORM PANEL -->
+  <div class="panel form-panel">
     <div class="form-hdr">
       <h2>Welcome back 👋</h2>
       <p>Sign in to continue your learning journey</p>
@@ -172,7 +199,7 @@ body.hovering #cur-ring{width:48px;height:48px;border-color:rgba(167,139,250,0.5
     <div class="field">
       <label>Password</label>
       <input type="password" id="pwdF" placeholder="Enter your password" autocomplete="current-password"/>
-      <span class="eye" id="eyeT">👁</span>
+      <span class="eye" id="eyeT" role="button" aria-label="Toggle password visibility">👁</span>
     </div>
 
     <div class="opt-row">
@@ -191,24 +218,27 @@ body.hovering #cur-ring{width:48px;height:48px;border-color:rgba(167,139,250,0.5
 
     <div class="foot">New to Mentora? <a href="signup.html">Create free account →</a></div>
   </div>
+
 </div>
 
 <script>
-// ── cursor ──
-const dot = document.getElementById('cur-dot');
-const ring = document.getElementById('cur-ring');
-let mx=0,my=0,rx=0,ry=0,raf;
-document.addEventListener('mousemove', e => { mx=e.clientX; my=e.clientY; });
-(function loop(){
-  rx += (mx-rx)*0.13; ry += (my-ry)*0.13;
-  dot.style.left = mx+'px'; dot.style.top = my+'px';
-  ring.style.left = rx+'px'; ring.style.top = ry+'px';
-  requestAnimationFrame(loop);
-})();
-document.querySelectorAll('a,button,input,.feat,.eye,.rem').forEach(el=>{
-  el.addEventListener('mouseenter',()=>document.body.classList.add('hovering'));
-  el.addEventListener('mouseleave',()=>document.body.classList.remove('hovering'));
-});
+// ── cursor (desktop only) ──
+if(window.matchMedia('(pointer:fine)').matches){
+  const dot = document.getElementById('cur-dot');
+  const ring = document.getElementById('cur-ring');
+  let mx=0,my=0,rx=0,ry=0;
+  document.addEventListener('mousemove', e => { mx=e.clientX; my=e.clientY; });
+  (function loop(){
+    rx += (mx-rx)*0.13; ry += (my-ry)*0.13;
+    dot.style.left = mx+'px'; dot.style.top = my+'px';
+    ring.style.left = rx+'px'; ring.style.top = ry+'px';
+    requestAnimationFrame(loop);
+  })();
+  document.querySelectorAll('a,button,input,.feat,.eye,.rem').forEach(el=>{
+    el.addEventListener('mouseenter',()=>document.body.classList.add('hovering'));
+    el.addEventListener('mouseleave',()=>document.body.classList.remove('hovering'));
+  });
+}
 
 // ── eye toggle ──
 document.getElementById('eyeT').addEventListener('click',function(){
@@ -227,30 +257,18 @@ for(let i=0;i<28;i++){
   pc.appendChild(p);
 }
 </script>
-  <script type="module">
-  import { signIn, googleSignIn, forgotPassword } from "./auth.js";
 
-  document.querySelector(".btn").addEventListener("click", () => signIn());
-  document.querySelector(".btn-google").addEventListener("click", () => googleSignIn());
-  document.querySelector(".forgot").addEventListener("click", (e) => {
-    e.preventDefault();
-    forgotPassword();
-  });
-</script>
 <script type="module">
-  import { signIn, googleSignIn, forgotPassword } from "./auth.js";
-
-  document.querySelector(".btn").addEventListener("click", () => signIn());
-  document.querySelector(".btn-google").addEventListener("click", () => googleSignIn());
-  document.querySelector(".forgot").addEventListener("click", (e) => {
-    e.preventDefault();
-    forgotPassword();
-  });
+import { signIn, googleSignIn, forgotPassword } from "./auth.js";
+document.querySelector(".btn").addEventListener("click", () => signIn());
+document.querySelector(".btn-google").addEventListener("click", () => googleSignIn());
+document.querySelector(".forgot").addEventListener("click", (e) => {
+  e.preventDefault();
+  forgotPassword();
+});
 </script>
 
-  <!-- Vercel Web Analytics -->
-  <script type="module" src="/analytics.js"></script>
-  <!-- Vercel Speed Insights -->
-  <script type="module" src="/speed-insights.js"></script>
+<script type="module" src="/analytics.js"></script>
+<script type="module" src="/speed-insights.js"></script>
 </body>
 </html>
