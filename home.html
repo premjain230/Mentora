@@ -36,7 +36,6 @@
     -webkit-font-smoothing: antialiased;
   }
 
-  /* ===== Ambient backdrop ===== */
   body::before {
     content: '';
     position: fixed;
@@ -123,6 +122,19 @@
   .nav-badge.green { background: var(--accent2); color: #0a0b0f; }
   .nav-badge.soon { background: rgba(255,255,255,0.08); color: var(--text-muted); }
 
+  /* ===== Recent chat nav items ===== */
+  .nav-item.chat-history-item {
+    font-size: 12.5px;
+    color: var(--text-muted);
+    padding: 8px 12px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: block; /* override flex so text truncates */
+  }
+  .nav-item.chat-history-item:hover { color: var(--text-secondary); background: rgba(255,255,255,0.03); }
+  .nav-item.chat-history-item.active { color: var(--text-primary); background: rgba(108,99,255,0.1); border-color: rgba(108,99,255,0.2); }
+
   .sidebar-bottom { padding: 12px 10px; border-top: 1px solid var(--border); }
   .user-card { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 10px; }
   .signout-btn { width: calc(100% - 20px); margin: 0 10px 8px; padding: 9px 14px; background: rgba(255,107,107,0.08); border: 1px solid rgba(255,107,107,0.2); color: var(--accent3); font-family: var(--font-main); font-size: 12px; font-weight: 500; border-radius: 8px; cursor: pointer; transition: all 0.18s; }
@@ -133,7 +145,6 @@
   .user-name { font-size: 13px; font-weight: 500; color: var(--text-primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .user-plan { font-size: 11px; color: var(--accent2); font-weight: 500; }
 
-  /* ===== Sidebar overlay (mobile) ===== */
   .sidebar-overlay {
     display: none;
     position: fixed; inset: 0;
@@ -306,6 +317,19 @@
   .ai-bubble hr { border: none; border-top: 1px solid rgba(255,255,255,0.08); margin: 14px 0; }
   .ai-bubble p { margin: 6px 0; }
 
+  /* ===== Chat history loading state ===== */
+  .chat-loading {
+    display: flex; align-items: center; justify-content: center;
+    gap: 8px; padding: 40px 20px;
+    color: var(--text-muted); font-size: 13px;
+  }
+  .chat-loading-dot {
+    width: 6px; height: 6px; border-radius: 50%; background: var(--accent);
+    animation: mentoraDot 1.2s ease-in-out infinite;
+  }
+  .chat-loading-dot:nth-child(2) { animation-delay: 180ms; }
+  .chat-loading-dot:nth-child(3) { animation-delay: 360ms; }
+
   @keyframes mentoraDot { 0%,80%,100%{ transform:translateY(0);opacity:.4; } 40%{ transform:translateY(-5px);opacity:1; } }
 
   @media (prefers-reduced-motion: reduce) {
@@ -322,13 +346,10 @@
     }
     .sidebar.open { margin-left: 0; box-shadow: 24px 0 60px rgba(0,0,0,0.45); }
     .sidebar-close { display: flex; }
-
     .sidebar-overlay.open { display: block; opacity: 1; }
-
     .menu-btn { display: flex; }
     .topbar-mobile-logo { display: flex; }
     .topbar { padding: 12px 14px; }
-
     .chat-area { padding: 22px 14px 16px; }
     .input-area { padding: 12px 14px 16px; }
     .suggestion-grid { grid-template-columns: 1fr; }
@@ -361,13 +382,11 @@
     <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
     New Chat
   </button>
-  <nav class="nav-section">
+  <nav class="nav-section" id="navSection">
     <div class="nav-label">Main</div>
     <a href="home.html" class="nav-item active"><span class="nav-icon">💬</span>Chat</a>
     <a href="analyze.html" class="nav-item"><span class="nav-icon">🔍</span>Analyze<span class="nav-badge green">AI</span></a>
     <a href="planner.html" class="nav-item"><span class="nav-icon">📅</span>Study Planner</a>
-
-
 
     <div class="nav-label">Account</div>
     <a href="profile.html" class="nav-item"><span class="nav-icon">👤</span>Profile</a>
@@ -386,20 +405,20 @@
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
       </button>
       <div class="topbar-mobile-logo"><div class="logo-icon">🎓</div><span>Aquila<span class="full"> AI</span></span></div>
-      <div class="model-selector"><span class="model-dot"></span>Mentora</div>
+      <div class="model-selector"><span class="model-dot"></span>Aquila AI</div>
     </div>
   </div>
   <div class="chat-area" id="chatArea"></div>
   <div class="input-area">
     <div class="input-box">
-      <textarea id="chatInput" rows="1" placeholder="Ask Mentora anything - explain, analyze, or plan your study..." oninput="resizeInput(this)" onkeydown="handleKey(event)"></textarea>
+      <textarea id="chatInput" rows="1" placeholder="Ask Aquila AI anything - explain, analyze, or plan your study..." oninput="resizeInput(this)" onkeydown="handleKey(event)"></textarea>
       <div class="input-actions">
         <button class="send-btn" id="sendBtn" title="Send" onclick="sendMessage()">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
         </button>
       </div>
     </div>
-    <div class="input-footer"><span>Encrypted in transit</span><span>Mentora can make mistakes - verify important answers</span></div>
+    <div class="input-footer"><span>Encrypted in transit</span><span>Aquila AI can make mistakes — verify important answers</span></div>
   </div>
 </main>
 
@@ -424,42 +443,34 @@ const overlay = document.getElementById('sidebarOverlay');
 const menuBtn = document.getElementById('menuBtn');
 const closeBtn = document.getElementById('sidebarClose');
 
-function openSidebar() {
-  sidebar.classList.add('open');
-  overlay.classList.add('open');
-}
-function closeSidebar() {
-  sidebar.classList.remove('open');
-  overlay.classList.remove('open');
-}
+function openSidebar() { sidebar.classList.add('open'); overlay.classList.add('open'); }
+function closeSidebar() { sidebar.classList.remove('open'); overlay.classList.remove('open'); }
 menuBtn.addEventListener('click', openSidebar);
 closeBtn.addEventListener('click', closeSidebar);
 overlay.addEventListener('click', closeSidebar);
 
-/* close sidebar automatically when a nav link is tapped on mobile */
 document.querySelectorAll('.nav-item').forEach((link) => {
-  link.addEventListener('click', () => {
-    if (window.innerWidth <= 880) closeSidebar();
-  });
+  link.addEventListener('click', () => { if (window.innerWidth <= 880) closeSidebar(); });
 });
 </script>
 
 <script type="module">
 import { auth, db } from "./firebase-config.js";
 import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-import { collection, addDoc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import {
+  collection, addDoc, setDoc, serverTimestamp,
+  query, orderBy, limit, getDocs, doc, getDoc
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 const authInstance = auth || getAuth();
 let currentUser = null;
 let activeChatRef = null;
+let activeChatId = null;
 let history = [];
 let sending = false;
 
-onAuthStateChanged(authInstance, (user) => {
-  if (!user) {
-    window.location.href = "login.html";
-    return;
-  }
+onAuthStateChanged(authInstance, async (user) => {
+  if (!user) { window.location.href = "login.html"; return; }
 
   currentUser = user;
   const name = user.displayName || user.email?.split("@")[0] || "Guest";
@@ -471,6 +482,17 @@ onAuthStateChanged(authInstance, (user) => {
   } else {
     avatar.textContent = name.charAt(0).toUpperCase();
   }
+
+  // Fetch plan
+  try {
+    const snap = await getDoc(doc(db, "users", user.uid));
+    if (snap.exists()) {
+      const plan = snap.data().plan || "free";
+      document.getElementById("userPlan").textContent = plan === "pro" ? "Pro Plan ✨" : "Free Plan";
+    }
+  } catch (_) {}
+
+  await loadRecentChats(user.uid);
 });
 
 document.getElementById("signOutBtn").onclick = async () => {
@@ -480,12 +502,116 @@ document.getElementById("signOutBtn").onclick = async () => {
 
 document.getElementById("newChatBtn").onclick = () => resetChat();
 
+/* ===== Recent chats sidebar ===== */
+async function loadRecentChats(uid) {
+  const navSection = document.getElementById("navSection");
+
+  // Remove any previous recent section
+  const existing = navSection.querySelector(".recent-section");
+  if (existing) existing.remove();
+
+  try {
+    const q = query(
+      collection(db, "users", uid, "chats"),
+      orderBy("updatedAt", "desc"),
+      limit(10)
+    );
+    const snap = await getDocs(q);
+    if (snap.empty) return;
+
+    // Build a wrapper so we can remove/re-render cleanly
+    const section = document.createElement("div");
+    section.className = "recent-section";
+
+    const label = document.createElement("div");
+    label.className = "nav-label";
+    label.textContent = "Recent";
+    section.appendChild(label);
+
+    snap.forEach((docSnap) => {
+      const data = docSnap.data();
+      const title = data.title || "Untitled Chat";
+      const chatId = docSnap.id;
+
+      const item = document.createElement("div");
+      item.className = "nav-item chat-history-item";
+      item.dataset.chatId = chatId;
+      item.title = title;
+      item.textContent = title;
+      item.addEventListener("click", () => openChat(chatId, item));
+      section.appendChild(item);
+    });
+
+    // Insert before the Account label
+    const accountLabel = [...navSection.querySelectorAll(".nav-label")]
+      .find(el => el.textContent.trim() === "Account");
+    navSection.insertBefore(section, accountLabel || null);
+
+  } catch (e) {
+    console.warn("Could not load recent chats:", e);
+  }
+}
+
+/* ===== Open a past chat ===== */
+async function openChat(chatId, itemEl) {
+  if (!currentUser) return;
+
+  // Highlight active
+  document.querySelectorAll(".chat-history-item").forEach(el => el.classList.remove("active"));
+  if (itemEl) itemEl.classList.add("active");
+
+  // Set state so new replies continue this thread
+  activeChatId = chatId;
+  activeChatRef = doc(db, "users", currentUser.uid, "chats", chatId);
+  history = [];
+
+  // Show loading
+  const chatArea = document.getElementById("chatArea");
+  const welcome = document.getElementById("welcomeScreen");
+  if (welcome) welcome.remove();
+  chatArea.innerHTML = `<div class="chat-loading">
+    <span class="chat-loading-dot"></span>
+    <span class="chat-loading-dot"></span>
+    <span class="chat-loading-dot"></span>
+  </div>`;
+
+  try {
+    const msgsSnap = await getDocs(
+      query(
+        collection(db, "users", currentUser.uid, "chats", chatId, "messages"),
+        orderBy("ts", "asc")
+      )
+    );
+
+    chatArea.innerHTML = "";
+
+    msgsSnap.forEach((d) => {
+      const msg = d.data();
+      if (msg.role === "user") {
+        appendUserStatic(msg.content);
+        history.push({ role: "user", content: msg.content });
+      } else if (msg.role === "assistant") {
+        appendAssistantStatic(msg.content);
+        history.push({ role: "assistant", content: msg.content });
+      }
+    });
+
+    chatArea.scrollTop = chatArea.scrollHeight;
+  } catch (e) {
+    chatArea.innerHTML = `<div class="chat-loading" style="color:var(--accent3);">Failed to load chat.</div>`;
+    console.error(e);
+  }
+
+  if (window.innerWidth <= 880) closeSidebar();
+}
+
+/* ===== Welcome screen ===== */
 function welcomeMarkup() {
   return `
     <div class="welcome" id="welcomeScreen">
       <div class="welcome-icon">🎓</div>
       <h1>Learn smarter, not harder.</h1>
-      <p>Your AI study companion - ask anything, analyze ideas, or plan your academic journey with Mentora.</p>
+      <p>Your AI study companion — ask anything, analyze ideas, or plan your academic journey with Aquila AI.</p>
       <div class="suggestion-grid">
         <div class="suggestion-card" onclick="fillPrompt('Explain quantum entanglement step by step')"><span class="sug-icon">⚛️</span><div class="sug-title">Explain quantum entanglement</div><div class="sug-desc">Physics concept, step by step</div></div>
         <div class="suggestion-card" onclick="fillPrompt('Summarize my notes and highlight key points')"><span class="sug-icon">📝</span><div class="sug-title">Summarize my notes</div><div class="sug-desc">Turn rough notes into clarity</div></div>
@@ -498,20 +624,43 @@ function welcomeMarkup() {
 function resetChat() {
   history = [];
   activeChatRef = null;
+  activeChatId = null;
+  document.querySelectorAll(".chat-history-item").forEach(el => el.classList.remove("active"));
   document.getElementById("chatArea").innerHTML = welcomeMarkup();
 }
 
-function appendUser(text) {
+/* ===== Render helpers ===== */
+function appendUserStatic(text) {
   const row = document.createElement("div");
   row.className = "message-row user";
   const bubble = document.createElement("div");
   bubble.className = "user-bubble";
   bubble.textContent = text;
   row.appendChild(bubble);
-  appendRow(row);
+  document.getElementById("chatArea").appendChild(row);
+}
+
+function appendAssistantStatic(text) {
+  const row = document.createElement("div");
+  row.className = "message-row assistant";
+  row.innerHTML = `<div class="assistant-avatar">🎓</div>`;
+  const bubble = document.createElement("div");
+  bubble.className = "ai-bubble";
+  bubble.innerHTML = renderMd(text);
+  row.appendChild(bubble);
+  document.getElementById("chatArea").appendChild(row);
+}
+
+function appendUser(text) {
+  appendUserStatic(text);
+  document.getElementById("chatArea").scrollTop = document.getElementById("chatArea").scrollHeight;
 }
 
 function createAiBubble() {
+  const chatArea = document.getElementById("chatArea");
+  const welcome = document.getElementById("welcomeScreen");
+  if (welcome) welcome.remove();
+
   const row = document.createElement("div");
   row.className = "message-row assistant";
   row.innerHTML = `<div class="assistant-avatar">🎓</div>`;
@@ -521,19 +670,13 @@ function createAiBubble() {
     ${[0,180,360].map((delay) => `<span style="width:6px;height:6px;border-radius:50%;background:#6c63ff;display:inline-block;animation:mentoraDot 1.2s ease-in-out ${delay}ms infinite;"></span>`).join("")}
   </span>`;
   row.appendChild(bubble);
-  appendRow(row);
+  chatArea.appendChild(row);
+  chatArea.scrollTop = chatArea.scrollHeight;
   return bubble;
 }
 
-function appendRow(row) {
-  const chatArea = document.getElementById("chatArea");
-  const welcome = document.getElementById("welcomeScreen");
-  if (welcome) welcome.remove();
-  chatArea.appendChild(row);
-  chatArea.scrollTop = chatArea.scrollHeight;
-}
-
-async function callMentora() {
+/* ===== API call ===== */
+async function callAquila() {
   const response = await fetch("/api/chat", {
     method: "POST",
     headers: { "Content-Type": "application/json", "Accept": "application/json" },
@@ -542,31 +685,30 @@ async function callMentora() {
   });
 
   const data = await response.json().catch(() => ({}));
-  if (!response.ok) {
-    throw new Error(data.error || `Mentora API error ${response.status}`);
-  }
-
-  if (!data.reply) {
-    throw new Error("Mentora returned an empty response.");
-  }
-
+  if (!response.ok) throw new Error(data.error || `API error ${response.status}`);
+  if (!data.reply) throw new Error("Aquila AI returned an empty response.");
   return data.reply;
 }
 
+/* ===== Save to Firestore ===== */
 async function saveMsg(role, content) {
   if (!currentUser) return;
   if (!activeChatRef) {
-    activeChatRef = await addDoc(collection(db, "users", currentUser.uid, "chats"), {
+    const ref = await addDoc(collection(db, "users", currentUser.uid, "chats"), {
       title: content.slice(0, 60),
       createdAt: serverTimestamp(),
       updatedAt: serverTimestamp(),
     });
+    activeChatRef = ref;
+    activeChatId = ref.id;
+    // Refresh sidebar to show new chat
+    await loadRecentChats(currentUser.uid);
   }
-
   await addDoc(collection(activeChatRef, "messages"), { role, content, ts: serverTimestamp() });
   await setDoc(activeChatRef, { updatedAt: serverTimestamp() }, { merge: true });
 }
 
+/* ===== Send message ===== */
 window.sendMessage = async function sendMessage() {
   if (sending) return;
   const input = document.getElementById("chatInput");
@@ -576,6 +718,11 @@ window.sendMessage = async function sendMessage() {
 
   input.value = "";
   input.style.height = "auto";
+
+  // Remove welcome screen manually before appendUser so chatArea is ready
+  const welcome = document.getElementById("welcomeScreen");
+  if (welcome) welcome.remove();
+
   appendUser(text);
   history.push({ role: "user", content: text });
   saveMsg("user", text).catch(console.error);
@@ -585,7 +732,7 @@ window.sendMessage = async function sendMessage() {
   sendBtn.disabled = true;
 
   try {
-    const reply = await callMentora();
+    const reply = await callAquila();
     bubble.innerHTML = renderMd(reply);
     history.push({ role: "assistant", content: reply });
     saveMsg("assistant", reply).catch(console.error);
@@ -598,6 +745,7 @@ window.sendMessage = async function sendMessage() {
   }
 };
 
+/* ===== Markdown renderer ===== */
 function renderMd(text) {
   const codeBlocks = [];
   let html = text.replace(/```[\w-]*\n?([\s\S]*?)```/g, (_, code) => {
@@ -621,9 +769,8 @@ function renderMd(text) {
 }
 
 function escapeHtml(value) {
-  return String(value).replace(/[&<>"]/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[char]));
+  return String(value).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
 }
-
 function escapeAttr(value) {
   return escapeHtml(value).replace(/'/g, "&#39;");
 }
