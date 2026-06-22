@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-
   <url>
-    <loc>https://aquila-sand.vercel.app/home.html</loc>
+    <loc>https://aquila-ai.vercel.app/</loc>
   </url>
-
   <url>
-    <loc>https://aquila-sand.vercel.app/planner.html</loc>
+    <loc>https://aquila-ai.vercel.app/login.html</loc>
   </url>
-
+  <url>
+    <loc>https://aquila-ai.vercel.app/signup.html</loc>
+  </url>
 </urlset>
