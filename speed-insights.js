@@ -1,8 +1,8 @@
 // Vercel Speed Insights initialization
 // This script initializes Vercel Speed Insights for performance monitoring
-// Uses the @vercel/speed-insights package for vanilla HTML/JavaScript projects
+// Uses the browser-ready ESM URL because this project serves vanilla JavaScript.
 
-import { injectSpeedInsights } from '@vercel/speed-insights';
+import { injectSpeedInsights } from "https://esm.sh/@vercel/speed-insights";
 
 // Initialize Speed Insights
 // This will automatically track Web Vitals and performance metrics
