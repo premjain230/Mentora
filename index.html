@@ -67,6 +67,7 @@
     --muted-2: #5e6b7d;
     --cyan: #00d4ff;
     --violet: #a78bfa;
+    --amber: #ffd166;
     --cyan-glow: rgba(0,212,255,0.35);
     --violet-glow: rgba(167,139,250,0.30);
     --nb-bg: rgba(8, 10, 16, 0.78);
@@ -319,40 +320,73 @@
     box-shadow: 0 0 16px rgba(0,212,255,0.15);
   }
 
-  .preview-area {
-    width: 100%;
-    max-width: 1280px;
-    flex: 1;
-    display: grid;
-    grid-template-columns: 1.05fr 0.95fr;
-    align-items: center;
-    gap: 48px;
-    padding: 100px 32px 90px;
-    text-align: left;
+  /* ===================== CINEMATIC HERO ===================== */
+
+  .hero {
     position: relative;
+    width: 100%;
+    min-height: 100vh;
+    min-height: 100dvh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     overflow: hidden;
-    z-index: 1;
+    background: #050609;
+    isolation: isolate;
   }
 
-  .preview-area::before {
-    content: '';
+  .hero-canvas-layer {
     position: absolute;
-    top: -260px; left: 8%;
-    width: 640px; height: 480px;
-    background: radial-gradient(ellipse, rgba(0,212,255,0.08) 0%, transparent 70%);
+    inset: 0;
+    z-index: 1;
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+
+  .hero-vignette {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    pointer-events: none;
+    background:
+      radial-gradient(ellipse 70% 60% at 50% 38%, transparent 0%, transparent 40%, rgba(5,6,9,0.55) 78%, rgba(5,6,9,0.92) 100%),
+      linear-gradient(to bottom, rgba(5,6,9,0.55) 0%, transparent 16%, transparent 72%, rgba(5,6,9,0.9) 100%);
+  }
+
+  .hero-grain {
+    position: absolute;
+    inset: 0;
+    z-index: 3;
+    pointer-events: none;
+    opacity: 0.035;
+    mix-blend-mode: overlay;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  .hero-content {
+    position: relative;
+    z-index: 5;
+    width: 100%;
+    max-width: 1280px;
+    padding: 150px 32px 120px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
     pointer-events: none;
   }
 
-  .grid-bg { display: none; }
-  .hero-copy { position: relative; z-index: 2; }
+  .hero-content a,
+  .hero-content button { pointer-events: auto; }
 
-  .badge {
+  .hero .badge {
     display: inline-flex;
     align-items: center;
     gap: 8px;
     padding: 6px 14px;
     background: rgba(0,212,255,0.07);
-    border: 1px solid rgba(0,212,255,0.2);
+    border: 1px solid rgba(0,212,255,0.25);
     border-radius: 99px;
     font-family: 'JetBrains Mono', monospace;
     font-size: 11.5px;
@@ -360,8 +394,9 @@
     font-weight: 500;
     letter-spacing: 0.12em;
     text-transform: uppercase;
-    margin-bottom: 28px;
-    animation: fadeUp 0.7s 0.5s both;
+    margin-bottom: 30px;
+    backdrop-filter: blur(8px);
+    animation: fadeUp 0.8s 0.4s both;
   }
 
   .badge-dot {
@@ -379,13 +414,14 @@
 
   .hero-title {
     font-family: 'Sora', sans-serif;
-    font-size: clamp(34px, 5.4vw, 64px);
+    font-size: clamp(36px, 6.4vw, 76px);
     font-weight: 800;
-    line-height: 1.08;
+    line-height: 1.06;
     letter-spacing: -0.02em;
     color: #fff;
-    margin-bottom: 22px;
-    animation: fadeUp 0.7s 0.62s both;
+    margin-bottom: 24px;
+    text-shadow: 0 4px 60px rgba(0,0,0,0.6);
+    animation: fadeUp 0.8s 0.55s both;
   }
 
   .hero-title span {
@@ -396,24 +432,26 @@
   }
 
   .hero-sub {
-    font-size: 16.5px;
+    font-size: 17px;
     color: var(--muted);
-    max-width: 460px;
+    max-width: 540px;
     line-height: 1.75;
-    animation: fadeUp 0.7s 0.74s both;
-    margin-bottom: 36px;
+    animation: fadeUp 0.8s 0.7s both;
+    margin-bottom: 38px;
+    text-shadow: 0 2px 20px rgba(0,0,0,0.5);
   }
 
   .hero-ctas {
     display: flex;
     gap: 14px;
     flex-wrap: wrap;
-    animation: fadeUp 0.7s 0.86s both;
-    margin-bottom: 40px;
+    justify-content: center;
+    animation: fadeUp 0.8s 0.85s both;
+    margin-bottom: 46px;
   }
 
   .cta-primary {
-    padding: 14px 30px;
+    padding: 15px 32px;
     background: var(--cyan);
     color: #06121a;
     font-size: 14px;
@@ -430,6 +468,7 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
+    box-shadow: 0 0 40px rgba(0,212,255,0.25);
   }
 
   .cta-primary::after {
@@ -449,13 +488,13 @@
   }
 
   .cta-secondary {
-    padding: 14px 30px;
-    background: rgba(255,255,255,0.03);
+    padding: 15px 32px;
+    background: rgba(255,255,255,0.04);
     color: #fff;
     font-size: 14px;
     font-weight: 500;
     font-family: 'Inter', sans-serif;
-    border: 1px solid rgba(255,255,255,0.12);
+    border: 1px solid rgba(255,255,255,0.14);
     border-radius: 11px;
     cursor: pointer;
     letter-spacing: 0.01em;
@@ -465,19 +504,20 @@
     gap: 8px;
     transition: all 0.22s;
     text-decoration: none;
+    backdrop-filter: blur(8px);
   }
 
   .cta-secondary:hover {
-    border-color: rgba(255,255,255,0.3);
-    background: rgba(255,255,255,0.06);
+    border-color: rgba(255,255,255,0.32);
+    background: rgba(255,255,255,0.08);
     transform: translateY(-2px);
   }
 
-  .trust-row {
+  .hero .trust-row {
     display: flex;
     align-items: center;
     gap: 18px;
-    animation: fadeUp 0.7s 0.98s both;
+    animation: fadeUp 0.8s 1s both;
   }
 
   .trust-avatars { display: flex; }
@@ -485,7 +525,7 @@
   .trust-avatars span {
     width: 30px; height: 30px;
     border-radius: 50%;
-    border: 2px solid var(--bg);
+    border: 2px solid #050609;
     margin-left: -8px;
     display: flex;
     align-items: center;
@@ -509,77 +549,42 @@
 
   .label-note strong { color: var(--text); font-weight: 600; }
 
-  .hero-visual {
-    position: relative;
-    z-index: 2;
+  .scroll-cue {
+    position: absolute;
+    bottom: 28px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 5;
     display: flex;
+    flex-direction: column;
     align-items: center;
-    justify-content: center;
-    animation: fadeUp 0.8s 0.5s both;
-  }
-
-  .constellation-wrap {
-    position: relative;
-    width: 100%;
-    max-width: 480px;
-    aspect-ratio: 1 / 1;
-  }
-
-  .constellation-wrap svg { width: 100%; height: 100%; display: block; }
-
-  .const-line {
-    stroke: url(#lineGrad);
-    stroke-width: 1;
-    fill: none;
-    opacity: 0.35;
-    stroke-dasharray: 6 8;
-    animation: dashFlow 14s linear infinite;
-  }
-
-  @keyframes dashFlow { to { stroke-dashoffset: -280; } }
-
-  .const-node {
-    transform-box: fill-box;
-    transform-origin: center;
-    animation: floatNode 6s ease-in-out infinite;
-  }
-
-  .const-node:nth-child(2) { animation-delay: -1.2s; }
-  .const-node:nth-child(3) { animation-delay: -2.6s; }
-  .const-node:nth-child(4) { animation-delay: -4s; }
-  .const-node:nth-child(5) { animation-delay: -0.6s; }
-
-  @keyframes floatNode {
-    0%, 100% { transform: translateY(0); }
-    50%      { transform: translateY(-10px); }
-  }
-
-  .const-node circle.node-bg {
-    fill: rgba(13,17,23,0.9);
-    stroke: rgba(255,255,255,0.12);
-    stroke-width: 1;
-  }
-
-  .const-node circle.node-glow { fill: var(--cyan); opacity: 0.18; }
-
-  .const-node text {
+    gap: 8px;
     font-family: 'JetBrains Mono', monospace;
-    font-size: 10px;
-    fill: var(--text);
-    text-anchor: middle;
-    dominant-baseline: middle;
-    letter-spacing: 0.04em;
+    font-size: 10.5px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--muted-2);
+    animation: fadeUp 0.8s 1.2s both;
   }
 
-  .const-center circle.node-glow { fill: var(--violet); opacity: 0.22; }
-  .const-center circle.node-bg { stroke: rgba(167,139,250,0.35); }
-
-  .const-center text {
-    font-family: 'Sora', sans-serif;
-    font-weight: 700;
-    font-size: 13px;
-    fill: #fff;
+  .scroll-cue .chevron {
+    width: 14px; height: 14px;
+    border-right: 1.5px solid var(--muted-2);
+    border-bottom: 1.5px solid var(--muted-2);
+    transform: rotate(45deg);
+    animation: bob 1.8s ease-in-out infinite;
   }
+
+  @keyframes bob {
+    0%, 100% { transform: rotate(45deg) translate(0,0); opacity: 0.5; }
+    50%      { transform: rotate(45deg) translate(3px,3px); opacity: 1; }
+  }
+
+  @media (max-width: 640px) {
+    .hero-content { padding: 130px 20px 100px; }
+  }
+
+  /* ===================== /CINEMATIC HERO ===================== */
 
   .proof-strip {
     width: 100%;
@@ -884,10 +889,6 @@
   }
 
   @media (max-width: 980px) {
-    .preview-area { grid-template-columns: 1fr; text-align: center; padding-top: 64px; }
-    .hero-copy { display: flex; flex-direction: column; align-items: center; }
-    .hero-sub { max-width: 520px; }
-    .hero-visual { order: -1; max-width: 360px; margin: 0 auto; }
     .feature-grid { grid-template-columns: repeat(2, 1fr); }
     .steps { grid-template-columns: 1fr; }
     .step { border-right: none; border-bottom: 1px solid var(--line); }
@@ -903,13 +904,11 @@
     .nav-actions .btn-ghost a { padding: 8px 10px; }
     .nav-actions .btn-cta a { padding: 8px 14px; font-size: 12.5px; }
     .nav-actions .btn-cta span { display: none; }
-    .preview-area { padding: 40px 18px 48px; gap: 32px; }
-    .hero-title { font-size: clamp(28px, 9vw, 40px); }
+    .hero-title { font-size: clamp(30px, 9vw, 42px); }
     .hero-sub { font-size: 15px; padding: 0 4px; }
-    .hero-ctas { flex-direction: column; align-items: stretch; gap: 12px; }
+    .hero-ctas { flex-direction: column; align-items: stretch; gap: 12px; width: 100%; }
     .hero-ctas .cta-primary, .hero-ctas .cta-secondary { width: 100%; }
     .trust-row { flex-direction: column; align-items: center; gap: 10px; text-align: center; }
-    .hero-visual { max-width: 280px; }
     .feature-grid { grid-template-columns: 1fr; }
     .section { padding: 56px 18px; }
     .section-head { margin-bottom: 36px; }
@@ -1016,17 +1015,17 @@
 
       <div class="nav-actions">
         <button class="search-btn" aria-label="Search Aquila AI">
-          <i class="ti ti-search" aria-hidden="true"></i>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.35-4.35"/></svg>
         </button>
         <div class="btn-ghost" aria-label="Login to Aquila AI">
           <a href="login.html">
-            <i class="ti ti-user" aria-hidden="true"></i>
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
             <span>Log in</span>
           </a>
         </div>
         <div class="btn-cta" aria-label="Get started with Aquila AI for free">
           <a href="signup.html">
-            <i class="ti ti-bolt" aria-hidden="true"></i>
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M13 2 3 14h7l-1 8 10-12h-7l1-8Z"/></svg>
             <span>Get Started</span>
           </a>
         </div>
@@ -1035,10 +1034,12 @@
   </header>
 
   <main>
-    <section class="preview-area" aria-labelledby="hero-heading">
-      <div class="grid-bg" aria-hidden="true"></div>
+    <section class="hero" id="hero" aria-labelledby="hero-heading">
+      <canvas class="hero-canvas-layer" id="heroCanvas" aria-hidden="true"></canvas>
+      <div class="hero-vignette" aria-hidden="true"></div>
+      <div class="hero-grain" aria-hidden="true"></div>
 
-      <div class="hero-copy">
+      <div class="hero-content">
         <div class="badge">
           <span class="badge-dot" aria-hidden="true"></span>
           Powered by advanced AI
@@ -1072,55 +1073,9 @@
         </div>
       </div>
 
-      <div class="hero-visual" aria-hidden="true">
-        <div class="constellation-wrap">
-          <svg viewBox="0 0 480 480" xmlns="http://www.w3.org/2000/svg">
-            <defs>
-              <linearGradient id="lineGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stop-color="#00d4ff"/>
-                <stop offset="100%" stop-color="#a78bfa"/>
-              </linearGradient>
-            </defs>
-
-            <path class="const-line" d="M240,240 C200,180 150,140 100,100" />
-            <path class="const-line" d="M240,240 C300,180 350,140 400,90" />
-            <path class="const-line" d="M240,240 C180,300 140,350 90,400" />
-            <path class="const-line" d="M240,240 C300,300 350,350 410,390" />
-            <path class="const-line" d="M240,240 C240,180 240,120 240,60" />
-
-            <g class="const-node const-center" transform="translate(240,240)">
-              <circle class="node-glow" r="46"/>
-              <circle class="node-bg" r="34"/>
-              <text y="1">Aquila</text>
-            </g>
-
-            <g class="const-node" transform="translate(100,100)">
-              <circle class="node-glow" r="34"/>
-              <circle class="node-bg" r="26"/>
-              <text>Physics</text>
-            </g>
-            <g class="const-node" transform="translate(400,90)">
-              <circle class="node-glow" r="34"/>
-              <circle class="node-bg" r="26"/>
-              <text>Chemistry</text>
-            </g>
-            <g class="const-node" transform="translate(90,400)">
-              <circle class="node-glow" r="34"/>
-              <circle class="node-bg" r="26"/>
-              <text>Biology</text>
-            </g>
-            <g class="const-node" transform="translate(410,390)">
-              <circle class="node-glow" r="34"/>
-              <circle class="node-bg" r="26"/>
-              <text>Maths</text>
-            </g>
-            <g class="const-node" transform="translate(240,60)">
-              <circle class="node-glow" r="30"/>
-              <circle class="node-bg" r="24"/>
-              <text font-size="9">Mock Test</text>
-            </g>
-          </svg>
-        </div>
+      <div class="scroll-cue" aria-hidden="true">
+        <span>Scroll</span>
+        <span class="chevron"></span>
       </div>
     </section>
 
@@ -1302,6 +1257,679 @@
   document.querySelectorAll('.feature-grid .feature-card').forEach(function (el, i) {
     el.style.transitionDelay = (i * 70) + 'ms';
   });
+})();
+</script>
+
+<script>
+/* =======================================================================
+   AQUILA AI — CINEMATIC HERO ENGINE
+   Pure canvas 2D. No external assets. Particles, data streams, floating
+   dashboard panels with live mini-charts, a glowing AI core, and a slow
+   parallax drift driven by pointer position + autonomous easing.
+   ======================================================================= */
+(function () {
+  var canvas = document.getElementById('heroCanvas');
+  if (!canvas) return;
+  var ctx = canvas.getContext('2d', { alpha: true });
+  var hero = document.getElementById('hero');
+
+  var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  var DPR = Math.min(window.devicePixelRatio || 1, 2);
+  var W = 0, H = 0;
+  var isMobile = false;
+  var panelScale = 1;
+
+  // Pointer-driven parallax target (eased)
+  var pointer = { x: 0.5, y: 0.5 };
+  var parallax = { x: 0, y: 0 };
+
+  function resize() {
+    var rect = hero.getBoundingClientRect();
+    W = rect.width;
+    H = rect.height;
+    isMobile = W < 720;
+    // Smoothly shrink/inset panels between 720px and 1180px so tablet-ish
+    // widths don't crowd the centered text column.
+    panelScale = W >= 1180 ? 1 : W <= 720 ? 0.62 : 0.62 + (W - 720) / (1180 - 720) * 0.38;
+    canvas.width = Math.floor(W * DPR);
+    canvas.height = Math.floor(H * DPR);
+    canvas.style.width = W + 'px';
+    canvas.style.height = H + 'px';
+    ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+    buildScene();
+  }
+
+  // ---------------- Color palette (matches brand tokens) ----------------
+  var CYAN = '0,212,255';
+  var VIOLET = '167,139,250';
+  var AMBER = '255,209,102';
+
+  // ---------------- Starfield / particle layers ----------------
+  var particleLayers = []; // each layer has its own depth -> parallax strength + speed
+
+  function buildParticles() {
+    particleLayers = [];
+    var density = isMobile ? 0.00022 : 0.00038;
+    var count = Math.min(160, Math.max(50, Math.floor(W * H * density)));
+    var layerDefs = [
+      { depth: 0.15, speed: 0.06, size: [0.6, 1.4], alpha: [0.25, 0.5], color: CYAN },
+      { depth: 0.35, speed: 0.12, size: [0.9, 2.0], alpha: [0.35, 0.7], color: VIOLET },
+      { depth: 0.6,  speed: 0.22, size: [1.1, 2.6], alpha: [0.4, 0.85], color: CYAN }
+    ];
+
+    layerDefs.forEach(function (def) {
+      var pts = [];
+      var n = Math.floor(count / layerDefs.length);
+      var zone = textSafeZone();
+      for (var i = 0; i < n; i++) {
+        var pos;
+        // Allow ~12% of particles to drift faintly through the safe zone
+        // for atmosphere, but keep the strong majority clear of the copy.
+        if (Math.random() < 0.12) {
+          pos = { x: Math.random() * W, y: Math.random() * H };
+        } else {
+          pos = pointOutsideSafeZone(zone);
+        }
+        pts.push({
+          x: pos.x,
+          y: pos.y,
+          baseX: 0,
+          baseY: 0,
+          r: def.size[0] + Math.random() * (def.size[1] - def.size[0]),
+          a: def.alpha[0] + Math.random() * (def.alpha[1] - def.alpha[0]),
+          phase: Math.random() * Math.PI * 2,
+          driftSpeed: 0.15 + Math.random() * 0.25,
+          color: def.color
+        });
+      }
+      pts.forEach(function (p) { p.baseX = p.x; p.baseY = p.y; });
+      particleLayers.push({ def: def, points: pts });
+    });
+  }
+
+  // ---------------- Data stream lines (glowing bezier "synapses") ----------------
+  var streams = [];
+
+  // Central text safe-zone (headline + sub copy + CTAs). Particles and
+  // streams are biased away from this rectangle so they never visually
+  // compete with the copy. Expressed as fractional bounds of W/H.
+  function textSafeZone() {
+    var xInset = isMobile ? 0.04 : lerp(0.30, 0.26, panelScale);
+    return {
+      x0: W * xInset,
+      x1: W * (1 - xInset),
+      y0: H * (isMobile ? 0.22 : 0.24),
+      y1: H * (isMobile ? 0.82 : 0.84)
+    };
+  }
+
+  function inSafeZone(x, y, zone) {
+    return x > zone.x0 && x < zone.x1 && y > zone.y0 && y < zone.y1;
+  }
+
+  function pointOutsideSafeZone(zone) {
+    var x, y, tries = 0;
+    do {
+      x = Math.random() * W;
+      y = Math.random() * H;
+      tries++;
+    } while (inSafeZone(x, y, zone) && tries < 12);
+    return { x: x, y: y };
+  }
+
+  function buildStreams() {
+    streams = [];
+    var n = isMobile ? 4 : 8;
+    var zone = textSafeZone();
+    for (var i = 0; i < n; i++) {
+      var p1 = pointOutsideSafeZone(zone);
+      var p2 = pointOutsideSafeZone(zone);
+      var sx = p1.x, sy = p1.y, ex = p2.x, ey = p2.y;
+      var ccx = (sx + ex) / 2 + (Math.random() - 0.5) * 220;
+      var ccy = (sy + ey) / 2 + (Math.random() - 0.5) * 160;
+      // pull the control point away from the safe zone too, so the curve's
+      // belly doesn't bow into the text even if both endpoints are clear
+      if (inSafeZone(ccx, ccy, zone)) {
+        ccy = ccy < (zone.y0 + zone.y1) / 2 ? zone.y0 - 30 : zone.y1 + 30;
+      }
+      streams.push({
+        x1: sx, y1: sy, x2: ex, y2: ey,
+        cx: ccx, cy: ccy,
+        color: Math.random() > 0.5 ? CYAN : VIOLET,
+        speed: 0.00028 + Math.random() * 0.00035,
+        offset: Math.random(),
+        width: 1 + Math.random() * 1.2,
+        depth: 0.2 + Math.random() * 0.25
+      });
+    }
+  }
+
+  // ---------------- Floating dashboard panels (DOM-free, drawn on canvas) ----------------
+  var panels = [];
+
+  function buildPanels() {
+    panels = [];
+    if (isMobile) {
+      // Mobile: keep panels small and pinned to the far corners only,
+      // well clear of the centered text column.
+      panels.push(makeLineChartPanel(W * 0.97 - 118, H * 0.1, 118, 64, CYAN, 0.45));
+      panels.push(makeStatPanel(W * 0.03, H * 0.78, 96, 52, AMBER, 0.4));
+      return;
+    }
+    // Desktop: panels live strictly in the outer margins. Sizes and inset
+    // scale down smoothly via panelScale as the viewport narrows toward
+    // tablet widths, keeping clear margin around the centered copy.
+    var s = panelScale;
+    var lineW = 196 * s, lineH = 102 * s;
+    var ringSize = 92 * s;
+    var barW = 184 * s, barH = 98 * s;
+    var statW = 156 * s, statH = 84 * s;
+    var marginX = lerp(0.1, 0.04, s); // more inset margin at smaller scale
+
+    panels.push(makeLineChartPanel(W * marginX, H * 0.16, lineW, lineH, CYAN, 0.5));
+    panels.push(makeRingPanel(W * (marginX + 0.02), H * 0.62, ringSize, VIOLET, 0.4));
+    panels.push(makeBarChartPanel(W * (1 - marginX) - barW, H * 0.18, barW, barH, VIOLET, 0.45));
+    panels.push(makeStatPanel(W * (1 - marginX) - statW, H * 0.64, statW, statH, AMBER, 0.5));
+  }
+
+  function basePanel(x, y, w, h, color, depth) {
+    return {
+      x: x, y: y, w: w, h: h, color: color, depth: depth,
+      baseX: x, baseY: y,
+      floatPhase: Math.random() * Math.PI * 2,
+      floatSpeed: 0.25 + Math.random() * 0.2,
+      floatAmp: 6 + Math.random() * 5,
+      appear: 0 // fade-in progress
+    };
+  }
+
+  function makeLineChartPanel(x, y, w, h, color, depth) {
+    var p = basePanel(x, y, w, h, color, depth);
+    p.type = 'line';
+    p.label = 'PERFORMANCE';
+    p.points = [];
+    var n = 18;
+    for (var i = 0; i < n; i++) p.points.push(0.3 + Math.random() * 0.5);
+    p.cursor = 0;
+    p.tick = 0;
+    return p;
+  }
+
+  function makeBarChartPanel(x, y, w, h, color, depth) {
+    var p = basePanel(x, y, w, h, color, depth);
+    p.type = 'bar';
+    p.label = 'TOPIC MASTERY';
+    p.bars = [];
+    var n = 6;
+    for (var i = 0; i < n; i++) p.bars.push({ target: 0.25 + Math.random() * 0.7, cur: 0 });
+    return p;
+  }
+
+  function makeStatPanel(x, y, w, h, color, depth) {
+    var p = basePanel(x, y, w, h, color, depth);
+    p.type = 'stat';
+    p.label = 'STUDY STREAK';
+    p.value = 0;
+    p.target = 24 + Math.floor(Math.random() * 60);
+    p.unit = 'DAYS';
+    return p;
+  }
+
+  function makeRingPanel(x, y, size, color, depth) {
+    var p = basePanel(x, y, size, size, color, depth);
+    p.type = 'ring';
+    p.label = 'SYLLABUS';
+    p.progress = 0;
+    p.target = 0.6 + Math.random() * 0.3;
+    return p;
+  }
+
+  // ---------------- Central AI core ----------------
+  var core = { x: 0, y: 0, baseR: 0, pulse: 0 };
+
+  function buildScene() {
+    buildParticles();
+    buildStreams();
+    buildPanels();
+    core.x = W / 2;
+    // Keep the core low, beneath the headline/sub copy band so it never
+    // fights legibility — it reads as a glow anchor under the CTA area.
+    core.y = isMobile ? H * 0.9 : H * 0.95;
+    core.baseR = Math.min(W, H) * 0.05;
+  }
+
+  // ---------------- Helpers ----------------
+  function lerp(a, b, t) { return a + (b - a) * t; }
+
+  function roundRectPath(x, y, w, h, r) {
+    ctx.beginPath();
+    ctx.moveTo(x + r, y);
+    ctx.arcTo(x + w, y, x + w, y + h, r);
+    ctx.arcTo(x + w, y + h, x, y + h, r);
+    ctx.arcTo(x, y + h, x, y, r);
+    ctx.arcTo(x, y, x + w, y, r);
+    ctx.closePath();
+  }
+
+  // ---------------- Draw functions ----------------
+  function drawBackground(t) {
+    // deep space gradient with slow nebula drift
+    var gx = W * 0.5 + Math.sin(t * 0.00006) * W * 0.08;
+    var gy = H * 0.4 + Math.cos(t * 0.00005) * H * 0.06;
+    var g = ctx.createRadialGradient(gx, gy, 0, gx, gy, Math.max(W, H) * 0.75);
+    g.addColorStop(0, '#0a1018');
+    g.addColorStop(0.45, '#070a10');
+    g.addColorStop(1, '#040508');
+    ctx.fillStyle = g;
+    ctx.fillRect(0, 0, W, H);
+
+    // nebula color washes
+    var n1x = W * (0.22 + Math.sin(t * 0.00004) * 0.04);
+    var n1y = H * (0.25 + Math.cos(t * 0.00003) * 0.03);
+    var neb1 = ctx.createRadialGradient(n1x, n1y, 0, n1x, n1y, Math.max(W, H) * 0.4);
+    neb1.addColorStop(0, 'rgba(' + CYAN + ',0.10)');
+    neb1.addColorStop(1, 'rgba(' + CYAN + ',0)');
+    ctx.fillStyle = neb1;
+    ctx.fillRect(0, 0, W, H);
+
+    var n2x = W * (0.8 - Math.sin(t * 0.000035) * 0.05);
+    var n2y = H * (0.3 + Math.sin(t * 0.000045) * 0.04);
+    var neb2 = ctx.createRadialGradient(n2x, n2y, 0, n2x, n2y, Math.max(W, H) * 0.42);
+    neb2.addColorStop(0, 'rgba(' + VIOLET + ',0.11)');
+    neb2.addColorStop(1, 'rgba(' + VIOLET + ',0)');
+    ctx.fillStyle = neb2;
+    ctx.fillRect(0, 0, W, H);
+  }
+
+  function drawParticles(t, opacityMul) {
+    particleLayers.forEach(function (layer) {
+      var def = layer.def;
+      var px = parallax.x * def.depth * 40;
+      var py = parallax.y * def.depth * 40;
+      layer.points.forEach(function (p) {
+        var drift = Math.sin(t * 0.0002 * p.driftSpeed + p.phase) * 14 * def.depth * 4;
+        var dx = p.baseX + px + drift * 0.3;
+        var dy = p.baseY + py + Math.cos(t * 0.00018 * p.driftSpeed + p.phase) * 10;
+        var tw = 0.6 + 0.4 * Math.sin(t * 0.0016 + p.phase * 3);
+        ctx.beginPath();
+        ctx.fillStyle = 'rgba(' + p.color + ',' + (p.a * tw * opacityMul).toFixed(3) + ')';
+        ctx.shadowColor = 'rgba(' + p.color + ',0.8)';
+        ctx.shadowBlur = p.r * 3;
+        ctx.arc(dx, dy, p.r, 0, Math.PI * 2);
+        ctx.fill();
+      });
+    });
+    ctx.shadowBlur = 0;
+  }
+
+  function drawStreams(t, opacityMul) {
+    streams.forEach(function (s) {
+      var px = parallax.x * s.depth * 30;
+      var py = parallax.y * s.depth * 30;
+      var x1 = s.x1 + px, y1 = s.y1 + py;
+      var x2 = s.x2 + px, y2 = s.y2 + py;
+      var cx = s.cx + px, cy = s.cy + py;
+
+      ctx.beginPath();
+      ctx.moveTo(x1, y1);
+      ctx.quadraticCurveTo(cx, cy, x2, y2);
+      ctx.strokeStyle = 'rgba(' + s.color + ',' + (0.10 * opacityMul).toFixed(3) + ')';
+      ctx.lineWidth = s.width;
+      ctx.stroke();
+
+      // traveling glow pulse along the path
+      var prog = (t * s.speed + s.offset) % 1;
+      var pt = quadPoint(x1, y1, cx, cy, x2, y2, prog);
+      var glowAlpha = 0.85 * opacityMul;
+      var grad = ctx.createRadialGradient(pt.x, pt.y, 0, pt.x, pt.y, 10);
+      grad.addColorStop(0, 'rgba(' + s.color + ',' + glowAlpha.toFixed(3) + ')');
+      grad.addColorStop(1, 'rgba(' + s.color + ',0)');
+      ctx.fillStyle = grad;
+      ctx.beginPath();
+      ctx.arc(pt.x, pt.y, 10, 0, Math.PI * 2);
+      ctx.fill();
+    });
+  }
+
+  function quadPoint(x1, y1, cx, cy, x2, y2, t) {
+    var u = 1 - t;
+    return {
+      x: u * u * x1 + 2 * u * t * cx + t * t * x2,
+      y: u * u * y1 + 2 * u * t * cy + t * t * y2
+    };
+  }
+
+  function drawCore(t, opacityMul) {
+    var px = parallax.x * 12;
+    var py = parallax.y * 12;
+    var cx = core.x + px;
+    var cy = core.y + py;
+    var pulse = 1 + 0.06 * Math.sin(t * 0.0012);
+    var r = core.baseR * pulse;
+
+    // outer glow halo
+    var halo = ctx.createRadialGradient(cx, cy, 0, cx, cy, r * 3.4);
+    halo.addColorStop(0, 'rgba(' + CYAN + ',' + (0.22 * opacityMul).toFixed(3) + ')');
+    halo.addColorStop(0.5, 'rgba(' + VIOLET + ',' + (0.10 * opacityMul).toFixed(3) + ')');
+    halo.addColorStop(1, 'rgba(' + VIOLET + ',0)');
+    ctx.fillStyle = halo;
+    ctx.beginPath();
+    ctx.arc(cx, cy, r * 3.4, 0, Math.PI * 2);
+    ctx.fill();
+
+    // orbiting rings
+    [1.5, 2.05, 2.55].forEach(function (mult, i) {
+      var rotSpeed = (i % 2 === 0 ? 1 : -1) * (0.00012 + i * 0.00004);
+      var ringR = r * mult;
+      ctx.save();
+      ctx.translate(cx, cy);
+      ctx.rotate(t * rotSpeed);
+      ctx.beginPath();
+      ctx.ellipse(0, 0, ringR, ringR * 0.38, 0, 0, Math.PI * 2);
+      ctx.strokeStyle = 'rgba(' + (i === 1 ? VIOLET : CYAN) + ',' + (0.18 * opacityMul).toFixed(3) + ')';
+      ctx.lineWidth = 1;
+      ctx.stroke();
+
+      // a bright dot traveling the ring
+      var ang = t * 0.0009 * (i + 1) * (i % 2 === 0 ? 1 : -1);
+      var dotX = Math.cos(ang) * ringR;
+      var dotY = Math.sin(ang) * ringR * 0.38;
+      ctx.beginPath();
+      ctx.fillStyle = 'rgba(' + (i === 1 ? VIOLET : CYAN) + ',' + (0.9 * opacityMul).toFixed(3) + ')';
+      ctx.shadowColor = 'rgba(' + (i === 1 ? VIOLET : CYAN) + ',1)';
+      ctx.shadowBlur = 10;
+      ctx.arc(dotX, dotY, 2.4, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.shadowBlur = 0;
+      ctx.restore();
+    });
+
+    // core body
+    var bodyGrad = ctx.createRadialGradient(cx - r * 0.3, cy - r * 0.3, 0, cx, cy, r);
+    bodyGrad.addColorStop(0, 'rgba(255,255,255,0.9)');
+    bodyGrad.addColorStop(0.25, 'rgba(' + CYAN + ',0.85)');
+    bodyGrad.addColorStop(1, 'rgba(' + VIOLET + ',0.55)');
+    ctx.fillStyle = bodyGrad;
+    ctx.globalAlpha = opacityMul;
+    ctx.beginPath();
+    ctx.arc(cx, cy, r, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.globalAlpha = 1;
+
+    // inner facets (low-poly AI feel)
+    ctx.save();
+    ctx.translate(cx, cy);
+    ctx.rotate(t * 0.00018);
+    ctx.beginPath();
+    var facets = 6;
+    for (var i = 0; i <= facets; i++) {
+      var a = (i / facets) * Math.PI * 2;
+      var fr = r * (0.55 + 0.08 * Math.sin(t * 0.001 + i));
+      var fx = Math.cos(a) * fr;
+      var fy = Math.sin(a) * fr;
+      if (i === 0) ctx.moveTo(fx, fy); else ctx.lineTo(fx, fy);
+    }
+    ctx.closePath();
+    ctx.strokeStyle = 'rgba(255,255,255,0.5)';
+    ctx.lineWidth = 1;
+    ctx.stroke();
+    ctx.restore();
+  }
+
+  // -- Panels --
+  function drawPanelFrame(p, x, y) {
+    ctx.save();
+    roundRectPath(x, y, p.w, p.h, 10);
+    ctx.fillStyle = 'rgba(10,13,20,' + (0.55 * p.appear).toFixed(3) + ')';
+    ctx.fill();
+    ctx.strokeStyle = 'rgba(' + p.color + ',' + (0.35 * p.appear).toFixed(3) + ')';
+    ctx.lineWidth = 1;
+    ctx.stroke();
+
+    // top accent line
+    ctx.beginPath();
+    ctx.moveTo(x + 12, y);
+    ctx.lineTo(x + p.w - 12, y);
+    ctx.strokeStyle = 'rgba(' + p.color + ',' + (0.5 * p.appear).toFixed(3) + ')';
+    ctx.lineWidth = 1.4;
+    ctx.stroke();
+
+    // label
+    ctx.font = '600 8px "JetBrains Mono", monospace';
+    ctx.fillStyle = 'rgba(255,255,255,' + (0.55 * p.appear).toFixed(3) + ')';
+    ctx.textBaseline = 'top';
+    ctx.fillText(p.label, x + 12, y + 11);
+
+    // status dot
+    ctx.beginPath();
+    ctx.arc(x + p.w - 14, y + 15, 2.4, 0, Math.PI * 2);
+    ctx.fillStyle = 'rgba(' + p.color + ',' + (0.9 * p.appear).toFixed(3) + ')';
+    ctx.shadowColor = 'rgba(' + p.color + ',1)';
+    ctx.shadowBlur = 6;
+    ctx.fill();
+    ctx.shadowBlur = 0;
+    ctx.restore();
+  }
+
+  function drawLinePanel(p, x, y, t) {
+    drawPanelFrame(p, x, y);
+    var padX = 12, padTop = 26, padBottom = 10;
+    var plotW = p.w - padX * 2;
+    var plotH = p.h - padTop - padBottom;
+
+    // advance series occasionally
+    p.tick += 1;
+    if (p.tick % 38 === 0) {
+      p.points.shift();
+      var last = p.points[p.points.length - 1];
+      var next = Math.max(0.15, Math.min(0.95, last + (Math.random() - 0.45) * 0.22));
+      p.points.push(next);
+    }
+
+    ctx.save();
+    roundRectPath(x, y, p.w, p.h, 10);
+    ctx.clip();
+
+    ctx.beginPath();
+    p.points.forEach(function (v, i) {
+      var px = x + padX + (i / (p.points.length - 1)) * plotW;
+      var py = y + padTop + (1 - v) * plotH;
+      if (i === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+    });
+    var lineGrad = ctx.createLinearGradient(x, y, x + p.w, y);
+    lineGrad.addColorStop(0, 'rgba(' + p.color + ',' + (0.9 * p.appear).toFixed(3) + ')');
+    lineGrad.addColorStop(1, 'rgba(' + p.color + ',' + (0.5 * p.appear).toFixed(3) + ')');
+    ctx.strokeStyle = lineGrad;
+    ctx.lineWidth = 1.6;
+    ctx.lineJoin = 'round';
+    ctx.stroke();
+
+    // fill under line
+    ctx.lineTo(x + padX + plotW, y + p.h - padBottom);
+    ctx.lineTo(x + padX, y + p.h - padBottom);
+    ctx.closePath();
+    var fillGrad = ctx.createLinearGradient(x, y + padTop, x, y + p.h - padBottom);
+    fillGrad.addColorStop(0, 'rgba(' + p.color + ',' + (0.22 * p.appear).toFixed(3) + ')');
+    fillGrad.addColorStop(1, 'rgba(' + p.color + ',0)');
+    ctx.fillStyle = fillGrad;
+    ctx.fill();
+    ctx.restore();
+  }
+
+  function drawBarPanel(p, x, y) {
+    drawPanelFrame(p, x, y);
+    var padX = 12, padTop = 26, padBottom = 10;
+    var plotW = p.w - padX * 2;
+    var plotH = p.h - padTop - padBottom;
+    var gap = 6;
+    var bw = (plotW - gap * (p.bars.length - 1)) / p.bars.length;
+
+    p.bars.forEach(function (b, i) {
+      b.cur = lerp(b.cur, b.target, 0.02);
+      if (Math.random() < 0.003) b.target = 0.25 + Math.random() * 0.7;
+      var bx = x + padX + i * (bw + gap);
+      var bh = plotH * b.cur;
+      var by = y + padTop + (plotH - bh);
+      roundRectPath(bx, by, bw, bh, 2);
+      var g = ctx.createLinearGradient(bx, by, bx, by + bh);
+      g.addColorStop(0, 'rgba(' + p.color + ',' + (0.85 * p.appear).toFixed(3) + ')');
+      g.addColorStop(1, 'rgba(' + p.color + ',' + (0.25 * p.appear).toFixed(3) + ')');
+      ctx.fillStyle = g;
+      ctx.fill();
+    });
+  }
+
+  function drawStatPanel(p, x, y) {
+    drawPanelFrame(p, x, y);
+    p.value = lerp(p.value, p.target, 0.015);
+    ctx.save();
+    ctx.font = '700 ' + Math.round(p.h * 0.34) + 'px "Sora", sans-serif';
+    ctx.fillStyle = 'rgba(255,255,255,' + (0.92 * p.appear).toFixed(3) + ')';
+    ctx.textBaseline = 'alphabetic';
+    var val = Math.round(p.value).toString();
+    ctx.fillText(val, x + 12, y + p.h - 16);
+    var valW = ctx.measureText(val).width;
+    ctx.font = '600 9px "JetBrains Mono", monospace';
+    ctx.fillStyle = 'rgba(' + p.color + ',' + (0.8 * p.appear).toFixed(3) + ')';
+    ctx.fillText(p.unit, x + 16 + valW, y + p.h - 16);
+    ctx.restore();
+  }
+
+  function drawRingPanel(p, x, y, t) {
+    var cx = x + p.w / 2;
+    var cy = y + p.h / 2;
+    var r = p.w / 2 - 8;
+
+    ctx.save();
+    ctx.beginPath();
+    ctx.arc(cx, cy, r, 0, Math.PI * 2);
+    ctx.fillStyle = 'rgba(10,13,20,' + (0.5 * p.appear).toFixed(3) + ')';
+    ctx.fill();
+    ctx.strokeStyle = 'rgba(255,255,255,' + (0.08 * p.appear).toFixed(3) + ')';
+    ctx.lineWidth = 6;
+    ctx.stroke();
+
+    p.progress = lerp(p.progress, p.target, 0.01);
+    ctx.beginPath();
+    ctx.arc(cx, cy, r, -Math.PI / 2, -Math.PI / 2 + Math.PI * 2 * p.progress);
+    ctx.strokeStyle = 'rgba(' + p.color + ',' + (0.85 * p.appear).toFixed(3) + ')';
+    ctx.lineWidth = 6;
+    ctx.lineCap = 'round';
+    ctx.shadowColor = 'rgba(' + p.color + ',0.6)';
+    ctx.shadowBlur = 10;
+    ctx.stroke();
+    ctx.shadowBlur = 0;
+
+    ctx.font = '700 15px "Sora", sans-serif';
+    ctx.fillStyle = 'rgba(255,255,255,' + (0.9 * p.appear).toFixed(3) + ')';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(Math.round(p.progress * 100) + '%', cx, cy - 4);
+    ctx.font = '600 7px "JetBrains Mono", monospace';
+    ctx.fillStyle = 'rgba(' + p.color + ',' + (0.75 * p.appear).toFixed(3) + ')';
+    ctx.fillText(p.label, cx, cy + 12);
+    ctx.textAlign = 'left';
+    ctx.textBaseline = 'alphabetic';
+    ctx.restore();
+  }
+
+  function drawPanels(t, opacityMul) {
+    panels.forEach(function (p) {
+      p.appear = Math.min(1, p.appear + 0.012);
+      var floatY = Math.sin(t * 0.0006 * p.floatSpeed + p.floatPhase) * p.floatAmp;
+      var floatX = Math.cos(t * 0.0004 * p.floatSpeed + p.floatPhase) * (p.floatAmp * 0.5);
+      var px = parallax.x * p.depth * 50;
+      var py = parallax.y * p.depth * 50;
+      var x = p.baseX + floatX + px;
+      var y = p.baseY + floatY + py;
+
+      ctx.globalAlpha = opacityMul;
+      if (p.type === 'line') drawLinePanel(p, x, y, t);
+      else if (p.type === 'bar') drawBarPanel(p, x, y);
+      else if (p.type === 'stat') drawStatPanel(p, x, y);
+      else if (p.type === 'ring') drawRingPanel(p, x, y, t);
+      ctx.globalAlpha = 1;
+    });
+  }
+
+  // ---------------- Animation loop ----------------
+  var lastT = 0;
+  var running = true;
+  var fadeOpacity = 1; // fades content slightly on scroll-out for perf/feel
+
+  function frame(now) {
+    if (!running) return;
+    var t = now;
+    lastT = t;
+
+    // ease parallax toward pointer target
+    var targetX = (pointer.x - 0.5) * 2;
+    var targetY = (pointer.y - 0.5) * 2;
+    parallax.x = lerp(parallax.x, targetX, 0.04);
+    parallax.y = lerp(parallax.y, targetY, 0.04);
+
+    ctx.clearRect(0, 0, W, H);
+    drawBackground(t);
+    drawStreams(t, fadeOpacity);
+    drawParticles(t, fadeOpacity);
+    drawCore(t, fadeOpacity);
+    drawPanels(t, fadeOpacity);
+
+    requestAnimationFrame(frame);
+  }
+
+  function staticFrame() {
+    // For reduced-motion: render one calm frame, no animation loop
+    ctx.clearRect(0, 0, W, H);
+    drawBackground(0);
+    drawStreams(0, 1);
+    drawParticles(0, 1);
+    drawCore(0, 1);
+    panels.forEach(function (p) { p.appear = 1; p.value = p.target; p.progress = p.target; p.bars && p.bars.forEach(function(b){ b.cur = b.target; }); });
+    drawPanels(0, 1);
+  }
+
+  // ---------------- Input handlers ----------------
+  function onPointerMove(e) {
+    var rect = hero.getBoundingClientRect();
+    pointer.x = (e.clientX - rect.left) / rect.width;
+    pointer.y = (e.clientY - rect.top) / rect.height;
+  }
+
+  function onScroll() {
+    var rect = hero.getBoundingClientRect();
+    var visibleRatio = Math.max(0, Math.min(1, (rect.bottom) / (rect.height + window.innerHeight * 0.2)));
+    fadeOpacity = Math.max(0.15, Math.min(1, visibleRatio));
+    // pause loop entirely once far out of view to save battery
+    var inView = rect.bottom > -200 && rect.top < window.innerHeight + 200;
+    if (inView && !running) { running = true; requestAnimationFrame(frame); }
+    if (!inView) { running = false; }
+  }
+
+  var resizeTimer;
+  function onResize() {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(function () {
+      resize();
+      if (reduceMotion) staticFrame();
+    }, 120);
+  }
+
+  window.addEventListener('resize', onResize);
+  window.addEventListener('orientationchange', onResize);
+  window.addEventListener('scroll', onScroll, { passive: true });
+  hero.addEventListener('pointermove', onPointerMove, { passive: true });
+  hero.addEventListener('pointerleave', function () { pointer.x = 0.5; pointer.y = 0.5; }, { passive: true });
+
+  // init
+  resize();
+
+  if (reduceMotion) {
+    staticFrame();
+  } else {
+    requestAnimationFrame(frame);
+  }
 })();
 </script>
 
