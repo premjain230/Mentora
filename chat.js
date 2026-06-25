@@ -3,6 +3,7 @@
 // - Calls Groq API (llama-3.3-70b-versatile) with full conversation history.
 // - Streams the response token-by-token into the UI.
 // - Persists each session to Firestore under users/{uid}/chats/{chatId}/messages.
+// - Action buttons: thumbs up, thumbs down, copy, share on every AI response.
 // - Exports: sendMessage(), renderMessage(), clearWelcome(), setActiveChatId()
 
 import { auth, db } from "./firebase-config.js";
@@ -25,15 +26,86 @@ Always be encouraging, precise, and structured. Use markdown formatting: headers
 When solving problems, show all working clearly. When explaining concepts, use relatable analogies.
 Keep responses focused and never pad with unnecessary filler.`;
 
+// ─── SVG Icons ────────────────────────────────────────────────────────────────
+const ICON_THUMBUP = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3H14z"/><path d="M7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"/></svg>`;
+const ICON_THUMBDOWN = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 15v4a3 3 0 0 0 3 3l4-9V2H5.72a2 2 0 0 0-2 1.7l-1.38 9a2 2 0 0 0 2 2.3H10z"/><path d="M17 2h2.67A2.31 2.31 0 0 1 22 4v7a2.31 2.31 0 0 1-2.33 2H17"/></svg>`;
+const ICON_COPY = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>`;
+const ICON_COPY_CHECK = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>`;
+const ICON_SHARE = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>`;
+
+// ─── Action buttons CSS (injected once) ──────────────────────────────────────
+(function injectActionButtonStyles() {
+  if (document.getElementById("aquila-action-styles")) return;
+  const style = document.createElement("style");
+  style.id = "aquila-action-styles";
+  style.textContent = `
+    .ai-actions {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 14px;
+      flex-wrap: wrap;
+    }
+    .ai-action-btn {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      padding: 5px 11px;
+      font-size: 12px;
+      font-family: 'Sora', sans-serif;
+      font-weight: 400;
+      border-radius: 8px;
+      border: 1px solid rgba(255,255,255,0.08);
+      background: transparent;
+      color: #4a4d62;
+      cursor: pointer;
+      transition: all 0.15s;
+      line-height: 1;
+    }
+    .ai-action-btn:hover {
+      color: #8b8fa8;
+      border-color: rgba(255,255,255,0.16);
+      background: rgba(255,255,255,0.04);
+    }
+    .ai-action-btn.active-good {
+      color: #00d4ff;
+      border-color: rgba(0,212,255,0.4);
+      background: rgba(0,212,255,0.08);
+    }
+    .ai-action-btn.active-bad {
+      color: #ff6b6b;
+      border-color: rgba(255,107,107,0.4);
+      background: rgba(255,107,107,0.08);
+    }
+    .ai-action-btn.active-copy {
+      color: #00d4ff;
+      border-color: rgba(0,212,255,0.4);
+      background: rgba(0,212,255,0.08);
+    }
+    .ai-action-btn.active-share {
+      color: #a78bfa;
+      border-color: rgba(167,139,250,0.4);
+      background: rgba(167,139,250,0.08);
+    }
+    .ai-action-divider {
+      width: 1px;
+      height: 16px;
+      background: rgba(255,255,255,0.08);
+      flex-shrink: 0;
+      margin: 0 2px;
+    }
+  `;
+  document.head.appendChild(style);
+})();
+
 // ─── State ───────────────────────────────────────────────────────────────────
-let conversationHistory = []; // { role, content }[]
+let conversationHistory = [];
 let activeChatId        = null;
 let isStreaming         = false;
 
 export function setActiveChatId(id) { activeChatId = id; }
 
 // ─── Public: sendMessage ──────────────────────────────────────────────────────
-// Called by home.html's sendMessage() global wrapper
 export async function sendMessage() {
   if (isStreaming) return;
 
@@ -41,7 +113,6 @@ export async function sendMessage() {
   const rawText = input?.value?.trim();
   if (!rawText) return;
 
-  const text = escapeHtml(rawText);
   input.value = "";
   input.style.height = "auto";
 
@@ -50,21 +121,21 @@ export async function sendMessage() {
 
   conversationHistory.push({ role: "user", content: rawText });
 
-  // Persist user message
   const chatRef = await ensureChatSession(rawText);
-
   await saveMessage(chatRef, "user", rawText);
 
-  // Render loading bubble
   const aiBubble = createAiBubble();
   isStreaming     = true;
 
   try {
     const replyText = await streamGroqResponse(aiBubble);
+    // Append action buttons after streaming finishes
+    const actions = createActionButtons(replyText);
+    aiBubble.appendChild(actions);
+
     conversationHistory.push({ role: "assistant", content: replyText });
     await saveMessage(chatRef, "assistant", replyText);
 
-    // Update chat title after first exchange
     if (conversationHistory.length === 2) {
       const title = rawText.slice(0, 60) + (rawText.length > 60 ? "…" : "");
       await updateChatTitle(chatRef, title);
@@ -75,6 +146,85 @@ export async function sendMessage() {
   } finally {
     isStreaming = false;
   }
+}
+
+// ─── Create action buttons ────────────────────────────────────────────────────
+function createActionButtons(rawText) {
+  const wrap = document.createElement("div");
+  wrap.className = "ai-actions";
+
+  // Thumbs up
+  const likeBtn = document.createElement("button");
+  likeBtn.className = "ai-action-btn";
+  likeBtn.title = "Good response";
+  likeBtn.innerHTML = `${ICON_THUMBUP}<span>Good</span>`;
+  likeBtn.addEventListener("click", () => {
+    const isActive = likeBtn.classList.toggle("active-good");
+    dislikeBtn.classList.remove("active-bad");
+    likeBtn.querySelector("span").textContent = isActive ? "Liked!" : "Good";
+    dislikeBtn.querySelector("span").textContent = "Bad";
+  });
+
+  // Thumbs down
+  const dislikeBtn = document.createElement("button");
+  dislikeBtn.className = "ai-action-btn";
+  dislikeBtn.title = "Bad response";
+  dislikeBtn.innerHTML = `${ICON_THUMBDOWN}<span>Bad</span>`;
+  dislikeBtn.addEventListener("click", () => {
+    const isActive = dislikeBtn.classList.toggle("active-bad");
+    likeBtn.classList.remove("active-good");
+    dislikeBtn.querySelector("span").textContent = isActive ? "Noted!" : "Bad";
+    likeBtn.querySelector("span").textContent = "Good";
+  });
+
+  // Divider
+  const divider = document.createElement("div");
+  divider.className = "ai-action-divider";
+
+  // Copy
+  const copyBtn = document.createElement("button");
+  copyBtn.className = "ai-action-btn";
+  copyBtn.title = "Copy response";
+  copyBtn.innerHTML = `${ICON_COPY}<span>Copy</span>`;
+  copyBtn.addEventListener("click", () => {
+    navigator.clipboard.writeText(rawText).catch(() => {});
+    copyBtn.classList.add("active-copy");
+    copyBtn.innerHTML = `${ICON_COPY_CHECK}<span>Copied!</span>`;
+    setTimeout(() => {
+      copyBtn.classList.remove("active-copy");
+      copyBtn.innerHTML = `${ICON_COPY}<span>Copy</span>`;
+    }, 2200);
+  });
+
+  // Share
+  const shareBtn = document.createElement("button");
+  shareBtn.className = "ai-action-btn";
+  shareBtn.title = "Share response";
+  shareBtn.innerHTML = `${ICON_SHARE}<span>Share</span>`;
+  shareBtn.addEventListener("click", () => {
+    const sharePayload = {
+      title: "Aquila AI",
+      text: `Here's what Aquila AI said:\n\n${rawText}`,
+    };
+    if (navigator.share) {
+      navigator.share(sharePayload).catch(() => {});
+    } else {
+      navigator.clipboard.writeText(sharePayload.text).catch(() => {});
+      shareBtn.classList.add("active-share");
+      shareBtn.querySelector("span").textContent = "Link copied!";
+      setTimeout(() => {
+        shareBtn.classList.remove("active-share");
+        shareBtn.querySelector("span").textContent = "Share";
+      }, 2200);
+    }
+  });
+
+  wrap.appendChild(likeBtn);
+  wrap.appendChild(dislikeBtn);
+  wrap.appendChild(divider);
+  wrap.appendChild(copyBtn);
+  wrap.appendChild(shareBtn);
+  return wrap;
 }
 
 // ─── Groq streaming ───────────────────────────────────────────────────────────
@@ -113,7 +263,7 @@ async function streamGroqResponse(bubble) {
 
     buffer += decoder.decode(value, { stream: true });
     const lines = buffer.split("\n");
-    buffer = lines.pop(); // keep incomplete line
+    buffer = lines.pop();
 
     for (const line of lines) {
       const stripped = line.replace(/^data: /, "").trim();
@@ -130,7 +280,6 @@ async function streamGroqResponse(bubble) {
     }
   }
 
-  // Remove streaming cursor
   bubble.innerHTML = renderMarkdown(fullText);
   scrollChatToBottom();
   return fullText;
@@ -143,8 +292,7 @@ export function renderMessage(role, content) {
 
   if (role === "user") {
     const wrap = document.createElement("div");
-    wrap.style.cssText =
-      "display:flex;justify-content:flex-end;padding:6px 20px;";
+    wrap.style.cssText = "display:flex;justify-content:flex-end;padding:6px 20px;";
     wrap.innerHTML = `
       <div style="
         background:#1e2130;
@@ -161,17 +309,19 @@ export function renderMessage(role, content) {
   } else {
     const wrap = document.createElement("div");
     wrap.style.cssText = "display:flex;gap:12px;padding:6px 20px;align-items:flex-start;";
+    const bubble = document.createElement("div");
+    bubble.className = "ai-message";
+    bubble.style.cssText = "flex:1;font-size:14px;line-height:1.75;color:#e8ecf0;word-break:break-word;";
+    bubble.innerHTML = renderMarkdown(content);
+    bubble.appendChild(createActionButtons(content));
     wrap.innerHTML = `
       <div style="
         width:30px;height:30px;flex-shrink:0;
         background:linear-gradient(135deg,#6c63ff,#00d4aa);
         border-radius:8px;display:flex;align-items:center;
         justify-content:center;font-size:14px;margin-top:2px;
-      ">🎓</div>
-      <div class="ai-message" style="
-        flex:1;font-size:14px;line-height:1.75;color:#e8ecf0;
-        word-break:break-word;
-      ">${renderMarkdown(content)}</div>`;
+      ">🎓</div>`;
+    wrap.appendChild(bubble);
     chatArea.appendChild(wrap);
   }
   scrollChatToBottom();
@@ -183,8 +333,7 @@ function createAiBubble() {
   wrap.style.cssText = "display:flex;gap:12px;padding:6px 20px;align-items:flex-start;";
   const bubble = document.createElement("div");
   bubble.className = "ai-message";
-  bubble.style.cssText =
-    "flex:1;font-size:14px;line-height:1.75;color:#e8ecf0;word-break:break-word;";
+  bubble.style.cssText = "flex:1;font-size:14px;line-height:1.75;color:#e8ecf0;word-break:break-word;";
   bubble.innerHTML = typingIndicator();
   wrap.innerHTML = `
     <div style="
@@ -210,21 +359,17 @@ function scrollChatToBottom() {
 }
 
 // ─── Minimal markdown renderer ────────────────────────────────────────────────
-// Converts the most common markdown to HTML without a library dependency.
 function renderMarkdown(md) {
   let html = escapeHtml(md);
 
-  // Code blocks  ```lang\n...\n```
   html = html.replace(/```[\w]*\n?([\s\S]*?)```/g, (_, code) =>
     `<pre style="background:#1a1d27;border:1px solid rgba(255,255,255,0.07);border-radius:10px;padding:14px 16px;overflow-x:auto;font-family:'Space Mono',monospace;font-size:12.5px;margin:10px 0;"><code>${code.trim()}</code></pre>`
   );
 
-  // Inline code `code`
   html = html.replace(/`([^`]+)`/g,
     `<code style="background:rgba(108,99,255,0.15);border-radius:4px;padding:2px 6px;font-family:'Space Mono',monospace;font-size:12.5px;color:#a78bfa;">$1</code>`
   );
 
-  // ### headers
   html = html.replace(/^### (.+)$/gm,
     `<h3 style="font-size:15px;font-weight:600;color:#f0f0f8;margin:14px 0 6px;">$1</h3>`
   );
@@ -235,15 +380,12 @@ function renderMarkdown(md) {
     `<h1 style="font-size:20px;font-weight:700;color:#f0f0f8;margin:18px 0 10px;">$1</h1>`
   );
 
-  // **bold**
   html = html.replace(/\*\*(.+?)\*\*/g,
     `<strong style="color:#f0f0f8;font-weight:600;">$1</strong>`
   );
 
-  // *italic*
   html = html.replace(/\*(.+?)\*/g, `<em>$1</em>`);
 
-  // Bullet lists  - item
   html = html.replace(/^[*\-] (.+)$/gm,
     `<li style="margin:4px 0 4px 18px;list-style:disc;">$1</li>`
   );
@@ -251,17 +393,14 @@ function renderMarkdown(md) {
     `<ul style="margin:8px 0;">$1</ul>`
   );
 
-  // Numbered lists  1. item
   html = html.replace(/^\d+\. (.+)$/gm,
     `<li style="margin:4px 0 4px 18px;">$1</li>`
   );
 
-  // Horizontal rule ---
   html = html.replace(/^---$/gm,
     `<hr style="border:none;border-top:1px solid rgba(255,255,255,0.08);margin:16px 0;">`
   );
 
-  // Newlines → <br>
   html = html.replace(/\n/g, "<br>");
 
   return html;
@@ -303,7 +442,6 @@ async function ensureChatSession(firstMessage) {
     return doc(db, "users", user.uid, "chats", activeChatId);
   }
 
-  // Create a new chat document
   const title  = firstMessage.slice(0, 60) + (firstMessage.length > 60 ? "…" : "");
   const chatRef = await addDoc(
     collection(db, "users", user.uid, "chats"),
@@ -325,7 +463,6 @@ async function saveMessage(chatRef, role, content) {
     content,
     ts: serverTimestamp(),
   });
-  // Update updatedAt on parent
   await setDoc(chatRef, { updatedAt: serverTimestamp() }, { merge: true });
 }
 
