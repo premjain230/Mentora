@@ -3,376 +3,778 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Aquila AI — Sign Up</title>
-<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<title>Aquila AI — Create Account</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet"/>
 <style>
-:root{
-  --bg:#03020a;--s2:#0d0b1a;--border:#ffffff08;--border2:#ffffff14;
-  --text:#f0eeff;--sub:#6b6893;--accent:#7c6aff;--accent2:#a78bfa;
-  --cyan:#06d6cf;--pink:#f472b6;
-}
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-html{height:100%}
-body{background:var(--bg);font-family:'Sora',sans-serif;color:var(--text);min-height:100vh;position:relative}
-
-/* cursor — desktop only */
-@media(pointer:fine){
-  #cur-dot{position:fixed;width:6px;height:6px;background:#fff;border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);transition:width .2s,height .2s,background .2s}
-  #cur-ring{position:fixed;width:32px;height:32px;border:1.5px solid rgba(124,106,255,0.7);border-radius:50%;pointer-events:none;z-index:9998;transform:translate(-50%,-50%);transition:width .25s,height .25s,border-color .25s,opacity .25s}
-  body.hovering #cur-dot{width:8px;height:8px;background:var(--accent2)}
-  body.hovering #cur-ring{width:48px;height:48px;border-color:rgba(167,139,250,0.5)}
-}
-@media(pointer:coarse){#cur-dot,#cur-ring{display:none}}
-
-.grid-bg{position:fixed;inset:0;pointer-events:none;z-index:0;
-  background-image:linear-gradient(rgba(124,106,255,0.035) 1px,transparent 1px),linear-gradient(90deg,rgba(124,106,255,0.035) 1px,transparent 1px);
-  background-size:64px 64px;
-  -webkit-mask-image:radial-gradient(ellipse 85% 85% at 50% 50%,black 20%,transparent 100%);
-  mask-image:radial-gradient(ellipse 85% 85% at 50% 50%,black 20%,transparent 100%)}
-
-.orb{position:fixed;border-radius:50%;pointer-events:none;z-index:0;filter:blur(90px)}
-.orb1{width:520px;height:520px;background:radial-gradient(circle,rgba(124,106,255,0.14),transparent 70%);top:-120px;right:-120px;animation:o1 14s ease-in-out infinite}
-.orb2{width:380px;height:380px;background:radial-gradient(circle,rgba(6,214,207,0.08),transparent 70%);bottom:-80px;left:-80px;animation:o2 11s ease-in-out infinite}
-.orb3{width:260px;height:260px;background:radial-gradient(circle,rgba(244,114,182,0.07),transparent 70%);top:45%;left:20%;animation:o3 9s ease-in-out infinite}
-@keyframes o1{0%,100%{transform:translate(0,0)}50%{transform:translate(-50px,40px)}}
-@keyframes o2{0%,100%{transform:translate(0,0)}50%{transform:translate(40px,-50px)}}
-@keyframes o3{0%,100%{transform:translate(0,0)}50%{transform:translate(-25px,25px)}}
-
-.noise{position:fixed;inset:0;pointer-events:none;z-index:1;opacity:0.022;
-  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-  background-size:180px 180px}
-
-.particles{position:fixed;inset:0;pointer-events:none;z-index:2}
-.particle{position:absolute;border-radius:50%;animation:pfloat var(--dur) ease-in-out infinite var(--del)}
-@keyframes pfloat{0%{transform:translateY(0) translateX(0);opacity:0}15%{opacity:var(--op)}85%{opacity:var(--op)}100%{transform:translateY(-110px) translateX(var(--drift));opacity:0}}
-
-/* ── LAYOUT ── */
-.page{
-  position:relative;z-index:10;
-  display:flex;width:100%;min-height:100vh;
-  align-items:center;justify-content:center;
+:root {
+  --bg: #070810;
+  --surface: #0f1117;
+  --card: #13151f;
+  --card2: #1a1d27;
+  --border: rgba(255,255,255,0.07);
+  --border-focus: rgba(0,212,255,0.5);
+  --text: #f0f0f8;
+  --sub: #6b6f8a;
+  --muted: #3a3d52;
+  --accent: #00d4ff;
+  --violet: #a78bfa;
+  --error: #ff6b6b;
+  --success: #34d399;
+  --font: 'Sora', sans-serif;
+  --mono: 'Space Mono', monospace;
 }
 
-/* Desktop: side-by-side */
-@media(min-width:900px){
-  body{overflow:hidden}
-  .page{height:100vh}
-  .panel{flex:1;max-width:520px;padding:0 60px;display:flex;flex-direction:column;justify-content:center;height:100vh;overflow-y:auto}
-  .panel::-webkit-scrollbar{display:none}
-  .divider-v{display:block}
-  .brand-panel{animation:fadeL .9s cubic-bezier(.22,1,.36,1) .12s both}
-  .form-panel{animation:fadeR .9s cubic-bezier(.22,1,.36,1) both}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { height: 100%; }
+body {
+  font-family: var(--font);
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow-x: hidden;
+  position: relative;
+  -webkit-font-smoothing: antialiased;
 }
 
-/* Mobile: stacked, form first */
-@media(max-width:899px){
-  .page{flex-direction:column;align-items:stretch;padding:0}
-  .panel{width:100%;max-width:100%;padding:32px 20px}
-  .form-panel{order:1;padding-top:40px}
-  .brand-panel{order:2;padding-bottom:48px;border-top:1px solid var(--border2)}
-  .divider-v{display:none}
+.bg-layer {
+  position: fixed; inset: 0; pointer-events: none; z-index: 0;
+  background:
+    radial-gradient(ellipse 700px 500px at 80% 0%, rgba(167,139,250,0.07) 0%, transparent 60%),
+    radial-gradient(ellipse 600px 500px at 15% 100%, rgba(0,212,255,0.07) 0%, transparent 60%),
+    radial-gradient(ellipse 400px 400px at 50% 45%, rgba(167,139,250,0.03) 0%, transparent 70%);
 }
 
-@keyframes fadeL{from{opacity:0;transform:translateX(-28px)}to{opacity:1;transform:translateX(0)}}
-@keyframes fadeR{from{opacity:0;transform:translateX(28px)}to{opacity:1;transform:translateX(0)}}
-
-.divider-v{width:1px;height:68vh;flex-shrink:0;position:relative;background:linear-gradient(to bottom,transparent,var(--border2) 25%,var(--border2) 75%,transparent)}
-.divider-v .scan{position:absolute;left:0;width:1px;height:56px;background:linear-gradient(to bottom,transparent,var(--cyan),transparent);animation:scan 4s ease-in-out infinite}
-@keyframes scan{0%{top:5%}50%{top:70%}100%{top:5%}}
-
-/* ── LOGO ── */
-.logo{display:flex;align-items:center;gap:11px;margin-bottom:28px}
-.logo svg{width:36px;height:36px;flex-shrink:0}
-.logo-name{font-size:19px;font-weight:700;letter-spacing:-0.03em}
-.logo-name span{color:var(--accent2)}
-
-/* ── FORM ── */
-.form-hdr{margin-bottom:22px}
-.form-hdr h2{font-size:24px;font-weight:700;letter-spacing:-0.04em;margin-bottom:6px}
-.form-hdr p{font-size:13px;color:var(--sub)}
-
-.row2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
-@media(max-width:400px){.row2{grid-template-columns:1fr}}
-
-.field{margin-bottom:14px;position:relative}
-.field label{display:block;font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:500;color:var(--sub);letter-spacing:.14em;text-transform:uppercase;margin-bottom:7px}
-.field input,.field select{width:100%;background:#09081a;border:1px solid var(--border2);border-radius:11px;color:var(--text);font-family:'Sora',sans-serif;font-size:16px;/* 16px prevents iOS zoom */padding:13px 16px;outline:none;transition:border-color .22s,box-shadow .22s,background .22s;caret-color:var(--accent);appearance:none;-webkit-appearance:none}
-.field input::placeholder{color:#282640}
-.field input:focus,.field select:focus{border-color:rgba(124,106,255,.55);background:#0b0a1c;box-shadow:0 0 0 4px rgba(124,106,255,.09),inset 0 1px 0 rgba(255,255,255,.03)}
-.field select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236b6893' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;padding-right:38px;cursor:pointer}
-.field select option{background:#0d0b1a;color:var(--text)}
-
-.eye{position:absolute;right:14px;top:37px;cursor:pointer;color:var(--sub);font-size:14px;line-height:1;transition:color .2s;user-select:none;padding:4px;/* larger tap target */}
-.eye:hover{color:var(--accent2)}
-
-.strength-wrap{margin-top:7px}
-.strength-bars{display:flex;gap:4px;margin-bottom:4px}
-.sbar{flex:1;height:3px;border-radius:99px;background:var(--border2);transition:background .35s}
-.sbar.s1{background:var(--pink)}
-.sbar.s2{background:#f59e0b}
-.sbar.s3{background:#22c55e}
-.sbar.s4{background:var(--cyan)}
-.strength-label{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.1em;color:var(--sub);transition:color .35s}
-
-.terms-row{display:flex;align-items:flex-start;gap:9px;margin-bottom:18px;margin-top:4px}
-.terms-row input{accent-color:var(--accent);width:16px;height:16px;flex-shrink:0;margin-top:2px;cursor:pointer}
-.terms-row span{font-size:12px;color:var(--sub);line-height:1.6}
-.terms-row a{color:var(--accent2);text-decoration:none;transition:color .2s}
-.terms-row a:hover{color:#fff}
-
-.btn{width:100%;padding:15px;border-radius:11px;border:none;background:linear-gradient(135deg,#6555ff,#9a7bff);color:#fff;font-family:'Sora',sans-serif;font-size:15px;font-weight:600;cursor:pointer;position:relative;overflow:hidden;transition:transform .18s,box-shadow .18s;letter-spacing:.02em;touch-action:manipulation}
-.btn:hover{transform:translateY(-2px);box-shadow:0 14px 42px rgba(101,85,255,.42)}
-.btn:active{transform:translateY(0)}
-.btn .shine{position:absolute;top:0;left:-100%;width:55%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.14),transparent);transform:skewX(-18deg);animation:shine 3.5s ease-in-out infinite 1.2s}
-@keyframes shine{0%,100%{left:-100%}45%,55%{left:140%}}
-
-.or-row{display:flex;align-items:center;gap:13px;margin:16px 0}
-.or-l{flex:1;height:1px;background:var(--border)}
-.or-t{font-family:'JetBrains Mono',monospace;font-size:10px;color:#2a2845;letter-spacing:.12em}
-
-.btn-google{width:100%;padding:13px;border-radius:11px;border:1px solid var(--border2);background:transparent;color:#7070a0;font-family:'Sora',sans-serif;font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;transition:border-color .2s,color .2s,background .2s;touch-action:manipulation}
-.btn-google:hover{border-color:rgba(124,106,255,.35);color:var(--text);background:rgba(255,255,255,.02)}
-.btn-google svg{width:17px;height:17px;flex-shrink:0}
-
-.foot{text-align:center;margin-top:16px;font-size:13px;color:var(--sub)}
-.foot a{color:var(--accent2);text-decoration:none;font-weight:500;transition:color .2s}
-.foot a:hover{color:#fff}
-
-/* ── BRAND PANEL ── */
-.tag-line{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--cyan);letter-spacing:.2em;text-transform:uppercase;display:flex;align-items:center;gap:9px;margin-bottom:18px}
-.tag-line::before{content:'';width:22px;height:1px;background:var(--cyan);flex-shrink:0}
-
-.headline{font-size:clamp(28px,5vw,46px);font-weight:700;line-height:1.1;letter-spacing:-0.045em;margin-bottom:16px}
-.headline .hl{background:linear-gradient(130deg,var(--cyan),var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent;display:block}
-.headline .dim{color:rgba(240,238,255,0.28);font-weight:300;display:block}
-
-.desc{font-size:13.5px;color:var(--sub);line-height:1.85;max-width:340px;margin-bottom:28px}
-
-.steps-label{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--sub);letter-spacing:.15em;text-transform:uppercase;margin-bottom:14px}
-.steps{display:flex;flex-direction:column;gap:12px;max-width:380px}
-.step{display:flex;align-items:flex-start;gap:14px}
-.step-num{width:26px;height:26px;border-radius:50%;background:rgba(124,106,255,0.12);border:1px solid rgba(124,106,255,0.25);display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:500;color:var(--accent2);flex-shrink:0;margin-top:1px}
-.step-body strong{display:block;font-size:13px;font-weight:600;margin-bottom:2px}
-.step-body span{font-size:12px;color:var(--sub);line-height:1.5}
-
-/* Steps horizontal on mobile */
-@media(max-width:899px){
-  .steps{flex-direction:row;flex-wrap:wrap;gap:10px}
-  .step{flex:1;min-width:140px;flex-direction:column;gap:8px;background:rgba(124,106,255,0.06);border:1px solid var(--border2);border-radius:12px;padding:12px}
-  .step-num{margin-top:0}
+.grid-bg {
+  position: fixed; inset: 0; pointer-events: none; z-index: 0;
+  background-image:
+    linear-gradient(rgba(167,139,250,0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(167,139,250,0.025) 1px, transparent 1px);
+  background-size: 56px 56px;
+  mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 10%, transparent 100%);
+  -webkit-mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 10%, transparent 100%);
 }
 
-.proof{margin-top:28px;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
-.avatars{display:flex}
-.avatar{width:28px;height:28px;border-radius:50%;border:2px solid var(--bg);margin-left:-8px;font-size:11px;display:flex;align-items:center;justify-content:center;font-weight:600}
-.avatars .avatar:first-child{margin-left:0}
-.av1{background:linear-gradient(135deg,#7c6aff,#06d6cf)}
-.av2{background:linear-gradient(135deg,#f472b6,#7c6aff)}
-.av3{background:linear-gradient(135deg,#06d6cf,#22c55e)}
-.av4{background:linear-gradient(135deg,#f59e0b,#f472b6)}
-.proof-txt{font-size:12px;color:var(--sub);line-height:1.55}
-.proof-txt strong{color:var(--text);font-weight:600}
+#constellation {
+  position: fixed; inset: 0; pointer-events: none; z-index: 1;
+  opacity: 0.4;
+}
+
+.particles { position: fixed; inset: 0; pointer-events: none; z-index: 2; }
+.particle {
+  position: absolute; border-radius: 50%;
+  animation: pfloat var(--dur) ease-in-out infinite var(--delay);
+  will-change: transform, opacity;
+}
+@keyframes pfloat {
+  0% { transform: translateY(0) translateX(0); opacity: 0; }
+  15% { opacity: var(--op); }
+  85% { opacity: var(--op); }
+  100% { transform: translateY(-120px) translateX(var(--drift)); opacity: 0; }
+}
+
+/* ── Page ── */
+.page {
+  position: relative; z-index: 10;
+  width: 100%; min-height: 100vh;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  padding: 40px 20px;
+}
+
+.logo {
+  display: flex; align-items: center; gap: 11px;
+  margin-bottom: 28px;
+  animation: fadeDown 0.7s cubic-bezier(0.16,1,0.3,1) both;
+  text-decoration: none;
+}
+.logo-mark { width: 38px; height: 38px; border-radius: 10px; flex-shrink: 0; }
+.logo-mark svg { width: 100%; height: 100%; }
+.logo-name { font-size: 19px; font-weight: 700; letter-spacing: -0.03em; color: var(--text); }
+.logo-name span { color: var(--accent); }
+
+/* ── Progress bar ── */
+.progress-wrap {
+  width: 100%; max-width: 440px;
+  margin-bottom: 14px;
+  animation: fadeDown 0.7s cubic-bezier(0.16,1,0.3,1) 0.05s both;
+}
+.progress-labels {
+  display: flex; gap: 0;
+  margin-bottom: 8px;
+}
+.prog-label {
+  flex: 1; text-align: center;
+  font-size: 10px; font-family: var(--mono);
+  letter-spacing: 0.08em; text-transform: uppercase;
+  color: var(--muted);
+  transition: color 0.3s;
+}
+.prog-label.active { color: var(--accent); }
+.prog-label.done { color: var(--success); }
+
+.progress-track {
+  width: 100%; height: 3px;
+  background: var(--border);
+  border-radius: 10px; overflow: hidden;
+}
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent), var(--violet));
+  border-radius: 10px;
+  transition: width 0.5s cubic-bezier(0.16,1,0.3,1);
+  width: 33.33%;
+  box-shadow: 0 0 8px rgba(0,212,255,0.5);
+}
+
+/* ── Card ── */
+.card {
+  width: 100%; max-width: 440px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 22px;
+  padding: 36px 36px 32px;
+  position: relative;
+  animation: fadeUp 0.7s cubic-bezier(0.16,1,0.3,1) 0.1s both;
+  transition: box-shadow 0.4s, border-color 0.4s;
+}
+.card:hover {
+  box-shadow: 0 20px 64px rgba(0,0,0,0.55), 0 0 0 1px rgba(167,139,250,0.1);
+  border-color: rgba(167,139,250,0.14);
+}
+.card::before {
+  content: '';
+  position: absolute; top: 0; left: 50%; transform: translateX(-50%);
+  width: 60%; height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(167,139,250,0.4), transparent);
+}
+
+@keyframes fadeUp { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes fadeDown { from { opacity: 0; transform: translateY(-16px); } to { opacity: 1; transform: translateY(0); } }
+
+/* ── Steps ── */
+.step-panel { display: none; animation: stepIn 0.4s cubic-bezier(0.16,1,0.3,1) both; }
+.step-panel.active { display: block; }
+@keyframes stepIn { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
+@keyframes stepBack { from { opacity: 0; transform: translateX(-20px); } to { opacity: 1; transform: translateX(0); } }
+.step-panel.back { animation: stepBack 0.4s cubic-bezier(0.16,1,0.3,1) both; }
+
+.card-hdr { margin-bottom: 24px; }
+.card-hdr h1 { font-size: 22px; font-weight: 700; letter-spacing: -0.03em; margin-bottom: 5px; }
+.card-hdr p { font-size: 13px; color: var(--sub); }
+
+/* ── Floating label fields ── */
+.field {
+  position: relative;
+  margin-bottom: 16px;
+}
+.row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px; }
+@media (max-width: 400px) { .row2 { grid-template-columns: 1fr; } }
+
+.field input,
+.field select {
+  width: 100%;
+  background: var(--card2);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  color: var(--text);
+  font-family: var(--font);
+  font-size: 14px;
+  padding: 20px 16px 8px;
+  outline: none;
+  transition: border-color 0.22s, box-shadow 0.22s, background 0.22s;
+  caret-color: var(--accent);
+  appearance: none; -webkit-appearance: none;
+}
+.field input:focus, .field select:focus {
+  border-color: var(--border-focus);
+  background: #161824;
+  box-shadow: 0 0 0 4px rgba(0,212,255,0.08);
+}
+.field input.has-error, .field select.has-error {
+  border-color: rgba(255,107,107,0.6);
+  box-shadow: 0 0 0 4px rgba(255,107,107,0.07);
+}
+.field input.valid { border-color: rgba(52,211,153,0.5); }
+
+.field select {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236b6f8a' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+  padding-right: 38px;
+  cursor: pointer;
+}
+.field select option { background: #1a1d27; color: var(--text); }
+
+.field label {
+  position: absolute;
+  left: 16px; top: 14px;
+  font-size: 13px; font-weight: 500;
+  color: var(--sub);
+  pointer-events: none;
+  transition: top 0.2s cubic-bezier(0.16,1,0.3,1), font-size 0.2s, color 0.2s;
+}
+.field input:focus ~ label,
+.field input:not(:placeholder-shown) ~ label,
+.field select:focus ~ label,
+.field select.filled ~ label {
+  top: 7px;
+  font-size: 10px;
+  font-family: var(--mono);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+.field input.has-error ~ label,
+.field select.has-error ~ label { color: var(--error); }
+.field input.valid ~ label { color: var(--success); }
+
+.field-action {
+  position: absolute; right: 14px; top: 50%; transform: translateY(-50%);
+  background: none; border: none; cursor: pointer;
+  color: var(--muted); padding: 4px;
+  transition: color 0.2s;
+  display: flex; align-items: center;
+}
+.field-action:hover { color: var(--sub); }
+.field-action svg { width: 16px; height: 16px; }
+
+.field-msg {
+  font-size: 11px; font-family: var(--mono);
+  margin-top: 5px; padding-left: 4px;
+  height: 0; overflow: hidden;
+  transition: height 0.2s, opacity 0.2s;
+  opacity: 0; color: var(--error);
+}
+.field-msg.show { height: 16px; opacity: 1; }
+.field-msg.ok { color: var(--success); }
+
+/* ── Password strength ── */
+.strength-wrap { margin-top: 8px; }
+.strength-bars { display: flex; gap: 4px; margin-bottom: 4px; }
+.sbar {
+  flex: 1; height: 3px; border-radius: 99px;
+  background: var(--border);
+  transition: background 0.35s, transform 0.2s;
+}
+.sbar.active { transform: scaleY(1.5); transform-origin: bottom; }
+.strength-row { display: flex; justify-content: space-between; align-items: center; }
+.strength-label {
+  font-family: var(--mono); font-size: 9.5px;
+  letter-spacing: 0.1em; color: var(--sub);
+  transition: color 0.35s;
+}
+.strength-hint { font-size: 10px; color: var(--muted); }
+
+/* ── Terms ── */
+.terms-row {
+  display: flex; align-items: flex-start; gap: 10px;
+  margin-bottom: 18px; margin-top: 4px;
+}
+.terms-row input {
+  accent-color: var(--accent);
+  width: 16px; height: 16px; flex-shrink: 0; margin-top: 2px; cursor: pointer;
+}
+.terms-row span { font-size: 12.5px; color: var(--sub); line-height: 1.6; }
+.terms-row a { color: var(--violet); text-decoration: none; transition: color 0.2s; }
+.terms-row a:hover { color: #fff; }
+
+/* ── Buttons ── */
+.btn-primary {
+  width: 100%; padding: 15px;
+  border-radius: 12px; border: none;
+  background: linear-gradient(135deg, #00b4d8, #00d4ff 50%, #48e3ff);
+  color: #040d12;
+  font-family: var(--font);
+  font-size: 14px; font-weight: 700;
+  cursor: pointer;
+  position: relative; overflow: hidden;
+  transition: transform 0.18s, box-shadow 0.18s;
+  letter-spacing: 0.02em;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+}
+.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 12px 36px rgba(0,212,255,0.38); }
+.btn-primary:active { transform: translateY(0) scale(0.99); }
+.btn-primary .btn-shine {
+  position: absolute; top: 0; left: -100%; width: 50%; height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.22), transparent);
+  transform: skewX(-18deg);
+  animation: shine 4s ease-in-out infinite 1.5s;
+}
+@keyframes shine { 0%, 100% { left: -100%; } 45%, 55% { left: 140%; } }
+.btn-primary.loading { pointer-events: none; }
+.btn-primary.loading .btn-text { opacity: 0; }
+.btn-primary.loading .btn-spinner { display: flex; }
+.btn-spinner { display: none; position: absolute; align-items: center; gap: 5px; }
+.spin-dot {
+  width: 6px; height: 6px; border-radius: 50%; background: #040d12;
+  animation: spinDot 0.9s ease-in-out infinite;
+}
+.spin-dot:nth-child(2) { animation-delay: 0.15s; }
+.spin-dot:nth-child(3) { animation-delay: 0.3s; }
+@keyframes spinDot { 0%, 80%, 100% { transform: scale(0.7); opacity: 0.5; } 40% { transform: scale(1); opacity: 1; } }
+.btn-primary.success { background: linear-gradient(135deg, #059669, #34d399); box-shadow: 0 12px 36px rgba(52,211,153,0.35); }
+.success-check { display: none; }
+.btn-primary.success .success-check { display: block; }
+.btn-primary.success .btn-text { display: none; }
+
+.btn-secondary {
+  width: 100%; padding: 13px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--sub); font-family: var(--font);
+  font-size: 13px; font-weight: 500;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  transition: border-color 0.2s, color 0.2s, background 0.2s;
+  margin-top: 10px;
+}
+.btn-secondary:hover { border-color: var(--border-focus); color: var(--accent); background: rgba(0,212,255,0.04); }
+
+.or-row { display: flex; align-items: center; gap: 12px; margin: 16px 0; }
+.or-line { flex: 1; height: 1px; background: var(--border); }
+.or-text { font-family: var(--mono); font-size: 10px; color: var(--muted); letter-spacing: 0.1em; }
+
+.btn-google {
+  width: 100%; padding: 13px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: rgba(255,255,255,0.025);
+  color: var(--sub); font-family: var(--font);
+  font-size: 13px; font-weight: 500;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center; gap: 10px;
+  transition: border-color 0.2s, color 0.2s, background 0.2s, transform 0.18s;
+}
+.btn-google:hover { border-color: rgba(0,212,255,0.25); color: var(--text); background: rgba(0,212,255,0.04); transform: translateY(-1px); }
+.btn-google svg { width: 17px; height: 17px; flex-shrink: 0; }
+
+.card-foot {
+  text-align: center; margin-top: 22px;
+  font-size: 13px; color: var(--sub);
+  animation: fadeUp 0.7s cubic-bezier(0.16,1,0.3,1) 0.2s both;
+}
+.card-foot a { color: var(--accent); text-decoration: none; font-weight: 600; transition: color 0.2s; }
+.card-foot a:hover { color: #33ddff; }
+
+/* ── Proof strip ── */
+.proof-strip {
+  display: flex; align-items: center; gap: 14px;
+  margin-top: 24px;
+  animation: fadeUp 0.7s cubic-bezier(0.16,1,0.3,1) 0.28s both;
+}
+.avatars { display: flex; }
+.ava {
+  width: 26px; height: 26px; border-radius: 50%;
+  border: 2px solid var(--bg);
+  margin-left: -7px; font-size: 10px; font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+}
+.avatars .ava:first-child { margin-left: 0; }
+.a1 { background: linear-gradient(135deg, #00d4ff, #a78bfa); color: #06121a; }
+.a2 { background: linear-gradient(135deg, #a78bfa, #ff6b6b); color: #fff; }
+.a3 { background: linear-gradient(135deg, #00d4ff, #34d399); color: #06121a; }
+.a4 { background: linear-gradient(135deg, #f59e0b, #a78bfa); color: #fff; }
+.proof-text { font-size: 12px; color: var(--sub); line-height: 1.55; }
+.proof-text strong { color: var(--text); font-weight: 600; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+}
+
+@media (max-width: 480px) {
+  .card { padding: 28px 22px 24px; border-radius: 18px; }
+  .row2 { grid-template-columns: 1fr; }
+}
 </style>
 </head>
 <body>
-<div id="cur-dot"></div>
-<div id="cur-ring"></div>
+
+<div class="bg-layer"></div>
 <div class="grid-bg"></div>
-<div class="orb orb1"></div><div class="orb orb2"></div><div class="orb orb3"></div>
-<div class="noise"></div>
+<canvas id="constellation"></canvas>
 <div class="particles" id="pts"></div>
 
 <div class="page">
 
-  <!-- FORM PANEL -->
-  <div class="panel form-panel">
-    <div class="logo">
-      <svg viewBox="0 0 36 36" fill="none">
-        <rect width="36" height="36" rx="9" fill="rgba(124,106,255,0.15)"/>
-        <path d="M9 25 L18 9 L27 25" stroke="#a78bfa" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-        <path d="M12.5 19.5 L23.5 19.5" stroke="#06d6cf" stroke-width="1.5" stroke-linecap="round"/>
-        <circle cx="18" cy="9" r="2.2" fill="#7c6aff"/>
+  <a href="index.html" class="logo">
+    <div class="logo-mark">
+      <svg viewBox="0 0 38 38" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect x="2" y="2" width="14" height="14" rx="3" fill="#00d4ff" opacity="0.9"/>
+        <rect x="22" y="2" width="14" height="14" rx="3" fill="#a78bfa" opacity="0.9"/>
+        <rect x="2" y="22" width="14" height="14" rx="3" fill="#a78bfa" opacity="0.9"/>
+        <rect x="22" y="22" width="14" height="14" rx="3" fill="#00d4ff" opacity="0.7"/>
+        <rect x="12" y="12" width="14" height="14" rx="3" fill="rgba(0,212,255,0.2)" stroke="#00d4ff" stroke-width="0.8"/>
       </svg>
-      <div class="logo-name">Aqui<span>la AI</span></div>
     </div>
+    <span class="logo-name">Aquila<span> AI</span></span>
+  </a>
 
-    <div class="form-hdr">
-      <h2>Create your account ✨</h2>
-      <p>Join thousands of students learning smarter with AI</p>
+  <!-- Progress -->
+  <div class="progress-wrap">
+    <div class="progress-labels">
+      <div class="prog-label active" id="pl-1">Account</div>
+      <div class="prog-label" id="pl-2">Profile</div>
+      <div class="prog-label" id="pl-3">Done</div>
     </div>
-
-    <div class="row2">
-      <div class="field">
-        <label>First name</label>
-        <input type="text" id="firstName" placeholder="Alex" autocomplete="given-name"/>
-      </div>
-      <div class="field">
-        <label>Last name</label>
-        <input type="text" id="lastName" placeholder="Chen" autocomplete="family-name"/>
-      </div>
+    <div class="progress-track">
+      <div class="progress-fill" id="progressFill"></div>
     </div>
-
-    <div class="field">
-      <label>Email address</label>
-      <input type="email" id="emailF" placeholder="you@example.com" autocomplete="email"/>
-    </div>
-
-    <div class="field">
-      <label>I am a…</label>
-      <select id="examF">
-        <option value="" disabled selected>Select your role</option>
-        <option>High school student</option>
-        <option>Undergraduate student</option>
-        <option>Graduate / postgrad student</option>
-        <option>Self-learner</option>
-        <option>Educator</option>
-        <option>Other</option>
-      </select>
-    </div>
-
-    <div class="field">
-      <label>Password</label>
-      <input type="password" id="pwdF" placeholder="Create a strong password" autocomplete="new-password" oninput="checkStrength(this.value)"/>
-      <span class="eye" id="eyeT" role="button" aria-label="Toggle password visibility">👁</span>
-      <div class="strength-wrap">
-        <div class="strength-bars">
-          <div class="sbar" id="sb1"></div>
-          <div class="sbar" id="sb2"></div>
-          <div class="sbar" id="sb3"></div>
-          <div class="sbar" id="sb4"></div>
-        </div>
-        <div class="strength-label" id="slbl"></div>
-      </div>
-    </div>
-
-    <div class="terms-row">
-      <input type="checkbox" id="terms"/>
-      <span>I agree to Aquila AI's <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>. I'm ready to learn smarter.</span>
-    </div>
-
-    <button class="btn"><div class="shine"></div>Create free account →</button>
-
-    <div class="or-row"><div class="or-l"></div><span class="or-t">or sign up with</span><div class="or-l"></div></div>
-
-    <button class="btn-google">
-      <svg viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
-      Continue with Google
-    </button>
-
-    <div class="foot">Already have an account? <a href="login.html">Sign in →</a></div>
   </div>
 
-  <div class="divider-v"><div class="scan"></div></div>
+  <div class="card" id="signupCard">
 
-  <!-- BRAND PANEL -->
-  <div class="panel brand-panel">
-    <div class="tag-line">Start your journey today</div>
-    <h1 class="headline">
-      Your smartest<br/>
-      <span class="hl">study partner</span>
-      <span class="dim">awaits you.</span>
-    </h1>
-    <p class="desc">Aquila AI adapts to how you learn — whether you need to chat through a concept, schedule your week, or review your progress. It's free to start.</p>
+    <!-- Step 1: Basic info -->
+    <div class="step-panel active" id="step1">
+      <div class="card-hdr">
+        <h1>Create your account ✨</h1>
+        <p>Join thousands of students learning smarter with AI</p>
+      </div>
 
-    <div class="steps-label">How it works</div>
-    <div class="steps">
-      <div class="step">
-        <div class="step-num">01</div>
-        <div class="step-body">
-          <strong>Create your profile</strong>
-          <span>Tell Aquila who you are and what you're studying.</span>
+      <div class="row2">
+        <div class="field" id="f-fn">
+          <input type="text" id="fnIn" placeholder=" " autocomplete="given-name" oninput="clearFieldError('f-fn')"/>
+          <label for="fnIn">First name</label>
+          <div class="field-msg" id="fnMsg"></div>
+        </div>
+        <div class="field" id="f-ln">
+          <input type="text" id="lnIn" placeholder=" " autocomplete="family-name" oninput="clearFieldError('f-ln')"/>
+          <label for="lnIn">Last name</label>
         </div>
       </div>
-      <div class="step">
-        <div class="step-num">02</div>
-        <div class="step-body">
-          <strong>Set your goals</strong>
-          <span>Define targets — exams, topics, or daily habits — and let AI plan the path.</span>
+
+      <div class="field" id="f-email">
+        <input type="email" id="emailIn" placeholder=" " autocomplete="email" oninput="validateEmail()"/>
+        <label for="emailIn">Email address</label>
+        <div class="field-msg" id="emailMsg"></div>
+      </div>
+
+      <div class="field" id="f-pwd">
+        <input type="password" id="pwdIn" placeholder=" " autocomplete="new-password" oninput="checkStrength(this.value)"/>
+        <label for="pwdIn">Create password</label>
+        <button class="field-action" id="eyeBtn" type="button" aria-label="Toggle password">
+          <svg id="eyeShow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          <svg id="eyeHide" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+        </button>
+        <div class="field-msg" id="pwdMsg"></div>
+        <div class="strength-wrap" id="strengthWrap" style="display:none">
+          <div class="strength-bars">
+            <div class="sbar" id="sb1"></div><div class="sbar" id="sb2"></div>
+            <div class="sbar" id="sb3"></div><div class="sbar" id="sb4"></div>
+          </div>
+          <div class="strength-row">
+            <div class="strength-label" id="sLabel"></div>
+            <div class="strength-hint" id="sHint"></div>
+          </div>
         </div>
       </div>
-      <div class="step">
-        <div class="step-num">03</div>
-        <div class="step-body">
-          <strong>Learn with AI</strong>
-          <span>Chat, listen, analyse, and grow. Aquila AI is with you every step.</span>
-        </div>
+
+      <button class="btn-primary" onclick="goToStep2()">
+        <div class="btn-shine"></div>
+        <span class="btn-text">Continue →</span>
+      </button>
+
+      <div class="or-row">
+        <div class="or-line"></div><span class="or-text">OR</span><div class="or-line"></div>
       </div>
+
+      <button class="btn-google" onclick="handleGoogle()">
+        <svg viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
+        Sign up with Google
+      </button>
     </div>
 
-    <div class="proof">
-      <div class="avatars">
-        <div class="avatar av1">A</div>
-        <div class="avatar av2">S</div>
-        <div class="avatar av3">K</div>
-        <div class="avatar av4">M</div>
+    <!-- Step 2: Profile -->
+    <div class="step-panel" id="step2">
+      <div class="card-hdr">
+        <h1>Tell us about you 🎓</h1>
+        <p>Aquila AI personalises your experience based on your goals</p>
       </div>
-      <div class="proof-txt">
-        <strong>12,000+ students</strong> already learning with Aquila AI<br/>
-        Join them — it takes less than a minute.
+
+      <div class="field" id="f-role">
+        <select id="roleIn" onchange="onSelectChange(this)" style="padding-top:20px;padding-bottom:8px;">
+          <option value="" disabled selected></option>
+          <option>High school student</option>
+          <option>JEE / Engineering aspirant</option>
+          <option>NEET / Medical aspirant</option>
+          <option>Undergraduate student</option>
+          <option>Graduate / Postgrad student</option>
+          <option>Self-learner</option>
+          <option>Educator</option>
+        </select>
+        <label for="roleIn">I am a…</label>
+        <div class="field-msg" id="roleMsg"></div>
       </div>
+
+      <div class="field" id="f-goal">
+        <select id="goalIn" onchange="onSelectChange(this)" style="padding-top:20px;padding-bottom:8px;">
+          <option value="" disabled selected></option>
+          <option>Crack JEE / NEET</option>
+          <option>Score better in board exams</option>
+          <option>Learn a subject deeply</option>
+          <option>Build a daily study habit</option>
+          <option>Revise faster before exams</option>
+          <option>Something else</option>
+        </select>
+        <label for="goalIn">My main goal is to…</label>
+        <div class="field-msg" id="goalMsg"></div>
+      </div>
+
+      <div class="terms-row">
+        <input type="checkbox" id="terms"/>
+        <span>I agree to Aquila AI's <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a></span>
+      </div>
+
+      <button class="btn-primary" id="createBtn" onclick="handleSignUp()">
+        <div class="btn-shine"></div>
+        <span class="btn-text">Create free account</span>
+        <div class="btn-spinner">
+          <div class="spin-dot"></div><div class="spin-dot"></div><div class="spin-dot"></div>
+        </div>
+        <svg class="success-check" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+      </button>
+
+      <button class="btn-secondary" onclick="goBack()">← Back</button>
+    </div>
+
+  </div>
+
+  <div class="card-foot">
+    Already have an account? <a href="login.html">Sign in →</a>
+  </div>
+
+  <div class="proof-strip">
+    <div class="avatars">
+      <div class="ava a1">A</div>
+      <div class="ava a2">S</div>
+      <div class="ava a3">K</div>
+      <div class="ava a4">M</div>
+    </div>
+    <div class="proof-text">
+      <strong>12,000+ students</strong> already learning with Aquila AI<br/>
+      Join them — it takes less than a minute.
     </div>
   </div>
 
 </div>
 
 <script>
-// ── cursor (desktop only) ──
-if(window.matchMedia('(pointer:fine)').matches){
-  const dot = document.getElementById('cur-dot');
-  const ring = document.getElementById('cur-ring');
-  let mx=0,my=0,rx=0,ry=0;
-  document.addEventListener('mousemove', e => { mx=e.clientX; my=e.clientY; });
-  (function loop(){
-    rx += (mx-rx)*0.13; ry += (my-ry)*0.13;
-    dot.style.left = mx+'px'; dot.style.top = my+'px';
-    ring.style.left = rx+'px'; ring.style.top = ry+'px';
-    requestAnimationFrame(loop);
-  })();
-  document.querySelectorAll('a,button,input,select,.step,.eye,.terms-row').forEach(el=>{
-    el.addEventListener('mouseenter',()=>document.body.classList.add('hovering'));
-    el.addEventListener('mouseleave',()=>document.body.classList.remove('hovering'));
+/* ── Constellation ── */
+(function () {
+  const canvas = document.getElementById('constellation');
+  const ctx = canvas.getContext('2d');
+  let W, H, nodes;
+
+  function resize() { W = canvas.width = window.innerWidth; H = canvas.height = window.innerHeight; }
+
+  function initNodes() {
+    const count = Math.min(40, Math.floor(W * H / 28000));
+    nodes = Array.from({ length: count }, () => ({
+      x: Math.random() * W, y: Math.random() * H,
+      vx: (Math.random() - 0.5) * 0.3, vy: (Math.random() - 0.5) * 0.3,
+      r: Math.random() * 1.8 + 0.8, pulse: Math.random() * Math.PI * 2,
+    }));
+  }
+
+  function draw() {
+    ctx.clearRect(0, 0, W, H);
+    nodes.forEach(n => {
+      n.x += n.vx; n.y += n.vy;
+      if (n.x < 0 || n.x > W) n.vx *= -1;
+      if (n.y < 0 || n.y > H) n.vy *= -1;
+      n.pulse += 0.018;
+    });
+    for (let i = 0; i < nodes.length; i++) {
+      for (let j = i + 1; j < nodes.length; j++) {
+        const a = nodes[i], b = nodes[j];
+        const dx = a.x - b.x, dy = a.y - b.y, dist = Math.sqrt(dx*dx+dy*dy);
+        if (dist < 160) {
+          const alpha = (1 - dist / 160) * 0.18;
+          const g = ctx.createLinearGradient(a.x, a.y, b.x, b.y);
+          g.addColorStop(0, `rgba(167,139,250,${alpha})`);
+          g.addColorStop(1, `rgba(0,212,255,${alpha})`);
+          ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y);
+          ctx.strokeStyle = g; ctx.lineWidth = 0.7; ctx.stroke();
+        }
+      }
+    }
+    nodes.forEach(n => {
+      const p = 0.7 + 0.3 * Math.sin(n.pulse);
+      const isCyan = n.pulse % (Math.PI * 2) < Math.PI;
+      ctx.beginPath(); ctx.arc(n.x, n.y, n.r * p, 0, Math.PI * 2);
+      ctx.fillStyle = isCyan ? `rgba(0,212,255,${0.55*p})` : `rgba(167,139,250,${0.55*p})`;
+      ctx.fill();
+    });
+    requestAnimationFrame(draw);
+  }
+
+  resize(); initNodes(); draw();
+  window.addEventListener('resize', () => { resize(); initNodes(); });
+})();
+
+/* ── Particles ── */
+(function () {
+  const pc = document.getElementById('pts');
+  const colors = ['#a78bfa', '#00d4ff', '#48e3ff'];
+  for (let i = 0; i < 22; i++) {
+    const p = document.createElement('div'); p.className = 'particle';
+    const s = Math.random() * 2 + 1;
+    p.style.cssText = `width:${s}px;height:${s}px;left:${Math.random()*100}%;bottom:${Math.random()*15}%;background:${colors[i%3]};--op:${0.25+Math.random()*0.35};--dur:${6+Math.random()*8}s;--delay:-${Math.random()*8}s;--drift:${(Math.random()-.5)*60}px`;
+    pc.appendChild(p);
+  }
+})();
+
+/* ── Eye toggle ── */
+document.getElementById('eyeBtn').addEventListener('click', function () {
+  const inp = document.getElementById('pwdIn');
+  const isPass = inp.type === 'password';
+  inp.type = isPass ? 'text' : 'password';
+  document.getElementById('eyeShow').style.display = isPass ? 'none' : '';
+  document.getElementById('eyeHide').style.display = isPass ? '' : 'none';
+});
+
+/* ── Select filled state ── */
+function onSelectChange(sel) {
+  if (sel.value) sel.classList.add('filled');
+  else sel.classList.remove('filled');
+  clearFieldError(sel.closest('.field').id);
+}
+
+/* ── Validation ── */
+function setFieldState(fieldId, state, msg) {
+  const field = document.getElementById(fieldId);
+  if (!field) return;
+  const input = field.querySelector('input, select');
+  const msgEl = field.querySelector('.field-msg');
+  if (input) { input.className = input.tagName === 'SELECT' ? (input.classList.contains('filled') ? 'filled' : '') : ''; }
+  if (state === 'error') {
+    if (input) input.classList.add('has-error');
+    if (msgEl) { msgEl.textContent = msg; msgEl.className = 'field-msg show'; }
+  } else if (state === 'ok') {
+    if (input && input.tagName !== 'SELECT') input.classList.add('valid');
+    if (msgEl && msg) { msgEl.textContent = msg; msgEl.className = 'field-msg show ok'; }
+  } else {
+    if (msgEl) msgEl.className = 'field-msg';
+  }
+}
+
+function clearFieldError(fieldId) {
+  const field = document.getElementById(fieldId);
+  if (!field) return;
+  const input = field.querySelector('input, select');
+  if (input) input.classList.remove('has-error');
+  const msgEl = field.querySelector('.field-msg');
+  if (msgEl) msgEl.className = 'field-msg';
+}
+
+function validateEmail() {
+  const val = document.getElementById('emailIn').value;
+  if (!val) return setFieldState('f-email', 'none');
+  const ok = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val);
+  setFieldState('f-email', ok ? 'ok' : 'error', ok ? '' : 'Enter a valid email');
+}
+
+/* ── Password strength ── */
+const COLORS = ['', '#ff6b6b', '#f59e0b', '#34d399', '#00d4ff'];
+const LABELS = ['', 'Weak', 'Fair', 'Good', 'Strong'];
+const HINTS  = ['', 'Add uppercase & numbers', 'Add a symbol', 'Almost there!', ''];
+
+function checkStrength(v) {
+  const wrap = document.getElementById('strengthWrap');
+  wrap.style.display = v.length > 0 ? 'block' : 'none';
+  let score = 0;
+  if (v.length >= 8) score++;
+  if (/[A-Z]/.test(v)) score++;
+  if (/[0-9]/.test(v)) score++;
+  if (/[^A-Za-z0-9]/.test(v)) score++;
+  const bars = [1,2,3,4].map(i => document.getElementById('sb'+i));
+  bars.forEach((b, i) => {
+    b.className = 'sbar';
+    if (i < score) {
+      b.style.background = COLORS[score];
+      b.classList.add('active');
+    } else {
+      b.style.background = '';
+    }
+  });
+  document.getElementById('sLabel').textContent = v.length > 0 ? LABELS[score] : '';
+  document.getElementById('sLabel').style.color = COLORS[score] || 'var(--sub)';
+  document.getElementById('sHint').textContent = HINTS[score] || '';
+  clearFieldError('f-pwd');
+}
+
+/* ── Progress ── */
+let currentStep = 1;
+function setProgress(step) {
+  const fill = document.getElementById('progressFill');
+  fill.style.width = step === 1 ? '33.33%' : step === 2 ? '66.66%' : '100%';
+  [1,2,3].forEach(i => {
+    const el = document.getElementById('pl-' + i);
+    el.className = 'prog-label' + (i < step ? ' done' : i === step ? ' active' : '');
   });
 }
 
-// ── eye toggle ──
-document.getElementById('eyeT').addEventListener('click',function(){
-  const f=document.getElementById('pwdF');
-  f.type=f.type==='password'?'text':'password';
-  this.textContent=f.type==='password'?'👁':'🙈';
-});
+/* ── Step navigation ── */
+function goToStep2() {
+  const fn = document.getElementById('fnIn').value.trim();
+  const email = document.getElementById('emailIn').value.trim();
+  const pwd = document.getElementById('pwdIn').value;
+  let valid = true;
+  if (!fn) { setFieldState('f-fn', 'error', 'Required'); valid = false; }
+  if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { setFieldState('f-email', 'error', 'Enter a valid email'); valid = false; }
+  if (pwd.length < 6) { setFieldState('f-pwd', 'error', 'Minimum 6 characters'); valid = false; }
+  if (!valid) return;
 
-// ── password strength ──
-function checkStrength(v){
-  let score=0;
-  if(v.length>=8) score++;
-  if(/[A-Z]/.test(v)) score++;
-  if(/[0-9]/.test(v)) score++;
-  if(/[^A-Za-z0-9]/.test(v)) score++;
-  const bars=[document.getElementById('sb1'),document.getElementById('sb2'),document.getElementById('sb3'),document.getElementById('sb4')];
-  const lbl=document.getElementById('slbl');
-  const cls=['s1','s2','s3','s4'];
-  const labels=['','Weak','Fair','Good','Strong'];
-  const colors=['','#f472b6','#f59e0b','#22c55e','#06d6cf'];
-  bars.forEach((b,i)=>{ b.className='sbar'; if(i<score) b.classList.add(cls[score-1]); });
-  lbl.textContent = v.length>0 ? labels[score] : '';
-  lbl.style.color = v.length>0 ? colors[score] : 'var(--sub)';
+  const s1 = document.getElementById('step1');
+  const s2 = document.getElementById('step2');
+  s1.classList.remove('active');
+  s2.classList.add('active');
+  currentStep = 2;
+  setProgress(2);
 }
 
-// ── particles ──
-const pc=document.getElementById('pts');
-for(let i=0;i<28;i++){
-  const p=document.createElement('div'); p.className='particle';
-  const s=Math.random()*2.5+1;
-  const cols=['#7c6aff','#06d6cf','#f472b6'];
-  p.style.cssText=`width:${s}px;height:${s}px;left:${Math.random()*100}%;bottom:${Math.random()*20}%;background:${cols[i%3]};--op:${0.3+Math.random()*0.4};--dur:${5+Math.random()*7}s;--del:${Math.random()*9}s;--drift:${(Math.random()-.5)*50}px`;
-  pc.appendChild(p);
+function goBack() {
+  const s1 = document.getElementById('step1');
+  const s2 = document.getElementById('step2');
+  s2.classList.remove('active');
+  s1.classList.add('active', 'back');
+  setTimeout(() => s1.classList.remove('back'), 400);
+  currentStep = 1;
+  setProgress(1);
 }
-</script>
 
-<script type="module">
-import { signUp, googleSignIn } from "./auth.js";
-document.querySelector(".btn").addEventListener("click", () => signUp());
-document.querySelector(".btn-google").addEventListener("click", () => googleSignIn());
+/* ── Submit ── */
+async function handleSignUp() {
+  const role = document.getElementById('roleIn').value;
+  const goal = document.getElementById('goalIn').value;
+  const terms = document.getElementById('terms').checked;
+  let valid = true;
+
+  if (!role) { setFieldState('f-role', 'error', 'Please select your role'); valid = false; }
+  if (!goal) { setFieldState('f-goal', 'error', 'Please select your goal'); valid = false; }
+  if (!terms) { valid = false; /* could show toast */ }
+  if (!valid) return;
+
+  const btn = document.getElementById('createBtn');
+  btn.classList.add('loading');
+
+  try {
+    const { signUp } = await import('./auth.js');
+    await signUp();
+    btn.classList.remove('loading');
+    btn.classList.add('success');
+    setProgress(3);
+  } catch (e) {
+    btn.classList.remove('loading');
+  }
+}
+
+async function handleGoogle() {
+  try { const { googleSignIn } = await import('./auth.js'); googleSignIn(); } catch(e) {}
+}
 </script>
 
 <script type="module">
