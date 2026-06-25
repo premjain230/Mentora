@@ -2,9 +2,9 @@
 // Auth guard for home.html.
 // - Redirects to login.html if user is not signed in.
 // - Populates sidebar user card with display name / avatar initial.
-// - Loads recent chat history from Firestore.
+// - Loads recent chat history from Firestore into the sidebar.
 // - Wires up the "New Chat" button to reset state.
-// - Exports signOut() for a settings/logout button.
+// - Exports signOut() for the sign-out button.
 
 import { auth, db } from "./firebase-config.js";
 import {
@@ -33,19 +33,21 @@ onAuthStateChanged(auth, async (user) => {
   currentUser = user;
   populateUserCard(user);
   await loadRecentChats(user.uid);
+  wireNewChatBtn();
+  wireSignOutBtn();
 });
 
 // ─── Sidebar user card ────────────────────────────────────────────────────────
 function populateUserCard(user) {
-  const nameEl   = document.querySelector(".user-name");
-  const planEl   = document.querySelector(".user-plan");
-  const avatarEl = document.querySelector(".avatar");
+  const nameEl   = document.getElementById("userName")   || document.querySelector(".user-name");
+  const planEl   = document.getElementById("userPlan")   || document.querySelector(".user-plan");
+  const avatarEl = document.getElementById("userAvatar") || document.querySelector(".avatar");
 
   const name = user.displayName || user.email?.split("@")[0] || "Student";
-  if (nameEl)   nameEl.textContent   = name;
+  if (nameEl) nameEl.textContent = name;
+
   if (avatarEl) {
     if (user.photoURL) {
-      // Replace letter with actual profile photo
       const img = document.createElement("img");
       img.src = user.photoURL;
       img.alt = name;
@@ -63,71 +65,129 @@ function populateUserCard(user) {
       const plan = snap.data().plan || "free";
       planEl.textContent = plan === "pro" ? "Pro Plan ✨" : "Free Plan";
     }
-  });
+  }).catch(() => {});
 }
 
-// ─── Load recent chat sessions into sidebar ────────────────────────────────
-async function loadRecentChats(uid) {
-  const container = document.querySelector(".nav-section");
-  if (!container) return;
+// ─── Load recent chat sessions into sidebar ───────────────────────────────────
+export async function loadRecentChats(uid) {
+  const navSection = document.getElementById("navSection") || document.querySelector(".nav-section");
+  if (!navSection) return;
+
+  // Remove any previous recent section so re-renders stay clean
+  const existing = navSection.querySelector(".recent-section");
+  if (existing) existing.remove();
 
   try {
     const q = query(
       collection(db, "users", uid, "chats"),
       orderBy("updatedAt", "desc"),
-      limit(8)
+      limit(10)
     );
     const snap = await getDocs(q);
-
     if (snap.empty) return;
+
+    const section = document.createElement("div");
+    section.className = "recent-section";
 
     const label = document.createElement("div");
     label.className = "nav-label";
     label.textContent = "Recent";
-
-    // Insert before "Library" label
-    const libraryLabel = [...container.querySelectorAll(".nav-label")]
-      .find((el) => el.textContent.trim() === "Library");
-    container.insertBefore(label, libraryLabel || null);
+    section.appendChild(label);
 
     snap.forEach((docSnap) => {
-      const data    = docSnap.data();
-      const title   = data.title || "Untitled Chat";
-      const chatId  = docSnap.id;
+      const data   = docSnap.data();
+      const title  = data.title || "Untitled Chat";
+      const chatId = docSnap.id;
 
-      const item    = document.createElement("div");
-      item.className = "nav-item";
+      const item = document.createElement("div");
+      item.className = "nav-item chat-history-item";
       item.dataset.chatId = chatId;
-      item.innerHTML = `<span class="nav-icon">💬</span>${escapeHtml(title)}`;
-      item.onclick   = () => loadChat(chatId);
-
-      container.insertBefore(item, libraryLabel || null);
+      item.title = title;
+      item.textContent = title;
+      item.addEventListener("click", () => loadChat(chatId, item));
+      section.appendChild(item);
     });
+
+    // Insert before the Account nav-label
+    const accountLabel = [...navSection.querySelectorAll(".nav-label")]
+      .find((el) => el.textContent.trim() === "Account");
+    navSection.insertBefore(section, accountLabel || null);
+
   } catch (e) {
     console.warn("Could not load recent chats:", e);
   }
 }
 
 // ─── Load a specific chat session into the chat area ──────────────────────────
-async function loadChat(chatId) {
+async function loadChat(chatId, itemEl) {
   if (!currentUser) return;
-  const { renderMessage, clearWelcome } = await import("./chat.js");
 
-  const snap = await getDocs(
-    collection(db, "users", currentUser.uid, "chats", chatId, "messages")
-  );
-  clearWelcome();
+  // Highlight active item
+  document.querySelectorAll(".chat-history-item").forEach((el) => el.classList.remove("active"));
+  if (itemEl) itemEl.classList.add("active");
 
-  snap.docs
-    .sort((a, b) => a.data().ts?.seconds - b.data().ts?.seconds)
-    .forEach((d) => {
+  const { renderMessage, clearWelcome, setActiveChatId } = await import("./chat.js");
+
+  // Clear UI and show loading dots
+  const chatArea = document.getElementById("chatArea");
+  const welcome  = document.getElementById("welcomeScreen");
+  if (welcome) welcome.remove();
+  chatArea.innerHTML = `
+    <div class="chat-loading">
+      <span class="chat-loading-dot"></span>
+      <span class="chat-loading-dot"></span>
+      <span class="chat-loading-dot"></span>
+    </div>`;
+
+  try {
+    const msgsSnap = await getDocs(
+      query(
+        collection(db, "users", currentUser.uid, "chats", chatId, "messages"),
+        orderBy("ts", "asc")
+      )
+    );
+
+    chatArea.innerHTML = "";
+
+    msgsSnap.forEach((d) => {
       const msg = d.data();
-      renderMessage(msg.role, msg.content);
+      if (msg.role === "user" || msg.role === "assistant") {
+        renderMessage(msg.role, msg.content);
+      }
     });
 
-  // Set active chat in chat.js
-  const { setActiveChatId } = await import("./chat.js");
+    chatArea.scrollTop = chatArea.scrollHeight;
+
+  } catch (e) {
+    chatArea.innerHTML = `<div class="chat-loading" style="color:#ff6b6b;">Failed to load chat.</div>`;
+    console.error(e);
+  }
+
   setActiveChatId(chatId);
+
+  // Close sidebar on mobile
+  if (window.innerWidth <= 880) {
+    document.getElementById("sidebar")?.classList.remove("open");
+    document.getElementById("sidebarOverlay")?.classList.remove("open");
+  }
+}
+
+// ─── Wire up New Chat button ──────────────────────────────────────────────────
+function wireNewChatBtn() {
+  const btn = document.getElementById("newChatBtn");
+  if (!btn) return;
+  btn.addEventListener("click", async () => {
+    const { resetChat } = await import("./chat.js");
+    resetChat();
+    document.querySelectorAll(".chat-history-item").forEach((el) => el.classList.remove("active"));
+  });
+}
+
+// ─── Wire up Sign Out button ──────────────────────────────────────────────────
+function wireSignOutBtn() {
+  const btn = document.getElementById("signOutBtn");
+  if (!btn) return;
+  btn.addEventListener("click", () => signOut());
 }
 
 // ─── Sign out ─────────────────────────────────────────────────────────────────
@@ -138,10 +198,10 @@ export async function signOut() {
 
 // ─── Utility ──────────────────────────────────────────────────────────────────
 function escapeHtml(str) {
-  return str.replace(/[&<>"']/g, (c) =>
+  return String(str).replace(/[&<>"']/g, (c) =>
     ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c])
   );
 }
 
-// Expose signOut globally so an inline onclick can call it
+// Expose globally for any inline onclick fallbacks
 window.mentora_signOut = signOut;
