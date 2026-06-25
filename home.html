@@ -64,11 +64,7 @@
 
   .logo-area { padding: 20px 18px 16px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; gap: 10px; }
   .logo { display: flex; align-items: center; gap: 10px; text-decoration: none; color: inherit; }
-  .logo-icon {
-    width: 34px; height: 34px;
-    border-radius: 10px;
-    flex-shrink: 0;
-  }
+  .logo-icon { width: 34px; height: 34px; border-radius: 10px; flex-shrink: 0; }
   .logo-icon svg { width: 100%; height: 100%; }
   .logo-text { font-size: 17px; font-weight: 700; color: var(--text-primary); letter-spacing: -0.3px; }
   .logo-text span { color: var(--accent); }
@@ -122,9 +118,7 @@
   .nav-item:hover .nav-icon { color: var(--text-primary); }
   .nav-badge { margin-left: auto; background: var(--accent3); color: white; font-size: 10px; font-weight: 600; padding: 2px 6px; border-radius: 20px; font-family: var(--font-mono); }
   .nav-badge.green { background: var(--accent2); color: #16122b; }
-  .nav-badge.soon { background: rgba(255,255,255,0.08); color: var(--text-muted); }
 
-  /* ===== Recent chat nav items ===== */
   .nav-item.chat-history-item {
     font-size: 12.5px;
     color: var(--text-muted);
@@ -132,7 +126,7 @@
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    display: block; /* override flex so text truncates */
+    display: block;
   }
   .nav-item.chat-history-item:hover { color: var(--text-secondary); background: rgba(255,255,255,0.03); }
   .nav-item.chat-history-item.active { color: var(--text-primary); background: rgba(0,212,255,0.08); border-color: rgba(0,212,255,0.2); }
@@ -350,6 +344,64 @@
   .ai-bubble hr { border: none; border-top: 1px solid rgba(255,255,255,0.08); margin: 14px 0; }
   .ai-bubble p { margin: 6px 0; }
 
+  /* ===== AI Action Buttons ===== */
+  .ai-actions {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 14px;
+    flex-wrap: wrap;
+  }
+  .ai-action-btn {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 5px 11px;
+    font-size: 12px;
+    font-family: var(--font-main);
+    font-weight: 400;
+    border-radius: 8px;
+    border: 1px solid rgba(255,255,255,0.08);
+    background: transparent;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: all 0.15s;
+    line-height: 1;
+  }
+  .ai-action-btn svg { flex-shrink: 0; transition: all 0.15s; }
+  .ai-action-btn:hover {
+    color: var(--text-secondary);
+    border-color: rgba(255,255,255,0.16);
+    background: rgba(255,255,255,0.04);
+  }
+  .ai-action-btn.active-good {
+    color: var(--accent);
+    border-color: rgba(0,212,255,0.4);
+    background: rgba(0,212,255,0.08);
+  }
+  .ai-action-btn.active-bad {
+    color: var(--accent3);
+    border-color: rgba(255,107,107,0.4);
+    background: rgba(255,107,107,0.08);
+  }
+  .ai-action-btn.active-copy {
+    color: var(--accent);
+    border-color: rgba(0,212,255,0.4);
+    background: rgba(0,212,255,0.08);
+  }
+  .ai-action-btn.active-share {
+    color: var(--accent2);
+    border-color: rgba(167,139,250,0.4);
+    background: rgba(167,139,250,0.08);
+  }
+  .ai-action-divider {
+    width: 1px;
+    height: 16px;
+    background: rgba(255,255,255,0.08);
+    flex-shrink: 0;
+    margin: 0 2px;
+  }
+
   /* ===== Chat history loading state ===== */
   .chat-loading {
     display: flex; align-items: center; justify-content: center;
@@ -362,14 +414,12 @@
   }
   .chat-loading-dot:nth-child(2) { animation-delay: 180ms; }
   .chat-loading-dot:nth-child(3) { animation-delay: 360ms; }
-
   @keyframes aquilaDot { 0%,80%,100%{ transform:translateY(0);opacity:.4; } 40%{ transform:translateY(-5px);opacity:1; } }
 
   @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
   }
 
-  /* ===== Focus visibility ===== */
   a:focus-visible, button:focus-visible, textarea:focus-visible, [tabindex]:focus-visible {
     outline: 2px solid var(--accent);
     outline-offset: 2px;
@@ -461,7 +511,13 @@
   </nav>
   <div class="sidebar-bottom">
     <button class="signout-btn" id="signOutBtn">Sign out</button>
-    <div class="user-card"><div class="avatar" id="userAvatar">G</div><div class="user-info"><div class="user-name" id="userName">Guest</div><div class="user-plan" id="userPlan">Free Plan</div></div></div>
+    <div class="user-card">
+      <div class="avatar" id="userAvatar">G</div>
+      <div class="user-info">
+        <div class="user-name" id="userName">Guest</div>
+        <div class="user-plan" id="userPlan">Free Plan</div>
+      </div>
+    </div>
   </div>
 </aside>
 
@@ -473,7 +529,7 @@
       </button>
       <div class="topbar-mobile-logo">
         <div class="logo-icon">
-          <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Aquila AI logo">
+          <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
             <rect x="2" y="2" width="12" height="12" rx="2" fill="#00d4ff" opacity="0.9"/>
             <rect x="18" y="2" width="12" height="12" rx="2" fill="#a78bfa" opacity="0.9"/>
             <rect x="2" y="18" width="12" height="12" rx="2" fill="#a78bfa" opacity="0.9"/>
@@ -496,7 +552,10 @@
         </button>
       </div>
     </div>
-    <div class="input-footer"><span>Encrypted in transit</span><span>Aquila AI can make mistakes — verify important answers</span></div>
+    <div class="input-footer">
+      <span>Encrypted in transit</span>
+      <span>Aquila AI can make mistakes — verify important answers</span>
+    </div>
   </div>
 </main>
 
@@ -561,7 +620,6 @@ onAuthStateChanged(authInstance, async (user) => {
     avatar.textContent = name.charAt(0).toUpperCase();
   }
 
-  // Fetch plan
   try {
     const snap = await getDoc(doc(db, "users", user.uid));
     if (snap.exists()) {
@@ -583,8 +641,6 @@ document.getElementById("newChatBtn").onclick = () => resetChat();
 /* ===== Recent chats sidebar ===== */
 async function loadRecentChats(uid) {
   const navSection = document.getElementById("navSection");
-
-  // Remove any previous recent section
   const existing = navSection.querySelector(".recent-section");
   if (existing) existing.remove();
 
@@ -597,7 +653,6 @@ async function loadRecentChats(uid) {
     const snap = await getDocs(q);
     if (snap.empty) return;
 
-    // Build a wrapper so we can remove/re-render cleanly
     const section = document.createElement("div");
     section.className = "recent-section";
 
@@ -620,7 +675,6 @@ async function loadRecentChats(uid) {
       section.appendChild(item);
     });
 
-    // Insert before the Account label
     const accountLabel = [...navSection.querySelectorAll(".nav-label")]
       .find(el => el.textContent.trim() === "Account");
     navSection.insertBefore(section, accountLabel || null);
@@ -634,16 +688,13 @@ async function loadRecentChats(uid) {
 async function openChat(chatId, itemEl) {
   if (!currentUser) return;
 
-  // Highlight active
   document.querySelectorAll(".chat-history-item").forEach(el => el.classList.remove("active"));
   if (itemEl) itemEl.classList.add("active");
 
-  // Set state so new replies continue this thread
   activeChatId = chatId;
   activeChatRef = doc(db, "users", currentUser.uid, "chats", chatId);
   history = [];
 
-  // Show loading
   const chatArea = document.getElementById("chatArea");
   const welcome = document.getElementById("welcomeScreen");
   if (welcome) welcome.remove();
@@ -725,6 +776,92 @@ function resetChat() {
   document.getElementById("chatArea").innerHTML = welcomeMarkup();
 }
 
+/* ===== SVG icons for action buttons ===== */
+const ICON_THUMBUP = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3H14z"/><path d="M7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"/></svg>`;
+const ICON_THUMBDOWN = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 15v4a3 3 0 0 0 3 3l4-9V2H5.72a2 2 0 0 0-2 1.7l-1.38 9a2 2 0 0 0 2 2.3H10z"/><path d="M17 2h2.67A2.31 2.31 0 0 1 22 4v7a2.31 2.31 0 0 1-2.33 2H17"/></svg>`;
+const ICON_COPY = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>`;
+const ICON_COPY_CHECK = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>`;
+const ICON_SHARE = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>`;
+
+/* ===== Create action buttons bar ===== */
+function createActionButtons(rawText) {
+  const wrap = document.createElement("div");
+  wrap.className = "ai-actions";
+
+  // Thumbs up
+  const likeBtn = document.createElement("button");
+  likeBtn.className = "ai-action-btn";
+  likeBtn.title = "Good response";
+  likeBtn.innerHTML = `${ICON_THUMBUP}<span>Good</span>`;
+  likeBtn.addEventListener("click", () => {
+    const isActive = likeBtn.classList.toggle("active-good");
+    dislikeBtn.classList.remove("active-bad");
+    likeBtn.querySelector("span").textContent = isActive ? "Liked!" : "Good";
+    dislikeBtn.querySelector("span").textContent = "Bad";
+  });
+
+  // Thumbs down
+  const dislikeBtn = document.createElement("button");
+  dislikeBtn.className = "ai-action-btn";
+  dislikeBtn.title = "Bad response";
+  dislikeBtn.innerHTML = `${ICON_THUMBDOWN}<span>Bad</span>`;
+  dislikeBtn.addEventListener("click", () => {
+    const isActive = dislikeBtn.classList.toggle("active-bad");
+    likeBtn.classList.remove("active-good");
+    dislikeBtn.querySelector("span").textContent = isActive ? "Noted!" : "Bad";
+    likeBtn.querySelector("span").textContent = "Good";
+  });
+
+  // Divider
+  const divider = document.createElement("div");
+  divider.className = "ai-action-divider";
+
+  // Copy
+  const copyBtn = document.createElement("button");
+  copyBtn.className = "ai-action-btn";
+  copyBtn.title = "Copy response";
+  copyBtn.innerHTML = `${ICON_COPY}<span>Copy</span>`;
+  copyBtn.addEventListener("click", () => {
+    navigator.clipboard.writeText(rawText).catch(() => {});
+    copyBtn.classList.add("active-copy");
+    copyBtn.innerHTML = `${ICON_COPY_CHECK}<span>Copied!</span>`;
+    setTimeout(() => {
+      copyBtn.classList.remove("active-copy");
+      copyBtn.innerHTML = `${ICON_COPY}<span>Copy</span>`;
+    }, 2200);
+  });
+
+  // Share
+  const shareBtn = document.createElement("button");
+  shareBtn.className = "ai-action-btn";
+  shareBtn.title = "Share response";
+  shareBtn.innerHTML = `${ICON_SHARE}<span>Share</span>`;
+  shareBtn.addEventListener("click", () => {
+    const sharePayload = {
+      title: "Aquila AI",
+      text: `Here's what Aquila AI said:\n\n${rawText}`,
+    };
+    if (navigator.share) {
+      navigator.share(sharePayload).catch(() => {});
+    } else {
+      navigator.clipboard.writeText(sharePayload.text).catch(() => {});
+      shareBtn.classList.add("active-share");
+      shareBtn.querySelector("span").textContent = "Link copied!";
+      setTimeout(() => {
+        shareBtn.classList.remove("active-share");
+        shareBtn.querySelector("span").textContent = "Share";
+      }, 2200);
+    }
+  });
+
+  wrap.appendChild(likeBtn);
+  wrap.appendChild(dislikeBtn);
+  wrap.appendChild(divider);
+  wrap.appendChild(copyBtn);
+  wrap.appendChild(shareBtn);
+  return wrap;
+}
+
 /* ===== Render helpers ===== */
 const ASSISTANT_AVATAR_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 2 7l10 5 10-5-10-5Z"/><path d="m2 17 10 5 10-5"/><path d="m2 12 10 5 10-5"/></svg>';
 
@@ -745,6 +882,8 @@ function appendAssistantStatic(text) {
   const bubble = document.createElement("div");
   bubble.className = "ai-bubble";
   bubble.innerHTML = renderMd(text);
+  // Append action buttons
+  bubble.appendChild(createActionButtons(text));
   row.appendChild(bubble);
   document.getElementById("chatArea").appendChild(row);
 }
@@ -799,7 +938,6 @@ async function saveMsg(role, content) {
     });
     activeChatRef = ref;
     activeChatId = ref.id;
-    // Refresh sidebar to show new chat
     await loadRecentChats(currentUser.uid);
   }
   await addDoc(collection(activeChatRef, "messages"), { role, content, ts: serverTimestamp() });
@@ -817,7 +955,6 @@ window.sendMessage = async function sendMessage() {
   input.value = "";
   input.style.height = "auto";
 
-  // Remove welcome screen manually before appendUser so chatArea is ready
   const welcome = document.getElementById("welcomeScreen");
   if (welcome) welcome.remove();
 
@@ -832,6 +969,8 @@ window.sendMessage = async function sendMessage() {
   try {
     const reply = await callAquila();
     bubble.innerHTML = renderMd(reply);
+    // Append action buttons after reply is rendered
+    bubble.appendChild(createActionButtons(reply));
     history.push({ role: "assistant", content: reply });
     saveMsg("assistant", reply).catch(console.error);
   } catch (err) {
@@ -875,6 +1014,7 @@ function escapeAttr(value) {
 
 resetChat();
 </script>
+
   <!-- Vercel Web Analytics -->
   <script type="module">
     import { inject } from 'https://esm.sh/@vercel/analytics';
