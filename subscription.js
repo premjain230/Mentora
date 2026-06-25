@@ -175,5 +175,4 @@ export async function requestProAccess(uid, email) {
     status: "pending",
   });
 }
-nsole.log("About to render UI");
-});
+console.log("About to render UI");
