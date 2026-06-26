@@ -19,6 +19,8 @@ import {
   getDocs,
   doc,
   getDoc,
+  setDoc,
+  serverTimestamp,
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 // ─── Global state ─────────────────────────────────────────────────────────────
@@ -59,10 +61,21 @@ function populateUserCard(user) {
     }
   }
 
-  // Fetch plan from Firestore
+  // Fetch plan from Firestore; create user doc if missing
   getDoc(doc(db, "users", user.uid)).then((snap) => {
-    if (snap.exists() && planEl) {
-      const plan = snap.data().plan || "free";
+    if (!snap.exists()) {
+      setDoc(doc(db, "users", user.uid), {
+        uid: user.uid,
+        displayName: user.displayName || "",
+        email: user.email || "",
+        photoURL: user.photoURL || "",
+        exam: "",
+        createdAt: serverTimestamp(),
+        plan: "free",
+      }).catch(() => {});
+    }
+    if (planEl) {
+      const plan = snap.exists() ? (snap.data().plan || "free") : "free";
       planEl.textContent = plan === "pro" ? "Pro Plan ✨" : "Free Plan";
     }
   }).catch(() => {});
