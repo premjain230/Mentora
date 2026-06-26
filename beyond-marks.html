@@ -637,6 +637,43 @@ svg { display: block; }
 .reflection-input-row input:focus { border-color: rgba(6,214,207,0.4); }
 .reflection-input-row input::placeholder { color: var(--text-muted); }
 
+.mood-picker {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+  margin-bottom: 16px;
+  position: relative;
+  z-index: 1;
+}
+.mood-pill {
+  padding: 6px 14px;
+  border-radius: 20px;
+  border: 1px solid var(--border, rgba(255,255,255,0.08));
+  background: rgba(255,255,255,0.03);
+  color: var(--text-secondary, #8b8fa8);
+  font-family: var(--font-main, 'Sora', sans-serif);
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.mood-pill:hover {
+  background: rgba(167,139,250,0.1);
+  border-color: rgba(167,139,250,0.3);
+  color: var(--text-primary);
+}
+.mood-pill.selected {
+  background: rgba(167,139,250,0.15);
+  border-color: var(--accent4, #a78bfa);
+  color: var(--accent4, #a78bfa);
+}
+.response-mood {
+  display: inline-block;
+  margin-right: 6px;
+  font-size: 15px;
+  vertical-align: middle;
+}
+
 .reflection-bottom {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -1148,15 +1185,25 @@ a:focus-visible, button:focus-visible, [tabindex]:focus-visible {
       <div class="reflection-container">
         <div class="section-header reveal">
           <div class="section-number">03</div>
-          <h2>💭 Daily Reflection</h2>
-          <p>Every day, a new question to help you pause, breathe, and reflect. Your answers are anonymous.</p>
+          <h2>🇮🇳 Student Voices</h2>
+          <p>Real talk about being a student in India — the pressure, the dreams, the struggles, and the hustle. Your voice matters, and it's anonymous.</p>
         </div>
 
         <div class="reflection-card reveal reveal-delay-1">
           <div class="reflection-date" id="reflectionDate"></div>
           <div class="reflection-question" id="todayQuestion">Loading today's question...</div>
+          <div class="mood-picker" id="moodPicker">
+            <button class="mood-pill" data-mood="stressed">😤 Stressed</button>
+            <button class="mood-pill" data-mood="anxious">😰 Anxious</button>
+            <button class="mood-pill" data-mood="hopeful">😊 Hopeful</button>
+            <button class="mood-pill" data-mood="motivated">🔥 Motivated</button>
+            <button class="mood-pill" data-mood="exhausted">😴 Exhausted</button>
+            <button class="mood-pill" data-mood="overwhelmed">🥺 Overwhelmed</button>
+            <button class="mood-pill" data-mood="determined">💪 Determined</button>
+            <button class="mood-pill" data-mood="confused">🤔 Confused</button>
+          </div>
           <div class="reflection-input-row">
-            <input type="text" id="reflectionInput" placeholder="Share your thoughts (anonymous)..." maxlength="200" />
+            <input type="text" id="reflectionInput" placeholder="Tell us more (optional)..." maxlength="200" />
             <button class="btn-primary" id="submitReflectionBtn">Submit</button>
           </div>
         </div>
@@ -1712,21 +1759,21 @@ document.getElementById('submitStoryBtn').addEventListener('click', async () => 
 // ═══════════ 3. REFLECTION ═══════════
 function seedDailyQuestion() {
   const questions = [
-    "What made you smile today?",
-    "If marks didn't exist, what would you love to learn?",
-    "What are you grateful for today?",
-    "What's one thing you're proud of this week?",
-    "What's worrying you today?",
-    "What advice would you give your younger self?",
-    "What does 'success' mean to you?",
-    "Who believed in you when you didn't believe in yourself?",
-    "What's a small win you had recently?",
-    "What's one habit you want to build?",
-    "Describe a moment you felt truly proud of yourself.",
-    "What would you do if you knew you couldn't fail?",
-    "What does your ideal day look like?",
-    "What's something kind you did for someone recently?",
-    "What's a fear you want to overcome?",
+    "What's the one thing about the Indian education system you'd change if you could?",
+    "How are you really feeling about your JEE/NEET prep today?",
+    "What's the most stressful part of being a student in India?",
+    "If marks and ranks didn't exist, what would you actually want to study?",
+    "What's something your parents don't understand about your academic pressure?",
+    "Have you ever felt like giving up? What kept you going?",
+    "What's the biggest myth about Indian students that you want to break?",
+    "How do you deal with constant comparison with other students?",
+    "What does 'success' really mean to you beyond IIT/AIIMS?",
+    "What's one thing about coaching culture you wish was different?",
+    "How do you handle the pressure of board + competitive exams together?",
+    "What's your honest take on the reservation system in India?",
+    "What would you tell a 10th grader about what's waiting in 11th and 12th?",
+    "Does Indian education actually prepare you for the real world? Why or why not?",
+    "What exhausts you the most about the daily study grind?",
   ];
 
   const today = new Date();
@@ -1753,10 +1800,27 @@ function showTodaysQuestion(qData, docId) {
   loadWordCloud(docId);
 }
 
+const MOOD_EMOJI = {
+  stressed: '😤', anxious: '😰', hopeful: '😊',
+  motivated: '🔥', exhausted: '😴', overwhelmed: '🥺',
+  determined: '💪', confused: '🤔',
+};
+
+let selectedMood = null;
+
+document.querySelectorAll('.mood-pill').forEach(pill => {
+  pill.addEventListener('click', () => {
+    document.querySelectorAll('.mood-pill').forEach(p => p.classList.remove('selected'));
+    pill.classList.add('selected');
+    selectedMood = pill.dataset.mood;
+  });
+});
+
 document.getElementById('submitReflectionBtn').addEventListener('click', async () => {
   const input = document.getElementById('reflectionInput');
   const text = input.value.trim();
-  if (!text || !currentUser) return;
+  if (!currentUser) return;
+  if (!text && !selectedMood) return;
 
   try {
     const todayRefSnap = await getDocs(query(collection(db, "dailyReflections"), orderBy("createdAt", "desc"), limit(1)));
@@ -1764,9 +1828,11 @@ document.getElementById('submitReflectionBtn').addEventListener('click', async (
     const refId = todayRefSnap.docs[0].id;
 
     await addDoc(collection(db, "dailyReflections", refId, "responses"), {
-      text, uid: currentUser.uid, createdAt: serverTimestamp(),
+      text, mood: selectedMood, uid: currentUser.uid, createdAt: serverTimestamp(),
     });
     input.value = '';
+    selectedMood = null;
+    document.querySelectorAll('.mood-pill').forEach(p => p.classList.remove('selected'));
     loadResponses(refId);
     loadWordCloud(refId);
   } catch {}
@@ -1789,7 +1855,8 @@ async function loadResponses(refId) {
 
     feed.innerHTML = allResponses.map(r => `
       <div class="response-item">
-        ${esc(r.text||'')}
+        ${r.mood && MOOD_EMOJI[r.mood] ? `<span class="response-mood">${MOOD_EMOJI[r.mood]}</span>` : ''}
+        ${r.text ? esc(r.text) : '<span style="color:var(--text-muted);font-style:italic;">shared a mood</span>'}
         <span class="response-time">${fmtTime(r.createdAt)}</span>
       </div>
     `).join('');
