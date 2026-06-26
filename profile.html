@@ -125,6 +125,18 @@
   .nav-badge { margin-left: auto; background: var(--accent3); color: white; font-size: 10px; font-weight: 600; padding: 2px 6px; border-radius: 20px; font-family: var(--font-mono); }
   .nav-badge.green { background: var(--accent2); color: #16122b; }
 
+  .upgrade-nav-btn {
+    display: flex; align-items: center; gap: 11px;
+    padding: 10px 12px; border-radius: 10px;
+    cursor: pointer; font-size: 13.5px; font-weight: 600;
+    color: var(--accent2);
+    background: rgba(167,139,250,0.08);
+    border: 1px solid rgba(167,139,250,0.2);
+    margin-bottom: 2px; text-decoration: none;
+    transition: all 0.18s;
+  }
+  .upgrade-nav-btn:hover { background: rgba(167,139,250,0.14); border-color: rgba(167,139,250,0.4); }
+
   .sidebar-bottom { padding: 12px 10px; border-top: 1px solid var(--border); }
   .user-card { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 10px; }
   .signout-btn { width: calc(100% - 20px); margin: 0 10px 8px; padding: 9px 14px; background: rgba(255,107,107,0.08); border: 1px solid rgba(255,107,107,0.2); color: var(--accent3); font-family: var(--font-main); font-size: 12px; font-weight: 500; border-radius: 8px; cursor: pointer; transition: all 0.18s; }
@@ -634,6 +646,12 @@
     </a>
 
     <div class="nav-label">Account</div>
+    <a href="subscription.html" class="upgrade-nav-btn">
+      <span class="nav-icon" style="color:var(--accent2)">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+      </span>
+      Subscription
+    </a>
     <a href="profile.html" class="nav-item active">
       <span class="nav-icon"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span>
       Profile
@@ -650,7 +668,7 @@
       <div class="avatar" id="sidebarAvatar">G</div>
       <div class="user-info">
         <div class="user-name" id="sidebarName">Guest</div>
-        <div class="user-plan" id="sidebarPlan">Free Plan</div>
+        <div class="user-plan" id="userPlan">Free Plan</div>
       </div>
     </div>
   </div>
@@ -899,7 +917,7 @@ function renderAll() {
 
   const plan = profileData.plan || 'free';
   setText('profilePlan', plan.toUpperCase() + ' PLAN');
-  setText('sidebarPlan', plan.charAt(0).toUpperCase() + plan.slice(1) + ' Plan');
+  setText('userPlan', plan.charAt(0).toUpperCase() + plan.slice(1) + ' Plan');
 
   const exam = profileData.exam || '';
   setText('profileLevel', examEmoji(exam) + ' ' + (exam || 'Student'));

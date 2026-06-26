@@ -65,6 +65,18 @@ svg { display: block; }
 .nav-badge { margin-left: auto; font-size: 10px; font-weight: 700; padding: 2px 7px; border-radius: 20px; }
 .nav-badge.green { background: rgba(167,139,250,0.2); color: var(--accent2); }
 
+.upgrade-nav-btn {
+  display: flex; align-items: center; gap: 11px;
+  padding: 10px 12px; border-radius: 10px;
+  cursor: pointer; font-size: 13.5px; font-weight: 600;
+  color: var(--accent2);
+  background: rgba(167,139,250,0.08);
+  border: 1px solid rgba(167,139,250,0.2);
+  margin-bottom: 2px; text-decoration: none;
+  transition: all 0.18s;
+}
+.upgrade-nav-btn:hover { background: rgba(167,139,250,0.14); border-color: rgba(167,139,250,0.4); }
+
 .sidebar-bottom { padding: 12px 10px; border-top: 1px solid var(--border); }
 .signout-btn { width: calc(100% - 20px); margin: 0 10px 8px; padding: 9px 14px; background: rgba(255,107,107,0.08); border: 1px solid rgba(255,107,107,0.2); color: var(--accent3); font-family: var(--font-main); font-size: 12px; font-weight: 500; border-radius: 8px; cursor: pointer; transition: all 0.18s; }
 .signout-btn:hover { background: rgba(255,107,107,0.15); }
@@ -297,6 +309,12 @@ svg { display: block; }
     <div class="nav-item" id="nav-progress" onclick="switchTabAndHighlight('progress')">
       <span class="nav-icon"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></span>Analytics</div>
     <div class="nav-label">Account</div>
+    <a href="subscription.html" class="upgrade-nav-btn">
+      <span class="nav-icon" style="color:var(--accent2)">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+      </span>
+      Subscription
+    </a>
     <a class="nav-item" href="profile.html">
       <span class="nav-icon"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span>Profile</a>
     <a class="nav-item" href="settings.html">
@@ -308,7 +326,7 @@ svg { display: block; }
       <div class="avatar" id="sidebarAvatar"></div>
       <div class="user-info">
         <div class="user-name" id="sidebarName">Student</div>
-        <div class="user-plan">Free Plan</div>
+        <div class="user-plan" id="userPlan">Free Plan</div>
       </div>
     </div>
   </div>
@@ -408,6 +426,7 @@ import {
   getActivePlan, getTasksByPlan, getProgress,
   updateTaskStatus, updateStreak, getExamProfile, logEvent
 } from "./planner-db.js";
+import { getUserPlan } from "./subscription.js";
 
 let appState = { user: null, profile: null, plan: null, tasks: [], progress: null, currentTab: "today" };
 let _getProgress = getProgress;
@@ -425,6 +444,10 @@ onAuthStateChanged(auth, async (user) => {
   } else {
     av.textContent = name.charAt(0).toUpperCase();
   }
+
+  const plan = await getUserPlan(user.uid);
+  const planEl = document.getElementById("userPlan");
+  if (planEl) planEl.textContent = plan === "pro" ? "✨ Aquila Pro" : "Free Plan";
 
   await loadPlannerData();
 });
