@@ -6,6 +6,7 @@
 // - Action buttons: thumbs up, thumbs down, copy, share on every AI response.
 // - Exports: sendMessage(), renderMessage(), clearWelcome(), setActiveChatId()
 
+import { escapeHtml } from "./xss.js";
 import { auth, db } from "./firebase-config.js";
 import {
   collection,
@@ -470,13 +471,6 @@ async function updateChatTitle(chatRef, title) {
 function updateSidebarTitle(chatId, title) {
   const el = document.querySelector(`[data-chat-id="${chatId}"]`);
   if (el) el.childNodes[1].textContent = title;
-}
-
-// ─── Utility ──────────────────────────────────────────────────────────────────
-function escapeHtml(str) {
-  return String(str).replace(/[&<>"']/g, (c) =>
-    ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c])
-  );
 }
 
 // ─── Expose globally for home.html inline handlers ───────────────────────────
