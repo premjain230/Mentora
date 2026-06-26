@@ -546,19 +546,15 @@ svg { display: block; }
   color: var(--text-muted);
 }
 .story-card-meta span { display: flex; align-items: center; gap: 4px; }
-.story-card-meta .reaction-btn {
-  background: none; border: none; color: var(--text-muted);
-  cursor: pointer; font-size: 12px; padding: 2px 6px;
-  border-radius: 6px; transition: all 0.18s;
-  display: flex; align-items: center; gap: 3px;
+.story-card-cta {
+  font-size: 12px;
+  color: var(--accent2);
+  font-weight: 500;
+  margin-top: 12px;
+  opacity: 0;
+  transition: opacity 0.25s;
 }
-.story-card-meta .reaction-btn:hover { color: var(--accent6); background: rgba(244,114,182,0.1); }
-.story-card-meta .bookmark-btn {
-  background: none; border: none; color: var(--text-muted);
-  cursor: pointer; font-size: 12px; padding: 2px 6px;
-  border-radius: 6px; transition: all 0.18s;
-}
-.story-card-meta .bookmark-btn:hover { color: var(--accent4); background: rgba(255,209,102,0.1); }
+.story-card:hover .story-card-cta { opacity: 1; }
 
 /* ─── 3. DAILY REFLECTION ─── */
 .reflection-section {
@@ -854,8 +850,6 @@ svg { display: block; }
   .stories-grid { grid-template-columns: 1fr; gap: 14px; }
   .story-card { padding: 18px; }
   .story-modal { padding: 20px; }
-  .story-modal .comment-input-row { flex-direction: column; }
-  .story-modal .comment-input-row input { width: 100%; }
   .tree-garden { min-height: 300px; }
   .tree-actions-card { padding: 20px; }
   .tree-action-item { gap: 10px; padding: 10px 0; }
@@ -932,59 +926,12 @@ a:focus-visible, button:focus-visible, [tabindex]:focus-visible {
   line-height: 1.85;
   white-space: pre-wrap;
 }
-.story-modal .story-modal-actions {
-  display: flex;
-  gap: 16px;
-  margin-top: 20px;
-  padding-top: 16px;
-  border-top: 1px solid var(--border);
-}
-.story-modal .story-modal-actions button {
-  background: none; border: none;
-  color: var(--text-muted);
-  font-size: 13px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  padding: 6px 10px;
-  border-radius: 8px;
-  transition: all 0.18s;
-}
-.story-modal .story-modal-actions button:hover { background: rgba(255,255,255,0.04); color: var(--text-primary); }
-.story-modal .comment-section { margin-top: 16px; }
-.story-modal .comment-section h4 {
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--text-primary);
-  margin-bottom: 10px;
-}
-.story-modal .comment-input-row {
-  display: flex;
-  gap: 8px;
-  margin-bottom: 12px;
-}
-.story-modal .comment-input-row input {
-  flex: 1;
-  background: var(--bg-input);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 9px 12px;
-  font-family: var(--font-main);
-  font-size: 13px;
-  color: var(--text-primary);
-  outline: none;
-}
-.story-modal .comment-input-row input:focus { border-color: rgba(167,139,250,0.3); }
-.story-modal .comment {
-  font-size: 12.5px;
+.story-modal .story-modal-body {
+  font-size: 14px;
   color: var(--text-secondary);
-  padding: 8px 0;
-  border-bottom: 1px solid var(--border);
-  line-height: 1.5;
+  line-height: 1.85;
+  white-space: pre-wrap;
 }
-.story-modal .comment:last-child { border-bottom: none; }
-.story-modal .comment .comment-time { font-size: 10px; color: var(--text-muted); font-family: var(--font-mono); }
 
 .empty-state {
   text-align: center;
@@ -1340,7 +1287,7 @@ let currentUser = null;
 let allDreams = [];
 let allStories = [];
 let allResponses = [];
-let currentStoryData = null;
+
 
 const STAGES = ['🌱 Seed', '🌿 Sapling', '🌳 Young Tree', '🌲 Strong Tree', '🌸 Blooming Tree'];
 const XP_PER_STAGE = [0, 20, 50, 100, 180];
@@ -1348,13 +1295,26 @@ const XP_PER_STAGE = [0, 20, 50, 100, 180];
 const CATEGORIES = ['all', 'Failure to Success', 'Drop Year Journey', 'Burnout Recovery', 'Career Change', 'Mental Health', 'Parents & Expectations', 'Motivation'];
 
 const SAMPLE_STORIES = [
-  { category:'Failure to Success', title:'From 27% to 92% — My Story', body:'I failed my first mid-term exam so badly that my parents were called to school. I scored 27% in mathematics. That night, I cried for hours. But then something clicked. I stopped comparing myself with others and started studying for myself. I woke up at 4 AM every day, solved one problem at a time, and slowly, things began to change. By the final exam, I scored 92%. But more importantly, I learned that failure is not the opposite of success — it\'s part of it.', readingTime:4, reactions:42 },
-  { category:'Drop Year Journey', title:'My Drop Year Was My Best Year', body:'Dropping a year felt like the end of the world. Watching all my friends go to college while I stayed home was devastating. But that year taught me more than any classroom ever could. I learned discipline, patience, and self-belief. I discovered that taking time doesn\'t mean falling behind — sometimes it means preparing for a better leap forward.', readingTime:5, reactions:67 },
-  { category:'Burnout Recovery', title:'I Ran on 4 Hours of Sleep for Months', body:'I thought working harder meant sleeping less. I was wrong. After months of 4-hour sleep schedules, my body gave up. I had panic attacks, memory loss, and extreme fatigue. Recovery was slow. I had to relearn how to rest, how to say no to extra study hours, and how to listen to my body. Now I tell every student: your health is your real superpower.', readingTime:6, reactions:89 },
-  { category:'Career Change', title:'From Engineering to Art — I Found Myself', body:'I spent two years in engineering because my parents wanted it. I was miserable. Every day felt like a chore. One night, I painted a small landscape and posted it online. The response was overwhelming. I realized I was chasing someone else\'s dream. Switching to art school was the hardest conversation I ever had with my family, but today I wake up excited to work. Follow your passion, not the crowd.', readingTime:5, reactions:55 },
-  { category:'Mental Health', title:'It\'s Okay to Not Be Okay', body:'For two years, I struggled with anxiety and depression while preparing for competitive exams. I thought if I just studied harder, the feelings would go away. They didn\'t. It took therapy, medication, and a lot of conversations to understand that mental health is not a weakness. If you\'re struggling, please reach out. You don\'t have to fight alone.', readingTime:7, reactions:124 },
-  { category:'Parents & Expectations', title:'My Parents Wanted a Doctor. I Wanted to Code.', body:'The pressure to become a doctor was immense. Every family gathering ended with "when will you start your medical practice?" I loved computers, not cadavers. When I finally told my parents I wanted to study computer science, they didn\'t speak to me for a week. But I built apps, won hackathons, and eventually they saw my passion. Today, they\'re my biggest supporters.', readingTime:6, reactions:78 },
-  { category:'Motivation', title:'The Day I Scored Zero', body:'Zero. Not one mark. I stared at the paper in disbelief. I had studied for weeks. On the bus home, I decided to either give up or start over. I chose to start over. I rewrote my entire approach — focusing on concepts, not memorization. A year later, I topped the subject. That zero taught me more than any perfect score ever could.', readingTime:4, reactions:93 },
+  { category:'Failure to Success', title:'From 27% to 92% — My Story', body:'I failed my first mid-term exam so badly that my parents were called to school. I scored 27% in mathematics. That night, I cried for hours. But then something clicked. I stopped comparing myself with others and started studying for myself. I woke up at 4 AM every day, solved one problem at a time, and slowly, things began to change. By the final exam, I scored 92%. But more importantly, I learned that failure is not the opposite of success — it\'s part of it.', readingTime:4 },
+  { category:'Drop Year Journey', title:'My Drop Year Was My Best Year', body:'Dropping a year felt like the end of the world. Watching all my friends go to college while I stayed home was devastating. But that year taught me more than any classroom ever could. I learned discipline, patience, and self-belief. I discovered that taking time doesn\'t mean falling behind — sometimes it means preparing for a better leap forward.', readingTime:5 },
+  { category:'Burnout Recovery', title:'I Ran on 4 Hours of Sleep for Months', body:'I thought working harder meant sleeping less. I was wrong. After months of 4-hour sleep schedules, my body gave up. I had panic attacks, memory loss, and extreme fatigue. Recovery was slow. I had to relearn how to rest, how to say no to extra study hours, and how to listen to my body. Now I tell every student: your health is your real superpower.', readingTime:6 },
+  { category:'Career Change', title:'From Engineering to Art — I Found Myself', body:'I spent two years in engineering because my parents wanted it. I was miserable. Every day felt like a chore. One night, I painted a small landscape and posted it online. The response was overwhelming. I realized I was chasing someone else\'s dream. Switching to art school was the hardest conversation I ever had with my family, but today I wake up excited to work. Follow your passion, not the crowd.', readingTime:5 },
+  { category:'Mental Health', title:'It\'s Okay to Not Be Okay', body:'For two years, I struggled with anxiety and depression while preparing for competitive exams. I thought if I just studied harder, the feelings would go away. They didn\'t. It took therapy, medication, and a lot of conversations to understand that mental health is not a weakness. If you\'re struggling, please reach out. You don\'t have to fight alone.', readingTime:7 },
+  { category:'Parents & Expectations', title:'My Parents Wanted a Doctor. I Wanted to Code.', body:'The pressure to become a doctor was immense. Every family gathering ended with "when will you start your medical practice?" I loved computers, not cadavers. When I finally told my parents I wanted to study computer science, they didn\'t speak to me for a week. But I built apps, won hackathons, and eventually they saw my passion. Today, they\'re my biggest supporters.', readingTime:6 },
+  { category:'Motivation', title:'The Day I Scored Zero', body:'Zero. Not one mark. I stared at the paper in disbelief. I had studied for weeks. On the bus home, I decided to either give up or start over. I chose to start over. I rewrote my entire approach — focusing on concepts, not memorization. A year later, I topped the subject. That zero taught me more than any perfect score ever could.', readingTime:4 },
+  { category:'Failure to Success', title:'I Was Called "Hopeless" by My Teacher', body:'In 10th grade, my math teacher told me in front of the whole class that I would never pass. I went home that day and wrote on my wall: "Prove them wrong." I failed that year. But I kept that note. I hired a tutor, studied during every break, and three years later I topped my school in the board exams. That teacher never apologized, but I didn\'t need one. My results spoke loud enough.', readingTime:5 },
+  { category:'Drop Year Journey', title:'Two Drop Years. One Dream.', body:'I took two drop years for JEE. The first year I fell short by 2000 ranks. The second year, I fell short again. Everyone told me to give up and settle for a local college. But something in me refused to quit. On the third attempt, I finally made it into an NIT. It took me three years, but I learned that persistence matters more than talent. Every late night, every doubt — it was worth it.', readingTime:6 },
+  { category:'Burnout Recovery', title:'I Forgot What Fun Felt Like', body:'I used to study 14 hours a day. I thought that was what it took to succeed. I stopped talking to friends, stopped playing cricket, stopped living. One day I woke up and couldn\'t remember the last time I laughed. That scared me more than any exam. I slowly reintroduced hobbies, started playing sports again, and realized balance is not laziness — it\'s survival. I scored better after I started resting more.', readingTime:5 },
+  { category:'Mental Health', title:'My Mother Noticed Before I Did', body:'I thought I was just tired from studying. But my mother saw I wasn\'t eating, wasn\'t sleeping, and had stopped talking. She sat me down one evening and said, "No exam is worth losing my child." That conversation saved me. I started seeing a counselor, and slowly, the fog lifted. To all parents: check on your kids. To all students: let your parents in. You don\'t have to have it all together.', readingTime:5 },
+  { category:'Parents & Expectations', title:'The Night I Told Them I Failed', body:'I had never failed anything in my life. When I got a D in organic chemistry, I hid the results for two weeks. The night I finally showed my parents, I was shaking. My father looked at the paper, then at me, and said, "I failed my first driving test too." We laughed for the first time in weeks. That moment taught me that parents are not looking for perfection — they just want us to keep trying.', readingTime:4 },
+  { category:'Motivation', title:'My Grandmother\'s Only Wish', body:'My grandmother never went to school. She works as a housekeeper in other people\'s homes. When I got into IIT, she held my offer letter with hands that were rough from years of scrubbing floors. She couldn\'t read it, but she smiled wider than anyone. She told me, "I worked so you could study." I study not just for myself, but for every sacrifice she made. Her dreams are in my textbooks.', readingTime:5 },
+  { category:'Motivation', title:'From Village Boy to University Topper', body:'My village had no internet, no coaching centers, and barely any electricity. I studied under a street lamp because we had no power at home. I walked 8 km every day to borrow books from a library in the next town. When I topped the university entrance exam, the local newspaper wrote about me. If there\'s one thing I want every student to know: your circumstances do not define your potential.', readingTime:6 },
+  { category:'Failure to Success', title:'I Failed My Dream College Interview', body:'I prepared for months for the interview at my dream college. I knew every possible question, practiced every answer. But when I sat in front of the panel, my mind went blank. I stuttered, stumbled, and was rejected. I cried for days. But that rejection pushed me to apply to more places, explore more options, and eventually I found a college that was a better fit. Looking back, that rejection was the best redirect of my life.', readingTime:5 },
+  { category:'Mental Health', title:'The Silence After My Best Friend Left', body:'My best friend and study partner passed away in an accident during our exam prep year. I couldn\'t study. Every book reminded me of them. I took a month off — no books, no classes, just silence and grief. People called me weak. But grief is not weakness. When I finally returned, I studied differently — not to compete, but to honour the friend who couldn\'t be here. I dedicated my rank to them.', readingTime:6 },
+  { category:'Drop Year Journey', title:'Everyone Moved On. I Stayed Behind.', body:'The hardest part of a drop year is the silence. Your friends are posting college stories, making new friends, and you\'re still solving the same problems in the same room. I deleted all social media for a year. I made a strict schedule and followed it like a monk. When I finally cleared the exam, I didn\'t post about it. I just called my mother. She cried. That was enough celebration for a lifetime.', readingTime:5 },
+  { category:'Career Change', title:'Chasing MBBS, Finding Music', body:'I cleared NEET on my second attempt. Everyone was proud. But two months into MBBS, I knew I had made a terrible mistake. The sight of blood made me nauseous, and the pressure was crushing. I quit during the first year. My family was devastated. I picked up a guitar I had bought years ago and started learning. Today, I teach music and perform at small venues. I earn less than a doctor, but I sleep peacefully every night.', readingTime:5 },
+  { category:'Parents & Expectations', title:'The 99% That Still Wasn\'t Enough', body:'I scored 99% in my boards. My father looked at the report card and said, "What about the missing 1%?" I laughed on the outside, but it stung. For years I tried to reach an invisible bar that kept rising. It took therapy to realize that I was living for someone else\'s approval. Today, I still aim high, but I\'ve learned to celebrate my own effort, not just the result. Perfection is a cage.', readingTime:5 },
+  { category:'Motivation', title:'The Teacher Who Believed in Me', body:'I was a below-average student. Teachers had given up on me. But one teacher, Ms. Sharma, saw something in me. She stayed after school to help me with physics, brought me extra books, and never let me feel stupid for asking questions. On results day, I scored 94% in physics. I ran to show her. She hugged me and whispered, "I knew you had it in you." Never underestimate what a little belief can do.', readingTime:4 },
 ];
 
 onAuthStateChanged(authInstance, async (user) => {
@@ -1403,7 +1363,7 @@ async function initAll(uid) {
     // Seed sample stories
     for (const s of SAMPLE_STORIES) {
       await addDoc(collection(db, "stories"), {
-        ...s, reactions: s.reactions, comments: 0, bookmarks: 0,
+        ...s,
         createdAt: serverTimestamp(),
       });
     }
@@ -1662,43 +1622,16 @@ function renderStories(category) {
       <div class="story-card-excerpt">${esc((s.body||'').slice(0,180))}...</div>
       <div class="story-card-meta">
         <span>📖 ${s.readingTime||3} min read</span>
-        <span>❤️ ${s.reactions||0}</span>
-        <span>💬 ${s.comments||0}</span>
-        <button class="reaction-btn" data-id="${esc(s.id)}">❤️ <span>${s.reactions||0}</span></button>
-        <button class="bookmark-btn" data-id="${esc(s.id)}">🔖</button>
       </div>
+      <div class="story-card-cta">Read full story →</div>
     </div>
   `).join('');
 
   grid.querySelectorAll('.story-card').forEach(card => {
-    card.addEventListener('click', (e) => {
-      if (e.target.closest('.reaction-btn') || e.target.closest('.bookmark-btn')) return;
+    card.addEventListener('click', () => {
       const id = card.dataset.id;
       const story = allStories.find(s => s.id === id);
       if (story) openStoryModal(story);
-    });
-  });
-
-  grid.querySelectorAll('.reaction-btn').forEach(btn => {
-    btn.addEventListener('click', async (e) => {
-      e.stopPropagation();
-      const id = btn.dataset.id;
-      const story = allStories.find(s => s.id === id);
-      if (!story) return;
-      const newReactions = (story.reactions || 0) + 1;
-      story.reactions = newReactions;
-      try {
-        await setDoc(doc(db, "stories", id), { reactions: newReactions }, { merge: true });
-      } catch {}
-      renderStories(document.querySelector('.category-pill.active')?.dataset?.cat || 'all');
-    });
-  });
-
-  grid.querySelectorAll('.bookmark-btn').forEach(btn => {
-    btn.addEventListener('click', (e) => {
-      e.stopPropagation();
-      btn.textContent = '✅';
-      setTimeout(() => { btn.textContent = '🔖'; }, 1500);
     });
   });
 }
@@ -1712,7 +1645,6 @@ document.querySelectorAll('.category-pill').forEach(pill => {
 });
 
 function openStoryModal(story) {
-  currentStoryData = story;
   const overlay = document.getElementById('storyModalOverlay');
   const content = document.getElementById('storyModalContent');
 
@@ -1721,75 +1653,11 @@ function openStoryModal(story) {
     <h2>${esc(story.title||'Untitled')}</h2>
     <div style="font-size:12px;color:var(--text-muted);margin-bottom:16px;">📖 ${story.readingTime||3} min read</div>
     <div class="story-body">${esc(story.body||'')}</div>
-    <div class="story-modal-actions">
-      <button id="modalReactionBtn">❤️ <span id="modalReactionCount">${story.reactions||0}</span></button>
-      <button id="modalBookmarkBtn">🔖 Bookmark</button>
-    </div>
-    <div class="comment-section">
-      <h4>💬 Comments (${story.comments||0})</h4>
-      <div class="comment-input-row">
-        <input type="text" id="commentInput" placeholder="Leave a kind comment..." maxlength="200" />
-        <button class="btn-primary" id="submitCommentBtn" style="padding:8px 14px;font-size:12px;">Post</button>
-      </div>
-      <div id="commentsList"></div>
-    </div>
   `;
 
   overlay.classList.add('open');
-
-  document.getElementById('modalReactionBtn').addEventListener('click', async () => {
-    const newR = (story.reactions||0) + 1;
-    story.reactions = newR;
-    try { await setDoc(doc(db, "stories", story.id), { reactions: newR }, { merge: true }); } catch {}
-    const count = document.getElementById('modalReactionCount');
-    if (count) count.textContent = newR;
-    renderStories(document.querySelector('.category-pill.active')?.dataset?.cat || 'all');
-  });
-
-  document.getElementById('modalBookmarkBtn').addEventListener('click', () => {
-    const btn = document.getElementById('modalBookmarkBtn');
-    btn.textContent = '✅ Bookmarked';
-  });
-
-  document.getElementById('submitCommentBtn').addEventListener('click', async () => {
-    const input = document.getElementById('commentInput');
-    const text = input.value.trim();
-    if (!text || !currentUser) return;
-    try {
-      await addDoc(collection(db, "stories", story.id, "comments"), {
-        text, uid: currentUser.uid,
-        createdAt: serverTimestamp(),
-      });
-      input.value = '';
-      story.comments = (story.comments||0) + 1;
-      await setDoc(doc(db, "stories", story.id), { comments: story.comments }, { merge: true });
-      loadComments(story.id);
-    } catch {}
-  });
-
-  document.getElementById('commentInput')?.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter') { e.preventDefault(); document.getElementById('submitCommentBtn')?.click(); }
-  });
-
-  loadComments(story.id);
   document.getElementById('storyModalClose').onclick = () => overlay.classList.remove('open');
   overlay.addEventListener('click', (e) => { if (e.target === overlay) overlay.classList.remove('open'); });
-}
-
-async function loadComments(storyId) {
-  try {
-    const snap = await getDocs(query(collection(db, "stories", storyId, "comments"), orderBy("createdAt", "desc"), limit(20)));
-    const list = document.getElementById('commentsList');
-    if (!list) return;
-    if (snap.empty) {
-      list.innerHTML = '<div style="font-size:13px;color:var(--text-muted);padding:8px 0;">No comments yet. Be the first to encourage them!</div>';
-      return;
-    }
-    list.innerHTML = snap.docs.map(d => {
-      const data = d.data();
-      return `<div class="comment">${esc(data.text||'')} <span class="comment-time">${fmtTime(data.createdAt)}</span></div>`;
-    }).join('');
-  } catch {}
 }
 
 // ═══════════ SHARE STORY MODAL ═══════════
@@ -1811,11 +1679,10 @@ document.getElementById('submitStoryBtn').addEventListener('click', async () => 
   if (!currentUser) return;
   const readingTime = Math.max(1, Math.ceil(body.split(/\s+/).length / 200));
   try {
-    await addDoc(collection(db, "stories"), {
-      title, category, body, readingTime,
-      reactions: 0, comments: 0, bookmarks: 0,
-      createdAt: serverTimestamp(),
-    });
+      await addDoc(collection(db, "stories"), {
+        title, category, body, readingTime,
+        createdAt: serverTimestamp(),
+      });
     document.getElementById('storyTitleInput').value = '';
     document.getElementById('storyCategoryInput').value = '';
     document.getElementById('storyBodyInput').value = '';
