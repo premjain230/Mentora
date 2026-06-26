@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<meta http-equiv="Content-Security-Policy" content="default-src 'self' https:; script-src 'self' 'unsafe-inline' https://www.gstatic.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://www.googletagmanager.com https://esm.sh; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: https:; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://firestore.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://analytics.vercel.com; object-src 'none'; frame-src 'none';">
 <title>Beyond Marks · Aquila AI</title>
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
 <style>
@@ -843,11 +844,34 @@ svg { display: block; }
 
 @media (max-width: 480px) {
   .beyond-hero { min-height: 80vh; padding: 60px 20px; }
+  .beyond-hero-quote { font-size: 15px; }
   .dreams-sky { height: 240px; }
   .dream-submit-wrap { flex-direction: column; }
+  .dream-stat { padding: 16px; }
+  .dream-stat-number { font-size: 24px; }
   .story-categories { gap: 6px; }
   .category-pill { font-size: 11px; padding: 5px 12px; }
+  .stories-grid { grid-template-columns: 1fr; gap: 14px; }
+  .story-card { padding: 18px; }
+  .story-modal { padding: 20px; }
+  .story-modal .comment-input-row { flex-direction: column; }
+  .story-modal .comment-input-row input { width: 100%; }
   .tree-garden { min-height: 300px; }
+  .tree-actions-card { padding: 20px; }
+  .tree-action-item { gap: 10px; padding: 10px 0; }
+  .reflection-input-row { flex-direction: column; gap: 10px; }
+  .reflection-input-row input { width: 100%; }
+  .reflection-stat { padding: 16px; }
+  .word-cloud-wrap { padding: 18px; min-height: 220px; }
+}
+
+@media (max-width: 360px) {
+  .beyond-hero { min-height: 70vh; padding: 40px 16px; }
+  .dreams-sky { height: 200px; }
+  .stories-grid { gap: 10px; }
+  .story-card { padding: 14px; }
+  .dream-submit-wrap input { font-size: 13px; }
+  .dream-tooltip { max-width: 200px; font-size: 12px; padding: 10px 14px; }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -1148,6 +1172,9 @@ a:focus-visible, button:focus-visible, [tabindex]:focus-visible {
           <button class="category-pill" data-cat="Motivation">Motivation</button>
         </div>
 
+        <div class="text-center reveal" style="text-align:center;margin-bottom:24px;">
+          <button class="btn-primary" id="shareStoryBtn" style="font-size:14px;padding:12px 28px;">✍️ Share Your Untold Story</button>
+        </div>
         <div class="stories-grid reveal reveal-delay-2" id="storiesGrid"></div>
       </div>
     </section>
@@ -1235,6 +1262,35 @@ a:focus-visible, button:focus-visible, [tabindex]:focus-visible {
       <div id="storyModalContent"></div>
     </div>
   </div>
+
+  <!-- ═══════════ SHARE STORY MODAL ═══════════ -->
+  <div class="story-modal-overlay" id="shareStoryOverlay">
+    <div class="story-modal" style="max-width:580px;">
+      <button class="story-modal-close" id="shareStoryClose">✕</button>
+      <h2 style="font-size:20px;font-weight:700;margin:4px 0 20px;">✍️ Share Your Untold Story</h2>
+      <p style="font-size:13px;color:var(--text-secondary);margin-bottom:20px;line-height:1.6;">
+        Your story will be shared anonymously. It could be about failure, growth, resilience, or any moment that shaped you.
+      </p>
+      <div style="display:flex;flex-direction:column;gap:14px;">
+        <input type="text" id="storyTitleInput" placeholder="Story title" maxlength="100" style="background:var(--bg-input);border:1px solid var(--border);border-radius:10px;padding:12px 16px;font-family:var(--font-main);font-size:14px;color:var(--text-primary);outline:none;" />
+        <select id="storyCategoryInput" style="background:var(--bg-input);border:1px solid var(--border);border-radius:10px;padding:12px 16px;font-family:var(--font-main);font-size:14px;color:var(--text-primary);outline:none;appearance:none;">
+          <option value="" disabled selected>Choose a category</option>
+          <option value="Failure to Success">Failure to Success</option>
+          <option value="Drop Year Journey">Drop Year Journey</option>
+          <option value="Burnout Recovery">Burnout Recovery</option>
+          <option value="Career Change">Career Change</option>
+          <option value="Mental Health">Mental Health</option>
+          <option value="Parents & Expectations">Parents & Expectations</option>
+          <option value="Motivation">Motivation</option>
+        </select>
+        <textarea id="storyBodyInput" placeholder="Write your story here..." maxlength="5000" style="background:var(--bg-input);border:1px solid var(--border);border-radius:10px;padding:12px 16px;font-family:var(--font-main);font-size:14px;color:var(--text-primary);outline:none;resize:vertical;min-height:180px;line-height:1.7;"></textarea>
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;">
+          <span style="font-size:11px;color:var(--text-muted);font-family:var(--font-mono);" id="storyCharCount">0 / 5000</span>
+          <button class="btn-primary" id="submitStoryBtn" style="padding:10px 24px;">Publish Story</button>
+        </div>
+      </div>
+    </div>
+  </div>
 </main>
 
 <script>
@@ -1305,7 +1361,7 @@ onAuthStateChanged(authInstance, async (user) => {
   if (!user) { window.location.href = "login.html"; return; }
   currentUser = user;
 
-  const name = user.displayName || user.email?.split("@")[0] || "Guest";
+  const name = user.displayName || user?.email?.split("@")[0] || "Guest";
   document.getElementById("userName").textContent = name;
   const avatar = document.getElementById("userAvatar");
   if (user.photoURL) {
@@ -1580,9 +1636,12 @@ async function loadDreamStats() {
 }
 
 function hexToRgb(hex) {
-  const r = parseInt(hex.slice(1,2), 16) * 17 || 0;
-  const g = parseInt(hex.slice(2,3), 16) * 17 || 0;
-  const b = parseInt(hex.slice(3,4), 16) * 17 || 0;
+  const c = hex.replace('#','');
+  if (c.length === 3) {
+    const r = parseInt(c[0],16)*17, g = parseInt(c[1],16)*17, b = parseInt(c[2],16)*17;
+    return `${r},${g},${b}`;
+  }
+  const r = parseInt(c.slice(0,2),16), g = parseInt(c.slice(2,4),16), b = parseInt(c.slice(4,6),16);
   return `${r},${g},${b}`;
 }
 
@@ -1732,6 +1791,41 @@ async function loadComments(storyId) {
     }).join('');
   } catch {}
 }
+
+// ═══════════ SHARE STORY MODAL ═══════════
+const shareStoryOverlay = document.getElementById('shareStoryOverlay');
+document.getElementById('shareStoryBtn').addEventListener('click', () => shareStoryOverlay.classList.add('open'));
+document.getElementById('shareStoryClose').addEventListener('click', () => shareStoryOverlay.classList.remove('open'));
+shareStoryOverlay.addEventListener('click', (e) => { if (e.target === shareStoryOverlay) shareStoryOverlay.classList.remove('open'); });
+
+document.getElementById('storyBodyInput').addEventListener('input', () => {
+  const len = document.getElementById('storyBodyInput').value.length;
+  document.getElementById('storyCharCount').textContent = `${len} / 5000`;
+});
+
+document.getElementById('submitStoryBtn').addEventListener('click', async () => {
+  const title = document.getElementById('storyTitleInput').value.trim();
+  const category = document.getElementById('storyCategoryInput').value;
+  const body = document.getElementById('storyBodyInput').value.trim();
+  if (!title || !category || !body) { alert('Please fill in title, category, and story body.'); return; }
+  if (!currentUser) return;
+  const readingTime = Math.max(1, Math.ceil(body.split(/\s+/).length / 200));
+  try {
+    await addDoc(collection(db, "stories"), {
+      title, category, body, readingTime,
+      reactions: 0, comments: 0, bookmarks: 0,
+      createdAt: serverTimestamp(),
+    });
+    document.getElementById('storyTitleInput').value = '';
+    document.getElementById('storyCategoryInput').value = '';
+    document.getElementById('storyBodyInput').value = '';
+    document.getElementById('storyCharCount').textContent = '0 / 5000';
+    shareStoryOverlay.classList.remove('open');
+    const snap = await getDocs(query(collection(db, "stories"), orderBy("createdAt", "desc"), limit(100)));
+    allStories = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    renderStories(document.querySelector('.category-pill.active')?.dataset?.cat || 'all');
+  } catch (err) { console.error(err); alert('Failed to publish story. Try again.'); }
+});
 
 // ═══════════ 3. REFLECTION ═══════════
 function seedDailyQuestion() {

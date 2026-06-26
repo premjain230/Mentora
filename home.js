@@ -209,12 +209,5 @@ export async function signOut() {
   window.location.href = "login.html";
 }
 
-// ─── Utility ──────────────────────────────────────────────────────────────────
-function escapeHtml(str) {
-  return String(str).replace(/[&<>"']/g, (c) =>
-    ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c])
-  );
-}
-
 // Expose globally for any inline onclick fallbacks
 window.mentora_signOut = signOut;
