@@ -7,17 +7,19 @@ import { getAuth, GoogleAuthProvider } from "https://www.gstatic.com/firebasejs/
 import { getFirestore } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 async function loadFirebaseConfig() {
-  const response = await fetch("/api/firebase-config", {
-    method: "GET",
-    headers: { "Accept": "application/json" },
-    credentials: "same-origin",
-  });
+  try {
+    const response = await fetch("/api/firebase-config", {
+      method: "GET",
+      headers: { "Accept": "application/json" },
+      credentials: "same-origin",
+    });
+    if (response.ok) return response.json();
+  } catch {}
 
-  if (!response.ok) {
-    throw new Error("Firebase configuration is unavailable.");
-  }
+  // Fallback for local dev: set window.__FIREBASE_CONFIG__ before this script loads
+  if (window.__FIREBASE_CONFIG__) return window.__FIREBASE_CONFIG__;
 
-  return response.json();
+  throw new Error("Firebase configuration is unavailable. Set window.__FIREBASE_CONFIG__ for local dev.");
 }
 
 const app = initializeApp(await loadFirebaseConfig());
