@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+<script>document.documentElement.className=localStorage.getItem('aquila-theme')==='light'?'light-mode':''</script>
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
@@ -25,12 +26,23 @@
     --font-mono: 'Space Mono', monospace;
     --sidebar-w: 248px;
   }
+  .light-mode {
+    --bg-base: #f4f5f9;
+    --bg-sidebar: #ecedf2;
+    --bg-card: #ffffff;
+    --bg-input: #f0f1f5;
+    --border: rgba(0,0,0,0.08);
+    --text-primary: #16162a;
+    --text-secondary: #5a5d72;
+    --text-muted: #9ea0b4;
+  }
   html, body { height: 100%; }
   body {
     font-family: var(--font-main);
     background: var(--bg-base);
     color: var(--text-primary);
     height: 100vh;
+    transition: background 0.35s ease, color 0.35s ease;
     display: flex;
     overflow: hidden;
     -webkit-font-smoothing: antialiased;

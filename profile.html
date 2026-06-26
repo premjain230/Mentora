@@ -672,7 +672,7 @@
           <button class="generate-btn" id="generateLetterBtn">
             <svg class="spinner" style="display:none;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10" stroke-dasharray="32" stroke-dashoffset="32"/><path d="M12 2a10 10 0 0 1 10 10"/></svg>
             <svg class="sparkle" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 2l1.5 6.5L20 10l-6.5 1.5L12 18l-1.5-6.5L4 10l6.5-1.5L12 2z"/><line x1="22" y1="17" x2="22" y2="22"/><line x1="17" y1="22" x2="22" y2="22"/></svg>
-            Generate New Letter
+            <span id="letterBtnText">Generate New Letter</span>
           </button>
         </div>
       </div>
@@ -744,27 +744,31 @@ const PERSONALITIES = [
 ];
 
 onAuthStateChanged(authInstance, async (user) => {
-  if (!user) { window.location.href = 'login.html'; return; }
-  currentUser = user;
-  populateSidebarUser(user);
-  const userRef = doc(db, 'users', user.uid);
-  const userSnap = await getDoc(userRef);
-  if (!userSnap.exists()) {
-    await setDoc(userRef, {
-      uid: user.uid,
-      displayName: user.displayName || '',
-      email: user.email || '',
-      photoURL: user.photoURL || '',
-      exam: '',
-      createdAt: serverTimestamp(),
-      plan: 'free',
-    }).catch(() => {});
+  try {
+    if (!user) { window.location.href = 'login.html'; return; }
+    currentUser = user;
+    populateSidebarUser(user);
+    const userRef = doc(db, 'users', user.uid);
+    const userSnap = await getDoc(userRef).catch(() => null);
+    if (!userSnap || !userSnap.exists()) {
+      await setDoc(userRef, {
+        uid: user.uid,
+        displayName: user.displayName || '',
+        email: user.email || '',
+        photoURL: user.photoURL || '',
+        exam: '',
+        createdAt: serverTimestamp(),
+        plan: 'free',
+      }).catch(() => {});
+    }
+    await loadProfile(user);
+    renderUserInfo();
+    initThemeToggle();
+    buildPersonalityGrid();
+    initLetter();
+  } catch (e) {
+    console.warn('Profile init error:', e);
   }
-  await loadProfile(user);
-  renderUserInfo();
-  initThemeToggle();
-  buildPersonalityGrid();
-  initLetter();
 });
 
 document.getElementById('signOutBtn').onclick = async () => {
@@ -910,7 +914,7 @@ async function generateLetter() {
   btn.disabled = true;
   btn.querySelector('.sparkle').style.display = 'none';
   btn.querySelector('.spinner').style.display = 'block';
-  btn.childNodes[2].textContent = ' Writing…';
+  document.getElementById('letterBtnText').textContent = ' Writing…';
 
   const name = profileData.displayName || currentUser?.displayName || 'Student';
   const streak = profileData.streak ?? 0;
@@ -974,7 +978,7 @@ Format it as a real handwritten letter, with a date line at the top and a closin
     btn.disabled = false;
     btn.querySelector('.sparkle').style.display = 'block';
     btn.querySelector('.spinner').style.display = 'none';
-    btn.childNodes[2].textContent = ' Generate New Letter';
+    document.getElementById('letterBtnText').textContent = 'Generate New Letter';
   }
 }
 

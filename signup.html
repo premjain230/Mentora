@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+<script>document.documentElement.className=localStorage.getItem('aquila-theme')==='light'?'light-mode':''</script>
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
@@ -24,6 +25,16 @@
   --font: 'Sora', sans-serif;
   --mono: 'Space Mono', monospace;
 }
+.light-mode {
+  --bg: #f4f5f9;
+  --surface: #ecedf2;
+  --card: #ffffff;
+  --card2: #f0f1f5;
+  --border: rgba(0,0,0,0.08);
+  --text: #16162a;
+  --sub: #5a5d72;
+  --muted: #9ea0b4;
+}
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html { height: 100%; }
@@ -35,6 +46,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
+  transition: background 0.35s ease, color 0.35s ease;
   overflow-x: hidden;
   position: relative;
   -webkit-font-smoothing: antialiased;
