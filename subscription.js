@@ -142,28 +142,6 @@ export function onUserReady(callback) {
     callback({ user, plan, usage });
   });
 }
-console.log("subscription.js loaded");
-
-onAuthStateChanged(auth, async (user) => {
-  console.log("Auth state changed", user);
-
-  if (!user) {
-    console.log("No user");
-    return;
-  }
-
-  console.log("Fetching Firestore document");
-
-  const snap = await getDoc(doc(db, "users", user.uid));
-
-  console.log("Document exists?", snap.exists());
-
-  if (snap.exists()) {
-    console.log("Data:", snap.data());
-  }
-
-  console.log("About to render UI");
-});
 // ─── Request Pro Access (writes intent to Firestore) ─────────────────────────
 
 export async function requestProAccess(uid, email) {
@@ -175,4 +153,3 @@ export async function requestProAccess(uid, email) {
     status: "pending",
   });
 }
-console.log("About to render UI");

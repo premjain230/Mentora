@@ -119,6 +119,18 @@
   .nav-badge { margin-left: auto; background: var(--accent3); color: white; font-size: 10px; font-weight: 600; padding: 2px 6px; border-radius: 20px; font-family: var(--font-mono); }
   .nav-badge.green { background: var(--accent2); color: #16122b; }
 
+  .upgrade-nav-btn {
+    display: flex; align-items: center; gap: 11px;
+    padding: 10px 12px; border-radius: 10px;
+    cursor: pointer; font-size: 13.5px; font-weight: 600;
+    color: var(--accent2);
+    background: rgba(167,139,250,0.08);
+    border: 1px solid rgba(167,139,250,0.2);
+    margin-bottom: 2px; text-decoration: none;
+    transition: all 0.18s;
+  }
+  .upgrade-nav-btn:hover { background: rgba(167,139,250,0.14); border-color: rgba(167,139,250,0.4); }
+
   .nav-item.chat-history-item {
     font-size: 12.5px;
     color: var(--text-muted);
@@ -421,6 +433,12 @@
     </a>
 
     <div class="nav-label">Account</div>
+    <a href="subscription.html" class="upgrade-nav-btn">
+      <span class="nav-icon" style="color:var(--accent2)">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+      </span>
+      Subscription
+    </a>
     <a href="profile.html" class="nav-item">
       <span class="nav-icon"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span>
       Profile
