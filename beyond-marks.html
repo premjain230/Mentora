@@ -679,7 +679,7 @@ svg { display: block; }
   grid-template-columns: 1fr 1fr;
   gap: 24px;
 }
-.word-cloud-wrap {
+.info-wrap {
   background: var(--glass);
   border: 1px solid var(--border);
   border-radius: var(--radius-md);
@@ -687,7 +687,7 @@ svg { display: block; }
   min-height: 300px;
   backdrop-filter: blur(12px);
 }
-.word-cloud-wrap h3 {
+.info-wrap h3 {
   font-size: 13px;
   font-weight: 600;
   color: var(--text-secondary);
@@ -695,26 +695,49 @@ svg { display: block; }
   letter-spacing: 0.1em;
   margin-bottom: 16px;
 }
-#wordCloud {
-  width: 100%;
-  height: 260px;
-  display: flex;
-  flex-wrap: wrap;
-  align-content: center;
-  justify-content: center;
-  gap: 8px 14px;
+.news-feed {
+  max-height: 360px;
+  overflow-y: auto;
+  padding-right: 4px;
 }
-.word-cloud-item {
-  display: inline-block;
-  cursor: default;
-  transition: all 0.2s;
-  font-weight: 500;
+.news-feed::-webkit-scrollbar { width: 3px; }
+.news-feed::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+.news-item {
+  background: rgba(255,255,255,0.02);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 14px 16px;
+  margin-bottom: 10px;
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.7;
+  animation: fadeUp 0.4s ease both;
+  word-break: break-word;
 }
-.word-cloud-item:hover {
-  transform: scale(1.15);
-  color: var(--accent5) !important;
+.news-item strong {
+  color: var(--text-primary);
+  font-weight: 600;
 }
-
+.news-item .news-source {
+  font-size: 10px;
+  color: var(--accent4, #a78bfa);
+  font-family: var(--font-mono);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  display: block;
+  margin-top: 8px;
+}
+.news-loading {
+  font-size: 13px;
+  color: var(--text-muted);
+  text-align: center;
+  padding: 40px 20px;
+  animation: pulse 1.5s ease-in-out infinite;
+}
+@keyframes pulse {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 1; }
+}
 .response-feed {
   display: flex;
   flex-direction: column;
@@ -908,7 +931,7 @@ svg { display: block; }
   .reflection-input-row { flex-direction: column; gap: 10px; }
   .reflection-input-row input { width: 100%; }
   .reflection-stat { padding: 16px; }
-  .word-cloud-wrap { padding: 18px; min-height: 220px; }
+  .info-wrap { padding: 18px; min-height: 220px; }
 }
 
 @media (max-width: 360px) {
@@ -1209,12 +1232,14 @@ a:focus-visible, button:focus-visible, [tabindex]:focus-visible {
         </div>
 
         <div class="reflection-bottom reveal reveal-delay-2">
-          <div class="word-cloud-wrap">
-            <h3>☁️ Community Word Cloud</h3>
-            <div id="wordCloud"></div>
+          <div class="info-wrap">
+            <h3>📰 The Big Picture</h3>
+            <div class="news-feed" id="newsFeed">
+              <div class="news-loading">Loading context...</div>
+            </div>
           </div>
-          <div class="word-cloud-wrap">
-            <h3>💬 Live Responses</h3>
+          <div class="info-wrap">
+            <h3>💬 Student Responses</h3>
             <div class="response-feed" id="responseFeed"></div>
           </div>
         </div>
@@ -1349,6 +1374,8 @@ let currentUser = null;
 let allDreams = [];
 let allStories = [];
 let allResponses = [];
+
+const GROQ_ENDPOINT = "/api/groq-proxy";
 
 
 const STAGES = ['🌱 Seed', '🌿 Sapling', '🌳 Young Tree', '🌲 Strong Tree', '🌸 Blooming Tree'];
@@ -1788,7 +1815,7 @@ function seedDailyQuestion() {
     question: q, date: serverTimestamp(), createdAt: serverTimestamp(),
   }).then(ref => {
     loadResponses(ref.id);
-    loadWordCloud(ref.id);
+    loadNewsContext(ref.id, q);
   });
 }
 
@@ -1797,7 +1824,7 @@ function showTodaysQuestion(qData, docId) {
   const d = qData.date?.toDate ? qData.date.toDate() : new Date();
   document.getElementById('reflectionDate').textContent = d.toLocaleDateString('en-US', { weekday:'long', month:'long', day:'numeric', year:'numeric' });
   loadResponses(docId);
-  loadWordCloud(docId);
+  loadNewsContext(docId, qData.question);
 }
 
 const MOOD_EMOJI = {
@@ -1834,7 +1861,6 @@ document.getElementById('submitReflectionBtn').addEventListener('click', async (
     selectedMood = null;
     document.querySelectorAll('.mood-pill').forEach(p => p.classList.remove('selected'));
     loadResponses(refId);
-    loadWordCloud(refId);
   } catch {}
 });
 
@@ -1863,28 +1889,62 @@ async function loadResponses(refId) {
   } catch {}
 }
 
-function loadWordCloud(refId) {
-  const cloud = document.getElementById('wordCloud');
-  getDocs(query(collection(db, "dailyReflections", refId, "responses"), orderBy("createdAt", "desc"), limit(100)))
-    .then(snap => {
-      const texts = snap.docs.map(d => (d.data().text||'').toLowerCase());
-      const words = texts.flatMap(t => t.split(/\s+/).filter(w => w.length > 2 && !['the','and','for','are','but','not','you','all','can','had','her','was','one','our','out','has','have','been','some','them','than','that','this','with','what','when','will'].includes(w)));
+async function loadNewsContext(refId, question) {
+  const feed = document.getElementById('newsFeed');
+  if (!feed) return;
 
-      const freq = {};
-      words.forEach(w => { freq[w] = (freq[w]||0) + 1; });
+  // Check if cached in Firestore
+  try {
+    const snap = await getDoc(doc(db, "dailyReflections", refId));
+    if (snap.exists() && snap.data().newsContext) {
+      return renderNews(snap.data().newsContext);
+    }
+  } catch {}
 
-      const sorted = Object.entries(freq).sort((a,b) => b[1] - a[1]).slice(0, 30);
-      const maxFreq = Math.max(...sorted.map(([,c]) => c), 1);
+  feed.innerHTML = '<div class="news-loading">Loading context...</div>';
 
-      cloud.innerHTML = sorted.map(([word, count]) => {
-        const size = 10 + (count / maxFreq) * 28;
-        const opacity = 0.4 + (count / maxFreq) * 0.6;
-        const colors = ['#a78bfa','#f472b6','#06d6cf','#ffd166','#00d4ff'];
-        const color = colors[Math.floor(Math.random() * colors.length)];
-        return `<span class="word-cloud-item" style="font-size:${size}px;color:${color};opacity:${opacity}">${esc(word)}</span>`;
-      }).join('');
-    })
-    .catch(() => { cloud.innerHTML = '<div style="color:var(--text-muted);font-size:13px;">Loading word cloud...</div>'; });
+  try {
+    const res = await fetch(GROQ_ENDPOINT, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'llama-3.3-70b-versatile',
+        messages: [
+          { role: 'system', content: 'You are a journalist covering Indian education. Write factual, hard-hitting news briefings about real issues facing students in India.' },
+          { role: 'user', content: `Write a brief, factual news briefing (3-4 short paragraphs) about this topic related to Indian students:\n\n"${question}"\n\nInclude key facts, recent developments, and why this matters to students. Keep it concise like a news digest. Use plain paragraphs, no markdown.` },
+        ],
+        max_tokens: 512,
+        temperature: 0.7,
+        stream: false,
+      }),
+    });
+
+    if (!res.ok) throw new Error('API error');
+
+    const data = await res.json();
+    const text = data.choices?.[0]?.message?.content?.trim();
+    if (!text) throw new Error('Empty response');
+
+    // Cache in Firestore
+    try {
+      await setDoc(doc(db, "dailyReflections", refId), { newsContext: text, newsContextFetchedAt: serverTimestamp() }, { merge: true });
+    } catch {}
+
+    renderNews(text);
+  } catch (err) {
+    feed.innerHTML = '<div style="font-size:13px;color:var(--text-muted);text-align:center;padding:40px 20px;">Could not load context. Check back later.</div>';
+  }
+}
+
+function renderNews(text) {
+  const feed = document.getElementById('newsFeed');
+  const paragraphs = text.split('\n\n').filter(p => p.trim());
+  feed.innerHTML = paragraphs.map(p => `
+    <div class="news-item">
+      ${esc(p.trim())}
+      <span class="news-source">AI-generated context · Student Voices</span>
+    </div>
+  `).join('');
 }
 
 // ═══════════ 4. LEGACY TREE ═══════════
