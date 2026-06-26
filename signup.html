@@ -763,7 +763,7 @@ async function handleSignUp() {
 
   try {
     const { signUp } = await import('./auth.js');
-    await signUp();
+    await signUp(btn, { role, goal });
     btn.classList.remove('loading');
     btn.classList.add('success');
     setProgress(3);

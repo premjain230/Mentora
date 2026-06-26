@@ -16,8 +16,7 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 // ─── Constants ────────────────────────────────────────────────────────────────
-const GROQ_API_KEY  = "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";
-const GROQ_ENDPOINT = "https://api.groq.com/openai/v1/chat/completions";
+const API_ENDPOINT  = "/api/groq-proxy";
 const MODEL         = "llama-3.3-70b-versatile";
 
 const SYSTEM_PROMPT = `You are Mentora, an expert AI study companion built for JEE and NEET aspirants and students in general.
@@ -229,12 +228,9 @@ function createActionButtons(rawText) {
 
 // ─── Groq streaming ───────────────────────────────────────────────────────────
 async function streamGroqResponse(bubble) {
-  const res = await fetch(GROQ_ENDPOINT, {
+  const res = await fetch(API_ENDPOINT, {
     method : "POST",
-    headers: {
-      "Content-Type" : "application/json",
-      "Authorization": `Bearer ${GROQ_API_KEY}`,
-    },
+    headers: { "Content-Type" : "application/json" },
     body: JSON.stringify({
       model    : MODEL,
       messages : [
