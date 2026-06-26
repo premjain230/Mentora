@@ -103,7 +103,7 @@ function showModal(question, dqRef) {
         margin-bottom: 20px;
       }
       .dq-textarea {
-        width: 100%; min-height: 100px;
+        width: 100%; min-height: 100px; max-height: 200px;
         background: var(--bg-input, #1e2130);
         border: 1px solid var(--border, rgba(255,255,255,0.07));
         border-radius: 12px;
@@ -111,16 +111,26 @@ function showModal(question, dqRef) {
         font-family: var(--font-main, 'Sora', sans-serif);
         font-size: 14px;
         color: var(--text-primary, #f0f0f8);
-        resize: vertical;
+        resize: none;
         outline: none;
         transition: border-color 0.2s;
         line-height: 1.6;
+        overflow-y: auto;
       }
       .dq-textarea:focus {
         border-color: rgba(0,212,255,0.4);
         box-shadow: 0 0 0 3px rgba(0,212,255,0.10);
       }
       .dq-textarea::placeholder { color: var(--text-muted, #4a4d62); }
+      .dq-counter {
+        text-align: right;
+        font-size: 11px;
+        color: var(--text-muted, #4a4d62);
+        font-family: var(--font-mono, 'Space Mono', monospace);
+        margin-top: 6px;
+        transition: color 0.2s;
+      }
+      .dq-counter.limit-near { color: var(--accent3, #ff6b6b); }
       .dq-actions {
         display: flex; gap: 10px; margin-top: 16px;
         justify-content: flex-end;
@@ -159,6 +169,7 @@ function showModal(question, dqRef) {
         </div>
         <div class="dq-question">${escHtml(question)}</div>
         <textarea class="dq-textarea" id="dqAnswer" placeholder="Share your thoughts..." maxlength="500"></textarea>
+        <div class="dq-counter" id="dqCounter">0/500</div>
         <div class="dq-actions">
           <button class="dq-skip" id="dqSkip">Skip</button>
           <button class="dq-submit" id="dqSubmit">Submit</button>
@@ -173,6 +184,13 @@ function showModal(question, dqRef) {
   const skipBtn = document.getElementById("dqSkip");
 
   textarea.focus();
+
+  const counter = document.getElementById("dqCounter");
+  textarea.addEventListener("input", () => {
+    const len = textarea.value.length;
+    counter.textContent = `${len}/500`;
+    counter.classList.toggle("limit-near", len > 450);
+  });
 
   async function handleSubmit() {
     const answer = textarea.value.trim();
