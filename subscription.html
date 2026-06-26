@@ -642,7 +642,7 @@
       document.getElementById('userAvatar').innerHTML = `<img src="${user.photoURL}" alt="avatar" />`;
     }
 
-    const plan = await import('./subscription.js').then(m => m.getUserPlan(user.uid));
+    const plan = await import('./subscription.js').then(m => m.getUserPlan(user.uid, user));
     const usage = await import('./subscription.js').then(m => m.getUsage(user.uid));
     document.getElementById('userPlanLabel').textContent = plan === 'pro' ? '✨ Aquila Pro' : 'Free Plan';
 

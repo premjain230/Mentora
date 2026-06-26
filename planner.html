@@ -426,6 +426,8 @@ import {
   getActivePlan, getTasksByPlan, getProgress,
   updateTaskStatus, updateStreak, getExamProfile, logEvent
 } from "./planner-db.js";
+import { doc, getDoc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { db } from "./firebase-config.js";
 import { getUserPlan } from "./subscription.js";
 
 let appState = { user: null, profile: null, plan: null, tasks: [], progress: null, currentTab: "today" };
@@ -445,9 +447,24 @@ onAuthStateChanged(auth, async (user) => {
     av.textContent = name.charAt(0).toUpperCase();
   }
 
-  const plan = await getUserPlan(user.uid);
+  const plan = await getUserPlan(user.uid, user);
   const planEl = document.getElementById("userPlan");
   if (planEl) planEl.textContent = plan === "pro" ? "✨ Aquila Pro" : "Free Plan";
+
+  // Ensure user doc exists (fallback if sign-up write failed)
+  const userRef = doc(db, "users", user.uid);
+  const userSnap = await getDoc(userRef);
+  if (!userSnap.exists()) {
+    setDoc(userRef, {
+      uid: user.uid,
+      displayName: user.displayName || "",
+      email: user.email || "",
+      photoURL: user.photoURL || "",
+      exam: "",
+      createdAt: serverTimestamp(),
+      plan: "free",
+    }).catch(() => {});
+  }
 
   await loadPlannerData();
 });

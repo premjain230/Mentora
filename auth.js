@@ -70,7 +70,7 @@ function setLoading(btn, loading) {
 }
 
 /** Persist user profile doc to Firestore on first sign-up */
-async function ensureUserDoc(user, extra = {}) {
+export async function ensureUserDoc(user, extra = {}) {
   const ref = doc(db, "users", user.uid);
   const snap = await getDoc(ref);
   if (!snap.exists()) {

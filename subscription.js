@@ -73,10 +73,23 @@ async function ensureUsageDoc(uid) {
 
 // ─── Get user plan ────────────────────────────────────────────────────────────
 
-export async function getUserPlan(uid) {
+export async function getUserPlan(uid, user = null) {
   const ref = doc(db, "users", uid);
   const snap = await getDoc(ref);
-  if (!snap.exists()) return "free";
+  if (!snap.exists()) {
+    // Auto-create user doc if missing (fallback for sign-up failures)
+    const data = {
+      uid,
+      email: user?.email || "",
+      displayName: user?.displayName || "",
+      photoURL: user?.photoURL || "",
+      exam: "",
+      createdAt: serverTimestamp(),
+      plan: "free",
+    };
+    await setDoc(ref, data).catch(() => {});
+    return "free";
+  }
   return snap.data().plan || "free";
 }
 
