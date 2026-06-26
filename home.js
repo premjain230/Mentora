@@ -37,6 +37,10 @@ onAuthStateChanged(auth, async (user) => {
   await loadRecentChats(user.uid);
   wireNewChatBtn();
   wireSignOutBtn();
+  // Daily question popup (non-blocking, shown once per day)
+  import("./dailyQuestion.js").then(({ checkDailyQuestion }) => {
+    checkDailyQuestion(user);
+  }).catch(() => {});
 });
 
 // ─── Sidebar user card ────────────────────────────────────────────────────────

@@ -25,6 +25,23 @@
     --font-mono: 'Space Mono', monospace;
     --sidebar-w: 248px;
     --glass: rgba(26,29,39,0.7);
+    --theme-icon: #fbbf24;
+    --card-shadow: 0 8px 32px rgba(0,0,0,0.3);
+    --personality-bg: rgba(26,29,39,0.5);
+  }
+  .light-mode {
+    --bg-base: #f4f5f9;
+    --bg-sidebar: #ecedf2;
+    --bg-card: #ffffff;
+    --bg-input: #f0f1f5;
+    --border: rgba(0,0,0,0.08);
+    --border-hover: rgba(0,212,255,0.5);
+    --text-primary: #16162a;
+    --text-secondary: #5a5d72;
+    --text-muted: #9ea0b4;
+    --glass: rgba(255,255,255,0.72);
+    --card-shadow: 0 8px 32px rgba(0,0,0,0.06);
+    --personality-bg: rgba(255,255,255,0.5);
   }
 
   html, body { height: 100%; }
@@ -36,6 +53,7 @@
     display: flex;
     overflow: hidden;
     -webkit-font-smoothing: antialiased;
+    transition: background 0.35s ease, color 0.35s ease;
   }
 
   body::before {
@@ -47,11 +65,12 @@
     background:
       radial-gradient(640px 420px at 14% -6%, rgba(0,212,255,0.09), transparent 62%),
       radial-gradient(560px 420px at 92% 6%, rgba(167,139,250,0.08), transparent 60%);
+    transition: opacity 0.35s ease;
   }
+  .light-mode::before { opacity: 0.5; }
 
   svg { display: block; }
 
-  /* ===== Sidebar ===== */
   .sidebar {
     width: var(--sidebar-w);
     min-width: var(--sidebar-w);
@@ -61,16 +80,12 @@
     flex-direction: column;
     position: relative;
     z-index: 30;
-    transition: margin-left 0.32s cubic-bezier(0.16,1,0.3,1), box-shadow 0.32s;
+    transition: margin-left 0.32s cubic-bezier(0.16,1,0.3,1), box-shadow 0.32s, background 0.35s ease;
   }
 
   .logo-area { padding: 20px 18px 16px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; gap: 10px; }
   .logo { display: flex; align-items: center; gap: 10px; text-decoration: none; color: inherit; }
-  .logo-icon {
-    width: 34px; height: 34px;
-    border-radius: 10px;
-    flex-shrink: 0;
-  }
+  .logo-icon { width: 34px; height: 34px; border-radius: 10px; flex-shrink: 0; }
   .logo-icon svg { width: 100%; height: 100%; }
   .logo-text { font-size: 17px; font-weight: 700; color: var(--text-primary); letter-spacing: -0.3px; }
   .logo-text span { color: var(--accent); }
@@ -159,8 +174,7 @@
     transition: opacity 0.28s;
   }
 
-  /* ===== Main ===== */
-  .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; background: var(--bg-base); position: relative; z-index: 1; min-width: 0; }
+  .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; background: var(--bg-base); position: relative; z-index: 1; min-width: 0; transition: background 0.35s ease; }
 
   .topbar {
     display: flex; align-items: center; justify-content: space-between;
@@ -208,7 +222,6 @@
   .topbar-mobile-logo .logo-icon { width: 28px; height: 28px; border-radius: 8px; }
   .topbar-mobile-logo span { color: var(--accent); }
 
-  /* ===== Content area ===== */
   .content-area {
     flex: 1;
     overflow-y: auto;
@@ -218,16 +231,15 @@
   .content-area::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
 
   .profile-layout {
-    max-width: 860px;
+    max-width: 720px;
     margin: 0 auto;
-    display: grid;
-    grid-template-columns: 260px 1fr;
+    display: flex;
+    flex-direction: column;
     gap: 24px;
     animation: fadeUp 0.4s cubic-bezier(0.16,1,0.3,1) both;
   }
   @keyframes fadeUp { from { opacity:0; transform:translateY(14px); } to { opacity:1; transform:translateY(0); } }
 
-  /* ===== Glass card ===== */
   .glass-card {
     background: var(--glass);
     border: 1px solid var(--border);
@@ -235,334 +247,233 @@
     backdrop-filter: blur(18px);
     -webkit-backdrop-filter: blur(18px);
     overflow: hidden;
+    transition: background 0.35s ease, border-color 0.35s ease;
   }
 
-  /* ===== Left: identity card ===== */
-  .identity-card {
+  .section-card { padding: 28px; }
+  .section-header {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 20px;
+  }
+  .section-title {
+    font-size: 11px; font-weight: 600;
+    text-transform: uppercase; letter-spacing: 1.4px;
+    color: var(--text-muted);
+    display: flex; align-items: center; gap: 10px;
+  }
+  .section-title svg { width: 16px; height: 16px; color: var(--accent); flex-shrink: 0; }
+
+  /* ── User Info Card ── */
+  .user-profile-card {
     display: flex;
-    flex-direction: column;
     align-items: center;
-    padding: 32px 24px 24px;
-    gap: 12px;
-    position: relative;
+    gap: 20px;
+    padding: 24px 28px;
   }
-  .identity-card::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0;
-    height: 88px;
-    background: linear-gradient(135deg, rgba(0,212,255,0.14), rgba(167,139,250,0.12));
-    border-radius: 18px 18px 0 0;
-  }
-
-  .profile-avatar-wrap { position: relative; z-index: 1; margin-top: 16px; }
-  .profile-avatar {
-    width: 86px; height: 86px;
+  .user-profile-avatar {
+    width: 64px; height: 64px;
     border-radius: 50%;
     background: linear-gradient(135deg, var(--accent), var(--accent2));
     display: flex; align-items: center; justify-content: center;
-    font-size: 34px; font-weight: 700;
-    border: 3px solid var(--bg-card);
-    box-shadow: 0 0 0 2px rgba(0,212,255,0.35), 0 8px 28px rgba(0,0,0,0.4);
+    font-size: 26px; font-weight: 700;
+    border: 2px solid var(--bg-card);
+    box-shadow: 0 0 0 2px rgba(0,212,255,0.3), 0 8px 28px rgba(0,0,0,0.3);
     overflow: hidden;
     flex-shrink: 0;
     color: #06121a;
   }
-  .profile-avatar img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
+  .user-profile-avatar img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
+  .user-profile-info { flex: 1; min-width: 0; }
+  .user-profile-name { font-size: 20px; font-weight: 700; letter-spacing: -0.3px; color: var(--text-primary); }
+  .user-profile-email { font-size: 12.5px; color: var(--text-secondary); margin-top: 2px; }
+  .user-profile-stats { display: flex; gap: 20px; margin-top: 8px; }
+  .user-profile-stat { display: flex; align-items: center; gap: 4px; font-size: 12px; color: var(--text-muted); font-family: var(--font-mono); }
+  .user-profile-stat svg { width: 13px; height: 13px; color: var(--accent); }
 
-  .online-dot {
-    position: absolute;
-    bottom: 4px; right: 4px;
-    width: 14px; height: 14px;
-    border-radius: 50%;
-    background: var(--accent);
-    border: 2px solid var(--bg-card);
-    box-shadow: 0 0 8px var(--accent);
-  }
-
-  .identity-name {
-    font-size: 18px; font-weight: 700; letter-spacing: -0.3px;
-    color: var(--text-primary); text-align: center;
-  }
-  .identity-email { font-size: 12px; color: var(--text-muted); text-align: center; word-break: break-all; }
-
-  .plan-badge {
-    display: inline-flex; align-items: center; gap: 6px;
-    background: rgba(0,212,255,0.1);
-    border: 1px solid rgba(0,212,255,0.25);
-    border-radius: 20px;
-    padding: 4px 12px;
-    font-size: 11px; font-weight: 600;
-    color: var(--accent);
-    font-family: var(--font-mono);
-    letter-spacing: 0.5px;
-  }
-  .plan-badge::before { content: '●'; font-size: 7px; }
-
-  .level-badge {
-    display: inline-flex; align-items: center; gap: 6px;
-    background: rgba(167,139,250,0.1);
-    border: 1px solid rgba(167,139,250,0.22);
-    border-radius: 20px;
-    padding: 4px 12px;
-    font-size: 11.5px; font-weight: 500;
-    color: var(--accent2);
-  }
-
-  .identity-divider { width: 100%; height: 1px; background: var(--border); margin: 4px 0; }
-
-  .stat-row { display: flex; justify-content: space-around; width: 100%; padding: 4px 0; }
-  .stat-item { display: flex; flex-direction: column; align-items: center; gap: 2px; }
-  .stat-num { font-size: 18px; font-weight: 700; color: var(--text-primary); font-family: var(--font-mono); }
-  .stat-label { font-size: 10.5px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.8px; }
-
-  .edit-profile-btn {
-    width: 100%; padding: 10px 14px;
-    background: rgba(0,212,255,0.1);
-    border: 1px solid rgba(0,212,255,0.28);
-    border-radius: 10px;
-    color: var(--accent);
-    font-family: var(--font-main);
-    font-size: 13px; font-weight: 500;
-    cursor: pointer;
-    display: flex; align-items: center; justify-content: center; gap: 8px;
-    transition: all 0.2s;
-    margin-top: 4px;
-  }
-  .edit-profile-btn:hover { background: rgba(0,212,255,0.18); border-color: rgba(0,212,255,0.5); }
-
-  /* ===== Right: details ===== */
-  .details-col { display: flex; flex-direction: column; gap: 18px; }
-
-  .section-card { padding: 24px; }
-  .section-header {
-    display: flex; align-items: center; justify-content: space-between;
-    margin-bottom: 18px;
-  }
-  .section-title {
-    font-size: 13px; font-weight: 600;
-    text-transform: uppercase; letter-spacing: 1.2px;
-    color: var(--text-muted);
-    display: flex; align-items: center; gap: 8px;
-  }
-  .section-title::before { content: ''; width: 3px; height: 14px; background: var(--accent); border-radius: 4px; display: block; }
-
-  /* Fields */
-  .field-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
-  .field-group { display: flex; flex-direction: column; gap: 6px; }
-  .field-group.full { grid-column: 1 / -1; }
-  .field-label {
-    font-size: 11px; font-weight: 600;
-    text-transform: uppercase; letter-spacing: 1px;
-    color: var(--text-muted);
-  }
-  .field-value {
-    font-size: 14px; color: var(--text-primary);
-    background: var(--bg-input);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 10px 14px;
-    line-height: 1.4;
-    min-height: 42px;
-  }
-  .field-value.muted { color: var(--text-secondary); }
-  .field-value.locked {
-    display: flex; align-items: center; gap: 8px;
-    color: var(--text-muted);
-    font-size: 13px;
-  }
-  .lock-icon { font-size: 12px; opacity: 0.6; }
-
-  /* Editable input */
-  .field-input {
-    font-size: 14px; color: var(--text-primary);
-    background: var(--bg-input);
-    border: 1px solid rgba(0,212,255,0.35);
-    border-radius: 10px;
-    padding: 10px 14px;
-    font-family: var(--font-main);
-    outline: none;
-    width: 100%;
-    transition: border-color 0.2s, box-shadow 0.2s;
-    box-shadow: 0 0 0 3px rgba(0,212,255,0.08);
-    display: none;
-  }
-  .field-input:focus { border-color: rgba(0,212,255,0.6); box-shadow: 0 0 0 3px rgba(0,212,255,0.14); }
-
-  .field-select {
-    font-size: 14px; color: var(--text-primary);
-    background: var(--bg-input);
-    border: 1px solid rgba(0,212,255,0.35);
-    border-radius: 10px;
-    padding: 10px 14px;
-    font-family: var(--font-main);
-    outline: none;
-    width: 100%;
-    transition: all 0.2s;
-    box-shadow: 0 0 0 3px rgba(0,212,255,0.08);
-    display: none;
-    appearance: none;
-    cursor: pointer;
-  }
-  .field-select option { background: #1a1d27; }
-
-  /* Topics chips */
-  .topics-wrap {
-    display: flex; flex-wrap: wrap; gap: 8px;
-    min-height: 42px;
-    background: var(--bg-input);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 10px 12px;
+  /* ── Theme Toggle ── */
+  .theme-toggle-wrap {
+    display: flex;
     align-items: center;
+    justify-content: space-between;
+    padding: 20px 28px;
   }
-  .topics-wrap.editable {
-    border-color: rgba(0,212,255,0.35);
-    box-shadow: 0 0 0 3px rgba(0,212,255,0.08);
-    display: none;
-  }
-  .topic-chip {
-    display: inline-flex; align-items: center; gap: 5px;
-    background: rgba(0,212,255,0.1);
-    border: 1px solid rgba(0,212,255,0.22);
-    border-radius: 20px;
-    padding: 3px 11px;
-    font-size: 12px; font-weight: 500;
-    color: var(--accent);
-  }
-  .topic-chip.teal {
-    background: rgba(167,139,250,0.1);
-    border-color: rgba(167,139,250,0.2);
-    color: var(--accent2);
-  }
-  .chip-remove {
-    background: none; border: none; cursor: pointer;
-    color: var(--accent); font-size: 14px; line-height: 1;
-    padding: 0 0 1px; opacity: 0.7;
-    transition: opacity 0.15s;
-  }
-  .chip-remove:hover { opacity: 1; }
-
-  .chip-input-row { display: flex; gap: 8px; margin-top: 8px; }
-  .chip-add-input {
-    flex: 1;
-    background: rgba(0,212,255,0.05);
-    border: 1px solid rgba(0,212,255,0.25);
-    border-radius: 8px;
-    padding: 7px 12px;
-    font-family: var(--font-main);
-    font-size: 13px;
+  .theme-toggle-label {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 14px;
+    font-weight: 500;
     color: var(--text-primary);
-    outline: none;
-    display: none;
   }
-  .chip-add-input::placeholder { color: var(--text-muted); }
-  .chip-add-btn {
-    padding: 7px 14px;
-    background: rgba(0,212,255,0.12);
-    border: 1px solid rgba(0,212,255,0.28);
-    border-radius: 8px;
-    font-family: var(--font-main);
-    font-size: 12px; font-weight: 500;
-    color: var(--accent);
-    cursor: pointer;
-    transition: all 0.18s;
-    display: none;
-  }
-  .chip-add-btn:hover { background: rgba(0,212,255,0.22); }
-
-  /* Week subjects */
-  .week-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; }
-  .day-item { display: flex; flex-direction: column; align-items: center; gap: 4px; }
-  .day-label {
-    font-size: 9.5px; font-weight: 600;
-    text-transform: uppercase; letter-spacing: 0.8px;
-    color: var(--text-muted);
-  }
-  .day-bubble {
-    width: 100%;
-    min-height: 56px;
+  .theme-toggle-label svg { width: 20px; height: 20px; color: var(--theme-icon); }
+  .theme-toggle-switch {
+    width: 50px; height: 28px;
     background: var(--bg-input);
     border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 6px;
-    font-size: 10.5px; color: var(--text-secondary);
-    line-height: 1.4;
-    text-align: center;
-    display: flex; align-items: center; justify-content: center;
-    cursor: default;
-    transition: border-color 0.18s, background 0.18s;
-    word-break: break-word;
+    border-radius: 14px;
+    cursor: pointer;
+    position: relative;
+    transition: all 0.3s ease;
+    flex-shrink: 0;
   }
-  .day-bubble.has-subject {
-    background: rgba(0,212,255,0.07);
-    border-color: rgba(0,212,255,0.22);
-    color: var(--text-primary);
+  .theme-toggle-switch.active { background: var(--accent); border-color: var(--accent); }
+  .theme-toggle-knob {
+    position: absolute;
+    top: 3px; left: 3px;
+    width: 20px; height: 20px;
+    border-radius: 50%;
+    background: var(--text-primary);
+    transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
   }
-  .day-bubble.today-bubble {
-    border-color: rgba(167,139,250,0.45);
-    background: rgba(167,139,250,0.07);
-    box-shadow: 0 0 12px rgba(167,139,250,0.12);
+  .theme-toggle-switch.active .theme-toggle-knob {
+    left: 25px;
+    background: #06121a;
   }
-  .day-input-field {
-    width: 100%;
-    background: rgba(0,212,255,0.06);
-    border: 1px solid rgba(0,212,255,0.3);
-    border-radius: 8px;
-    padding: 5px;
-    font-family: var(--font-main);
-    font-size: 10.5px;
-    color: var(--text-primary);
-    outline: none;
-    text-align: center;
-    min-height: 56px;
-    resize: none;
-    line-height: 1.4;
-    display: none;
-    box-shadow: 0 0 0 2px rgba(0,212,255,0.08);
-  }
-  .day-input-field:focus { border-color: rgba(0,212,255,0.55); }
 
-  /* Action buttons */
-  .action-row { display: flex; gap: 10px; justify-content: flex-end; margin-top: 4px; }
-  .btn-save {
-    padding: 10px 22px;
+  /* ── Future Me Letter ── */
+  .letter-card { position: relative; }
+  .letter-card-inner { padding: 28px; }
+  .letter-preview {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 28px 32px;
+    min-height: 200px;
+    position: relative;
+    transition: background 0.35s ease;
+    line-height: 1.8;
+    font-size: 14px;
+    color: var(--text-secondary);
+    font-weight: 300;
+  }
+  .letter-preview::before {
+    content: '✧';
+    position: absolute;
+    top: 12px; right: 16px;
+    font-size: 20px;
+    color: var(--accent);
+    opacity: 0.3;
+  }
+  .letter-placeholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    min-height: 160px;
+    text-align: center;
+    color: var(--text-muted);
+  }
+  .letter-placeholder svg { width: 48px; height: 48px; opacity: 0.4; color: var(--accent); }
+  .letter-placeholder p { font-size: 13px; max-width: 280px; }
+  .letter-content {
+    white-space: pre-wrap;
+    font-style: italic;
+    color: var(--text-primary);
+  }
+  .letter-date {
+    text-align: right;
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-top: 16px;
+    font-family: var(--font-mono);
+  }
+  .generate-btn {
+    margin-top: 16px;
+    padding: 12px 24px;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    border: none;
+    border-radius: 12px;
+    color: #06121a;
+    font-family: var(--font-main);
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: all 0.25s;
+    box-shadow: 0 4px 20px rgba(0,212,255,0.3);
+    width: 100%;
+  }
+  .generate-btn:hover { transform: translateY(-1px); box-shadow: 0 6px 28px rgba(0,212,255,0.4); }
+  .generate-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+  .generate-btn svg { width: 18px; height: 18px; flex-shrink: 0; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .generate-btn .spinner { animation: spin 1s linear infinite; }
+
+  /* ── AI Personality ── */
+  .personality-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 12px;
+  }
+  .personality-card {
+    background: var(--personality-bg);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 18px 16px;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    position: relative;
+    overflow: hidden;
+  }
+  .personality-card:hover {
+    border-color: var(--border-hover);
+    transform: translateY(-2px);
+    box-shadow: var(--card-shadow);
+  }
+  .personality-card.selected {
+    border-color: var(--accent);
+    background: rgba(0,212,255,0.06);
+    box-shadow: 0 0 0 2px rgba(0,212,255,0.15);
+  }
+  .personality-card.selected::after {
+    content: '';
+    position: absolute;
+    top: 0; right: 0;
+    width: 24px; height: 24px;
     background: var(--accent);
-    border: none; border-radius: 10px;
-    color: #06121a; font-family: var(--font-main);
-    font-size: 13px; font-weight: 600;
-    cursor: pointer;
-    display: none; align-items: center; gap: 7px;
-    transition: all 0.2s;
-    box-shadow: 0 4px 14px rgba(0,212,255,0.35);
+    border-radius: 0 14px 0 14px;
+    mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'%3E%3Cpolyline points='20 6 9 17 4 12' stroke='white' stroke-width='3' fill='none'/%3E%3C/svg%3E") center/12px no-repeat;
+    -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'%3E%3Cpolyline points='20 6 9 17 4 12' stroke='white' stroke-width='3' fill='none'/%3E%3C/svg%3E") center/12px no-repeat;
   }
-  .btn-save:hover { background: #33ddff; transform: translateY(-1px); }
-  .btn-cancel {
-    padding: 10px 18px;
-    background: rgba(255,255,255,0.04);
-    border: 1px solid var(--border); border-radius: 10px;
-    color: var(--text-secondary); font-family: var(--font-main);
-    font-size: 13px; font-weight: 500;
-    cursor: pointer;
-    display: none; align-items: center; gap: 7px;
-    transition: all 0.18s;
+  .personality-icon {
+    font-size: 28px;
+    line-height: 1;
   }
-  .btn-cancel:hover { background: rgba(255,255,255,0.08); color: var(--text-primary); }
+  .personality-name {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-primary);
+  }
+  .personality-desc {
+    font-size: 11.5px;
+    color: var(--text-secondary);
+    line-height: 1.5;
+  }
 
   /* Toast */
   .toast {
     position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%) translateY(20px);
-    background: #1a1d27; border: 1px solid rgba(0,212,255,0.35);
+    background: var(--bg-card); border: 1px solid var(--border);
     border-radius: 12px; padding: 12px 22px;
-    font-size: 13px; font-weight: 500; color: var(--accent);
+    font-size: 13px; font-weight: 500; color: var(--text-primary);
     display: flex; align-items: center; gap: 8px;
     opacity: 0; transition: all 0.3s; z-index: 999;
     box-shadow: 0 8px 32px rgba(0,0,0,0.4);
     white-space: nowrap;
     pointer-events: none;
+    backdrop-filter: blur(12px);
   }
   .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
   .toast.error { border-color: rgba(255,107,107,0.35); color: var(--accent3); }
+  .toast.success { border-color: rgba(0,212,255,0.35); }
 
   .nav-section::-webkit-scrollbar { width: 4px; }
   .nav-section::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
@@ -576,7 +487,6 @@
     outline-offset: 2px;
   }
 
-  /* ===== Mobile ===== */
   @media (max-width: 880px) {
     .sidebar {
       position: fixed;
@@ -590,15 +500,15 @@
     .topbar-mobile-logo { display: flex; }
     .topbar { padding: 12px 14px; }
     .content-area { padding: 20px 16px 36px; }
-    .profile-layout { grid-template-columns: 1fr; }
-    .identity-card { padding: 24px 20px 20px; }
-    .field-grid { grid-template-columns: 1fr; }
-    .week-grid { grid-template-columns: repeat(4, 1fr); row-gap: 10px; }
+    .section-card { padding: 20px; }
+    .user-profile-card { flex-direction: column; text-align: center; }
+    .user-profile-stats { justify-content: center; }
+    .personality-grid { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); }
+    .letter-preview { padding: 20px; }
   }
-
   @media (max-width: 480px) {
-    .week-grid { grid-template-columns: repeat(3, 1fr); }
-    .stat-num { font-size: 15px; }
+    .personality-grid { grid-template-columns: 1fr 1fr; }
+    .theme-toggle-wrap { flex-direction: column; align-items: flex-start; gap: 12px; }
   }
 </style>
 </head>
@@ -642,17 +552,17 @@
       Analyze
       <span class="nav-badge green">AI</span>
     </a>
-      <a href="planner.html" class="nav-item">
-        <span class="nav-icon"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M3 10h18M8 2v4M16 2v4"/></svg></span>
-        Study Planner
-      </a>
-      <a href="beyond-marks.html" class="nav-item">
-        <span class="nav-icon"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></span>
-        Beyond Marks
-        <span class="nav-badge purple">New</span>
-      </a>
+    <a href="planner.html" class="nav-item">
+      <span class="nav-icon"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M3 10h18M8 2v4M16 2v4"/></svg></span>
+      Study Planner
+    </a>
+    <a href="beyond-marks.html" class="nav-item">
+      <span class="nav-icon"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></span>
+      Beyond Marks
+      <span class="nav-badge purple">New</span>
+    </a>
 
-      <div class="nav-label">Account</div>
+    <div class="nav-label">Account</div>
     <a href="subscription.html" class="upgrade-nav-btn">
       <span class="nav-icon" style="color:var(--accent2)">
         <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
@@ -706,114 +616,83 @@
   <div class="content-area">
     <div class="profile-layout">
 
-      <!-- LEFT: Identity -->
-      <div class="glass-card identity-card">
-        <div class="profile-avatar-wrap">
-          <div class="profile-avatar" id="profileAvatar">G</div>
-          <div class="online-dot"></div>
-        </div>
-        <div class="identity-name" id="profileName">Loading…</div>
-        <div class="identity-email" id="profileEmail">–</div>
-        <div class="plan-badge" id="profilePlan">FREE PLAN</div>
-        <div class="level-badge" id="profileLevel">🎓 Student</div>
-
-        <div class="identity-divider"></div>
-        <div class="stat-row">
-          <div class="stat-item">
-            <div class="stat-num" id="statChats">–</div>
-            <div class="stat-label">Chats</div>
-          </div>
-          <div class="stat-item">
-            <div class="stat-num" id="statStreak">–</div>
-            <div class="stat-label">Streak</div>
-          </div>
-          <div class="stat-item">
-            <div class="stat-num" id="statTopics">–</div>
-            <div class="stat-label">Topics</div>
+      <!-- User Info Card -->
+      <div class="glass-card user-profile-card">
+        <div class="user-profile-avatar" id="profileAvatar">G</div>
+        <div class="user-profile-info">
+          <div class="user-profile-name" id="profileName">Loading…</div>
+          <div class="user-profile-email" id="profileEmail">–</div>
+          <div class="user-profile-stats">
+            <span class="user-profile-stat" id="statChats">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+              <span>–</span>
+            </span>
+            <span class="user-profile-stat" id="statStreak">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+              <span>–</span>
+            </span>
+            <span class="user-profile-stat" id="statTopics">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+              <span>–</span>
+            </span>
           </div>
         </div>
-        <div class="identity-divider"></div>
-
-        <button class="edit-profile-btn" id="editProfileBtn">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-          Edit Profile
-        </button>
       </div>
 
-      <!-- RIGHT: Details -->
-      <div class="details-col">
-
-        <!-- Personal Info -->
-        <div class="glass-card section-card">
-          <div class="section-header">
-            <div class="section-title">Personal Info</div>
+      <!-- Theme Toggle -->
+      <div class="glass-card">
+        <div class="theme-toggle-wrap">
+          <div class="theme-toggle-label">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+            Theme
           </div>
-          <div class="field-grid">
-            <div class="field-group">
-              <div class="field-label">First Name</div>
-              <div class="field-value" id="view-firstName">–</div>
-              <input class="field-input" id="edit-firstName" type="text" placeholder="First name" />
-            </div>
-            <div class="field-group">
-              <div class="field-label">Last Name</div>
-              <div class="field-value" id="view-lastName">–</div>
-              <input class="field-input" id="edit-lastName" type="text" placeholder="Last name" />
-            </div>
-            <div class="field-group full">
-              <div class="field-label">Email Address</div>
-              <div class="field-value locked" id="view-email">
-                <span class="lock-icon">🔒</span>
-                <span id="email-display">–</span>
-              </div>
-            </div>
-            <div class="field-group full">
-              <div class="field-label">Education Level</div>
-              <div class="field-value" id="view-exam">–</div>
-              <select class="field-select" id="edit-exam">
-                <option value="">Select level</option>
-                <option value="High School">High School</option>
-                <option value="JEE">JEE (Engineering Entrance)</option>
-                <option value="NEET">NEET (Medical Entrance)</option>
-                <option value="College">College / University</option>
-                <option value="Other">Other</option>
-              </select>
-            </div>
+          <div class="theme-toggle-switch" id="themeSwitch" role="button" tabindex="0" aria-label="Toggle theme">
+            <div class="theme-toggle-knob"></div>
           </div>
         </div>
+      </div>
 
-        <!-- Topics of Interest -->
-        <div class="glass-card section-card">
+      <!-- Future Me Letter -->
+      <div class="glass-card letter-card">
+        <div class="section-card letter-card-inner">
           <div class="section-header">
-            <div class="section-title">Topics of Interest</div>
+            <div class="section-title">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M22 6v12H2V6l10 7 10-7z"/><path d="M2 6l10 7 10-7"/></svg>
+              A Letter from Future Me
+            </div>
           </div>
-          <div class="topics-wrap" id="view-topics">
-            <span style="color: var(--text-muted); font-size:13px;">No topics added yet.</span>
+          <div class="letter-preview" id="letterPreview">
+            <div class="letter-placeholder" id="letterPlaceholder">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+              <p>Your future self has a message for you. Generate a letter of motivation and wisdom from the version of you who made it.</p>
+            </div>
+            <div class="letter-content" id="letterContent" style="display:none;"></div>
+            <div class="letter-date" id="letterDate" style="display:none;"></div>
           </div>
-          <div class="topics-wrap editable" id="edit-topics-display" style="display:none;"></div>
-          <div class="chip-input-row" id="chip-input-row" style="display:none;">
-            <input class="chip-add-input" id="chip-add-input" placeholder="Add a topic…" style="display:block;" />
-            <button class="chip-add-btn" id="chip-add-btn" style="display:block;">+ Add</button>
-          </div>
-        </div>
-
-        <!-- Weekly Study Schedule -->
-        <div class="glass-card section-card">
-          <div class="section-header">
-            <div class="section-title">This Week's Subjects</div>
-          </div>
-          <div class="week-grid" id="weekGrid"></div>
-        </div>
-
-        <!-- Save / Cancel -->
-        <div class="action-row" id="actionRow">
-          <button class="btn-cancel" id="btnCancel">Cancel</button>
-          <button class="btn-save" id="btnSave">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-            Save Changes
+          <button class="generate-btn" id="generateLetterBtn">
+            <svg class="spinner" style="display:none;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10" stroke-dasharray="32" stroke-dashoffset="32"/><path d="M12 2a10 10 0 0 1 10 10"/></svg>
+            <svg class="sparkle" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 2l1.5 6.5L20 10l-6.5 1.5L12 18l-1.5-6.5L4 10l6.5-1.5L12 2z"/><line x1="22" y1="17" x2="22" y2="22"/><line x1="17" y1="22" x2="22" y2="22"/></svg>
+            Generate New Letter
           </button>
         </div>
-
       </div>
+
+      <!-- AI Personality -->
+      <div class="glass-card">
+        <div class="section-card">
+          <div class="section-header">
+            <div class="section-title">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2a4 4 0 0 0-4 4v1a4 4 0 0 0 8 0V6a4 4 0 0 0-4-4z"/><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+              AI Personality
+            </div>
+          </div>
+          <p style="font-size:13px;color:var(--text-muted);margin-bottom:18px;line-height:1.6;">
+            Choose how your AI companion sounds. This changes the tone of every chat.
+          </p>
+          <div class="personality-grid" id="personalityGrid"></div>
+        </div>
+      </div>
+
     </div>
   </div>
 </main>
@@ -834,7 +713,7 @@ document.querySelectorAll('.nav-item').forEach(l => l.addEventListener('click', 
 function showToast(msg, isError = false) {
   const t = document.getElementById('toast');
   t.textContent = (isError ? '⚠ ' : '✓ ') + msg;
-  t.className = 'toast' + (isError ? ' error' : '') + ' show';
+  t.className = 'toast' + (isError ? ' error' : ' success') + ' show';
   clearTimeout(window._toastTimer);
   window._toastTimer = setTimeout(() => t.classList.remove('show'), 3200);
 }
@@ -843,26 +722,31 @@ window.showToast = showToast;
 
 <script type="module">
 import { auth, db } from "./firebase-config.js";
-import { getAuth, onAuthStateChanged, signOut, updateProfile } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 import {
   doc, getDoc, setDoc, serverTimestamp,
   collection, getDocs
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
 const authInstance = auth || getAuth();
 let currentUser = null;
 let profileData = {};
-let editMode = false;
-let topics = [];
-let weekSubjects = { Mon:'', Tue:'', Wed:'', Thu:'', Fri:'', Sat:'', Sun:'' };
+const GROQ_ENDPOINT = "/api/groq-proxy";
 
-const DAYS = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
-const TODAY_IDX = [1,2,3,4,5,6,0][new Date().getDay()];
+const PERSONALITIES = [
+  { id: "mentor", emoji: "🧭", name: "Mentor", desc: "Wise and experienced, guides you with patience and deep knowledge." },
+  { id: "friendly", emoji: "🤝", name: "Friendly Companion", desc: "Warm and supportive, like a study buddy who's always there." },
+  { id: "motivator", emoji: "⚡", name: "Motivator", desc: "High energy, pushes you to do your best and crush your goals." },
+  { id: "deep-thinker", emoji: "🧠", name: "Deep Thinker", desc: "Philosophical and analytical, explores ideas from every angle." },
+  { id: "coach", emoji: "🎯", name: "Coach", desc: "Goal-oriented and structured, keeps you on track with clear plans." },
+  { id: "calm-guide", emoji: "🌿", name: "Calm Guide", desc: "Soothing and gentle, helps you stay relaxed and focused." },
+  { id: "inspirational", emoji: "✨", name: "Inspirational", desc: "Uplifting and visionary, helps you dream big and reach higher." },
+];
 
 onAuthStateChanged(authInstance, async (user) => {
   if (!user) { window.location.href = 'login.html'; return; }
   currentUser = user;
   populateSidebarUser(user);
-  // Ensure user doc exists (fallback if sign-up write failed)
   const userRef = doc(db, 'users', user.uid);
   const userSnap = await getDoc(userRef);
   if (!userSnap.exists()) {
@@ -877,8 +761,10 @@ onAuthStateChanged(authInstance, async (user) => {
     }).catch(() => {});
   }
   await loadProfile(user);
-  buildWeekGrid();
-  renderAll();
+  renderUserInfo();
+  initThemeToggle();
+  buildPersonalityGrid();
+  initLetter();
 });
 
 document.getElementById('signOutBtn').onclick = async () => {
@@ -889,7 +775,6 @@ document.getElementById('signOutBtn').onclick = async () => {
 async function loadProfile(user) {
   const ref = doc(db, 'users', user.uid);
   const snap = await getDoc(ref).catch(() => null);
-
   if (snap && snap.exists()) {
     profileData = snap.data();
   } else {
@@ -897,220 +782,42 @@ async function loadProfile(user) {
       displayName: user.displayName || '',
       email: user.email || '',
       photoURL: user.photoURL || '',
-      exam: '',
       plan: 'free',
-      topics: [],
-      weekSubjects: {},
       streak: 0,
+      topics: [],
     };
   }
-
-  topics = Array.isArray(profileData.topics) ? [...profileData.topics] : [];
-  weekSubjects = { Mon:'', Tue:'', Wed:'', Thu:'', Fri:'', Sat:'', Sun:'', ...(profileData.weekSubjects || {}) };
-
   try {
     const chatsSnap = await getDocs(collection(db, 'users', user.uid, 'chats'));
     profileData._chatCount = chatsSnap.size;
   } catch { profileData._chatCount = 0; }
 }
 
-function renderAll() {
+function renderUserInfo() {
   const name = profileData.displayName || currentUser?.displayName || 'Student';
   const email = profileData.email || currentUser?.email || '–';
-  const [firstName, ...rest] = name.split(' ');
-  const lastName = rest.join(' ');
+  const topics = Array.isArray(profileData.topics) ? profileData.topics : [];
 
-  const avatarEls = [document.getElementById('profileAvatar')];
-  avatarEls.forEach(el => {
-    if (!el) return;
-    if (profileData.photoURL || currentUser?.photoURL) {
-      el.innerHTML = `<img src="${esc(profileData.photoURL || currentUser.photoURL)}" alt="${esc(name)}" />`;
-    } else {
-      el.textContent = name.charAt(0).toUpperCase();
-    }
-  });
+  const avEl = document.getElementById('profileAvatar');
+  if (profileData.photoURL || currentUser?.photoURL) {
+    avEl.innerHTML = `<img src="${esc(profileData.photoURL || currentUser.photoURL)}" alt="${esc(name)}" />`;
+  } else {
+    avEl.textContent = name.charAt(0).toUpperCase();
+  }
 
   setText('profileName', name);
   setText('profileEmail', email);
-  setText('email-display', email);
   setText('sidebarName', name.split(' ')[0]);
 
   const plan = profileData.plan || 'free';
-  setText('profilePlan', plan.toUpperCase() + ' PLAN');
   setText('userPlan', plan.charAt(0).toUpperCase() + plan.slice(1) + ' Plan');
 
-  const exam = profileData.exam || '';
-  setText('profileLevel', examEmoji(exam) + ' ' + (exam || 'Student'));
-  setText('view-firstName', firstName || '–');
-  setText('view-lastName', lastName || '–');
-  setText('view-exam', exam || '–');
-
-  setText('statChats', profileData._chatCount ?? '0');
-  setText('statStreak', (profileData.streak ?? 0) + '🔥');
-  setText('statTopics', topics.length);
-
-  const topicsWrap = document.getElementById('view-topics');
-  if (topics.length === 0) {
-    topicsWrap.innerHTML = '<span style="color:var(--text-muted);font-size:13px;">No topics added yet.</span>';
-  } else {
-    topicsWrap.innerHTML = topics.map(t =>
-      `<span class="topic-chip teal">${esc(t)}</span>`
-    ).join('');
-  }
-
-  DAYS.forEach((day, i) => {
-    const bubble = document.getElementById('day-bubble-' + day);
-    if (!bubble) return;
-    const subj = weekSubjects[day] || '';
-    bubble.textContent = subj || '—';
-    bubble.className = 'day-bubble' +
-      (subj ? ' has-subject' : '') +
-      (i === TODAY_IDX ? ' today-bubble' : '');
-  });
-}
-
-function buildWeekGrid() {
-  const grid = document.getElementById('weekGrid');
-  grid.innerHTML = '';
-  DAYS.forEach((day, i) => {
-    const col = document.createElement('div');
-    col.className = 'day-item';
-    col.innerHTML = `
-      <div class="day-label">${day}${i === TODAY_IDX ? ' •' : ''}</div>
-      <div class="day-bubble${i===TODAY_IDX?' today-bubble':''}" id="day-bubble-${day}">—</div>
-      <textarea class="day-input-field" id="day-input-${day}" placeholder="${day}…" rows="3">${weekSubjects[day]||''}</textarea>
-    `;
-    grid.appendChild(col);
-  });
-}
-
-document.getElementById('editProfileBtn').onclick = enterEditMode;
-document.getElementById('btnCancel').onclick = cancelEdit;
-document.getElementById('btnSave').onclick = saveProfile;
-
-function enterEditMode() {
-  editMode = true;
-  swapField('firstName', true);
-  swapField('lastName', true);
-  swapField('exam', true);
-
-  const name = profileData.displayName || currentUser?.displayName || '';
-  const [fn, ...rest] = name.split(' ');
-  getEl('edit-firstName').value = fn || '';
-  getEl('edit-lastName').value = rest.join(' ');
-  getEl('edit-exam').value = profileData.exam || '';
-
-  document.getElementById('view-topics').style.display = 'none';
-  const editDisplay = document.getElementById('edit-topics-display');
-  editDisplay.style.display = 'flex';
-  document.getElementById('chip-input-row').style.display = 'flex';
-  renderEditChips();
-
-  DAYS.forEach(day => {
-    const bubble = document.getElementById('day-bubble-' + day);
-    const input  = document.getElementById('day-input-' + day);
-    if (bubble) bubble.style.display = 'none';
-    if (input)  { input.style.display = 'block'; input.value = weekSubjects[day] || ''; }
-  });
-
-  showEl('btnSave');
-  showEl('btnCancel');
-  document.getElementById('editProfileBtn').style.display = 'none';
-}
-
-function cancelEdit() {
-  editMode = false;
-  swapField('firstName', false);
-  swapField('lastName', false);
-  swapField('exam', false);
-
-  document.getElementById('view-topics').style.display = 'flex';
-  document.getElementById('edit-topics-display').style.display = 'none';
-  document.getElementById('chip-input-row').style.display = 'none';
-
-  DAYS.forEach(day => {
-    const bubble = document.getElementById('day-bubble-' + day);
-    const input  = document.getElementById('day-input-' + day);
-    if (bubble) bubble.style.display = '';
-    if (input)  input.style.display = 'none';
-  });
-
-  hideEl('btnSave');
-  hideEl('btnCancel');
-  document.getElementById('editProfileBtn').style.display = '';
-  renderAll();
-}
-
-async function saveProfile() {
-  const btn = document.getElementById('btnSave');
-  btn.disabled = true;
-  btn.textContent = 'Saving…';
-
-  const firstName = getEl('edit-firstName').value.trim();
-  const lastName  = getEl('edit-lastName').value.trim();
-  const exam      = getEl('edit-exam').value;
-  const displayName = [firstName, lastName].filter(Boolean).join(' ') || profileData.displayName;
-
-  DAYS.forEach(day => {
-    const input = document.getElementById('day-input-' + day);
-    if (input) weekSubjects[day] = input.value.trim();
-  });
-
-  profileData.displayName = displayName;
-  profileData.exam = exam;
-  profileData.topics = [...topics];
-  profileData.weekSubjects = { ...weekSubjects };
-
-  try {
-    if (currentUser && displayName !== currentUser.displayName) {
-      await updateProfile(currentUser, { displayName });
-    }
-    const ref = doc(db, 'users', currentUser.uid);
-    await setDoc(ref, {
-      displayName,
-      exam,
-      topics: [...topics],
-      weekSubjects: { ...weekSubjects },
-      updatedAt: serverTimestamp(),
-    }, { merge: true });
-
-    showToast('Profile saved successfully!');
-    cancelEdit();
-    renderAll();
-  } catch (err) {
-    console.error(err);
-    showToast('Failed to save: ' + err.message, true);
-  } finally {
-    btn.disabled = false;
-    btn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Save Changes`;
-  }
-}
-
-function renderEditChips() {
-  const wrap = document.getElementById('edit-topics-display');
-  wrap.innerHTML = topics.map((t, i) => `
-    <span class="topic-chip">
-      ${esc(t)}
-      <button class="chip-remove" data-idx="${i}" title="Remove" aria-label="Remove ${esc(t)}">×</button>
-    </span>
-  `).join('');
-  wrap.querySelectorAll('.chip-remove').forEach(btn => {
-    btn.onclick = () => { topics.splice(parseInt(btn.dataset.idx, 10), 1); renderEditChips(); };
-  });
-}
-
-document.getElementById('chip-add-btn').onclick = addChip;
-document.getElementById('chip-add-input').addEventListener('keydown', e => {
-  if (e.key === 'Enter') { e.preventDefault(); addChip(); }
-});
-
-function addChip() {
-  const input = document.getElementById('chip-add-input');
-  const val = input.value.trim();
-  if (!val || topics.includes(val) || topics.length >= 12) return;
-  topics.push(val);
-  input.value = '';
-  renderEditChips();
+  const chatEl = document.querySelector('#statChats span');
+  if (chatEl) chatEl.textContent = (profileData._chatCount ?? 0) + ' chats';
+  const streakEl = document.querySelector('#statStreak span');
+  if (streakEl) streakEl.textContent = (profileData.streak ?? 0) + ' day streak';
+  const topicsEl = document.querySelector('#statTopics span');
+  if (topicsEl) topicsEl.textContent = topics.length + ' topics';
 }
 
 function populateSidebarUser(user) {
@@ -1124,24 +831,157 @@ function populateSidebarUser(user) {
   }
 }
 
+/* ── Theme Toggle ── */
+function initThemeToggle() {
+  const saved = localStorage.getItem('aquila-theme');
+  if (saved === 'light') {
+    document.body.classList.add('light-mode');
+  }
+  const sw = document.getElementById('themeSwitch');
+  if (saved === 'light') sw.classList.add('active');
+
+  sw.addEventListener('click', () => {
+    const isLight = document.body.classList.toggle('light-mode');
+    sw.classList.toggle('active');
+    localStorage.setItem('aquila-theme', isLight ? 'light' : 'dark');
+  });
+}
+
+/* ── AI Personality ── */
+function buildPersonalityGrid() {
+  const grid = document.getElementById('personalityGrid');
+  const saved = profileData.personality || null;
+
+  PERSONALITIES.forEach(p => {
+    const card = document.createElement('div');
+    card.className = 'personality-card' + (saved === p.id ? ' selected' : '');
+    card.dataset.id = p.id;
+    card.innerHTML = `
+      <div class="personality-icon">${p.emoji}</div>
+      <div class="personality-name">${p.name}</div>
+      <div class="personality-desc">${p.desc}</div>
+    `;
+    card.addEventListener('click', () => selectPersonality(p.id));
+    grid.appendChild(card);
+  });
+}
+
+async function selectPersonality(id) {
+  document.querySelectorAll('.personality-card').forEach(c => c.classList.remove('selected'));
+  const card = document.querySelector(`.personality-card[data-id="${id}"]`);
+  if (card) card.classList.add('selected');
+
+  try {
+    if (currentUser) {
+      await setDoc(doc(db, 'users', currentUser.uid), {
+        personality: id,
+        updatedAt: serverTimestamp(),
+      }, { merge: true });
+      profileData.personality = id;
+      showToast('Personality saved as ' + PERSONALITIES.find(p => p.id === id)?.name);
+    }
+  } catch (err) {
+    showToast('Failed to save personality', true);
+  }
+}
+
+/* ── Future Me Letter ── */
+function initLetter() {
+  const savedLetter = profileData.futureMeLetter;
+  const savedDate = profileData.futureMeLetterDate;
+  if (savedLetter && savedDate) {
+    showLetter(savedLetter, savedDate);
+  }
+  document.getElementById('generateLetterBtn').addEventListener('click', generateLetter);
+}
+
+function showLetter(content, date) {
+  document.getElementById('letterPlaceholder').style.display = 'none';
+  const contentEl = document.getElementById('letterContent');
+  contentEl.textContent = content;
+  contentEl.style.display = 'block';
+  const dateEl = document.getElementById('letterDate');
+  dateEl.textContent = '— ' + date;
+  dateEl.style.display = 'block';
+}
+
+async function generateLetter() {
+  const btn = document.getElementById('generateLetterBtn');
+  btn.disabled = true;
+  btn.querySelector('.sparkle').style.display = 'none';
+  btn.querySelector('.spinner').style.display = 'block';
+  btn.childNodes[2].textContent = ' Writing…';
+
+  const name = profileData.displayName || currentUser?.displayName || 'Student';
+  const streak = profileData.streak ?? 0;
+  const topics = Array.isArray(profileData.topics) ? profileData.topics : [];
+  const exam = profileData.exam || '';
+
+  const prompt = `You are writing a heartfelt, motivational letter from "${name}"'s future self — the version of them who has already achieved their academic dreams and is looking back with pride and gratitude.
+
+Write a warm, personal letter (200-300 words) that:
+- Celebrates their current efforts and progress
+- Acknowledges the challenges they're facing now in studying ${exam || 'their subjects'}${topics.length ? ', especially ' + topics.slice(0,4).join(', ') : ''}
+- Reminds them why they started and how far they've come (${streak} day streak so far!)
+- Offers specific, encouraging wisdom from the future
+- Ends with a loving sign-off
+
+Format it as a real handwritten letter, with a date line at the top and a closing signature. Make it deeply personal, not generic. Use natural, warm language.`;
+
+  try {
+    const res = await fetch(GROQ_ENDPOINT, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'llama-3.3-70b-versatile',
+        messages: [
+          { role: 'system', content: 'You are a compassionate, wise letter writer. You write beautiful, personalized letters from a person\'s future self.' },
+          { role: 'user', content: prompt },
+        ],
+        max_tokens: 1024,
+        temperature: 0.8,
+        stream: false,
+      }),
+    });
+
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err?.error?.message || 'Generation failed');
+    }
+
+    const data = await res.json();
+    const letter = data.choices?.[0]?.message?.content?.trim();
+    if (!letter) throw new Error('Empty response');
+
+    const today = new Date().toLocaleDateString('en-US', {
+      weekday: 'long', year: 'numeric', month: 'long', day: 'numeric',
+    });
+
+    showLetter(letter, today);
+
+    if (currentUser) {
+      await setDoc(doc(db, 'users', currentUser.uid), {
+        futureMeLetter: letter,
+        futureMeLetterDate: today,
+        updatedAt: serverTimestamp(),
+      }, { merge: true });
+    }
+
+    showToast('Your future letter is ready ✨');
+  } catch (err) {
+    showToast('Failed to generate: ' + err.message, true);
+  } finally {
+    btn.disabled = false;
+    btn.querySelector('.sparkle').style.display = 'block';
+    btn.querySelector('.spinner').style.display = 'none';
+    btn.childNodes[2].textContent = ' Generate New Letter';
+  }
+}
+
+/* ── Helpers ── */
 function getEl(id) { return document.getElementById(id); }
 function setText(id, val) { const el = getEl(id); if (el) el.textContent = val; }
 function esc(str) { return String(str||'').replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
-function showEl(id) { const el=getEl(id); if(el){el.style.display='flex';} }
-function hideEl(id) { const el=getEl(id); if(el){el.style.display='none';} }
-
-function swapField(name, editing) {
-  const view  = getEl('view-' + name);
-  const input = getEl('edit-' + name);
-  if (!view || !input) return;
-  view.style.display  = editing ? 'none' : '';
-  input.style.display = editing ? 'block' : 'none';
-}
-
-function examEmoji(exam) {
-  const map = { 'JEE':'⚙️', 'NEET':'🩺', 'High School':'📚', 'College':'🏛️', 'Other':'🎓' };
-  return map[exam] || '🎓';
-}
 </script>
 </body>
-</html>s
+</html>
