@@ -42,8 +42,8 @@ function showMsg(text, isError = true) {
       font-weight: 500;
       animation: fadeUp .3s ease;
     `;
-    // Insert before the primary button
-    const btn = document.querySelector(".btn");
+    // Insert before the primary submit button
+    const btn = document.querySelector(".btn, .btn-primary, #createBtn, #signInBtn, [type='submit']");
     btn?.parentNode?.insertBefore(el, btn);
   }
   el.textContent = text;
@@ -102,14 +102,16 @@ export async function googleSignIn(btnEl) {
   } catch (err) {
     showMsg(friendlyError(err.code));
     setLoading(btn, false);
+    throw err;
   }
 }
 
 // ─── Email / Password Sign-In  (login.html) ──────────────────────────────────
 
 export async function signIn(btnEl) {
-  const btn = btnEl || document.querySelector(".btn");
-  const email = document.querySelector('input[type="email"]')?.value?.trim();
+  const btn = btnEl || document.querySelector(".btn") || document.getElementById("signInBtn");
+  const emailElement = document.getElementById("emailIn") || document.querySelector('input[type="email"]');
+  const email = emailElement?.value?.trim();
   const password = document.getElementById("pwdF")?.value;
 
   if (!email || !password) {
@@ -124,20 +126,19 @@ export async function signIn(btnEl) {
   } catch (err) {
     showMsg(friendlyError(err.code));
     setLoading(btn, false);
+    throw err;
   }
 }
 
 // ─── Email / Password Sign-Up  (signup.html) ─────────────────────────────────
 
-export async function signUp(btnEl) {
-  const btn = btnEl || document.querySelector(".btn");
+export async function signUp(btnEl, extra = {}) {
+  const btn = btnEl || document.getElementById("createBtn") || document.querySelector(".btn-primary") || document.querySelector("[onclick*='handleSignUp']");
 
-  // Collect fields — adjust selectors if your markup changes
-  const firstName = document.getElementById("firstName")?.value?.trim();
-  const lastName  = document.getElementById("lastName")?.value?.trim();
-  const email     = document.getElementById("emailF")?.value?.trim();
-  const password  = document.getElementById("pwdF")?.value;
-  const exam      = document.getElementById("examF")?.value;
+  const firstName = document.getElementById("fnIn")?.value?.trim();
+  const lastName  = document.getElementById("lnIn")?.value?.trim();
+  const email     = document.getElementById("emailIn")?.value?.trim();
+  const password  = document.getElementById("pwdIn")?.value;
   const terms     = document.getElementById("terms")?.checked;
 
   if (!firstName || !email || !password) {
@@ -158,11 +159,12 @@ export async function signUp(btnEl) {
     const cred = await createUserWithEmailAndPassword(auth, email, password);
     const displayName = `${firstName} ${lastName}`.trim();
     await updateProfile(cred.user, { displayName });
-    await ensureUserDoc(cred.user, { displayName, exam });
+    await ensureUserDoc(cred.user, { displayName, exam: extra.goal || "" });
     redirectToHome();
   } catch (err) {
     showMsg(friendlyError(err.code));
     setLoading(btn, false);
+    throw err;
   }
 }
 
