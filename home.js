@@ -37,6 +37,10 @@ onAuthStateChanged(auth, async (user) => {
   await loadRecentChats(user.uid);
   wireNewChatBtn();
   wireSignOutBtn();
+  // Daily question popup (non-blocking, shown once per day)
+  import("./dailyQuestion.js").then(({ checkDailyQuestion }) => {
+    checkDailyQuestion(user);
+  }).catch(() => {});
 });
 
 // ─── Sidebar user card ────────────────────────────────────────────────────────
@@ -207,13 +211,6 @@ function wireSignOutBtn() {
 export async function signOut() {
   await fbSignOut(auth);
   window.location.href = "login.html";
-}
-
-// ─── Utility ──────────────────────────────────────────────────────────────────
-function escapeHtml(str) {
-  return String(str).replace(/[&<>"']/g, (c) =>
-    ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c])
-  );
 }
 
 // Expose globally for any inline onclick fallbacks

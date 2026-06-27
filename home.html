@@ -1,8 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
+<script>document.documentElement.className=localStorage.getItem('aquila-theme')==='light'?'light-mode':''</script>
 <head>
 <meta charset="UTF-8" /> 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<meta http-equiv="Content-Security-Policy" content="default-src 'self' https:; script-src 'self' 'unsafe-inline' https://www.gstatic.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://www.googletagmanager.com https://esm.sh; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: https:; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://firestore.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://analytics.vercel.com; object-src 'none'; frame-src 'none';">
 <title>Aquila AI</title>
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
 <style>
@@ -24,12 +26,23 @@
     --font-mono: 'Space Mono', monospace;
     --sidebar-w: 248px;
   }
+  .light-mode {
+    --bg-base: #f4f5f9;
+    --bg-sidebar: #ecedf2;
+    --bg-card: #ffffff;
+    --bg-input: #f0f1f5;
+    --border: rgba(0,0,0,0.08);
+    --text-primary: #16162a;
+    --text-secondary: #5a5d72;
+    --text-muted: #9ea0b4;
+  }
 
   html, body { height: 100%; }
   body {
     font-family: var(--font-main);
     background: var(--bg-base);
     color: var(--text-primary);
+    transition: background 0.35s ease, color 0.35s ease;
     height: 100vh;
     display: flex;
     overflow: hidden;

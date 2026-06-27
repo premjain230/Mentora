@@ -1,8 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
+<script>document.documentElement.className=localStorage.getItem('aquila-theme')==='light'?'light-mode':''</script>
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta http-equiv="Content-Security-Policy" content="default-src 'self' https:; script-src 'self' 'unsafe-inline' https://www.gstatic.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://www.googletagmanager.com https://esm.sh; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: https:; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://firestore.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://analytics.vercel.com; object-src 'none'; frame-src 'none';">
 <title>Aquila AI — Sign In</title>
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet"/>
 <style>
@@ -23,6 +25,16 @@
   --font: 'Sora', sans-serif;
   --mono: 'Space Mono', monospace;
 }
+.light-mode {
+  --bg: #f4f5f9;
+  --surface: #ecedf2;
+  --card: #ffffff;
+  --card2: #f0f1f5;
+  --border: rgba(0,0,0,0.08);
+  --text: #16162a;
+  --sub: #5a5d72;
+  --muted: #9ea0b4;
+}
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html { height: 100%; }
@@ -34,6 +46,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
+  transition: background 0.35s ease, color 0.35s ease;
   overflow-x: hidden;
   position: relative;
   -webkit-font-smoothing: antialiased;
