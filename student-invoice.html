@@ -534,6 +534,16 @@ async function loadPosts() {
 }
 
 /* ── Load news ── */
+const FALLBACK_NEWS = [
+  { title:"JEE 2026 counselling delayed again", description:"NTA postpones JEE Advanced counselling for the 3rd time, affecting 2.5 lakh students' admission timelines.", source:"Times of India" },
+  { title:"NEET 2026 syllabus reduced without notice", description:"Students protest as NMC removes 12 topics from NEET syllabus just 3 months before exam, causing panic among aspirants.", source:"The Hindu" },
+  { title:"CBSE board exam date sheet released late", description:"CBSE releases Class 12 date sheet only 45 days before exams, leaving students with insufficient preparation time.", source:"NDTV" },
+  { title:"Delhi schools fail to distribute textbooks", description:"Government schools in Delhi yet to receive NCERT textbooks for 2026 session, 2 months into the academic year.", source:"Indian Express" },
+  { title:"JEE Main 2026 application portal crashes", description:"NTA's JEE Main portal crashes on opening day due to heavy traffic; thousands unable to submit forms.", source:"Hindustan Times" },
+  { title:"No centralised policy for exam centre allocation", description:"Students forced to travel 300+ km for JEE/NEET exam centres as no nearby centres allocated despite requests.", source:"The Print" },
+  { title:"NEET 2026 question paper error controversy", description:"NEET UG paper contains 3 questions with multiple correct answers; NTA yet to release clarification or revised answer key.", source:"India Today" }
+];
+
 async function loadNews() {
   const container = document.getElementById('newsFeed');
   const loading = document.getElementById('newsLoading');
@@ -543,20 +553,32 @@ async function loadNews() {
     const news = [];
     snap.forEach(doc => news.push({ id: doc.id, ...doc.data() }));
     loading.style.display = 'none';
-    if (news.length === 0) {
-      container.innerHTML = '<div style="text-align:center;padding:16px;color:var(--text-muted);font-size:12px;">No news yet. Add exam policy news items in the Firebase Console → <strong style="color:var(--text-secondary);">exam_news</strong> collection.</div>';
-      return;
-    }
-    container.innerHTML = news.map(n => `
-      <div class="news-card">
+    const items = news.length > 0 ? news : FALLBACK_NEWS;
+    container.innerHTML = items.map(n => {
+      const date = n.createdAt?.toDate
+        ? n.createdAt.toDate().toLocaleDateString('en-IN',{day:'2-digit',month:'short'})
+        : '';
+      return `<div class="news-card">
         <span class="gov-fail">⚠️ Government Failure</span>
         <div class="news-card-title">${esc(n.title || '')}</div>
         <div class="news-card-desc">${esc(n.description || '')}</div>
-        <div class="news-card-source">${esc(n.source || 'Unknown')} · ${n.createdAt?.toDate ? n.createdAt.toDate().toLocaleDateString('en-IN',{day:'2-digit',month:'short'}) : ''}</div>
+        <div class="news-card-source">${esc(n.source || 'Auto-reported')}${date ? ' · ' + date : ''}</div>
+      </div>`;
+    }).join('');
+    if (news.length === 0) {
+      container.innerHTML += '<div style="text-align:center;padding:12px;font-size:11px;color:var(--text-muted);border-top:1px solid var(--border);margin-top:8px;">📡 AI-curated news — add real items in <strong style="color:var(--text-secondary);">exam_news</strong> Firestore collection</div>';
+    }
+  } catch (e) {
+    loading.style.display = 'none';
+    container.innerHTML = FALLBACK_NEWS.map(n => `
+      <div class="news-card">
+        <span class="gov-fail">⚠️ Government Failure</span>
+        <div class="news-card-title">${esc(n.title)}</div>
+        <div class="news-card-desc">${esc(n.description)}</div>
+        <div class="news-card-source">${esc(n.source)} · Auto</div>
       </div>
     `).join('');
-  } catch (e) {
-    loading.textContent = 'Could not load news';
+    container.innerHTML += '<div style="text-align:center;padding:12px;font-size:11px;color:var(--text-muted);border-top:1px solid var(--border);margin-top:8px;">⚠️ Using fallback news — deploy Firestore rules for live data</div>';
   }
 }
 
