@@ -66,15 +66,16 @@ svg { display: block; }
 
 /* ─── Sidebar overlay ─── */
 .sidebar-overlay {
-  display: none;
   position: fixed; inset: 0;
   background: rgba(0,0,0,0.55);
   backdrop-filter: blur(2px);
   z-index: 25;
   opacity: 0;
-  transition: opacity 0.28s;
+  visibility: hidden;
+  transition: opacity 0.28s, visibility 0.28s;
+  pointer-events: none;
 }
-.sidebar-overlay.open { display: block; opacity: 1; }
+.sidebar-overlay.open { opacity: 1; visibility: visible; pointer-events: all; }
 
 /* ─── Sidebar ─── */
 .sidebar {
