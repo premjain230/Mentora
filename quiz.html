@@ -154,10 +154,10 @@ body{font-family:var(--font-main);background:var(--bg-base);color:var(--text-pri
 
 <script type="module">
 import { auth, db } from "./firebase-config.js";
-import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 import { collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-const authInstance = auth || getAuth();
+const authInstance = auth;
 let currentUser = null;
 onAuthStateChanged(authInstance, (user) => {
   if (!user) { window.location.href = "login.html"; return; }
@@ -303,6 +303,7 @@ const quizPanel   = document.getElementById("quizPanel");
 const resultPanel = document.getElementById("resultPanel");
 
 document.getElementById("startBtn").onclick = () => {
+  document.getElementById("startBtn").disabled = true;
   subject = subjectSelect.value;
   topic   = topicSelect.value;
   const count = parseInt(document.getElementById("countSelect").value, 10);
@@ -323,7 +324,7 @@ function renderQuestion() {
   const q = questions[current];
   document.getElementById("qCounter").textContent = `Question ${current + 1} / ${questions.length}`;
   document.getElementById("qTopicLabel").textContent = `${subject} · ${topic}`;
-  document.getElementById("progressFill").style.width = `${(current / questions.length) * 100}%`;
+  document.getElementById("progressFill").style.width = `${((current + 1) / questions.length) * 100}%`;
   document.getElementById("qText").textContent = q.q;
   document.getElementById("nextBtn").disabled = true;
   document.getElementById("nextBtn").textContent = current === questions.length - 1 ? "Finish" : "Next";
@@ -366,7 +367,12 @@ document.getElementById("quitBtn").onclick = () => {
   }
 };
 
-document.getElementById("retakeBtn").onclick = () => location.reload();
+document.getElementById("retakeBtn").onclick = () => {
+  resultPanel.style.display = "none";
+  setupPanel.style.display = "block";
+  current = 0; correctCount = 0; answers = []; questions = [];
+  document.getElementById("startBtn").disabled = false;
+};
 
 async function finishQuiz() {
   quizPanel.style.display = "none";
