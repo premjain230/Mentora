@@ -95,6 +95,7 @@ export async function saveStudyPlan(planData) {
 export async function getActivePlan() {
   const user = requireAuth();
 
+  // Requires composite index: studyPlans → userId ASC, status ASC, createdAt DESC
   const q = query(
     collection(db, "studyPlans"),
     where("userId", "==", user.uid),
@@ -173,6 +174,7 @@ export async function createTasksFromPlan(planId, weeklyPlan) {
 export async function getTasksByPlan(planId) {
   const user = requireAuth();
 
+  // Requires composite index: tasks → userId ASC, planId ASC, createdAt ASC
   const q = query(
     collection(db, "tasks"),
     where("userId", "==", user.uid),
@@ -188,6 +190,7 @@ export async function getTodaysTasks(planId) {
   const user = requireAuth();
   const today = new Date().toISOString().split("T")[0];
 
+  // Requires composite index: tasks → userId ASC, planId ASC, scheduledDate ASC, createdAt ASC
   const q = query(
     collection(db, "tasks"),
     where("userId", "==", user.uid),

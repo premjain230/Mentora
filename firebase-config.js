@@ -14,15 +14,23 @@ async function loadFirebaseConfig() {
       credentials: "same-origin",
     });
     if (response.ok) return response.json();
-  } catch {}
+  } catch (e) {
+    console.warn("Fetching Firebase config failed, trying fallback.", e);
+  }
 
-  // Fallback for local dev: set window.__FIREBASE_CONFIG__ before this script loads
   if (window.__FIREBASE_CONFIG__) return window.__FIREBASE_CONFIG__;
 
-  throw new Error("Firebase configuration is unavailable. Set window.__FIREBASE_CONFIG__ for local dev.");
+  throw new Error("Firebase configuration is unavailable.");
 }
 
-const app = initializeApp(await loadFirebaseConfig());
+let app;
+try {
+  const config = await loadFirebaseConfig();
+  app = initializeApp(config);
+} catch (e) {
+  console.error("Firebase initialization failed:", e);
+  throw e;
+}
 
 export const auth = getAuth(app);
 export const db = getFirestore(app);

@@ -11,6 +11,7 @@ import {
   getDoc,
   setDoc,
   updateDoc,
+  increment,
   serverTimestamp,
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
@@ -105,7 +106,7 @@ export async function getUsage(uid) {
 
 export async function incrementUsage(uid, type, amount = 1) {
   const ref = doc(db, "usage", uid);
-  await ensureUsageDoc(uid); // ensures reset if new day
+  await ensureUsageDoc(uid);
 
   const fieldMap = {
     chat: "dailyChatCount",
@@ -116,9 +117,7 @@ export async function incrementUsage(uid, type, amount = 1) {
   const field = fieldMap[type];
   if (!field) return;
 
-  const snap = await getDoc(ref);
-  const current = snap.data()?.[field] || 0;
-  await updateDoc(ref, { [field]: current + amount });
+  await updateDoc(ref, { [field]: increment(amount) });
 }
 
 // ─── Check if user can perform action ────────────────────────────────────────

@@ -1,5 +1,23 @@
 const { applyCors, rateLimit, readJsonBody, sendError } = require("./_shared");
 
+const ALLOWED_MODELS = [
+  "llama-3.3-70b-versatile",
+  "llama-3.1-8b-instant",
+  "mixtral-8x7b-32768",
+];
+const MAX_TOKENS = 4096;
+const FETCH_TIMEOUT_MS = 55000;
+
+function sanitizeMessages(messages) {
+  if (!Array.isArray(messages)) return [];
+  return messages.slice(-30).map(m => {
+    if (!m || typeof m !== "object") return null;
+    const role = m.role === "assistant" ? "assistant" : "user";
+    const content = String(m.content || "").trim().slice(0, 8000);
+    return content ? { role, content } : null;
+  }).filter(Boolean);
+}
+
 module.exports = async function handler(req, res) {
   if (!applyCors(req, res, ["POST", "OPTIONS"])) return;
   if (req.method !== "POST") {
@@ -14,18 +32,48 @@ module.exports = async function handler(req, res) {
     return res.status(500).json({ error: "GROQ_API_KEY is not configured." });
   }
 
+  const GROQ_MODEL = process.env.GROQ_MODEL || "llama-3.3-70b-versatile";
+  if (!ALLOWED_MODELS.includes(GROQ_MODEL)) {
+    return res.status(500).json({ error: `Model "${GROQ_MODEL}" is not in the allowed list.` });
+  }
+
   try {
     const body = await readJsonBody(req);
     const isStream = body.stream === true;
+    const messages = sanitizeMessages(body.messages);
 
-    const groqRes = await fetch("https://api.groq.com/openai/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        "Authorization": `Bearer ${apiKey}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(body),
-    });
+    if (messages.length === 0) {
+      return res.status(400).json({ error: "A non-empty messages array is required." });
+    }
+
+    const groqPayload = {
+      model: GROQ_MODEL,
+      messages: [
+        { role: "system", content: "You are Mentora, an expert AI study companion." },
+        ...messages,
+      ],
+      max_tokens: Math.min(Number(body.max_tokens) || 2048, MAX_TOKENS),
+      temperature: Math.max(0, Math.min(Number(body.temperature) || 0.65, 1)),
+      stream: isStream,
+    };
+
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS);
+
+    let groqRes;
+    try {
+      groqRes = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${apiKey}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(groqPayload),
+        signal: controller.signal,
+      });
+    } finally {
+      clearTimeout(timeout);
+    }
 
     if (isStream) {
       res.writeHead(groqRes.status, {
@@ -57,7 +105,7 @@ module.exports = async function handler(req, res) {
         }
       };
 
-      pump();
+      await pump();
     } else {
       const data = await groqRes.json();
       if (!groqRes.ok) {
@@ -67,6 +115,9 @@ module.exports = async function handler(req, res) {
       return res.status(200).json(data);
     }
   } catch (err) {
+    if (err.name === "AbortError") {
+      return res.status(504).json({ error: "AI provider did not respond in time." });
+    }
     return sendError(req, res, err, "Could not communicate with the AI provider.");
   }
 };

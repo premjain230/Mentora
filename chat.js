@@ -15,10 +15,12 @@ import {
   setDoc,
   serverTimestamp,
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { checkAndGate } from "./limits.js";
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 const API_ENDPOINT  = "/api/groq-proxy";
 const MODEL         = "llama-3.3-70b-versatile";
+const MAX_HISTORY   = 60;
 
 const SYSTEM_PROMPT = `You are Mentora, an expert AI study companion built for JEE and NEET aspirants and students in general.
 You help students understand concepts deeply, solve problems step-by-step, create study plans, and analyse their performance.
@@ -94,6 +96,7 @@ const ICON_SHARE = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" 
       flex-shrink: 0;
       margin: 0 2px;
     }
+    @keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
   `;
   document.head.appendChild(style);
 })();
@@ -113,13 +116,22 @@ export async function sendMessage() {
   const rawText = input?.value?.trim();
   if (!rawText) return;
 
+  const uid = auth.currentUser?.uid;
+  if (uid) {
+    const allowed = await checkAndGate(uid, "chat");
+    if (!allowed) return;
+  }
+
   input.value = "";
   input.style.height = "auto";
 
   clearWelcome();
   renderMessage("user", rawText);
 
-  conversationHistory.push({ role: "user", content: rawText });
+    conversationHistory.push({ role: "user", content: rawText });
+    if (conversationHistory.length > MAX_HISTORY) {
+      conversationHistory.splice(0, conversationHistory.length - MAX_HISTORY);
+    }
 
   const chatRef = await ensureChatSession(rawText);
   await saveMessage(chatRef, "user", rawText);
@@ -134,6 +146,9 @@ export async function sendMessage() {
     aiBubble.appendChild(actions);
 
     conversationHistory.push({ role: "assistant", content: replyText });
+    if (conversationHistory.length > MAX_HISTORY) {
+      conversationHistory.splice(0, conversationHistory.length - MAX_HISTORY);
+    }
     await saveMessage(chatRef, "assistant", replyText);
 
     if (conversationHistory.length === 2) {
@@ -426,8 +441,7 @@ function cursorHtml() {
     display:inline-block;width:2px;height:15px;background:#6c63ff;
     border-radius:2px;margin-left:2px;vertical-align:middle;
     animation:blink .7s step-end infinite;
-  "></span>
-  <style>@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}</style>`;
+  "></span>`;
 }
 
 // ─── Firestore persistence ────────────────────────────────────────────────────
@@ -470,7 +484,9 @@ async function updateChatTitle(chatRef, title) {
 
 function updateSidebarTitle(chatId, title) {
   const el = document.querySelector(`[data-chat-id="${chatId}"]`);
-  if (el) el.childNodes[1].textContent = title;
+  if (!el) return;
+  const titleEl = el.querySelector(".chat-title") || el.childNodes[1];
+  if (titleEl) titleEl.textContent = title;
 }
 
 // ─── Expose globally for home.html inline handlers ───────────────────────────

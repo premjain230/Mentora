@@ -171,7 +171,6 @@ export async function checkAndGate(uid, type) {
 // Call at start of planner session with planned duration.
 
 export async function checkPlannerGate(uid, minutesRequested = 1) {
-  const { checkLimit: cl } = await import("./subscription.js");
   const result = await checkLimit(uid, "planner");
 
   if (!result.allowed) {
@@ -179,12 +178,12 @@ export async function checkPlannerGate(uid, minutesRequested = 1) {
     return false;
   }
 
-  // Check if adding these minutes would exceed limit
   const { plan, used, limit } = result;
   if (limit !== Infinity && used + minutesRequested > limit) {
     showUpgradeModal({ ...result, used: limit, type: "planner" });
     return false;
   }
 
+  await incrementUsage(uid, "planner", minutesRequested);
   return true;
 }
