@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+<script>document.documentElement.className=localStorage.getItem('aquila-theme')==='light'?'light-mode':''</script>
 <head>
 <meta charset="UTF-8" /> 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
@@ -67,7 +68,7 @@
       radial-gradient(560px 420px at 92% 6%, rgba(167,139,250,0.08), transparent 60%);
     transition: opacity 0.35s ease;
   }
-  .light-mode::before { opacity: 0.5; }
+  .light-mode body::before { opacity: 0.5; }
 
   svg { display: block; }
 
@@ -172,13 +173,13 @@
   .user-plan { font-size: 11px; color: var(--accent); font-weight: 500; }
 
   .sidebar-overlay {
-    display: none;
     position: fixed; inset: 0;
     background: rgba(0,0,0,0.55);
     backdrop-filter: blur(2px);
     z-index: 25;
-    opacity: 0;
-    transition: opacity 0.28s;
+    opacity: 0; visibility: hidden;
+    transition: opacity 0.28s, visibility 0.28s;
+    pointer-events: none;
   }
 
   .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; background: var(--bg-base); position: relative; z-index: 1; min-width: 0; transition: background 0.35s ease; }
@@ -502,7 +503,7 @@
     }
     .sidebar.open { margin-left: 0; box-shadow: 24px 0 60px rgba(0,0,0,0.45); }
     .sidebar-close { display: flex; }
-    .sidebar-overlay.open { display: block; opacity: 1; }
+    .sidebar-overlay.open { opacity: 1; visibility: visible; pointer-events: all; }
     .menu-btn { display: flex; }
     .topbar-mobile-logo { display: flex; }
     .topbar { padding: 12px 14px; }
@@ -845,13 +846,13 @@ function populateSidebarUser(user) {
 function initThemeToggle() {
   const saved = localStorage.getItem('aquila-theme');
   if (saved === 'light') {
-    document.body.classList.add('light-mode');
+    document.documentElement.classList.add('light-mode');
   }
   const sw = document.getElementById('themeSwitch');
   if (saved === 'light') sw.classList.add('active');
 
   sw.addEventListener('click', () => {
-    const isLight = document.body.classList.toggle('light-mode');
+    const isLight = document.documentElement.classList.toggle('light-mode');
     sw.classList.toggle('active');
     localStorage.setItem('aquila-theme', isLight ? 'light' : 'dark');
   });

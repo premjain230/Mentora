@@ -72,15 +72,16 @@ body::before {
 svg { display: block; }
 
 .sidebar-overlay {
-  display: none;
   position: fixed; inset: 0;
   background: rgba(0,0,0,0.55);
   backdrop-filter: blur(2px);
   z-index: 25;
   opacity: 0;
-  transition: opacity 0.28s;
+  visibility: hidden;
+  transition: opacity 0.28s, visibility 0.28s;
+  pointer-events: none;
 }
-.sidebar-overlay.open { display: block; opacity: 1; }
+.sidebar-overlay.open { opacity: 1; visibility: visible; pointer-events: all; }
 
 .sidebar {
   width: var(--sidebar-w); min-width: var(--sidebar-w);
@@ -905,7 +906,7 @@ svg { display: block; }
   .sidebar { position: fixed; top: 0; left: 0; bottom: 0; margin-left: calc(-1 * var(--sidebar-w)); box-shadow: none; }
   .sidebar.open { margin-left: 0; box-shadow: 24px 0 60px rgba(0,0,0,0.45); }
   .sidebar-close { display: flex; }
-  .sidebar-overlay.open { display: block; opacity: 1; }
+  .sidebar-overlay.open { opacity: 1; visibility: visible; pointer-events: all; }
   .menu-btn { display: flex; }
   .topbar-mobile-logo { display: flex; }
   .topbar { padding: 12px 14px; }
@@ -1244,7 +1245,7 @@ a:focus-visible, button:focus-visible, [tabindex]:focus-visible {
           </div>
           <div class="info-wrap">
             <h3>💬 Student Responses</h3>
-            <div class="response-feed" id="responseFeed"></div>
+            <div class="response-feed" id="responseFeed"><div class="news-loading">Loading responses...</div></div>
           </div>
         </div>
       </div>
@@ -1441,7 +1442,7 @@ onAuthStateChanged(authInstance, async (user) => {
     }).catch(() => {});
   }
 
-  initAll(user.uid);
+  initAll(user.uid).catch(err => console.error('initAll failed:', err));
 });
 
 document.getElementById("signOutBtn").onclick = async () => {
@@ -1450,51 +1451,65 @@ document.getElementById("signOutBtn").onclick = async () => {
 };
 
 async function initAll(uid) {
-  // Init dreams
-  const dreamsSnap = await getDocs(query(collection(db, "dreams"), orderBy("createdAt", "desc"), limit(200)));
-  allDreams = dreamsSnap.docs.map(d => ({ id: d.id, ...d.data() }));
-  initDreamsCanvas();
-  loadDreamStats();
+  try {
+    // Init dreams
+    const dreamsSnap = await getDocs(query(collection(db, "dreams"), orderBy("createdAt", "desc"), limit(200)));
+    allDreams = dreamsSnap.docs.map(d => ({ id: d.id, ...d.data() }));
+    initDreamsCanvas();
+    loadDreamStats();
 
-  // Init stories
-  const storiesSnap = await getDocs(query(collection(db, "stories"), orderBy("createdAt", "desc"), limit(100)));
-  if (storiesSnap.empty) {
-    // Seed sample stories
-    for (const s of SAMPLE_STORIES) {
-      await addDoc(collection(db, "stories"), {
-        ...s,
-        createdAt: serverTimestamp(),
-      });
-    }
-    const snap2 = await getDocs(query(collection(db, "stories"), orderBy("createdAt", "desc"), limit(100)));
-    allStories = snap2.docs.map(d => ({ id: d.id, ...d.data() }));
-  } else {
-    allStories = storiesSnap.docs.map(d => ({ id: d.id, ...d.data() }));
-  }
-  renderStories('all');
-
-  // Init reflection
-  const today = new Date().toDateString();
-  const reflectionSnap = await getDocs(
-    query(collection(db, "dailyReflections"), orderBy("createdAt", "desc"), limit(1))
-  );
-  if (reflectionSnap.empty) {
-    seedDailyQuestion();
-  } else {
-    const qData = reflectionSnap.docs[0].data();
-    const qDate = qData.date?.toDate ? qData.date.toDate().toDateString() : '';
-    if (qDate === today && qData.question) {
-      showTodaysQuestion(qData, reflectionSnap.docs[0].id);
+    // Init stories
+    const storiesSnap = await getDocs(query(collection(db, "stories"), orderBy("createdAt", "desc"), limit(100)));
+    if (storiesSnap.empty) {
+      for (const s of SAMPLE_STORIES) {
+        await addDoc(collection(db, "stories"), {
+          ...s,
+          createdAt: serverTimestamp(),
+        });
+      }
+      const snap2 = await getDocs(query(collection(db, "stories"), orderBy("createdAt", "desc"), limit(100)));
+      allStories = snap2.docs.map(d => ({ id: d.id, ...d.data() }));
     } else {
-      seedDailyQuestion();
+      allStories = storiesSnap.docs.map(d => ({ id: d.id, ...d.data() }));
     }
+    renderStories('all');
+  } catch (err) {
+    console.error('initAll dreams/stories error:', err);
+    document.getElementById('storiesGrid') && (document.getElementById('storiesGrid').innerHTML = '<div class="empty-state"><div class="empty-state-text">Could not load stories. Refresh to try again.</div></div>');
   }
 
-  // Init tree
-  initTree(uid);
+  try {
+    const today = new Date().toDateString();
+    const reflectionSnap = await getDocs(
+      query(collection(db, "dailyReflections"), orderBy("createdAt", "desc"), limit(1))
+    );
+    if (reflectionSnap.empty) {
+      seedDailyQuestion();
+    } else {
+      const qData = reflectionSnap.docs[0].data();
+      const qDate = qData.date?.toDate ? qData.date.toDate().toDateString() : '';
+      if (qDate === today && qData.question) {
+        showTodaysQuestion(qData, reflectionSnap.docs[0].id);
+      } else {
+        seedDailyQuestion();
+      }
+    }
+  } catch (err) {
+    console.error('initAll reflection error:', err);
+    document.getElementById('todayQuestion') && (document.getElementById('todayQuestion').textContent = 'Could not load question. Refresh to try again.');
+  }
 
-  // Starfield background
-  initStarfield();
+  try {
+    initTree(uid);
+  } catch (err) {
+    console.error('initAll tree error:', err);
+  }
+
+  try {
+    initStarfield();
+  } catch (err) {
+    console.error('initAll starfield error:', err);
+  }
 }
 
 // ═══════════ STARFIELD HERO ═══════════
@@ -1679,7 +1694,7 @@ document.getElementById('submitDreamBtn').addEventListener('click', async () => 
     allDreams = snap.docs.map(d => ({ id: d.id, ...d.data() }));
     loadDreamStats();
     buildDreamStars();
-  } catch (err) { console.error(err); }
+  } catch (err) { console.error('submitDream error:', err); alert('Could not share dream. Try again.'); }
 });
 
 document.getElementById('dreamInput').addEventListener('keydown', (e) => {
@@ -1826,6 +1841,16 @@ function seedDailyQuestion() {
   }).then(ref => {
     loadResponses(ref.id);
     loadNewsContext(ref.id, q);
+  }).catch(err => {
+    console.error('seedDailyQuestion addDoc error:', err);
+    // Fallback: try to find existing today's question
+    getDocs(query(collection(db, "dailyReflections"), orderBy("createdAt", "desc"), limit(1))).then(snap => {
+      if (!snap.empty) {
+        const d = snap.docs[0];
+        loadResponses(d.id);
+        loadNewsContext(d.id, q);
+      }
+    }).catch(() => {});
   });
 }
 
@@ -1871,7 +1896,7 @@ document.getElementById('submitReflectionBtn').addEventListener('click', async (
     selectedMood = null;
     document.querySelectorAll('.mood-pill').forEach(p => p.classList.remove('selected'));
     loadResponses(refId);
-  } catch {}
+  } catch (err) { console.error('submitReflection error:', err); }
 });
 
 document.getElementById('reflectionInput').addEventListener('keydown', (e) => {
@@ -1879,10 +1904,11 @@ document.getElementById('reflectionInput').addEventListener('keydown', (e) => {
 });
 
 async function loadResponses(refId) {
+  const feed = document.getElementById('responseFeed');
+  if (!feed) return;
   try {
     const snap = await getDocs(query(collection(db, "dailyReflections", refId, "responses"), orderBy("createdAt", "desc"), limit(30)));
     allResponses = snap.docs.map(d => d.data());
-    const feed = document.getElementById('responseFeed');
 
     if (allResponses.length === 0) {
       feed.innerHTML = '<div style="font-size:13px;color:var(--text-muted);text-align:center;padding:20px;">Be the first to respond 🌱</div>';
@@ -1896,7 +1922,10 @@ async function loadResponses(refId) {
         <span class="response-time">${fmtTime(r.createdAt)}</span>
       </div>
     `).join('');
-  } catch {}
+  } catch (err) {
+    console.error('loadResponses error:', err);
+    feed.innerHTML = '<div style="font-size:13px;color:var(--text-muted);text-align:center;padding:20px;">Could not load responses. Try again later.</div>';
+  }
 }
 
 async function loadNewsContext(refId, question) {
