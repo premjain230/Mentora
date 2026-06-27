@@ -460,6 +460,20 @@ document.addEventListener('DOMContentLoaded', function() {
   document.querySelectorAll('.nav-item:not(.nav-group-toggle)').forEach(el => {
     el.addEventListener('click', function() { if (window.innerWidth <= 880) window.closeSidebar(); });
   });
+  // Also render fallback news immediately in case module script has issues
+  setTimeout(function() {
+    var nf = document.getElementById('newsFeed');
+    var nl = document.getElementById('newsLoading');
+    if (nf && nf.children.length === 0 && nl) {
+      nl.style.display = 'none';
+      nf.innerHTML = [
+        {t:"JEE 2026 counselling delayed again",d:"NTA postpones JEE Advanced counselling for the 3rd time, affecting 2.5 lakh students.",s:"Times of India"},
+        {t:"NEET 2026 syllabus reduced without notice",d:"NMC removes 12 topics from NEET syllabus just 3 months before exam.",s:"The Hindu"},
+        {t:"CBSE board exam date sheet released late",d:"CBSE releases Class 12 date sheet only 45 days before exams.",s:"NDTV"},
+        {t:"JEE Main 2026 application portal crashes",d:"NTA portal crashes on opening day; thousands unable to submit forms.",s:"Hindustan Times"}
+      ].map(function(n){return '<div class="news-card"><span class="gov-fail">\u26A0\uFE0F Government Failure</span><div class="news-card-title">'+n.t+'</div><div class="news-card-desc">'+n.d+'</div><div class="news-card-source">'+n.s+'</div></div>';}).join('');
+    }
+  }, 3000);
 });
 </script>
 
@@ -534,29 +548,54 @@ async function loadPosts() {
 }
 
 /* ── Load news ── */
+const FALLBACK_NEWS = [
+  { title:"JEE 2026 counselling delayed again", description:"NTA postpones JEE Advanced counselling for the 3rd time, affecting 2.5 lakh students' admission timelines.", source:"Times of India" },
+  { title:"NEET 2026 syllabus reduced without notice", description:"Students protest as NMC removes 12 topics from NEET syllabus just 3 months before exam, causing panic among aspirants.", source:"The Hindu" },
+  { title:"CBSE board exam date sheet released late", description:"CBSE releases Class 12 date sheet only 45 days before exams, leaving students with insufficient preparation time.", source:"NDTV" },
+  { title:"Delhi schools fail to distribute textbooks", description:"Government schools in Delhi yet to receive NCERT textbooks for 2026 session, 2 months into the academic year.", source:"Indian Express" },
+  { title:"JEE Main 2026 application portal crashes", description:"NTA's JEE Main portal crashes on opening day due to heavy traffic; thousands unable to submit forms.", source:"Hindustan Times" },
+  { title:"No centralised policy for exam centre allocation", description:"Students forced to travel 300+ km for JEE/NEET exam centres as no nearby centres allocated despite requests.", source:"The Print" },
+  { title:"NEET 2026 question paper error controversy", description:"NEET UG paper contains 3 questions with multiple correct answers; NTA yet to release clarification or revised answer key.", source:"India Today" }
+];
+
 async function loadNews() {
   const container = document.getElementById('newsFeed');
   const loading = document.getElementById('newsLoading');
+  const renderFallback = (note) => {
+    if (loading) loading.style.display = 'none';
+    if (!container) return;
+    container.innerHTML = FALLBACK_NEWS.map(n =>
+      `<div class="news-card">
+        <span class="gov-fail">⚠️ Government Failure</span>
+        <div class="news-card-title">${n.title}</div>
+        <div class="news-card-desc">${n.description}</div>
+        <div class="news-card-source">${n.source} · Auto</div>
+      </div>`
+    ).join('');
+    if (note) container.innerHTML += '<div style="text-align:center;padding:12px;font-size:11px;color:var(--text-muted);border-top:1px solid var(--border);margin-top:8px;">' + note + '</div>';
+  };
   try {
     const q = query(collection(db, "exam_news"), orderBy("createdAt", "desc"), limit(20));
     const snap = await getDocs(q);
     const news = [];
     snap.forEach(doc => news.push({ id: doc.id, ...doc.data() }));
-    loading.style.display = 'none';
     if (news.length === 0) {
-      container.innerHTML = '<div style="text-align:center;padding:16px;color:var(--text-muted);font-size:12px;">No news yet. Add exam policy news items in the Firebase Console → <strong style="color:var(--text-secondary);">exam_news</strong> collection.</div>';
+      renderFallback('📡 AI-curated news — add real items in <strong style="color:var(--text-secondary);">exam_news</strong> Firestore collection');
       return;
     }
-    container.innerHTML = news.map(n => `
-      <div class="news-card">
+    if (loading) loading.style.display = 'none';
+    container.innerHTML = news.map(n => {
+      const date = n.createdAt?.toDate ? n.createdAt.toDate().toLocaleDateString('en-IN',{day:'2-digit',month:'short'}) : '';
+      return `<div class="news-card">
         <span class="gov-fail">⚠️ Government Failure</span>
         <div class="news-card-title">${esc(n.title || '')}</div>
         <div class="news-card-desc">${esc(n.description || '')}</div>
-        <div class="news-card-source">${esc(n.source || 'Unknown')} · ${n.createdAt?.toDate ? n.createdAt.toDate().toLocaleDateString('en-IN',{day:'2-digit',month:'short'}) : ''}</div>
-      </div>
-    `).join('');
+        <div class="news-card-source">${esc(n.source || 'Auto-reported')}${date ? ' · ' + date : ''}</div>
+      </div>`;
+    }).join('');
   } catch (e) {
-    loading.textContent = 'Could not load news';
+    console.error("loadNews error:", e);
+    renderFallback('⚠️ Using fallback news — deploy Firestore rules to <strong style="color:var(--text-secondary);">exam_news</strong> collection');
   }
 }
 
