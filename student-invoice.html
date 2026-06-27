@@ -547,17 +547,31 @@ const FALLBACK_NEWS = [
 async function loadNews() {
   const container = document.getElementById('newsFeed');
   const loading = document.getElementById('newsLoading');
+  const renderFallback = (note) => {
+    if (loading) loading.style.display = 'none';
+    if (!container) return;
+    container.innerHTML = FALLBACK_NEWS.map(n =>
+      `<div class="news-card">
+        <span class="gov-fail">⚠️ Government Failure</span>
+        <div class="news-card-title">${n.title}</div>
+        <div class="news-card-desc">${n.description}</div>
+        <div class="news-card-source">${n.source} · Auto</div>
+      </div>`
+    ).join('');
+    if (note) container.innerHTML += '<div style="text-align:center;padding:12px;font-size:11px;color:var(--text-muted);border-top:1px solid var(--border);margin-top:8px;">' + note + '</div>';
+  };
   try {
     const q = query(collection(db, "exam_news"), orderBy("createdAt", "desc"), limit(20));
     const snap = await getDocs(q);
     const news = [];
     snap.forEach(doc => news.push({ id: doc.id, ...doc.data() }));
-    loading.style.display = 'none';
-    const items = news.length > 0 ? news : FALLBACK_NEWS;
-    container.innerHTML = items.map(n => {
-      const date = n.createdAt?.toDate
-        ? n.createdAt.toDate().toLocaleDateString('en-IN',{day:'2-digit',month:'short'})
-        : '';
+    if (news.length === 0) {
+      renderFallback('📡 AI-curated news — add real items in <strong style="color:var(--text-secondary);">exam_news</strong> Firestore collection');
+      return;
+    }
+    if (loading) loading.style.display = 'none';
+    container.innerHTML = news.map(n => {
+      const date = n.createdAt?.toDate ? n.createdAt.toDate().toLocaleDateString('en-IN',{day:'2-digit',month:'short'}) : '';
       return `<div class="news-card">
         <span class="gov-fail">⚠️ Government Failure</span>
         <div class="news-card-title">${esc(n.title || '')}</div>
@@ -565,20 +579,9 @@ async function loadNews() {
         <div class="news-card-source">${esc(n.source || 'Auto-reported')}${date ? ' · ' + date : ''}</div>
       </div>`;
     }).join('');
-    if (news.length === 0) {
-      container.innerHTML += '<div style="text-align:center;padding:12px;font-size:11px;color:var(--text-muted);border-top:1px solid var(--border);margin-top:8px;">📡 AI-curated news — add real items in <strong style="color:var(--text-secondary);">exam_news</strong> Firestore collection</div>';
-    }
   } catch (e) {
-    loading.style.display = 'none';
-    container.innerHTML = FALLBACK_NEWS.map(n => `
-      <div class="news-card">
-        <span class="gov-fail">⚠️ Government Failure</span>
-        <div class="news-card-title">${esc(n.title)}</div>
-        <div class="news-card-desc">${esc(n.description)}</div>
-        <div class="news-card-source">${esc(n.source)} · Auto</div>
-      </div>
-    `).join('');
-    container.innerHTML += '<div style="text-align:center;padding:12px;font-size:11px;color:var(--text-muted);border-top:1px solid var(--border);margin-top:8px;">⚠️ Using fallback news — deploy Firestore rules for live data</div>';
+    console.error("loadNews error:", e);
+    renderFallback('⚠️ Using fallback news — deploy Firestore rules to <strong style="color:var(--text-secondary);">exam_news</strong> collection');
   }
 }
 
