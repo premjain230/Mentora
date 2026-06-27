@@ -112,7 +112,6 @@ svg { display: block; }
 .topbar-mobile-logo span { color: var(--accent); }
 
 .model-selector { display: flex; align-items: center; gap: 7px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; padding: 7px 13px; font-size: 13px; color: var(--text-secondary); font-weight: 500; white-space: nowrap; }
-.model-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--accent5); box-shadow: 0 0 8px var(--accent5); flex-shrink: 0; }
 
 .content { flex: 1; overflow-y: auto; padding: 0; }
 .content::-webkit-scrollbar { width: 4px; }
@@ -132,16 +131,15 @@ svg { display: block; }
 
 .btn-primary { display: inline-flex; align-items: center; justify-content: center; gap: 7px; padding: 10px 20px; border-radius: 10px; font-family: var(--font-main); font-size: 13px; font-weight: 600; cursor: pointer; border: none; transition: all 0.2s; white-space: nowrap; background: linear-gradient(135deg, #7c6aff, #a78bfa); color: #fff; box-shadow: 0 4px 16px rgba(124,106,255,0.35); }
 .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(124,106,255,0.5); }
+.btn-primary:disabled { opacity: 0.5; cursor: not-allowed; transform: none; box-shadow: none; }
 
 .btn-secondary { display: inline-flex; align-items: center; justify-content: center; gap: 7px; padding: 10px 20px; border-radius: 10px; font-family: var(--font-main); font-size: 13px; font-weight: 500; cursor: pointer; background: rgba(255,255,255,0.04); color: var(--text-secondary); border: 1px solid var(--border); transition: all 0.2s; white-space: nowrap; }
 .btn-secondary:hover { background: rgba(255,255,255,0.08); color: var(--text-primary); border-color: rgba(167,139,250,0.3); }
 
-.btn-accent { background: var(--accent); color: #06121a; box-shadow: 0 4px 14px rgba(0,212,255,0.35); }
-.btn-accent:hover { background: #33ddff; transform: translateY(-1px); }
-
+/* ── Hero ── */
 .invoice-hero {
   text-align: center;
-  padding: 60px 24px 40px;
+  padding: 40px 24px 28px;
   max-width: 720px;
   margin: 0 auto;
 }
@@ -155,14 +153,14 @@ svg { display: block; }
   color: var(--accent5);
   font-weight: 500;
   letter-spacing: 0.05em;
-  margin-bottom: 20px;
+  margin-bottom: 16px;
 }
 .invoice-hero h1 {
-  font-size: clamp(30px, 5vw, 48px);
+  font-size: clamp(26px, 4vw, 40px);
   font-weight: 800;
   line-height: 1.1;
   letter-spacing: -0.03em;
-  margin-bottom: 14px;
+  margin-bottom: 10px;
 }
 .invoice-hero h1 .gradient {
   background: linear-gradient(135deg, #06d6cf, #00d4ff, #a78bfa);
@@ -171,7 +169,7 @@ svg { display: block; }
   background-clip: text;
 }
 .invoice-hero p {
-  font-size: 15px;
+  font-size: 14px;
   color: var(--text-secondary);
   line-height: 1.7;
   max-width: 480px;
@@ -179,30 +177,32 @@ svg { display: block; }
   font-weight: 300;
 }
 
+/* ── Layout ── */
 .section-wrap {
   padding: 0 48px 60px;
-  max-width: 1200px;
+  max-width: 1000px;
   margin: 0 auto;
 }
 
+/* ── Summary stats ── */
 .invoice-summary {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 16px;
-  margin-bottom: 32px;
+  gap: 14px;
+  margin-bottom: 24px;
 }
 .invoice-stat {
   background: var(--glass);
   border: 1px solid var(--border);
   border-radius: var(--radius-md);
-  padding: 20px;
+  padding: 16px;
   text-align: center;
   backdrop-filter: blur(12px);
   transition: transform 0.2s;
 }
-.invoice-stat:hover { transform: translateY(-3px); }
+.invoice-stat:hover { transform: translateY(-2px); }
 .invoice-stat-value {
-  font-size: 28px;
+  font-size: 24px;
   font-weight: 700;
   font-family: var(--font-mono);
   color: var(--text-primary);
@@ -210,15 +210,16 @@ svg { display: block; }
   line-height: 1;
   margin-bottom: 4px;
 }
-.invoice-stat-icon { font-size: 22px; margin-bottom: 6px; }
-.invoice-stat-label { font-size: 12px; color: var(--text-secondary); font-weight: 400; }
+.invoice-stat-icon { font-size: 20px; margin-bottom: 4px; }
+.invoice-stat-label { font-size: 11px; color: var(--text-secondary); font-weight: 400; }
 
+/* ── Toolbar ── */
 .invoice-toolbar {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 16px;
-  margin-bottom: 20px;
+  gap: 12px;
+  margin-bottom: 16px;
   flex-wrap: wrap;
 }
 .invoice-search {
@@ -226,8 +227,8 @@ svg { display: block; }
   align-items: center;
   gap: 10px;
   flex: 1;
-  min-width: 200px;
-  max-width: 360px;
+  min-width: 180px;
+  max-width: 300px;
 }
 .invoice-search input {
   flex: 1;
@@ -244,6 +245,7 @@ svg { display: block; }
 .invoice-search input:focus { border-color: rgba(6,214,207,0.4); }
 .invoice-search input::placeholder { color: var(--text-muted); }
 
+/* ── Table ── */
 .invoice-table-wrap {
   background: var(--glass);
   border: 1px solid var(--border);
@@ -262,7 +264,7 @@ svg { display: block; }
   text-transform: uppercase;
   letter-spacing: 1px;
   color: var(--text-muted);
-  padding: 14px 18px;
+  padding: 12px 16px;
   text-align: left;
   border-bottom: 1px solid var(--border);
   background: rgba(255,255,255,0.02);
@@ -270,7 +272,7 @@ svg { display: block; }
 .invoice-table td {
   font-size: 13px;
   color: var(--text-secondary);
-  padding: 14px 18px;
+  padding: 12px 16px;
   border-bottom: 1px solid var(--border);
   vertical-align: middle;
 }
@@ -280,42 +282,129 @@ svg { display: block; }
   font-family: var(--font-mono);
   font-weight: 600;
   color: var(--text-primary);
+  white-space: nowrap;
 }
-.status-badge {
+.invoice-table .direction-badge {
   display: inline-flex;
+  align-items: center;
+  gap: 4px;
   font-size: 11px;
   font-weight: 600;
-  padding: 3px 10px;
+  padding: 2px 8px;
   border-radius: 20px;
   font-family: var(--font-mono);
 }
-.status-badge.paid { background: rgba(6,214,207,0.1); color: var(--accent5); border: 1px solid rgba(6,214,207,0.2); }
-.status-badge.pending { background: rgba(255,209,102,0.1); color: var(--accent4); border: 1px solid rgba(255,209,102,0.2); }
-.status-badge.overdue { background: rgba(255,107,107,0.1); color: var(--accent3); border: 1px solid rgba(255,107,107,0.2); }
+.direction-badge.sent { background: rgba(0,212,255,0.1); color: var(--accent); border: 1px solid rgba(0,212,255,0.2); }
+.direction-badge.received { background: rgba(6,214,207,0.1); color: var(--accent5); border: 1px solid rgba(6,214,207,0.2); }
+.direction-badge.self { background: rgba(167,139,250,0.1); color: var(--accent2); border: 1px solid rgba(167,139,250,0.2); }
 
-.invoice-actions {
-  display: flex;
-  gap: 6px;
+.empty-state { text-align: center; padding: 48px 20px; }
+.empty-state-icon { font-size: 40px; margin-bottom: 10px; }
+.empty-state-title { font-size: 18px; font-weight: 600; color: var(--text-primary); margin-bottom: 6px; }
+.empty-state-text { font-size: 13px; color: var(--text-muted); max-width: 320px; margin: 0 auto; line-height: 1.6; }
+
+/* ── Modal ── */
+.modal-overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.65);
+  backdrop-filter: blur(4px); z-index: 100;
+  display: none; align-items: center; justify-content: center;
+  padding: 20px;
 }
-.invoice-action-btn {
-  padding: 5px 10px;
-  font-size: 11px;
-  font-family: var(--font-main);
-  border-radius: 6px;
-  cursor: pointer;
-  transition: all 0.15s;
+.modal-overlay.open { display: flex; }
+.modal-box {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 32px;
+  width: 100%;
+  max-width: 460px;
+  animation: scaleIn 0.25s ease;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+.modal-box h2 {
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+.modal-box .modal-sub {
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin-bottom: 24px;
+}
+.modal-close {
+  float: right;
+  width: 32px; height: 32px;
+  border-radius: 8px;
   border: 1px solid var(--border);
   background: transparent;
   color: var(--text-muted);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
-.invoice-action-btn:hover { color: var(--text-primary); border-color: rgba(255,255,255,0.15); }
-.invoice-action-btn.view:hover { color: var(--accent); border-color: rgba(0,212,255,0.3); }
-.invoice-action-btn.download:hover { color: var(--accent5); border-color: rgba(6,214,207,0.3); }
-.invoice-action-btn.pay:hover { color: var(--accent2); border-color: rgba(167,139,250,0.3); background: rgba(167,139,250,0.08); }
+.modal-close:hover { color: var(--text-primary); border-color: rgba(255,255,255,0.15); }
 
-.empty-state { text-align: center; padding: 60px 20px; }
-.empty-state-icon { font-size: 48px; margin-bottom: 12px; }
-.empty-state-text { font-size: 14px; color: var(--text-muted); }
+.form-group { margin-bottom: 16px; }
+.form-group label {
+  display: block;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  margin-bottom: 5px;
+}
+.form-group input,
+.form-group textarea {
+  width: 100%;
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-family: var(--font-main);
+  font-size: 13px;
+  color: var(--text-primary);
+  outline: none;
+  transition: border-color 0.2s;
+}
+.form-group input:focus,
+.form-group textarea:focus { border-color: rgba(0,212,255,0.4); }
+.form-group textarea { resize: vertical; min-height: 70px; }
+.form-group .char-count {
+  text-align: right;
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-top: 3px;
+  font-family: var(--font-mono);
+}
+.form-group .char-count.over { color: var(--accent3); }
+.form-row { display: flex; gap: 12px; }
+.form-row .form-group { flex: 1; }
+
+.modal-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+  justify-content: flex-end;
+}
+.modal-actions .btn-primary,
+.modal-actions .btn-secondary {
+  padding: 9px 18px;
+  font-size: 13px;
+}
+
+/* ── Toast ── */
+.toast {
+  position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px);
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: 12px; padding: 12px 24px;
+  font-size: 13px; color: var(--text-primary);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+  opacity: 0; transition: all 0.35s ease; z-index: 200;
+  pointer-events: none;
+}
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+.toast.error { border-color: rgba(255,107,107,0.3); color: var(--accent3); }
 
 @media (max-width: 880px) {
   .sidebar { position: fixed; top: 0; left: 0; bottom: 0; margin-left: calc(-1 * var(--sidebar-w)); box-shadow: none; }
@@ -327,15 +416,14 @@ svg { display: block; }
   .topbar { padding: 12px 14px; }
   .section-wrap { padding: 0 20px 40px; }
   .invoice-summary { grid-template-columns: 1fr; }
-  .invoice-hero { padding: 40px 20px 28px; }
+  .invoice-hero { padding: 28px 20px 20px; }
   .invoice-toolbar { flex-direction: column; align-items: stretch; }
   .invoice-search { max-width: 100%; }
-  .invoice-table th:nth-child(3), .invoice-table td:nth-child(3),
-  .invoice-table th:nth-child(5), .invoice-table td:nth-child(5) { display: none; }
+  .form-row { flex-direction: column; gap: 0; }
 }
-@media (max-width: 480px) {
-  .invoice-hero h1 { font-size: 26px; }
-  .invoice-table th, .invoice-table td { padding: 10px 12px; }
+@media (max-width: 600px) {
+  .invoice-table th:nth-child(3),
+  .invoice-table td:nth-child(3) { display: none; }
 }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
@@ -459,26 +547,26 @@ a:focus-visible, button:focus-visible, [tabindex]:focus-visible { outline: 2px s
   <div class="content" id="content">
     <div class="invoice-hero reveal">
       <div class="invoice-hero-badge">📄 Student Invoices</div>
-      <h1>Manage Your <span class="gradient">Invoices</span></h1>
-      <p>Track your payments, download receipts, and manage your subscription billing all in one place.</p>
+      <h1>Send &amp; View <span class="gradient">Invoices</span></h1>
+      <p>Send invoices to other students and see invoices sent to you. No payments — just records.</p>
     </div>
 
     <div class="section-wrap">
       <div class="invoice-summary reveal reveal-delay-1">
         <div class="invoice-stat">
-          <div class="invoice-stat-icon">💰</div>
+          <div class="invoice-stat-icon">📄</div>
           <div class="invoice-stat-value" id="totalInvoices">0</div>
-          <div class="invoice-stat-label">Total Invoices</div>
+          <div class="invoice-stat-label">Total</div>
         </div>
         <div class="invoice-stat">
-          <div class="invoice-stat-icon">✅</div>
-          <div class="invoice-stat-value" id="paidInvoices">0</div>
-          <div class="invoice-stat-label">Paid</div>
+          <div class="invoice-stat-icon">↗️</div>
+          <div class="invoice-stat-value" id="sentCount">0</div>
+          <div class="invoice-stat-label">Sent by you</div>
         </div>
         <div class="invoice-stat">
-          <div class="invoice-stat-icon">⏳</div>
-          <div class="invoice-stat-value" id="pendingInvoices">0</div>
-          <div class="invoice-stat-label">Pending / Overdue</div>
+          <div class="invoice-stat-icon">↙️</div>
+          <div class="invoice-stat-value" id="receivedCount">0</div>
+          <div class="invoice-stat-label">Received</div>
         </div>
       </div>
 
@@ -486,7 +574,7 @@ a:focus-visible, button:focus-visible, [tabindex]:focus-visible { outline: 2px s
         <div class="invoice-search">
           <input type="text" id="invoiceSearch" placeholder="Search invoices..." oninput="filterInvoices()" />
         </div>
-        <button class="btn-primary" onclick="alert('Invoice generation form would open here.')">
+        <button class="btn-primary" onclick="openCreateModal()">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
           New Invoice
         </button>
@@ -496,25 +584,97 @@ a:focus-visible, button:focus-visible, [tabindex]:focus-visible { outline: 2px s
         <table class="invoice-table">
           <thead>
             <tr>
-              <th>Invoice</th>
+              <th>#</th>
               <th>Date</th>
+              <th>From / To</th>
               <th>Description</th>
               <th>Amount</th>
-              <th>Status</th>
               <th></th>
             </tr>
           </thead>
           <tbody id="invoiceBody">
           </tbody>
         </table>
-        <div class="empty-state" id="invoiceEmpty">
+        <div class="empty-state" id="invoiceEmpty" style="display:none;">
           <div class="empty-state-icon">📄</div>
-          <div class="empty-state-text">No invoices yet. Your first invoice will appear here after your first payment.</div>
+          <div class="empty-state-title">No invoices yet</div>
+          <div class="empty-state-text">Create an invoice to send to another student, or wait for someone to send one to you.</div>
         </div>
       </div>
     </div>
   </div>
 </main>
+
+<!-- Create Invoice Modal -->
+<div class="modal-overlay" id="createModal">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeCreateModal()">✕</button>
+    <h2>New Invoice</h2>
+    <p class="modal-sub">Send an invoice to another student. Description is limited to 200 characters.</p>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Recipient Name</label>
+        <input type="text" id="invRecipientName" placeholder="e.g. Rahul Sharma" maxlength="60" />
+      </div>
+      <div class="form-group">
+        <label>Recipient Email</label>
+        <input type="email" id="invRecipientEmail" placeholder="rahul@email.com" />
+      </div>
+    </div>
+    <div class="form-group">
+      <label>Title</label>
+      <input type="text" id="invTitle" placeholder="e.g. Tuition fee - June" maxlength="80" />
+    </div>
+    <div class="form-group">
+      <label>Description</label>
+      <textarea id="invDescription" placeholder="Brief description..." maxlength="200" oninput="updateCharCount()"></textarea>
+      <div class="char-count" id="charCount">0 / 200</div>
+    </div>
+    <div class="form-group">
+      <label>Amount (₹)</label>
+      <input type="number" id="invAmount" placeholder="0" min="0" />
+    </div>
+    <div class="modal-actions">
+      <button class="btn-secondary" onclick="closeCreateModal()">Cancel</button>
+      <button class="btn-primary" id="createBtn" onclick="createInvoice()">Create Invoice</button>
+    </div>
+  </div>
+</div>
+
+<!-- View Invoice Modal -->
+<div class="modal-overlay" id="viewModal">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeViewModal()">✕</button>
+    <h2 id="viewTitle">Invoice</h2>
+    <p class="modal-sub" id="viewSub">Invoice details</p>
+    <div style="background:var(--bg-input);border-radius:var(--radius-md);padding:20px;margin-bottom:16px;">
+      <div style="display:flex;justify-content:space-between;margin-bottom:12px;">
+        <div>
+          <div style="font-size:11px;color:var(--text-muted);margin-bottom:2px;">From</div>
+          <div style="font-size:14px;font-weight:600;" id="viewFrom">—</div>
+        </div>
+        <div style="text-align:right;">
+          <div style="font-size:11px;color:var(--text-muted);margin-bottom:2px;">To</div>
+          <div style="font-size:14px;font-weight:600;" id="viewTo">—</div>
+        </div>
+      </div>
+      <div style="margin-bottom:12px;">
+        <div style="font-size:11px;color:var(--text-muted);margin-bottom:2px;">Description</div>
+        <div style="font-size:13px;line-height:1.6;" id="viewDesc">—</div>
+      </div>
+      <div>
+        <div style="font-size:11px;color:var(--text-muted);margin-bottom:2px;">Amount</div>
+        <div style="font-size:24px;font-weight:700;font-family:var(--font-mono);color:var(--text-primary);" id="viewAmount">₹0</div>
+      </div>
+    </div>
+    <div style="font-size:12px;color:var(--text-muted);" id="viewMeta"></div>
+    <div class="modal-actions">
+      <button class="btn-secondary" onclick="closeViewModal()">Close</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
 
 <script>
 function toggleNavGroup(el) {
@@ -541,78 +701,24 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 
-<script>
-const INVOICES = [
-  { id: 'INV-2026-001', date: '2026-06-01', desc: 'Aquila Pro - Monthly', amount: 499, status: 'paid' },
-  { id: 'INV-2026-002', date: '2026-05-01', desc: 'Aquila Pro - Monthly', amount: 499, status: 'paid' },
-  { id: 'INV-2026-003', date: '2026-04-01', desc: 'Aquila Pro - Monthly', amount: 499, status: 'paid' },
-  { id: 'INV-2026-004', date: '2026-03-15', desc: 'Study Planner Add-on', amount: 199, status: 'paid' },
-  { id: 'INV-2026-005', date: '2026-03-01', desc: 'Aquila Pro - Monthly', amount: 499, status: 'overdue' },
-  { id: 'INV-2026-006', date: '2026-02-01', desc: 'Aquila Pro - Monthly', amount: 499, status: 'paid' },
-];
-
-let filteredInvoices = [...INVOICES];
-
-function renderInvoices(invoices) {
-  const tbody = document.getElementById('invoiceBody');
-  const empty = document.getElementById('invoiceEmpty');
-
-  if (invoices.length === 0) {
-    tbody.innerHTML = '';
-    empty.style.display = 'block';
-    document.querySelector('.invoice-table thead').style.display = 'none';
-    return;
-  }
-
-  empty.style.display = 'none';
-  document.querySelector('.invoice-table thead').style.display = '';
-
-  tbody.innerHTML = invoices.map(inv => {
-    const statusClass = inv.status === 'paid' ? 'paid' : inv.status === 'pending' ? 'pending' : 'overdue';
-    const statusLabel = inv.status.charAt(0).toUpperCase() + inv.status.slice(1);
-    const formattedDate = new Date(inv.date).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
-    return `<tr>
-      <td><strong style="color:var(--text-primary);font-family:var(--font-mono);font-size:12px;">${inv.id}</strong></td>
-      <td>${formattedDate}</td>
-      <td>${inv.desc}</td>
-      <td class="amount">₹${inv.amount}</td>
-      <td><span class="status-badge ${statusClass}">${statusLabel}</span></td>
-      <td>
-        <div class="invoice-actions">
-          <button class="invoice-action-btn view" onclick="alert('Viewing invoice ${inv.id}')">View</button>
-          <button class="invoice-action-btn download" onclick="alert('Downloading ${inv.id}')">Download</button>
-          ${inv.status !== 'paid' ? `<button class="invoice-action-btn pay" onclick="alert('Payment gateway for ${inv.id}')">Pay Now</button>` : ''}
-        </div>
-      </td>
-    </tr>`;
-  }).join('');
-}
-
-function filterInvoices() {
-  const query = document.getElementById('invoiceSearch').value.toLowerCase();
-  filteredInvoices = INVOICES.filter(inv =>
-    inv.id.toLowerCase().includes(query) || inv.desc.toLowerCase().includes(query) || inv.status.includes(query)
-  );
-  renderInvoices(filteredInvoices);
-}
-
-document.addEventListener('DOMContentLoaded', function() {
-  renderInvoices(INVOICES);
-  document.getElementById('totalInvoices').textContent = INVOICES.length;
-  document.getElementById('paidInvoices').textContent = INVOICES.filter(i => i.status === 'paid').length;
-  document.getElementById('pendingInvoices').textContent = INVOICES.filter(i => i.status !== 'paid').length;
-});
-</script>
-
 <script type="module">
 import { auth, db } from "./firebase-config.js";
 import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-import { doc, getDoc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import {
+  collection, query, where, orderBy, getDocs,
+  addDoc, serverTimestamp, Timestamp
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 import { getUserPlan } from "./subscription.js";
 
+let currentUser = null;
+let invoices = [];
+let filtered = [];
+
+/* ── Auth ── */
 const authInstance = auth || getAuth();
 onAuthStateChanged(authInstance, async (user) => {
   if (!user) { window.location.href = "login.html"; return; }
+  currentUser = user;
   const name = user.displayName || user.email?.split("@")[0] || "Guest";
   document.getElementById("userName").textContent = name;
   const avatar = document.getElementById("userAvatar");
@@ -623,12 +729,205 @@ onAuthStateChanged(authInstance, async (user) => {
   }
   const plan = await getUserPlan(user.uid, user);
   document.getElementById("userPlan").textContent = plan === "pro" ? "✨ Aquila Pro" : "Free Plan";
+  await loadInvoices();
 });
 
 document.getElementById("signOutBtn").onclick = async () => {
   await signOut(authInstance);
   window.location.href = "login.html";
 };
+
+/* ── Load invoices ── */
+async function loadInvoices() {
+  const q = query(
+    collection(db, "invoices"),
+    orderBy("createdAt", "desc")
+  );
+  const snap = await getDocs(q);
+  invoices = [];
+  snap.forEach(doc => {
+    const d = doc.data();
+    invoices.push({ id: doc.id, ...d });
+  });
+  filtered = [...invoices];
+  render();
+}
+
+/* ── Render ── */
+function render() {
+  const tbody = document.getElementById('invoiceBody');
+  const empty = document.getElementById('invoiceEmpty');
+
+  if (filtered.length === 0) {
+    tbody.innerHTML = '';
+    empty.style.display = 'block';
+    document.querySelector('.invoice-table thead').style.display = 'none';
+  } else {
+    empty.style.display = 'none';
+    document.querySelector('.invoice-table thead').style.display = '';
+    tbody.innerHTML = filtered.map((inv, i) => {
+      const isSent = inv.senderEmail === currentUser?.email;
+      const isReceived = inv.recipientEmail === currentUser?.email;
+      let direction, dirLabel;
+      if (isSent && isReceived) {
+        direction = 'self';
+        dirLabel = 'To self';
+      } else if (isSent) {
+        direction = 'sent';
+        dirLabel = 'Sent to ' + (inv.recipientName || inv.recipientEmail);
+      } else if (isReceived) {
+        direction = 'received';
+        dirLabel = 'From ' + (inv.senderName || inv.senderEmail);
+      } else {
+        direction = '';
+        dirLabel = '';
+      }
+      const date = inv.createdAt?.toDate
+        ? inv.createdAt.toDate().toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })
+        : '—';
+      return `<tr>
+        <td><strong style="color:var(--text-primary);font-family:var(--font-mono);font-size:12px;">${'#' + (i + 1)}</strong></td>
+        <td style="font-size:12px;">${date}</td>
+        <td>${direction ? '<span class="direction-badge ' + direction + '">' + dirLabel + '</span>' : '<span style="color:var(--text-muted);font-size:12px;">—</span>'}</td>
+        <td style="max-width:200px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${esc(inv.title || '')}${inv.description ? ' — ' + esc(inv.description) : ''}</td>
+        <td class="amount">₹${inv.amount ?? 0}</td>
+        <td>
+          <button class="invoice-action-btn view" onclick="viewInvoice('${inv.id}')" style="padding:5px 10px;font-size:11px;font-family:var(--font-main);border-radius:6px;cursor:pointer;transition:all 0.15s;border:1px solid var(--border);background:transparent;color:var(--text-muted);">View</button>
+        </td>
+      </tr>`;
+    }).join('');
+  }
+
+  const total = invoices.length;
+  const sent = invoices.filter(i => i.senderEmail === currentUser?.email).length;
+  const received = invoices.filter(i => i.recipientEmail === currentUser?.email).length;
+  document.getElementById('totalInvoices').textContent = total;
+  document.getElementById('sentCount').textContent = sent;
+  document.getElementById('receivedCount').textContent = received;
+}
+
+function esc(s) {
+  if (!s) return '';
+  return s.replace(/[&<>"']/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' })[c]);
+}
+
+window.filterInvoices = function() {
+  const q = document.getElementById('invoiceSearch').value.toLowerCase();
+  filtered = invoices.filter(inv =>
+    (inv.title || '').toLowerCase().includes(q) ||
+    (inv.description || '').toLowerCase().includes(q) ||
+    (inv.recipientName || '').toLowerCase().includes(q) ||
+    (inv.senderName || '').toLowerCase().includes(q) ||
+    (inv.recipientEmail || '').toLowerCase().includes(q) ||
+    (inv.senderEmail || '').toLowerCase().includes(q) ||
+    ('' + (inv.amount ?? '')).includes(q)
+  );
+  render();
+};
+
+/* ── Create modal ── */
+window.openCreateModal = function() {
+  document.getElementById('createModal').classList.add('open');
+  document.getElementById('charCount').textContent = '0 / 200';
+};
+window.closeCreateModal = function() {
+  document.getElementById('createModal').classList.remove('open');
+  ['invRecipientName','invRecipientEmail','invTitle','invDescription','invAmount'].forEach(id => {
+    document.getElementById(id).value = '';
+  });
+};
+
+window.updateCharCount = function() {
+  const el = document.getElementById('invDescription');
+  const cc = document.getElementById('charCount');
+  const len = el.value.length;
+  cc.textContent = len + ' / 200';
+  cc.classList.toggle('over', len > 200);
+};
+
+window.createInvoice = async function() {
+  const btn = document.getElementById('createBtn');
+  btn.disabled = true;
+
+  const recipientName = document.getElementById('invRecipientName').value.trim();
+  const recipientEmail = document.getElementById('invRecipientEmail').value.trim();
+  const title = document.getElementById('invTitle').value.trim();
+  const description = document.getElementById('invDescription').value.trim();
+  const amount = parseFloat(document.getElementById('invAmount').value) || 0;
+
+  if (!recipientEmail) {
+    showToast('Please enter recipient email', true);
+    btn.disabled = false;
+    return;
+  }
+  if (!title) {
+    showToast('Please enter a title', true);
+    btn.disabled = false;
+    return;
+  }
+  if (description.length > 200) {
+    showToast('Description exceeds 200 characters', true);
+    btn.disabled = false;
+    return;
+  }
+
+  try {
+    await addDoc(collection(db, "invoices"), {
+      senderEmail: currentUser.email,
+      senderName: currentUser.displayName || currentUser.email?.split('@')[0] || 'Unknown',
+      recipientName,
+      recipientEmail,
+      title,
+      description,
+      amount,
+      createdAt: serverTimestamp()
+    });
+    showToast('Invoice created successfully');
+    closeCreateModal();
+    await loadInvoices();
+  } catch (e) {
+    showToast('Error creating invoice: ' + e.message, true);
+  }
+  btn.disabled = false;
+};
+
+/* ── View modal ── */
+window.viewInvoice = function(id) {
+  const inv = invoices.find(i => i.id === id);
+  if (!inv) return;
+  document.getElementById('viewTitle').textContent = esc(inv.title || 'Invoice');
+  document.getElementById('viewSub').textContent = 'Invoice ' + esc(inv.senderName) + ' → ' + esc(inv.recipientName || inv.recipientEmail);
+  document.getElementById('viewFrom').textContent = esc(inv.senderName || inv.senderEmail);
+  document.getElementById('viewTo').textContent = esc(inv.recipientName || inv.recipientEmail);
+  document.getElementById('viewDesc').textContent = esc(inv.description || 'No description');
+  document.getElementById('viewAmount').textContent = '₹' + (inv.amount ?? 0);
+  const date = inv.createdAt?.toDate
+    ? 'Created: ' + inv.createdAt.toDate().toLocaleDateString('en-IN', { day: '2-digit', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' })
+    : '';
+  document.getElementById('viewMeta').textContent = date;
+  document.getElementById('viewModal').classList.add('open');
+};
+
+window.closeViewModal = function() {
+  document.getElementById('viewModal').classList.remove('open');
+};
+
+/* ── Toast ── */
+function showToast(msg, isError = false) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast' + (isError ? ' error' : '');
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3200);
+}
+
+/* ── Close modals on overlay click ── */
+document.getElementById('createModal').addEventListener('click', function(e) {
+  if (e.target === this) closeCreateModal();
+});
+document.getElementById('viewModal').addEventListener('click', function(e) {
+  if (e.target === this) closeViewModal();
+});
 </script>
 
 <script type="module">import { inject } from 'https://esm.sh/@vercel/analytics'; inject();</script>
