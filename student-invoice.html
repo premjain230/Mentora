@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-<title>Student Invoice · Aquila AI</title>
+<title>Invoices · Aquila AI</title>
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -122,12 +122,6 @@ svg { display: block; }
 @keyframes scaleIn { from { opacity:0; transform:scale(0.92); } to { opacity:1; transform:scale(1); } }
 
 .reveal { animation: fadeIn 0.6s cubic-bezier(0.16,1,0.3,1) both; }
-.reveal-delay-1 { animation-delay: 0.1s; }
-.reveal-delay-2 { animation-delay: 0.2s; }
-.reveal-delay-3 { animation-delay: 0.3s; }
-
-.glass-card { background: var(--glass); border: 1px solid var(--border); border-radius: var(--radius-md); backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px); transition: border-color 0.3s, transform 0.25s; }
-.glass-card:hover { border-color: rgba(167,139,250,0.2); }
 
 .btn-primary { display: inline-flex; align-items: center; justify-content: center; gap: 7px; padding: 10px 20px; border-radius: 10px; font-family: var(--font-main); font-size: 13px; font-weight: 600; cursor: pointer; border: none; transition: all 0.2s; white-space: nowrap; background: linear-gradient(135deg, #7c6aff, #a78bfa); color: #fff; box-shadow: 0 4px 16px rgba(124,106,255,0.35); }
 .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(124,106,255,0.5); }
@@ -137,42 +131,42 @@ svg { display: block; }
 .btn-secondary:hover { background: rgba(255,255,255,0.08); color: var(--text-primary); border-color: rgba(167,139,250,0.3); }
 
 /* ── Hero ── */
-.invoice-hero {
+.hero {
   text-align: center;
-  padding: 40px 24px 28px;
-  max-width: 720px;
+  padding: 32px 24px 20px;
+  max-width: 640px;
   margin: 0 auto;
 }
-.invoice-hero-badge {
-  display: inline-flex; align-items: center; gap: 8px;
+.hero-badge {
+  display: inline-flex; align-items: center; gap: 6px;
   background: rgba(6,214,207,0.1);
   border: 1px solid rgba(6,214,207,0.25);
   border-radius: 99px;
-  padding: 6px 16px;
-  font-size: 12px;
+  padding: 5px 14px;
+  font-size: 11px;
   color: var(--accent5);
   font-weight: 500;
   letter-spacing: 0.05em;
-  margin-bottom: 16px;
+  margin-bottom: 14px;
 }
-.invoice-hero h1 {
-  font-size: clamp(26px, 4vw, 40px);
+.hero h1 {
+  font-size: clamp(24px, 3.5vw, 36px);
   font-weight: 800;
   line-height: 1.1;
   letter-spacing: -0.03em;
-  margin-bottom: 10px;
+  margin-bottom: 8px;
 }
-.invoice-hero h1 .gradient {
+.hero h1 .gradient {
   background: linear-gradient(135deg, #06d6cf, #00d4ff, #a78bfa);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
-.invoice-hero p {
+.hero p {
   font-size: 14px;
   color: var(--text-secondary);
   line-height: 1.7;
-  max-width: 480px;
+  max-width: 420px;
   margin: 0 auto;
   font-weight: 300;
 }
@@ -180,57 +174,28 @@ svg { display: block; }
 /* ── Layout ── */
 .section-wrap {
   padding: 0 48px 60px;
-  max-width: 1000px;
+  max-width: 800px;
   margin: 0 auto;
 }
 
-/* ── Summary stats ── */
-.invoice-summary {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 14px;
-  margin-bottom: 24px;
-}
-.invoice-stat {
-  background: var(--glass);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-md);
-  padding: 16px;
-  text-align: center;
-  backdrop-filter: blur(12px);
-  transition: transform 0.2s;
-}
-.invoice-stat:hover { transform: translateY(-2px); }
-.invoice-stat-value {
-  font-size: 24px;
-  font-weight: 700;
-  font-family: var(--font-mono);
-  color: var(--text-primary);
-  letter-spacing: -1px;
-  line-height: 1;
-  margin-bottom: 4px;
-}
-.invoice-stat-icon { font-size: 20px; margin-bottom: 4px; }
-.invoice-stat-label { font-size: 11px; color: var(--text-secondary); font-weight: 400; }
-
 /* ── Toolbar ── */
-.invoice-toolbar {
+.toolbar {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  margin-bottom: 16px;
+  margin-bottom: 20px;
   flex-wrap: wrap;
 }
-.invoice-search {
+.search-box {
   display: flex;
   align-items: center;
   gap: 10px;
   flex: 1;
   min-width: 180px;
-  max-width: 300px;
+  max-width: 280px;
 }
-.invoice-search input {
+.search-box input {
   flex: 1;
   background: var(--bg-input);
   border: 1px solid var(--border);
@@ -242,66 +207,88 @@ svg { display: block; }
   outline: none;
   transition: border-color 0.2s;
 }
-.invoice-search input:focus { border-color: rgba(6,214,207,0.4); }
-.invoice-search input::placeholder { color: var(--text-muted); }
+.search-box input:focus { border-color: rgba(6,214,207,0.4); }
+.search-box input::placeholder { color: var(--text-muted); }
 
-/* ── Table ── */
-.invoice-table-wrap {
+/* ── Post feed ── */
+.post-feed { display: flex; flex-direction: column; gap: 14px; }
+
+.post-card {
   background: var(--glass);
   border: 1px solid var(--border);
   border-radius: var(--radius-md);
   backdrop-filter: blur(14px);
-  overflow: hidden;
-  margin-bottom: 24px;
+  padding: 20px;
+  transition: border-color 0.25s, transform 0.2s;
+  animation: fadeUp 0.4s ease both;
 }
-.invoice-table {
-  width: 100%;
-  border-collapse: collapse;
-}
-.invoice-table th {
-  font-size: 10px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  color: var(--text-muted);
-  padding: 12px 16px;
-  text-align: left;
-  border-bottom: 1px solid var(--border);
-  background: rgba(255,255,255,0.02);
-}
-.invoice-table td {
-  font-size: 13px;
-  color: var(--text-secondary);
-  padding: 12px 16px;
-  border-bottom: 1px solid var(--border);
-  vertical-align: middle;
-}
-.invoice-table tr:last-child td { border-bottom: none; }
-.invoice-table tr:hover td { background: rgba(255,255,255,0.02); }
-.invoice-table .amount {
-  font-family: var(--font-mono);
-  font-weight: 600;
-  color: var(--text-primary);
-  white-space: nowrap;
-}
-.invoice-table .direction-badge {
-  display: inline-flex;
+.post-card:hover { border-color: rgba(167,139,250,0.18); transform: translateY(-1px); }
+
+.post-header {
+  display: flex;
   align-items: center;
-  gap: 4px;
-  font-size: 11px;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+.post-sender {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.post-avatar {
+  width: 36px; height: 36px; border-radius: 50%;
+  background: linear-gradient(135deg, #00d4ff, #a78bfa);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px; font-weight: 600; flex-shrink: 0; color: #06121a;
+}
+.post-author {
+  font-size: 14px; font-weight: 600; color: var(--text-primary);
+}
+.post-to {
+  font-size: 12px; color: var(--text-muted);
+}
+.post-to strong { color: var(--text-secondary); font-weight: 500; }
+.post-date {
+  font-size: 11px; color: var(--text-muted);
+  font-family: var(--font-mono);
+}
+.post-title {
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 6px;
+  line-height: 1.3;
+}
+.post-desc {
+  font-size: 13.5px;
+  color: var(--text-secondary);
+  line-height: 1.7;
+  white-space: pre-wrap;
+}
+
+.post-badge {
+  display: inline-block;
+  font-size: 10px;
   font-weight: 600;
   padding: 2px 8px;
   border-radius: 20px;
   font-family: var(--font-mono);
+  margin-bottom: 8px;
 }
-.direction-badge.sent { background: rgba(0,212,255,0.1); color: var(--accent); border: 1px solid rgba(0,212,255,0.2); }
-.direction-badge.received { background: rgba(6,214,207,0.1); color: var(--accent5); border: 1px solid rgba(6,214,207,0.2); }
-.direction-badge.self { background: rgba(167,139,250,0.1); color: var(--accent2); border: 1px solid rgba(167,139,250,0.2); }
+.post-badge.sent { background: rgba(0,212,255,0.1); color: var(--accent); border: 1px solid rgba(0,212,255,0.2); }
+.post-badge.received { background: rgba(6,214,207,0.1); color: var(--accent5); border: 1px solid rgba(6,214,207,0.2); }
+.post-badge.self { background: rgba(167,139,250,0.1); color: var(--accent2); border: 1px solid rgba(167,139,250,0.2); }
 
-.empty-state { text-align: center; padding: 48px 20px; }
-.empty-state-icon { font-size: 40px; margin-bottom: 10px; }
-.empty-state-title { font-size: 18px; font-weight: 600; color: var(--text-primary); margin-bottom: 6px; }
-.empty-state-text { font-size: 13px; color: var(--text-muted); max-width: 320px; margin: 0 auto; line-height: 1.6; }
+.empty-state {
+  text-align: center; padding: 48px 20px;
+  background: var(--glass);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  backdrop-filter: blur(14px);
+}
+.empty-state-icon { font-size: 36px; margin-bottom: 10px; }
+.empty-state-title { font-size: 17px; font-weight: 600; color: var(--text-primary); margin-bottom: 6px; }
+.empty-state-text { font-size: 13px; color: var(--text-muted); max-width: 300px; margin: 0 auto; line-height: 1.6; }
 
 /* ── Modal ── */
 .modal-overlay {
@@ -315,26 +302,26 @@ svg { display: block; }
   background: var(--bg-card);
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
-  padding: 32px;
+  padding: 28px;
   width: 100%;
-  max-width: 460px;
+  max-width: 440px;
   animation: scaleIn 0.25s ease;
   max-height: 90vh;
   overflow-y: auto;
 }
 .modal-box h2 {
-  font-size: 20px;
+  font-size: 19px;
   font-weight: 700;
-  margin-bottom: 4px;
+  margin-bottom: 3px;
 }
 .modal-box .modal-sub {
   font-size: 13px;
   color: var(--text-secondary);
-  margin-bottom: 24px;
+  margin-bottom: 20px;
 }
 .modal-close {
   float: right;
-  width: 32px; height: 32px;
+  width: 30px; height: 30px;
   border-radius: 8px;
   border: 1px solid var(--border);
   background: transparent;
@@ -346,13 +333,13 @@ svg { display: block; }
 }
 .modal-close:hover { color: var(--text-primary); border-color: rgba(255,255,255,0.15); }
 
-.form-group { margin-bottom: 16px; }
+.form-group { margin-bottom: 14px; }
 .form-group label {
   display: block;
   font-size: 12px;
   font-weight: 500;
   color: var(--text-secondary);
-  margin-bottom: 5px;
+  margin-bottom: 4px;
 }
 .form-group input,
 .form-group textarea {
@@ -369,22 +356,22 @@ svg { display: block; }
 }
 .form-group input:focus,
 .form-group textarea:focus { border-color: rgba(0,212,255,0.4); }
-.form-group textarea { resize: vertical; min-height: 70px; }
+.form-group textarea { resize: vertical; min-height: 60px; }
 .form-group .char-count {
   text-align: right;
   font-size: 11px;
   color: var(--text-muted);
-  margin-top: 3px;
+  margin-top: 2px;
   font-family: var(--font-mono);
 }
 .form-group .char-count.over { color: var(--accent3); }
-.form-row { display: flex; gap: 12px; }
+.form-row { display: flex; gap: 10px; }
 .form-row .form-group { flex: 1; }
 
 .modal-actions {
   display: flex;
   gap: 10px;
-  margin-top: 20px;
+  margin-top: 16px;
   justify-content: flex-end;
 }
 .modal-actions .btn-primary,
@@ -415,15 +402,10 @@ svg { display: block; }
   .topbar-mobile-logo { display: flex; }
   .topbar { padding: 12px 14px; }
   .section-wrap { padding: 0 20px 40px; }
-  .invoice-summary { grid-template-columns: 1fr; }
-  .invoice-hero { padding: 28px 20px 20px; }
-  .invoice-toolbar { flex-direction: column; align-items: stretch; }
-  .invoice-search { max-width: 100%; }
+  .hero { padding: 24px 20px 16px; }
+  .toolbar { flex-direction: column; align-items: stretch; }
+  .search-box { max-width: 100%; }
   .form-row { flex-direction: column; gap: 0; }
-}
-@media (max-width: 600px) {
-  .invoice-table th:nth-child(3),
-  .invoice-table td:nth-child(3) { display: none; }
 }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
@@ -545,72 +527,40 @@ a:focus-visible, button:focus-visible, [tabindex]:focus-visible { outline: 2px s
   </div>
 
   <div class="content" id="content">
-    <div class="invoice-hero reveal">
-      <div class="invoice-hero-badge">📄 Student Invoices</div>
-      <h1>Send &amp; View <span class="gradient">Invoices</span></h1>
-      <p>Send invoices to other students and see invoices sent to you. No payments — just records.</p>
+    <div class="hero reveal">
+      <div class="hero-badge">📄 Invoice Board</div>
+      <h1>Send &amp; Receive <span class="gradient">Invoice Posts</span></h1>
+      <p>Post invoices for other students and see what others have sent you. Simple notice-style, no payments.</p>
     </div>
 
     <div class="section-wrap">
-      <div class="invoice-summary reveal reveal-delay-1">
-        <div class="invoice-stat">
-          <div class="invoice-stat-icon">📄</div>
-          <div class="invoice-stat-value" id="totalInvoices">0</div>
-          <div class="invoice-stat-label">Total</div>
-        </div>
-        <div class="invoice-stat">
-          <div class="invoice-stat-icon">↗️</div>
-          <div class="invoice-stat-value" id="sentCount">0</div>
-          <div class="invoice-stat-label">Sent by you</div>
-        </div>
-        <div class="invoice-stat">
-          <div class="invoice-stat-icon">↙️</div>
-          <div class="invoice-stat-value" id="receivedCount">0</div>
-          <div class="invoice-stat-label">Received</div>
-        </div>
-      </div>
-
-      <div class="invoice-toolbar reveal reveal-delay-2">
-        <div class="invoice-search">
-          <input type="text" id="invoiceSearch" placeholder="Search invoices..." oninput="filterInvoices()" />
+      <div class="toolbar reveal">
+        <div class="search-box">
+          <input type="text" id="invoiceSearch" placeholder="Search by name, title..." oninput="filterPosts()" />
         </div>
         <button class="btn-primary" onclick="openCreateModal()">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-          New Invoice
+          New Post
         </button>
       </div>
 
-      <div class="invoice-table-wrap reveal reveal-delay-2" id="invoiceTableWrap">
-        <table class="invoice-table">
-          <thead>
-            <tr>
-              <th>#</th>
-              <th>Date</th>
-              <th>From / To</th>
-              <th>Description</th>
-              <th>Amount</th>
-              <th></th>
-            </tr>
-          </thead>
-          <tbody id="invoiceBody">
-          </tbody>
-        </table>
-        <div class="empty-state" id="invoiceEmpty" style="display:none;">
-          <div class="empty-state-icon">📄</div>
-          <div class="empty-state-title">No invoices yet</div>
-          <div class="empty-state-text">Create an invoice to send to another student, or wait for someone to send one to you.</div>
-        </div>
+      <div class="post-feed" id="postFeed"></div>
+
+      <div class="empty-state" id="emptyState" style="display:none;">
+        <div class="empty-state-icon">📄</div>
+        <div class="empty-state-title">No invoices yet</div>
+        <div class="empty-state-text">Click "New Post" to send an invoice to another student. Invoices sent to you will also show up here.</div>
       </div>
     </div>
   </div>
 </main>
 
-<!-- Create Invoice Modal -->
+<!-- Create Modal -->
 <div class="modal-overlay" id="createModal">
   <div class="modal-box">
     <button class="modal-close" onclick="closeCreateModal()">✕</button>
-    <h2>New Invoice</h2>
-    <p class="modal-sub">Send an invoice to another student. Description is limited to 200 characters.</p>
+    <h2>New Invoice Post</h2>
+    <p class="modal-sub">Send an invoice notice to another student. Max 200 characters for description.</p>
     <div class="form-row">
       <div class="form-group">
         <label>Recipient Name</label>
@@ -623,53 +573,16 @@ a:focus-visible, button:focus-visible, [tabindex]:focus-visible { outline: 2px s
     </div>
     <div class="form-group">
       <label>Title</label>
-      <input type="text" id="invTitle" placeholder="e.g. Tuition fee - June" maxlength="80" />
+      <input type="text" id="invTitle" placeholder="e.g. Tuition fee notice" maxlength="80" />
     </div>
     <div class="form-group">
       <label>Description</label>
-      <textarea id="invDescription" placeholder="Brief description..." maxlength="200" oninput="updateCharCount()"></textarea>
+      <textarea id="invDescription" placeholder="Brief description (max 200 characters)..." maxlength="200" oninput="updateCharCount()"></textarea>
       <div class="char-count" id="charCount">0 / 200</div>
-    </div>
-    <div class="form-group">
-      <label>Amount (₹)</label>
-      <input type="number" id="invAmount" placeholder="0" min="0" />
     </div>
     <div class="modal-actions">
       <button class="btn-secondary" onclick="closeCreateModal()">Cancel</button>
-      <button class="btn-primary" id="createBtn" onclick="createInvoice()">Create Invoice</button>
-    </div>
-  </div>
-</div>
-
-<!-- View Invoice Modal -->
-<div class="modal-overlay" id="viewModal">
-  <div class="modal-box">
-    <button class="modal-close" onclick="closeViewModal()">✕</button>
-    <h2 id="viewTitle">Invoice</h2>
-    <p class="modal-sub" id="viewSub">Invoice details</p>
-    <div style="background:var(--bg-input);border-radius:var(--radius-md);padding:20px;margin-bottom:16px;">
-      <div style="display:flex;justify-content:space-between;margin-bottom:12px;">
-        <div>
-          <div style="font-size:11px;color:var(--text-muted);margin-bottom:2px;">From</div>
-          <div style="font-size:14px;font-weight:600;" id="viewFrom">—</div>
-        </div>
-        <div style="text-align:right;">
-          <div style="font-size:11px;color:var(--text-muted);margin-bottom:2px;">To</div>
-          <div style="font-size:14px;font-weight:600;" id="viewTo">—</div>
-        </div>
-      </div>
-      <div style="margin-bottom:12px;">
-        <div style="font-size:11px;color:var(--text-muted);margin-bottom:2px;">Description</div>
-        <div style="font-size:13px;line-height:1.6;" id="viewDesc">—</div>
-      </div>
-      <div>
-        <div style="font-size:11px;color:var(--text-muted);margin-bottom:2px;">Amount</div>
-        <div style="font-size:24px;font-weight:700;font-family:var(--font-mono);color:var(--text-primary);" id="viewAmount">₹0</div>
-      </div>
-    </div>
-    <div style="font-size:12px;color:var(--text-muted);" id="viewMeta"></div>
-    <div class="modal-actions">
-      <button class="btn-secondary" onclick="closeViewModal()">Close</button>
+      <button class="btn-primary" id="createBtn" onclick="createInvoice()">Post</button>
     </div>
   </div>
 </div>
@@ -705,16 +618,15 @@ document.addEventListener('DOMContentLoaded', function() {
 import { auth, db } from "./firebase-config.js";
 import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 import {
-  collection, query, where, orderBy, getDocs,
-  addDoc, serverTimestamp, Timestamp
+  collection, query, orderBy, getDocs,
+  addDoc, serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 import { getUserPlan } from "./subscription.js";
 
 let currentUser = null;
-let invoices = [];
+let posts = [];
 let filtered = [];
 
-/* ── Auth ── */
 const authInstance = auth || getAuth();
 onAuthStateChanged(authInstance, async (user) => {
   if (!user) { window.location.href = "login.html"; return; }
@@ -723,13 +635,13 @@ onAuthStateChanged(authInstance, async (user) => {
   document.getElementById("userName").textContent = name;
   const avatar = document.getElementById("userAvatar");
   if (user.photoURL) {
-    avatar.innerHTML = `<img src="${user.photoURL}" alt="${name.replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}" />`;
+    avatar.innerHTML = `<img src="${user.photoURL}" alt="${esc(name)}" />`;
   } else {
     avatar.textContent = name.charAt(0).toUpperCase();
   }
   const plan = await getUserPlan(user.uid, user);
   document.getElementById("userPlan").textContent = plan === "pro" ? "✨ Aquila Pro" : "Free Plan";
-  await loadInvoices();
+  await loadPosts();
 });
 
 document.getElementById("signOutBtn").onclick = async () => {
@@ -737,73 +649,26 @@ document.getElementById("signOutBtn").onclick = async () => {
   window.location.href = "login.html";
 };
 
-/* ── Load invoices ── */
-async function loadInvoices() {
-  const q = query(
-    collection(db, "invoices"),
-    orderBy("createdAt", "desc")
-  );
-  const snap = await getDocs(q);
-  invoices = [];
-  snap.forEach(doc => {
-    const d = doc.data();
-    invoices.push({ id: doc.id, ...d });
-  });
-  filtered = [...invoices];
-  render();
-}
-
-/* ── Render ── */
-function render() {
-  const tbody = document.getElementById('invoiceBody');
-  const empty = document.getElementById('invoiceEmpty');
-
-  if (filtered.length === 0) {
-    tbody.innerHTML = '';
-    empty.style.display = 'block';
-    document.querySelector('.invoice-table thead').style.display = 'none';
-  } else {
-    empty.style.display = 'none';
-    document.querySelector('.invoice-table thead').style.display = '';
-    tbody.innerHTML = filtered.map((inv, i) => {
-      const isSent = inv.senderEmail === currentUser?.email;
-      const isReceived = inv.recipientEmail === currentUser?.email;
-      let direction, dirLabel;
-      if (isSent && isReceived) {
-        direction = 'self';
-        dirLabel = 'To self';
-      } else if (isSent) {
-        direction = 'sent';
-        dirLabel = 'Sent to ' + (inv.recipientName || inv.recipientEmail);
-      } else if (isReceived) {
-        direction = 'received';
-        dirLabel = 'From ' + (inv.senderName || inv.senderEmail);
-      } else {
-        direction = '';
-        dirLabel = '';
+async function loadPosts() {
+  try {
+    const q = query(
+      collection(db, "invoices"),
+      orderBy("createdAt", "desc")
+    );
+    const snap = await getDocs(q);
+    posts = [];
+    snap.forEach(doc => {
+      const d = doc.data();
+      if (d.createdAt?.toDate) {
+        posts.push({ id: doc.id, ...d });
       }
-      const date = inv.createdAt?.toDate
-        ? inv.createdAt.toDate().toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })
-        : '—';
-      return `<tr>
-        <td><strong style="color:var(--text-primary);font-family:var(--font-mono);font-size:12px;">${'#' + (i + 1)}</strong></td>
-        <td style="font-size:12px;">${date}</td>
-        <td>${direction ? '<span class="direction-badge ' + direction + '">' + dirLabel + '</span>' : '<span style="color:var(--text-muted);font-size:12px;">—</span>'}</td>
-        <td style="max-width:200px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${esc(inv.title || '')}${inv.description ? ' — ' + esc(inv.description) : ''}</td>
-        <td class="amount">₹${inv.amount ?? 0}</td>
-        <td>
-          <button class="invoice-action-btn view" onclick="viewInvoice('${inv.id}')" style="padding:5px 10px;font-size:11px;font-family:var(--font-main);border-radius:6px;cursor:pointer;transition:all 0.15s;border:1px solid var(--border);background:transparent;color:var(--text-muted);">View</button>
-        </td>
-      </tr>`;
-    }).join('');
+    });
+  } catch (e) {
+    showToast("Permission error: " + e.message, true);
+    posts = [];
   }
-
-  const total = invoices.length;
-  const sent = invoices.filter(i => i.senderEmail === currentUser?.email).length;
-  const received = invoices.filter(i => i.recipientEmail === currentUser?.email).length;
-  document.getElementById('totalInvoices').textContent = total;
-  document.getElementById('sentCount').textContent = sent;
-  document.getElementById('receivedCount').textContent = received;
+  filtered = [...posts];
+  render();
 }
 
 function esc(s) {
@@ -811,16 +676,68 @@ function esc(s) {
   return s.replace(/[&<>"']/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' })[c]);
 }
 
-window.filterInvoices = function() {
+function render() {
+  const feed = document.getElementById('postFeed');
+  const empty = document.getElementById('emptyState');
+
+  if (filtered.length === 0) {
+    feed.innerHTML = '';
+    empty.style.display = 'block';
+    return;
+  }
+
+  empty.style.display = 'none';
+  feed.innerHTML = filtered.map((post, i) => {
+    const isSent = post.senderEmail === currentUser?.email;
+    const isReceived = post.recipientEmail === currentUser?.email;
+    let badge, badgeLabel;
+    if (isSent && isReceived) {
+      badge = 'self';
+      badgeLabel = 'To yourself';
+    } else if (isSent) {
+      badge = 'sent';
+      badgeLabel = 'Sent to ' + (post.recipientName || post.recipientEmail);
+    } else if (isReceived) {
+      badge = 'received';
+      badgeLabel = 'From ' + (post.senderName || post.senderEmail);
+    } else {
+      badge = '';
+      badgeLabel = '';
+    }
+
+    const date = post.createdAt?.toDate
+      ? post.createdAt.toDate().toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })
+      : '—';
+
+    const senderInitial = (post.senderName || post.senderEmail || '?')[0].toUpperCase();
+
+    return `<div class="post-card" style="animation-delay:${i * 0.05}s">
+      ${badge ? '<span class="post-badge ' + badge + '">' + badgeLabel + '</span>' : ''}
+      <div class="post-header">
+        <div class="post-sender">
+          <div class="post-avatar">${senderInitial}</div>
+          <div>
+            <div class="post-author">${esc(post.senderName || post.senderEmail)}</div>
+            <div class="post-to">→ <strong>${esc(post.recipientName || post.recipientEmail)}</strong></div>
+          </div>
+        </div>
+        <div class="post-date">${date}</div>
+      </div>
+      <div class="post-title">${esc(post.title || '')}</div>
+      ${post.description ? '<div class="post-desc">' + esc(post.description) + '</div>' : ''}
+    </div>`;
+  }).join('');
+}
+
+window.filterPosts = function() {
   const q = document.getElementById('invoiceSearch').value.toLowerCase();
-  filtered = invoices.filter(inv =>
-    (inv.title || '').toLowerCase().includes(q) ||
-    (inv.description || '').toLowerCase().includes(q) ||
-    (inv.recipientName || '').toLowerCase().includes(q) ||
-    (inv.senderName || '').toLowerCase().includes(q) ||
-    (inv.recipientEmail || '').toLowerCase().includes(q) ||
-    (inv.senderEmail || '').toLowerCase().includes(q) ||
-    ('' + (inv.amount ?? '')).includes(q)
+  filtered = posts.filter(p =>
+    (p.title || '').toLowerCase().includes(q) ||
+    (p.description || '').toLowerCase().includes(q) ||
+    (p.recipientName || '').toLowerCase().includes(q) ||
+    (p.senderName || '').toLowerCase().includes(q) ||
+    (p.recipientEmail || '').toLowerCase().includes(q) ||
+    (p.senderEmail || '').toLowerCase().includes(q)
   );
   render();
 };
@@ -832,7 +749,7 @@ window.openCreateModal = function() {
 };
 window.closeCreateModal = function() {
   document.getElementById('createModal').classList.remove('open');
-  ['invRecipientName','invRecipientEmail','invTitle','invDescription','invAmount'].forEach(id => {
+  ['invRecipientName','invRecipientEmail','invTitle','invDescription'].forEach(id => {
     document.getElementById(id).value = '';
   });
 };
@@ -853,66 +770,31 @@ window.createInvoice = async function() {
   const recipientEmail = document.getElementById('invRecipientEmail').value.trim();
   const title = document.getElementById('invTitle').value.trim();
   const description = document.getElementById('invDescription').value.trim();
-  const amount = parseFloat(document.getElementById('invAmount').value) || 0;
 
-  if (!recipientEmail) {
-    showToast('Please enter recipient email', true);
-    btn.disabled = false;
-    return;
-  }
-  if (!title) {
-    showToast('Please enter a title', true);
-    btn.disabled = false;
-    return;
-  }
-  if (description.length > 200) {
-    showToast('Description exceeds 200 characters', true);
-    btn.disabled = false;
-    return;
-  }
+  if (!recipientEmail) { showToast('Please enter recipient email', true); btn.disabled = false; return; }
+  if (!title) { showToast('Please enter a title', true); btn.disabled = false; return; }
+  if (description.length > 200) { showToast('Description exceeds 200 characters', true); btn.disabled = false; return; }
 
   try {
-    await addDoc(collection(db, "invoices"), {
+    const data = {
       senderEmail: currentUser.email,
       senderName: currentUser.displayName || currentUser.email?.split('@')[0] || 'Unknown',
       recipientName,
       recipientEmail,
       title,
-      description,
-      amount,
+      description: description || '',
       createdAt: serverTimestamp()
-    });
-    showToast('Invoice created successfully');
+    };
+    await addDoc(collection(db, "invoices"), data);
+    showToast('Posted successfully');
     closeCreateModal();
-    await loadInvoices();
+    await loadPosts();
   } catch (e) {
-    showToast('Error creating invoice: ' + e.message, true);
+    showToast('Error: ' + e.message, true);
   }
   btn.disabled = false;
 };
 
-/* ── View modal ── */
-window.viewInvoice = function(id) {
-  const inv = invoices.find(i => i.id === id);
-  if (!inv) return;
-  document.getElementById('viewTitle').textContent = esc(inv.title || 'Invoice');
-  document.getElementById('viewSub').textContent = 'Invoice ' + esc(inv.senderName) + ' → ' + esc(inv.recipientName || inv.recipientEmail);
-  document.getElementById('viewFrom').textContent = esc(inv.senderName || inv.senderEmail);
-  document.getElementById('viewTo').textContent = esc(inv.recipientName || inv.recipientEmail);
-  document.getElementById('viewDesc').textContent = esc(inv.description || 'No description');
-  document.getElementById('viewAmount').textContent = '₹' + (inv.amount ?? 0);
-  const date = inv.createdAt?.toDate
-    ? 'Created: ' + inv.createdAt.toDate().toLocaleDateString('en-IN', { day: '2-digit', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' })
-    : '';
-  document.getElementById('viewMeta').textContent = date;
-  document.getElementById('viewModal').classList.add('open');
-};
-
-window.closeViewModal = function() {
-  document.getElementById('viewModal').classList.remove('open');
-};
-
-/* ── Toast ── */
 function showToast(msg, isError = false) {
   const t = document.getElementById('toast');
   t.textContent = msg;
@@ -921,12 +803,8 @@ function showToast(msg, isError = false) {
   setTimeout(() => t.classList.remove('show'), 3200);
 }
 
-/* ── Close modals on overlay click ── */
 document.getElementById('createModal').addEventListener('click', function(e) {
   if (e.target === this) closeCreateModal();
-});
-document.getElementById('viewModal').addEventListener('click', function(e) {
-  if (e.target === this) closeViewModal();
 });
 </script>
 
