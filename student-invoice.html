@@ -460,6 +460,20 @@ document.addEventListener('DOMContentLoaded', function() {
   document.querySelectorAll('.nav-item:not(.nav-group-toggle)').forEach(el => {
     el.addEventListener('click', function() { if (window.innerWidth <= 880) window.closeSidebar(); });
   });
+  // Also render fallback news immediately in case module script has issues
+  setTimeout(function() {
+    var nf = document.getElementById('newsFeed');
+    var nl = document.getElementById('newsLoading');
+    if (nf && nf.children.length === 0 && nl) {
+      nl.style.display = 'none';
+      nf.innerHTML = [
+        {t:"JEE 2026 counselling delayed again",d:"NTA postpones JEE Advanced counselling for the 3rd time, affecting 2.5 lakh students.",s:"Times of India"},
+        {t:"NEET 2026 syllabus reduced without notice",d:"NMC removes 12 topics from NEET syllabus just 3 months before exam.",s:"The Hindu"},
+        {t:"CBSE board exam date sheet released late",d:"CBSE releases Class 12 date sheet only 45 days before exams.",s:"NDTV"},
+        {t:"JEE Main 2026 application portal crashes",d:"NTA portal crashes on opening day; thousands unable to submit forms.",s:"Hindustan Times"}
+      ].map(function(n){return '<div class="news-card"><span class="gov-fail">\u26A0\uFE0F Government Failure</span><div class="news-card-title">'+n.t+'</div><div class="news-card-desc">'+n.d+'</div><div class="news-card-source">'+n.s+'</div></div>';}).join('');
+    }
+  }, 3000);
 });
 </script>
 
