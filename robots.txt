@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://aquila-sand.vercel.app/sitemap.xml
+Sitemap: https://aquila-ai.vercel.app/sitemap.xml
