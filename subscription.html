@@ -671,7 +671,7 @@
     document.getElementById('userName').textContent = user.displayName || user.email;
     document.getElementById('userAvatar').textContent = (user.displayName || user.email || 'G')[0].toUpperCase();
     if (user.photoURL) {
-      document.getElementById('userAvatar').innerHTML = `<img src="${user.photoURL}" alt="avatar" />`;
+      document.getElementById('userAvatar').innerHTML = `<img src="${user.photoURL.replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c])}" alt="avatar" />`;
     }
 
     const plan = await import('./subscription.js').then(m => m.getUserPlan(user.uid, user));
