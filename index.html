@@ -5,7 +5,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <meta name="google-site-verification" content="QjBlgyH6XzD8rehRkb-vkXlhlXw9cNO6MMUfFW6GAis" />
-<meta http-equiv="Content-Security-Policy" content="default-src 'self' https:; script-src 'self' 'unsafe-inline' https://www.gstatic.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://www.googletagmanager.com https://esm.sh; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: https:; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://firestore.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://analytics.vercel.com; object-src 'none'; frame-src 'none';">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self' https:; script-src 'self' 'unsafe-inline' https://www.gstatic.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://www.googletagmanager.com https://esm.sh; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: https:; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://firestore.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://analytics.vercel.com; media-src 'self' https: blob:; object-src 'none'; frame-src 'none';">
 
 <title>Aquila AI – AI Study Assistant & Tutor for JEE, NEET, Boards</title>
 
@@ -135,36 +135,53 @@
   .navbar {
     width: 100%;
     max-width: 1280px;
-    height: 68px;
+    height: 72px;
     background: var(--nb-bg);
     border: 1px solid var(--nb-border);
-    border-radius: 16px;
-    backdrop-filter: blur(20px) saturate(1.8);
-    -webkit-backdrop-filter: blur(20px);
+    border-radius: 18px;
+    backdrop-filter: blur(24px) saturate(1.8);
+    -webkit-backdrop-filter: blur(24px);
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 0 24px;
+    padding: 0 20px 0 12px;
     position: sticky;
-    top: 14px;
-    margin: 14px 16px 0;
+    top: 16px;
+    margin: 16px 16px 0;
     z-index: 50;
-    overflow: hidden;
     animation: navSlide 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
-    box-shadow: 0 8px 30px rgba(0,0,0,0.35);
+    box-shadow:
+      0 8px 30px rgba(0,0,0,0.35),
+      0 0 60px rgba(0,212,255,0.03);
+    transition: border-color 0.3s, box-shadow 0.3s;
+  }
+
+  .navbar:hover {
+    border-color: rgba(0,212,255,0.12);
+    box-shadow:
+      0 8px 30px rgba(0,0,0,0.35),
+      0 0 60px rgba(0,212,255,0.06);
   }
 
   @keyframes navSlide {
-    from { opacity: 0; transform: translateY(-24px); }
-    to   { opacity: 1; transform: translateY(0); }
+    from { opacity: 0; transform: translateY(-28px) scale(0.98); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
   }
 
-  .navbar::before {
+  .navbar-scan {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    pointer-events: none;
+    border-radius: 18px;
+  }
+
+  .navbar-scan::before {
     content: '';
     position: absolute;
     top: 0; left: -100%; width: 60%; height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(0,212,255,0.05), transparent);
-    animation: scan 6s ease-in-out infinite;
+    background: linear-gradient(90deg, transparent, rgba(0,212,255,0.06), transparent);
+    animation: scan 7s ease-in-out infinite;
   }
 
   @keyframes scan {
@@ -172,20 +189,44 @@
     100% { left: 160%; }
   }
 
-  .navbar::after {
-    content: '';
+  .navbar-glow {
     position: absolute;
-    bottom: 0; left: 8%; right: 8%;
-    height: 1px;
-    background: linear-gradient(90deg, transparent 0%, var(--cyan) 30%, var(--violet) 60%, transparent 100%);
+    bottom: -1px; left: 0; right: 0;
+    height: 24px;
+    background:
+      radial-gradient(50% 20px at 50% 0%, rgba(0,212,255,0.20) 0%, transparent 100%),
+      radial-gradient(50% 20px at 20% 0%, rgba(167,139,250,0.12) 0%, transparent 100%),
+      radial-gradient(50% 20px at 80% 0%, rgba(0,212,255,0.10) 0%, transparent 100%);
     opacity: 0;
-    animation: lineReveal 1s 0.6s cubic-bezier(0.16,1,0.3,1) forwards;
-    filter: blur(0.5px);
+    animation: glowReveal 1s 0.5s cubic-bezier(0.16,1,0.3,1) forwards;
+    pointer-events: none;
+    z-index: -1;
   }
 
-  @keyframes lineReveal {
-    from { opacity: 0; transform: scaleX(0); transform-origin: left; }
-    to   { opacity: 0.6; transform: scaleX(1); }
+  @keyframes glowReveal {
+    from { opacity: 0; transform: scaleY(0); transform-origin: top; }
+    to   { opacity: 1; transform: scaleY(1); }
+  }
+
+  .navbar-curve-svg {
+    position: absolute;
+    bottom: -18px;
+    left: 0;
+    width: 100%;
+    height: 18px;
+    z-index: -1;
+    opacity: 0;
+    animation: curveReveal 1s 0.5s cubic-bezier(0.16,1,0.3,1) forwards;
+  }
+
+  .navbar-curve-svg path {
+    fill: var(--nb-bg);
+    filter: drop-shadow(0 4px 12px rgba(0,0,0,0.3));
+  }
+
+  @keyframes curveReveal {
+    from { opacity: 0; transform: scaleY(0); transform-origin: top; }
+    to   { opacity: 1; transform: scaleY(1); }
   }
 
   .logo {
@@ -204,14 +245,18 @@
     border-radius: 9px;
   }
 
-  .logo-icon svg {
-    width: 100%; height: 100%;
-    transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+  .logo-img {
+    height: 38px;
+    width: auto;
+    transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    filter: brightness(1) drop-shadow(0 0 8px rgba(0,212,255,0.15));
   }
 
-  .logo:hover .logo-icon svg { transform: rotate(90deg) scale(1.08); }
+  .logo:hover .logo-img {
+    transform: scale(1.06) rotate(-2deg);
+    filter: brightness(1.1) drop-shadow(0 0 12px rgba(0,212,255,0.3));
+  }
 
-  .logo-img { height: 34px; width: auto; }
   .logo-text {
     font-family: 'Sora', sans-serif;
     font-weight: 700;
@@ -223,6 +268,45 @@
     background-clip: text;
   }
 
+  .nav-center {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    animation: fadeUp 0.6s 0.2s both;
+  }
+
+  .nav-center a {
+    padding: 8px 14px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--muted);
+    text-decoration: none;
+    border-radius: 8px;
+    transition: all 0.22s;
+    letter-spacing: 0.01em;
+    position: relative;
+  }
+
+  .nav-center a:hover {
+    color: var(--text);
+    background: rgba(255,255,255,0.04);
+  }
+
+  .nav-center a::after {
+    content: '';
+    position: absolute;
+    bottom: 4px; left: 50%;
+    width: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--cyan), var(--violet));
+    border-radius: 2px;
+    transform: translateX(-50%);
+    transition: width 0.25s cubic-bezier(0.16,1,0.3,1);
+    filter: blur(0.5px);
+  }
+
+  .nav-center a:hover::after { width: 60%; }
+
   @keyframes fadeUp {
     from { opacity: 0; transform: translateY(10px); }
     to   { opacity: 1; transform: translateY(0); }
@@ -231,7 +315,7 @@
   .nav-actions {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 8px;
     animation: fadeUp 0.6s 0.3s both;
   }
 
@@ -255,7 +339,7 @@
     align-items: center;
     gap: 6px;
     padding: 8px 18px;
-    border-radius: 9px;
+    border-radius: 10px;
     width: 100%;
     height: 100%;
   }
@@ -274,9 +358,9 @@
   .btn-cta a {
     font-weight: 600;
     color: #06121a;
-    background: var(--cyan);
+    background: linear-gradient(135deg, var(--cyan) 0%, #00e5ff 100%);
     padding: 9px 22px;
-    border-radius: 9px;
+    border-radius: 10px;
     position: relative;
     overflow: hidden;
   }
@@ -284,7 +368,7 @@
   .btn-cta {
     position: relative;
     overflow: hidden;
-    border-radius: 9px;
+    border-radius: 10px;
   }
 
   .btn-cta::before {
@@ -294,6 +378,7 @@
     background: linear-gradient(135deg, rgba(255,255,255,0.25) 0%, transparent 60%);
     pointer-events: none;
     z-index: 1;
+    border-radius: 10px;
   }
 
   .btn-cta::after {
@@ -320,7 +405,7 @@
     display: flex; align-items: center; justify-content: center;
     background: rgba(255,255,255,0.04);
     border: 1px solid rgba(255,255,255,0.08);
-    border-radius: 9px;
+    border-radius: 10px;
     cursor: pointer;
     color: var(--muted);
     font-size: 16px;
@@ -347,29 +432,56 @@
     isolation: isolate;
   }
 
-  .hero-canvas-layer {
+  .hero-video-bg {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    opacity: 0;
+    animation: videoFadeIn 1.5s 0.3s cubic-bezier(0.16,1,0.3,1) forwards;
+  }
+
+  @keyframes videoFadeIn {
+    from { opacity: 0; transform: scale(1.05); }
+    to   { opacity: 0.45; transform: scale(1); }
+  }
+
+  .hero-video-overlay {
     position: absolute;
     inset: 0;
     z-index: 1;
+    background:
+      linear-gradient(to bottom, rgba(5,6,9,0.6) 0%, transparent 30%, transparent 60%, rgba(5,6,9,0.8) 100%);
+  }
+
+  .hero-canvas-layer {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
     display: block;
     width: 100%;
     height: 100%;
+    opacity: 0.6;
+    transition: opacity 0.8s;
   }
 
   .hero-vignette {
     position: absolute;
     inset: 0;
-    z-index: 2;
+    z-index: 3;
     pointer-events: none;
     background:
-      radial-gradient(ellipse 70% 60% at 50% 38%, transparent 0%, transparent 40%, rgba(5,6,9,0.55) 78%, rgba(5,6,9,0.92) 100%),
-      linear-gradient(to bottom, rgba(5,6,9,0.55) 0%, transparent 16%, transparent 72%, rgba(5,6,9,0.9) 100%);
+      radial-gradient(ellipse 70% 60% at 50% 38%, transparent 0%, transparent 40%, rgba(5,6,9,0.45) 78%, rgba(5,6,9,0.88) 100%),
+      linear-gradient(to bottom, rgba(5,6,9,0.5) 0%, transparent 16%, transparent 72%, rgba(5,6,9,0.85) 100%);
   }
 
   .hero-grain {
     position: absolute;
     inset: 0;
-    z-index: 3;
+    z-index: 4;
     pointer-events: none;
     opacity: 0.035;
     mix-blend-mode: overlay;
@@ -378,7 +490,7 @@
 
   .hero-content {
     position: relative;
-    z-index: 5;
+    z-index: 6;
     width: 100%;
     max-width: 1280px;
     padding: 150px 32px 120px;
@@ -1444,15 +1556,22 @@
     .testimonials-grid { grid-template-columns: 1fr; }
     .pricing-grid { grid-template-columns: 1fr; max-width: 480px; }
     .discord-inner { padding: 36px 32px; flex-direction: column; }
+    .navbar-curve-svg { display: none; }
+  }
+
+  @media (max-width: 860px) {
+    .nav-center { display: none; }
   }
 
   @media (max-width: 640px) {
-    .navbar { margin: 10px 12px 0; padding: 0 12px; height: 60px; }
-    .nav-actions { gap: 8px; }
+    .navbar { margin: 10px 12px 0; padding: 0 10px 0 8px; height: 60px; }
+    .logo-img { height: 32px; }
+    .nav-actions { gap: 6px; }
     .nav-actions .btn-ghost span { display: none; }
     .nav-actions .btn-ghost a { padding: 8px 10px; }
     .nav-actions .btn-cta a { padding: 8px 14px; font-size: 12.5px; }
     .nav-actions .btn-cta span { display: none; }
+    .search-btn { width: 34px; height: 34px; }
     .hero-title { font-size: clamp(30px, 9vw, 42px); }
     .hero-sub { font-size: 15px; padding: 0 4px; }
     .hero-ctas { flex-direction: column; align-items: stretch; gap: 12px; width: 100%; }
@@ -1477,6 +1596,7 @@
     .discord-banner { padding: 0 18px 56px; }
     .discord-inner { padding: 28px 20px; }
     .faq-list { padding: 0; }
+    .navbar-curve-svg { display: none; }
   }
 </style>
 
@@ -1555,9 +1675,21 @@
 
   <header>
     <nav class="navbar" aria-label="Main navigation">
+      <div class="navbar-scan" aria-hidden="true"></div>
+      <div class="navbar-glow" aria-hidden="true"></div>
+      <svg class="navbar-curve-svg" viewBox="0 0 1280 18" preserveAspectRatio="none" aria-hidden="true">
+        <path d="M0,0 Q320,18 640,10 Q960,2 1280,0 L1280,0 L0,0 Z"/>
+      </svg>
+
       <a class="logo" href="/" aria-label="Aquila AI home">
         <img src="logo.png" alt="Aquila AI" class="logo-img">
       </a>
+
+      <div class="nav-center">
+        <a href="#features-heading">Features</a>
+        <a href="#how-heading">How it Works</a>
+        <a href="#pricing">Pricing</a>
+      </div>
 
       <div class="nav-actions">
         <button class="search-btn" aria-label="Search Aquila AI">
@@ -1580,8 +1712,13 @@
   </header>
 
   <main>
-    <!-- ===== HERO (unchanged) ===== -->
+    <!-- ===== HERO ===== -->
     <section class="hero" id="hero" aria-labelledby="hero-heading">
+      <video class="hero-video-bg" autoplay muted loop playsinline poster="logo.png"
+        aria-hidden="true"
+        src="hero-bg.mp4">
+      </video>
+      <div class="hero-video-overlay" aria-hidden="true"></div>
       <canvas class="hero-canvas-layer" id="heroCanvas" aria-hidden="true"></canvas>
       <div class="hero-vignette" aria-hidden="true"></div>
       <div class="hero-grain" aria-hidden="true"></div>
