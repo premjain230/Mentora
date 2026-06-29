@@ -303,9 +303,12 @@
     .usage-grid { grid-template-columns: 1fr; }
     .plans-grid { grid-template-columns: 1fr; }
   }
+@keyframes rippleAnim{to{transform:scale(2);opacity:0;}}
 </style>
 </head>
 <body>
+<div class="ambient-orb orb-1" aria-hidden="true"></div>
+<div class="ambient-orb orb-2" aria-hidden="true"></div>
 
 <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
@@ -684,7 +687,42 @@
     await signOut(auth);
     window.location.href = 'login.html';
   });
+
+/* ── Scroll progress bar ── */
+(function(){
+  var bar = document.createElement('div');
+  bar.className = 'scroll-progress';
+  document.body.prepend(bar);
+  var ticking = false;
+  window.addEventListener('scroll', function(){
+    if(!ticking){ requestAnimationFrame(function(){
+      var h = document.documentElement.scrollHeight - window.innerHeight;
+      bar.style.width = h > 0 ? ((window.scrollY / h) * 100) + '%' : '0%';
+      ticking = false;
+    }); ticking = true; }
+  });
+}());
+
+/* ── Ripple effect ── */
+(function(){
+  var rm = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if(rm) return;
+  document.querySelectorAll('.btn-primary, .btn-secondary, .btn-ghost-nav, .signout-btn, .new-chat-btn, .upgrade-nav-btn, .send-btn').forEach(function(btn){
+    btn.addEventListener('click', function(e){
+      var rp = document.createElement('span');
+      var r = btn.getBoundingClientRect();
+      var s = Math.max(r.width, r.height);
+      rp.style.cssText = 'position:absolute;top:'+(e.clientY-r.top-s/2)+'px;left:'+(e.clientX-r.left-s/2)+'px;width:'+s+'px;height:'+s+'px;border-radius:50%;background:rgba(255,255,255,0.15);transform:scale(0);animation:rippleAnim .5s ease-out;pointer-events:none;z-index:0;';
+      btn.style.position = 'relative';
+      btn.style.overflow = 'hidden';
+      btn.appendChild(rp);
+      setTimeout(function(){ rp.remove(); }, 600);
+    });
+  });
+}());
 </script>
 
 </body>
 </html>
+
+
