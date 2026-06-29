@@ -162,10 +162,6 @@ body::before{
   border-radius:8px;padding:6px 13px;font-size:12.5px;color:var(--text2);font-weight:500;
 }
 .breadcrumb .dot{width:6px;height:6px;border-radius:50%;background:var(--teal);box-shadow:0 0 6px var(--teal);flex-shrink:0}
-.theme-sw{width:40px;height:23px;background:var(--bg2);border:1px solid var(--border);border-radius:12px;cursor:pointer;position:relative;transition:background 0.3s;flex-shrink:0}
-.theme-sw.on{background:var(--cyan);border-color:var(--cyan)}
-.theme-knob{position:absolute;top:2px;left:2px;width:17px;height:17px;border-radius:50%;background:var(--text3);transition:all 0.28s cubic-bezier(0.34,1.56,0.64,1)}
-.theme-sw.on .theme-knob{left:19px;background:#fff}
 
 /* ── SCROLL WRAP ── */
 .scroll{flex:1;overflow-y:auto;display:flex;gap:0;position:relative}
@@ -482,9 +478,6 @@ body::before{
       <div class="breadcrumb"><span class="dot"></span>Community Board</div>
     </div>
     <div class="topbar-r">
-      <div class="theme-sw" id="themeSwitch" role="button" tabindex="0" aria-label="Toggle theme">
-        <div class="theme-knob"></div>
-      </div>
     </div>
   </div>
 
@@ -603,13 +596,6 @@ function toggleGroup(el){
   closeBtn.addEventListener('click',close);
   overlay.addEventListener('click',close);
 
-  const ts=document.getElementById('themeSwitch');
-  if(localStorage.getItem('aquila-theme')!=='dark'){ts.classList.add('on')}
-  ts.addEventListener('click',()=>{
-    const l=document.documentElement.classList.toggle('light-mode');
-    ts.classList.toggle('on',l);
-    localStorage.setItem('aquila-theme',l?'light':'dark');
-  });
 })();
 </script>
 
@@ -699,7 +685,7 @@ onAuthStateChanged(authInst,async user=>{
   const name=user.displayName||user.email?.split("@")[0]||"Guest";
   document.getElementById("userName").textContent=name;
   const av=document.getElementById("userAvatar");
-  if(user.photoURL)av.innerHTML=`<img src="${user.photoURL}" alt="${esc(name)}"/>`;
+  if(user.photoURL)av.innerHTML=`<img src="${esc(user.photoURL)}" alt="${esc(name)}"/>`;
   else av.textContent=name.charAt(0).toUpperCase();
   const plan=await getUserPlan(user.uid,user);
   document.getElementById("userPlan").textContent=plan==="pro"?"✨ Aquila Pro":"Free Plan";
