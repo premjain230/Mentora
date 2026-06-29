@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
-<script>document.documentElement.className=localStorage.getItem('aquila-theme')==='light'?'light-mode':''</script>
+<script>document.documentElement.className=localStorage.getItem('aquila-theme')==='dark'?'':'light-mode'</script>
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
@@ -604,7 +604,7 @@ function toggleGroup(el){
   overlay.addEventListener('click',close);
 
   const ts=document.getElementById('themeSwitch');
-  if(localStorage.getItem('aquila-theme')==='light'){ts.classList.add('on')}
+  if(localStorage.getItem('aquila-theme')!=='dark'){ts.classList.add('on')}
   ts.addEventListener('click',()=>{
     const l=document.documentElement.classList.toggle('light-mode');
     ts.classList.toggle('on',l);
