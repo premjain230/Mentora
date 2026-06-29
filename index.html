@@ -49,7 +49,7 @@
     --mono: 'JetBrains Mono', ui-monospace, monospace;
   }
   .light-mode{
-    --black: #f0f2f6;
+    --black: #f4f5f9;
     --surface: #e8eaf0;
     --surface-2: #ffffff;
     --surface-3: #f4f5f9;
@@ -64,6 +64,54 @@
     --violet-soft: rgba(139,111,224,0.35);
     --spark: #d4902e;
   }
+  .light-mode .navbar{background:rgba(232,234,240,0.85);border-color:var(--line);}
+  .light-mode .navbar.scrolled{background:rgba(244,245,249,0.92);}
+  .light-mode .hero{background:var(--black);}
+  .light-mode .hero-scrim{background:radial-gradient(ellipse 65% 55% at 50% 40%,transparent 0%,transparent 35%,rgba(244,245,249,0.55) 72%,rgba(244,245,249,0.94) 100%),linear-gradient(to bottom,rgba(244,245,249,0.6) 0%,transparent 18%,transparent 68%,rgba(244,245,249,0.96) 100%);}
+  .light-mode .hero-video-layer{opacity:0.2;}
+  .light-mode .hero-canvas-layer{opacity:0.3;}
+  .light-mode .hero-title{color:var(--text);}
+  .light-mode .hero-eyebrow{color:var(--blue);border-color:rgba(79,140,255,0.2);background:rgba(79,140,255,0.06);}
+  .light-mode .gc-label{color:var(--text);}
+  .light-mode .gc-icon{background:rgba(79,140,255,0.08);border-color:rgba(79,140,255,0.15);color:var(--blue);}
+  .light-mode .glass-card:nth-child(2) .gc-icon{background:rgba(155,123,255,0.08);border-color:rgba(155,123,255,0.15);color:var(--violet);}
+  .light-mode .glass-card:nth-child(4) .gc-icon{background:rgba(245,185,92,0.06);border-color:rgba(245,185,92,0.12);color:var(--spark);}
+  .light-mode .glass-card{background:rgba(255,255,255,0.7);border-color:var(--line);}
+  .light-mode .glass-card::before{background:linear-gradient(160deg,rgba(255,255,255,0.8),transparent 50%);}
+  .light-mode .gc-pulse{background:#22c55e;box-shadow:0 0 8px #22c55e;}
+  .light-mode .glass-card:nth-child(3) .gc-pulse{background:var(--spark);box-shadow:0 0 8px var(--spark);}
+  .light-mode .section-title{color:var(--text);}
+  .light-mode .stat-cell{background:var(--surface-2);}
+  .light-mode .stat-cell:hover{background:var(--surface-3);}
+  .light-mode .stat-num{background:linear-gradient(135deg,var(--text),var(--blue) 70%,var(--violet));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+  .light-mode .feature-card{background:var(--surface-2);}
+  .light-mode .feature-card h3{color:var(--text);}
+  .light-mode .fc-icon{background:rgba(79,140,255,0.08);border-color:rgba(79,140,255,0.15);color:var(--blue);}
+  .light-mode .feature-card:nth-child(2) .fc-icon,.light-mode .feature-card:nth-child(6) .fc-icon{background:rgba(155,123,255,0.08);border-color:rgba(155,123,255,0.15);color:var(--violet);}
+  .light-mode .feature-card:nth-child(3) .fc-icon,.light-mode .feature-card:nth-child(7) .fc-icon{background:rgba(245,185,92,0.06);border-color:rgba(245,185,92,0.12);color:var(--spark);}
+  .light-mode .experience{background:radial-gradient(900px 500px at 30% 0%,rgba(79,140,255,0.06),transparent 60%),radial-gradient(800px 500px at 90% 100%,rgba(155,123,255,0.06),transparent 60%),var(--surface-2);}
+  .light-mode .experience-copy h2{color:var(--text);}
+  .light-mode .exp-item strong{color:var(--text);}
+  .light-mode .mock-panel{background:rgba(255,255,255,0.8);border-color:var(--line-strong);}
+  .light-mode .mp-tag{color:var(--muted);}
+  .light-mode .mp-chat-bubble{color:var(--muted);background:rgba(0,0,0,0.04);}
+  .light-mode .mp-bars span{background:linear-gradient(180deg,var(--blue),rgba(79,140,255,0.2));}
+  .light-mode .quote-text{color:var(--text);}
+  .light-mode .faq-item{background:var(--surface-2);}
+  .light-mode .faq-item.open .faq-q{color:var(--blue);}
+  .light-mode .cta-banner{background:radial-gradient(700px 320px at 18% 0%,rgba(79,140,255,0.08),transparent 70%),radial-gradient(700px 320px at 88% 100%,rgba(155,123,255,0.08),transparent 70%),var(--surface-2);}
+  .light-mode .cta-banner h2{color:var(--text);}
+  .light-mode .trust-pill{background:var(--surface-2);}
+  .light-mode .btn-secondary{color:var(--text);background:rgba(0,0,0,0.04);}
+  .light-mode .btn-secondary:hover{background:rgba(0,0,0,0.08);}
+  .light-mode .footer-social a:hover{color:var(--text);}
+  .light-mode .footer-col a{color:var(--muted);}
+  .light-mode .footer-col a:hover{color:var(--blue);}
+  .light-mode .site-footer,.light-mode .footer-bottom{border-color:var(--line);}
+  .light-mode .scroll-cue{color:var(--muted-2);}
+  .light-mode .scroll-cue .chev{border-color:var(--muted-2);}
+  .light-mode .ambient-grid{opacity:1;}
+  .light-mode .ambient-orb{opacity:0.08;}
 
   *{box-sizing:border-box;margin:0;padding:0;}
   html{scroll-behavior:smooth;scroll-padding-top:80px;}
