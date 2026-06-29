@@ -1,11 +1,12 @@
 ﻿<!doctype html>
 <html lang="en">
+<script>document.documentElement.className=localStorage.getItem('aquila-theme')==='light'?'light-mode':''</script>
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Aquila AI — The AI That Helps Students Think Bigger</title>
 <meta name="description" content="Aquila AI is a trusted AI companion for learning, creativity, productivity, and student empowerment — AI chat, study planning, daily reflection, and a community built around your growth." />
-<meta name="color-scheme" content="dark" />
+<meta name="color-scheme" content="dark light" />
 
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -46,6 +47,22 @@
     --display: 'Geist', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     --body: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     --mono: 'JetBrains Mono', ui-monospace, monospace;
+  }
+  .light-mode{
+    --black: #f0f2f6;
+    --surface: #e8eaf0;
+    --surface-2: #ffffff;
+    --surface-3: #f4f5f9;
+    --line: rgba(0,0,0,0.08);
+    --line-strong: rgba(0,0,0,0.14);
+    --text: #16162a;
+    --muted: #5a5d72;
+    --muted-2: #9ea0b4;
+    --blue: #4f8cff;
+    --blue-soft: rgba(79,140,255,0.35);
+    --violet: #8b6fe0;
+    --violet-soft: rgba(139,111,224,0.35);
+    --spark: #d4902e;
   }
 
   *{box-sizing:border-box;margin:0;padding:0;}
@@ -133,6 +150,7 @@
 
   .logo{display:flex;align-items:center;gap:10px;text-decoration:none;}
   .logo-mark{width:28px;height:28px;flex-shrink:0;}
+  .logo-img{height:32px;width:auto;display:block;}
   .logo-text{
     font-family:var(--display);font-weight:700;font-size:16px;
     letter-spacing:-0.01em;color:var(--text);
@@ -691,17 +709,7 @@
 <header>
   <nav class="navbar" aria-label="Main navigation">
     <a class="logo" href="/" aria-label="Aquila AI home">
-      <svg class="logo-mark" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <defs>
-          <linearGradient id="logoGrad" x1="0" y1="0" x2="32" y2="32">
-            <stop offset="0%" stop-color="#9fc3ff"/>
-            <stop offset="55%" stop-color="#4f8cff"/>
-            <stop offset="100%" stop-color="#9b7bff"/>
-          </linearGradient>
-        </defs>
-        <path d="M16 2 L29 27 H20.5 L16 17 L11.5 27 H3 Z" fill="url(#logoGrad)"/>
-      </svg>
-      <span class="logo-text">Aquila AI</span>
+      <img src="logo.png" alt="Aquila AI" class="logo-img">
     </a>
 
     <div class="nav-links">
@@ -997,10 +1005,7 @@
   <div class="footer-grid">
     <div class="footer-brand">
       <a class="logo" href="/" aria-label="Aquila AI home">
-        <svg class="logo-mark" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M16 2 L29 27 H20.5 L16 17 L11.5 27 H3 Z" fill="url(#logoGrad)"/>
-        </svg>
-        <span class="logo-text">Aquila AI</span>
+        <img src="logo.png" alt="Aquila AI" class="logo-img">
       </a>
       <p>A trusted AI companion for learning, creativity, productivity, and student empowerment.</p>
       <div class="footer-social">
@@ -1228,6 +1233,16 @@ document.querySelectorAll('.faq-q').forEach(function(btn){
   if(reduceMotion) staticFrame();
   else requestAnimationFrame(frame);
 }());
+</script>
+
+<script type="module">
+import { auth } from "./firebase-config.js";
+import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+onAuthStateChanged(auth, (user) => {
+  if (user) {
+    window.location.replace("home.html");
+  }
+});
 </script>
 
 </body>
