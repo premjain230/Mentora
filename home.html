@@ -49,7 +49,31 @@
     display: flex;
     overflow: hidden;
     -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
+
+  ::selection{background:rgba(0,212,255,0.3);color:#fff;}
+
+  /* ── Scrollbar ── */
+  ::-webkit-scrollbar{width:4px;height:4px;}
+  ::-webkit-scrollbar-track{background:transparent;}
+  ::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px;}
+  ::-webkit-scrollbar-thumb:hover{background:var(--text-muted);}
+
+  .scroll-progress{
+    position:fixed;top:0;left:0;height:2px;z-index:999;
+    background:linear-gradient(90deg,var(--accent),var(--accent2));
+    width:0%;transition:width 0.1s linear;
+  }
+
+  .ambient-orb{
+    position:fixed;border-radius:50%;pointer-events:none;z-index:0;
+    filter:blur(80px);opacity:0.2;
+  }
+  .orb-1{width:400px;height:400px;background:var(--accent);top:-12%;left:-6%;animation:orbFloat1 20s ease-in-out infinite;}
+  .orb-2{width:350px;height:350px;background:var(--accent2);bottom:-8%;right:-4%;animation:orbFloat2 25s ease-in-out infinite;}
+  @keyframes orbFloat1{0%,100%{transform:translate(0,0);}33%{transform:translate(30px,-20px);}66%{transform:translate(-15px,30px);}}
+  @keyframes orbFloat2{0%,100%{transform:translate(0,0);}33%{transform:translate(-20px,15px);}66%{transform:translate(40px,-30px);}}
 
   body::before {
     content: '';
@@ -74,7 +98,8 @@
     flex-direction: column;
     position: relative;
     z-index: 30;
-    transition: margin-left 0.32s cubic-bezier(0.16,1,0.3,1), box-shadow 0.32s;
+    transition: margin-left 0.35s cubic-bezier(0.16,1,0.3,1), box-shadow 0.35s, background 0.35s ease;
+    box-shadow: 4px 0 24px rgba(0,0,0,0.2);
   }
 
   .logo-area { padding: 20px 18px 16px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; gap: 10px; }
@@ -127,10 +152,10 @@
     user-select: none;
     text-decoration: none;
   }
-  .nav-item:hover { background: rgba(255,255,255,0.04); color: var(--text-primary); }
-  .nav-item.active { background: rgba(0,212,255,0.08); color: var(--text-primary); border-color: rgba(0,212,255,0.2); }
+  .nav-item:hover { background: rgba(255,255,255,0.04); color: var(--text-primary); border-color: rgba(255,255,255,0.06); transform: translateX(2px); }
+  .nav-item.active { background: rgba(0,212,255,0.08); color: var(--text-primary); border-color: rgba(0,212,255,0.2); box-shadow: inset 2px 0 0 var(--accent); }
   .nav-item.active .nav-icon { color: var(--accent); }
-  .nav-icon { width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; color: var(--text-secondary); }
+  .nav-icon { width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; color: var(--text-secondary); transition: color 0.2s; }
   .nav-item:hover .nav-icon { color: var(--text-primary); }
   .nav-badge { margin-left: auto; background: var(--accent3); color: white; font-size: 10px; font-weight: 600; padding: 2px 6px; border-radius: 20px; font-family: var(--font-mono); }
   .nav-badge.green { background: var(--accent2); color: #16122b; }
@@ -283,7 +308,8 @@
     background: var(--bg-card); border: 1px solid var(--border); border-radius: 14px;
     padding: 16px 18px; cursor: pointer; text-align: left; transition: all 0.2s;
   }
-  .suggestion-card:hover { border-color: rgba(0,212,255,0.32); background: #1e2130; transform: translateY(-2px); box-shadow: 0 10px 24px rgba(0,0,0,0.25); }
+  .suggestion-card:hover { border-color: rgba(0,212,255,0.35); background: #1e2130; transform: translateY(-3px) scale(1.02); box-shadow: 0 12px 32px rgba(0,0,0,0.3), 0 0 20px rgba(0,212,255,0.06); }
+  .suggestion-card:active { transform: translateY(-1px) scale(0.98); }
   .sug-icon { width: 32px; height: 32px; border-radius: 9px; display: flex; align-items: center; justify-content: center; margin-bottom: 10px; background: rgba(0,212,255,0.08); border: 1px solid rgba(0,212,255,0.16); color: var(--accent); }
   .suggestion-card:nth-child(2) .sug-icon, .suggestion-card:nth-child(4) .sug-icon { background: rgba(167,139,250,0.1); border: 1px solid rgba(167,139,250,0.2); color: var(--accent2); }
   .sug-icon svg { width: 16px; height: 16px; }
@@ -417,6 +443,8 @@
 <body>
 
 <div class="sidebar-overlay" id="sidebarOverlay"></div>
+<div class="ambient-orb orb-1" aria-hidden="true"></div>
+<div class="ambient-orb orb-2" aria-hidden="true"></div>
 
 <aside class="sidebar" id="sidebar">
   <div class="logo-area">
@@ -558,7 +586,43 @@ function toggleNavGroup(el) {
   const children = el.nextElementSibling;
   if (children) children.classList.toggle('open');
 }
+
+/* ── Scroll progress bar ── */
+(function(){
+  var bar = document.createElement('div');
+  bar.className = 'scroll-progress';
+  document.body.prepend(bar);
+  var ticking = false;
+  window.addEventListener('scroll', function(){
+    if(!ticking){ requestAnimationFrame(function(){
+      var h = document.documentElement.scrollHeight - window.innerHeight;
+      bar.style.width = h > 0 ? ((window.scrollY / h) * 100) + '%' : '0%';
+      ticking = false;
+    }); ticking = true; }
+  });
+}());
+
+/* ── Ripple effect on buttons ── */
+(function(){
+  var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if(reduceMotion) return;
+  document.querySelectorAll('.send-btn, .signout-btn, .new-chat-btn, .upgrade-nav-btn').forEach(function(btn){
+    btn.addEventListener('click', function(e){
+      var ripple = document.createElement('span');
+      var r = btn.getBoundingClientRect();
+      var size = Math.max(r.width, r.height);
+      ripple.style.cssText = 'position:absolute;top:'+(e.clientY-r.top-size/2)+'px;left:'+(e.clientX-r.left-size/2)+'px;width:'+size+'px;height:'+size+'px;border-radius:50%;background:rgba(255,255,255,0.15);transform:scale(0);animation:rippleAnim 0.5s ease-out;pointer-events:none;z-index:0;';
+      btn.style.position = 'relative';
+      btn.style.overflow = 'hidden';
+      btn.appendChild(ripple);
+      setTimeout(function(){ ripple.remove(); }, 600);
+    });
+  });
+}());
 </script>
+<style>
+  @keyframes rippleAnim{to{transform:scale(2);opacity:0;}}
+</style>
 
 <!-- ===== Module scripts ===== -->
 <script type="module" src="./home.js"></script>
