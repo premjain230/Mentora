@@ -548,7 +548,7 @@ function escText(str) { const d=document.createElement("div"); d.textContent=Str
 function subjectColor(idx) { return ["#00d4ff","#a78bfa","#f59e0b","#ff6b6b","#34d399","#60a5fa","#f472b6","#fb923c"][Math.max(0,idx)%8]; }
 function daysUntil(dateStr) { return Math.max(0, Math.ceil((new Date(dateStr)-new Date())/(1000*60*60*24))); }
 function countMissedTasks(tasks) { const today=new Date().toISOString().split("T")[0]; return tasks.filter(t=>t.status==="pending"&&t.scheduledDate&&t.scheduledDate<today).length; }
-function getTodaysTasks(tasks) { const today=new Date().toISOString().split("T")[0]; return tasks.filter(t=>t.scheduledDate===today); }
+function getTodaysTasks(tasks) { const today=new Date().toISOString().split("T")[0]; const todayName=new Date().toLocaleDateString("en-US",{weekday:"long"}); return tasks.filter(t=>t.scheduledDate===today||(!t.scheduledDate&&t.day===todayName)); }
 function getCompletionRate(tasks) { return tasks.length ? Math.round(tasks.filter(t=>t.status==="completed").length/tasks.length*100) : 0; }
 function getTotalHours(progress) { return ((progress?.totalMinutesStudied||0)/60).toFixed(1); }
 
