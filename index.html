@@ -1,2434 +1,1235 @@
-<!doctype html>
+﻿<!doctype html>
 <html lang="en">
-<script>document.documentElement.className=localStorage.getItem('aquila-theme')==='light'?'light-mode':''</script>
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<meta name="google-site-verification" content="QjBlgyH6XzD8rehRkb-vkXlhlXw9cNO6MMUfFW6GAis" />
-<meta http-equiv="Content-Security-Policy" content="default-src 'self' https:; script-src 'self' 'unsafe-inline' https://www.gstatic.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://www.googletagmanager.com https://esm.sh; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: https:; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://firestore.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://analytics.vercel.com; media-src 'self' https: blob:; object-src 'none'; frame-src 'none';">
-
-<title>Aquila AI – AI Study Assistant & Tutor for JEE, NEET, Boards</title>
-
-<meta name="description" content="Aquila AI is your personal AI tutor and study planner — get AI quiz generators, smart flashcards, and personalized learning for JEE, NEET & Board exams." />
-<meta name="keywords" content="AI learning platform, AI study assistant, AI tutor, AI quiz generator, AI flashcards, personalized learning, student productivity, study planner, Aquila AI, JEE preparation, NEET preparation, Board exam preparation" />
-<meta name="robots" content="index, follow" />
-<meta name="author" content="Aquila AI" />
-<meta http-equiv="content-language" content="en" />
-<link rel="canonical" href="https://aquila-ai.vercel.app/" />
-<link rel="sitemap" type="application/xml" href="/sitemap.xml" />
-<meta property="og:title" content="Aquila AI – AI Study Assistant & Tutor for JEE, NEET, Boards" />
-<meta property="og:description" content="AI-powered study companion with quiz generators, flashcards, study planner and personalized learning for competitive exam aspirants." />
-<meta property="og:type" content="website" />
-<meta property="og:image" content="https://aquila-ai.vercel.app/og-image.png" />
-<meta property="og:url" content="https://aquila-ai.vercel.app/" />
-<meta property="og:site_name" content="Aquila AI" />
-<meta name="twitter:card" content="summary_large_image" />
-<meta name="twitter:title" content="Aquila AI – AI Study Assistant & Tutor for JEE, NEET, Boards" />
-<meta name="twitter:description" content="AI tutor, AI quiz generator & flashcards for personalized learning. Build your study plan with Aquila AI." />
-<meta name="twitter:image" content="https://aquila-ai.vercel.app/og-image.png" />
+<title>Aquila AI — The AI That Helps Students Think Bigger</title>
+<meta name="description" content="Aquila AI is a trusted AI companion for learning, creativity, productivity, and student empowerment — AI chat, study planning, daily reflection, and a community built around your growth." />
+<meta name="color-scheme" content="dark" />
 
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
 
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  html { scroll-behavior: smooth; }
-
-  body, .nb-root {
-    background: var(--bg);
-    font-family: 'Inter', sans-serif;
-    min-height: 100vh;
-    color: var(--text);
-    transition: background 0.35s ease, color 0.35s ease;
+  /* ============================================================
+     DESIGN TOKENS
+     Base:      #050505 (true black canvas)
+     Surface:   #0B0C10 / #10121A (glass panel fills)
+     Line:      rgba(255,255,255,.08) hairlines
+     Accent A:  #4F8CFF  -> electric blue (primary signal)
+     Accent B:  #9B7BFF  -> violet (secondary signal / depth)
+     Accent C:  #F5B95C  -> warm spark, used ONLY for the single
+                            signature accent (rare, intentional)
+     Type:      Geist-style display via system stack fallback to
+                Inter at high weight w/ tight tracking; Inter for
+                body; JetBrains Mono for eyebrows/data/labels.
+     ============================================================ */
+  :root{
+    --black: #050505;
+    --surface: #0b0c10;
+    --surface-2: #10121a;
+    --surface-3: #15171f;
+    --line: rgba(255,255,255,0.08);
+    --line-strong: rgba(255,255,255,0.16);
+    --text: #f3f4f7;
+    --muted: #9aa1b0;
+    --muted-2: #5d6275;
+    --blue: #4f8cff;
+    --blue-soft: rgba(79,140,255,0.5);
+    --violet: #9b7bff;
+    --violet-soft: rgba(155,123,255,0.5);
+    --spark: #f5b95c;
+    --radius-lg: 24px;
+    --radius-md: 18px;
+    --radius-sm: 12px;
+    --display: 'Geist', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    --body: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    --mono: 'JetBrains Mono', ui-monospace, monospace;
   }
 
-  .nav-actions a, .nav-actions a:visited {
-    text-decoration: none;
-    color: inherit;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    width: 100%;
-    height: 100%;
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  ::selection{background:rgba(79,140,255,0.35);color:#fff;}
+
+  body{
+    background:var(--black);
+    color:var(--text);
+    font-family:var(--body);
+    -webkit-font-smoothing:antialiased;
+    min-height:100vh;
+    overflow-x:hidden;
   }
 
-  :root {
-    --bg: #07090d;
-    --surface: #0d1117;
-    --surface-2: #11151d;
-    --line: rgba(255,255,255,0.07);
-    --line-strong: rgba(255,255,255,0.14);
-    --text: #eef2f6;
-    --muted: #8b97a8;
-    --muted-2: #5e6b7d;
-    --cyan: #00d4ff;
-    --violet: #a78bfa;
-    --amber: #ffd166;
-    --cyan-glow: rgba(0,212,255,0.35);
-    --violet-glow: rgba(167,139,250,0.30);
-    --nb-bg: rgba(8, 10, 16, 0.78);
-    --nb-border: rgba(255,255,255,0.07);
-    --nb-accent: #00d4ff;
-    --nb-accent2: #a78bfa;
-    --nb-glow: rgba(0, 212, 255, 0.35);
-    --nb-text: #eef2f6;
-    --nb-muted: #8b97a8;
-  }
-  .light-mode {
-    --bg: #f4f5f9;
-    --surface: #ecedf2;
-    --surface-2: #ffffff;
-    --line: rgba(0,0,0,0.08);
-    --line-strong: rgba(0,0,0,0.14);
-    --text: #16162a;
-    --muted: #5a5d72;
-    --muted-2: #9ea0b4;
-    --nb-bg: rgba(244,245,249,0.9);
-    --nb-border: rgba(0,0,0,0.08);
-    --nb-text: #16162a;
-    --nb-muted: #5a5d72;
+  a{color:inherit;}
+  img,video{display:block;max-width:100%;}
+
+  .sr-only{
+    position:absolute;width:1px;height:1px;padding:0;margin:-1px;
+    overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;
   }
 
-  @media (prefers-reduced-motion: reduce) {
-    *, *::before, *::after {
-      animation-duration: 0.01ms !important;
-      animation-iteration-count: 1 !important;
-      transition-duration: 0.01ms !important;
-      scroll-behavior: auto !important;
+  :focus-visible{
+    outline:2px solid var(--blue);
+    outline-offset:3px;
+    border-radius:4px;
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    *,*::before,*::after{
+      animation-duration:0.01ms !important;
+      animation-iteration-count:1 !important;
+      transition-duration:0.01ms !important;
+      scroll-behavior:auto !important;
     }
   }
 
-  .nb-root {
-    padding: 0;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    position: relative;
-    overflow-x: hidden;
-  }
+  /* ============== layout shell ============== */
+  .wrap{max-width:1240px;margin:0 auto;padding:0 32px;}
+  @media (max-width:640px){.wrap{padding:0 20px;}}
 
-  .ambient {
-    position: fixed;
-    inset: 0;
-    z-index: 0;
-    pointer-events: none;
-    background:
-      radial-gradient(900px 600px at 18% -10%, rgba(0,212,255,0.10), transparent 60%),
-      radial-gradient(900px 700px at 85% 8%, rgba(167,139,250,0.10), transparent 60%),
-      radial-gradient(1200px 800px at 50% 100%, rgba(0,212,255,0.05), transparent 70%);
-  }
-
-  .ambient::after {
-    content: '';
-    position: absolute;
-    inset: 0;
+  .ambient-grid{
+    position:fixed;inset:0;z-index:0;pointer-events:none;
     background-image:
       linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
       linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
-    background-size: 64px 64px;
-    mask-image: radial-gradient(ellipse 70% 60% at 50% 0%, black 0%, transparent 75%);
-    opacity: 0.6;
+    background-size:64px 64px;
+    mask-image:radial-gradient(ellipse 80% 50% at 50% 0%, black 0%, transparent 70%);
+    opacity:0.5;
   }
 
-  .navbar {
-    width: 100%;
-    max-width: 1280px;
-    height: 72px;
-    background: var(--nb-bg);
-    border: 1px solid var(--nb-border);
-    border-radius: 18px;
-    backdrop-filter: blur(24px) saturate(1.8);
-    -webkit-backdrop-filter: blur(24px);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0 20px 0 12px;
-    position: sticky;
-    top: 16px;
-    margin: 16px 16px 0;
-    z-index: 50;
-    animation: navSlide 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
-    box-shadow:
-      0 8px 30px rgba(0,0,0,0.35),
-      0 0 60px rgba(0,212,255,0.03);
-    transition: border-color 0.3s, box-shadow 0.3s;
+  /* ============== signature: synapse thread ============== */
+  .synapse-thread{
+    position:absolute;
+    left:50%;
+    top:0;
+    width:2px;
+    height:100%;
+    transform:translateX(-50%);
+    z-index:0;
+    pointer-events:none;
+  }
+  .synapse-thread svg{position:absolute;top:0;left:50%;transform:translateX(-50%);}
+
+  /* ============== nav ============== */
+  .navbar{
+    width:100%;
+    max-width:1240px;
+    height:64px;
+    background:rgba(10,11,16,0.7);
+    border:1px solid var(--line);
+    border-radius:16px;
+    backdrop-filter:blur(20px) saturate(1.6);
+    -webkit-backdrop-filter:blur(20px) saturate(1.6);
+    display:flex;align-items:center;justify-content:space-between;
+    padding:0 10px 0 22px;
+    position:fixed;
+    top:16px;left:50%;
+    transform:translateX(-50%);
+    z-index:100;
+    box-shadow:0 8px 30px rgba(0,0,0,0.5);
+  }
+  @media (max-width:1240px){.navbar{left:16px;right:16px;transform:none;width:auto;}}
+
+  .logo{display:flex;align-items:center;gap:10px;text-decoration:none;}
+  .logo-mark{width:28px;height:28px;flex-shrink:0;}
+  .logo-text{
+    font-family:var(--display);font-weight:700;font-size:16px;
+    letter-spacing:-0.01em;color:var(--text);
   }
 
-  .navbar:hover {
-    border-color: rgba(0,212,255,0.12);
-    box-shadow:
-      0 8px 30px rgba(0,0,0,0.35),
-      0 0 60px rgba(0,212,255,0.06);
+  .nav-links{
+    display:flex;align-items:center;gap:28px;
+    font-size:13.5px;color:var(--muted);
+  }
+  .nav-links a{text-decoration:none;transition:color 0.2s;position:relative;}
+  .nav-links a:hover{color:var(--text);}
+
+  .nav-actions{display:flex;align-items:center;gap:8px;}
+  .btn-ghost-nav{
+    font-size:13.5px;font-weight:500;color:var(--muted);
+    padding:9px 16px;border-radius:10px;text-decoration:none;
+    transition:all 0.2s;
+  }
+  .btn-ghost-nav:hover{color:var(--text);background:rgba(255,255,255,0.04);}
+
+  .btn-primary{
+    font-family:var(--body);
+    font-size:13.5px;font-weight:600;
+    color:#04070d;
+    background:linear-gradient(135deg,#7fb0ff,var(--blue) 55%,var(--violet));
+    padding:10px 18px;
+    border-radius:10px;
+    border:none;
+    text-decoration:none;
+    cursor:pointer;
+    display:inline-flex;align-items:center;gap:6px;
+    position:relative;overflow:hidden;
+    transition:transform 0.25s cubic-bezier(.16,1,.3,1), box-shadow 0.25s;
+    box-shadow:0 0 0 1px rgba(255,255,255,0.08) inset, 0 4px 18px rgba(79,140,255,0.25);
+  }
+  .btn-primary::after{
+    content:'';position:absolute;top:50%;left:-40%;width:30%;height:220%;
+    background:rgba(255,255,255,0.35);
+    transform:translateY(-50%) skewX(-18deg);
+    transition:left 0.55s ease;
+  }
+  .btn-primary:hover::after{left:140%;}
+  .btn-primary:hover{transform:translateY(-1px);box-shadow:0 0 0 1px rgba(255,255,255,0.12) inset,0 8px 28px rgba(79,140,255,0.4);}
+  .btn-primary:active{transform:translateY(0) scale(0.98);}
+
+  .btn-secondary{
+    font-family:var(--body);
+    font-size:13.5px;font-weight:600;
+    color:var(--text);
+    background:rgba(255,255,255,0.04);
+    border:1px solid var(--line-strong);
+    padding:10px 18px;
+    border-radius:10px;
+    text-decoration:none;
+    cursor:pointer;
+    display:inline-flex;align-items:center;gap:8px;
+    backdrop-filter:blur(8px);
+    transition:all 0.22s;
+  }
+  .btn-secondary:hover{background:rgba(255,255,255,0.08);border-color:rgba(255,255,255,0.28);transform:translateY(-1px);}
+
+  /* magnetic button wrapper (JS adjusts translate) */
+  .magnetic{display:inline-block;will-change:transform;}
+
+  @media (max-width:880px){
+    .nav-links{display:none;}
   }
 
-  @keyframes navSlide {
-    from { opacity: 0; transform: translateY(-28px) scale(0.98); }
-    to   { opacity: 1; transform: translateY(0) scale(1); }
+  /* ============== HERO ============== */
+  .hero{
+    position:relative;
+    width:100%;
+    min-height:100vh;
+    min-height:100dvh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    overflow:hidden;
+    background:#020203;
+    isolation:isolate;
   }
 
-  .navbar-scan {
-    position: absolute;
-    inset: 0;
-    overflow: hidden;
-    pointer-events: none;
-    border-radius: 18px;
+  .hero-video-layer{
+    position:absolute;inset:0;z-index:1;
+    width:100%;height:100%;
+    object-fit:cover;
+    opacity:0.62;
+    filter:saturate(1.05) brightness(0.85);
   }
 
-  .navbar-scan::before {
-    content: '';
-    position: absolute;
-    top: 0; left: -100%; width: 60%; height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(0,212,255,0.06), transparent);
-    animation: scan 7s ease-in-out infinite;
+  .hero-canvas-layer{
+    position:absolute;inset:0;z-index:2;
+    width:100%;height:100%;
+    display:block;
+    mix-blend-mode:screen;
+    opacity:0.85;
   }
 
-  @keyframes scan {
-    0%   { left: -60%; }
-    100% { left: 160%; }
-  }
-
-  .navbar-glow {
-    position: absolute;
-    bottom: -1px; left: 0; right: 0;
-    height: 24px;
+  .hero-scrim{
+    position:absolute;inset:0;z-index:3;pointer-events:none;
     background:
-      radial-gradient(50% 20px at 50% 0%, rgba(0,212,255,0.20) 0%, transparent 100%),
-      radial-gradient(50% 20px at 20% 0%, rgba(167,139,250,0.12) 0%, transparent 100%),
-      radial-gradient(50% 20px at 80% 0%, rgba(0,212,255,0.10) 0%, transparent 100%);
-    opacity: 0;
-    animation: glowReveal 1s 0.5s cubic-bezier(0.16,1,0.3,1) forwards;
-    pointer-events: none;
-    z-index: -1;
+      radial-gradient(ellipse 65% 55% at 50% 40%, transparent 0%, transparent 35%, rgba(2,2,3,0.55) 72%, rgba(2,2,3,0.94) 100%),
+      linear-gradient(to bottom, rgba(2,2,3,0.6) 0%, transparent 18%, transparent 68%, rgba(2,2,3,0.96) 100%);
   }
 
-  @keyframes glowReveal {
-    from { opacity: 0; transform: scaleY(0); transform-origin: top; }
-    to   { opacity: 1; transform: scaleY(1); }
+  .hero-grain{
+    position:absolute;inset:0;z-index:4;pointer-events:none;opacity:0.04;mix-blend-mode:overlay;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   }
 
-  .navbar-curve-svg {
-    position: absolute;
-    bottom: -18px;
-    left: 0;
-    width: 100%;
-    height: 18px;
-    z-index: -1;
-    opacity: 0;
-    animation: curveReveal 1s 0.5s cubic-bezier(0.16,1,0.3,1) forwards;
+  .hero-content{
+    position:relative;z-index:6;
+    width:100%;max-width:1240px;
+    padding:160px 32px 0;
+    display:flex;flex-direction:column;
+    align-items:center;text-align:center;
+    pointer-events:none;
+  }
+  .hero-content a,.hero-content button{pointer-events:auto;}
+
+  .hero-eyebrow{
+    display:inline-flex;align-items:center;gap:8px;
+    padding:7px 14px 7px 10px;
+    background:rgba(79,140,255,0.08);
+    border:1px solid rgba(79,140,255,0.28);
+    border-radius:99px;
+    font-family:var(--mono);font-size:11.5px;font-weight:500;
+    letter-spacing:0.1em;text-transform:uppercase;
+    color:#bcd4ff;
+    margin-bottom:28px;
+    backdrop-filter:blur(10px);
+    animation:fadeUp 0.8s 0.3s both;
+  }
+  .eyebrow-dot{width:6px;height:6px;border-radius:50%;background:var(--blue);box-shadow:0 0 10px var(--blue);animation:pulse 2.2s ease-in-out infinite;}
+  @keyframes pulse{0%,100%{opacity:1;transform:scale(1);}50%{opacity:.45;transform:scale(.8);}}
+
+  .hero-title{
+    font-family:var(--display);
+    font-weight:800;
+    font-size:clamp(38px, 6.6vw, 78px);
+    line-height:1.05;
+    letter-spacing:-0.025em;
+    color:#fff;
+    max-width:920px;
+    margin-bottom:26px;
+    text-shadow:0 4px 50px rgba(0,0,0,0.5);
+    animation:fadeUp 0.8s 0.42s both;
+  }
+  .hero-title .grad{
+    background:linear-gradient(135deg,#9fc3ff 0%, var(--blue) 45%, var(--violet) 100%);
+    -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
   }
 
-  .navbar-curve-svg path {
-    fill: var(--nb-bg);
-    filter: drop-shadow(0 4px 12px rgba(0,0,0,0.3));
+  .hero-sub{
+    font-size:17.5px;
+    color:var(--muted);
+    max-width:560px;
+    line-height:1.7;
+    margin-bottom:38px;
+    animation:fadeUp 0.8s 0.56s both;
+    text-shadow:0 2px 20px rgba(0,0,0,0.4);
   }
 
-  @keyframes curveReveal {
-    from { opacity: 0; transform: scaleY(0); transform-origin: top; }
-    to   { opacity: 1; transform: scaleY(1); }
+  .hero-ctas{
+    display:flex;gap:14px;flex-wrap:wrap;justify-content:center;
+    margin-bottom:64px;
+    animation:fadeUp 0.8s 0.7s both;
+  }
+  .cta-lg{padding:15px 30px;font-size:14.5px;border-radius:12px;}
+
+  @keyframes fadeUp{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:translateY(0);}}
+
+  /* floating glass cards row */
+  .hero-cards{
+    position:relative;
+    width:100%;
+    max-width:980px;
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:16px;
+    padding:0 12px 120px;
+    animation:fadeUp 0.9s 0.86s both;
   }
 
-  .logo {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    cursor: pointer;
-    text-decoration: none;
-    animation: fadeUp 0.6s 0.1s both;
+  .glass-card{
+    background:rgba(14,16,22,0.55);
+    border:1px solid var(--line);
+    border-radius:var(--radius-md);
+    padding:18px 16px 20px;
+    backdrop-filter:blur(18px) saturate(1.4);
+    -webkit-backdrop-filter:blur(18px) saturate(1.4);
+    text-align:left;
+    position:relative;
+    overflow:hidden;
+    transition:transform 0.4s cubic-bezier(.16,1,.3,1), border-color 0.3s, box-shadow 0.4s;
+    will-change:transform;
+  }
+  .glass-card::before{
+    content:'';position:absolute;inset:0;border-radius:var(--radius-md);
+    background:linear-gradient(160deg, rgba(255,255,255,0.06), transparent 50%);
+    pointer-events:none;
+  }
+  .glass-card:hover{
+    transform:translateY(-6px);
+    border-color:rgba(79,140,255,0.35);
+    box-shadow:0 20px 50px rgba(0,0,0,0.5), 0 0 30px rgba(79,140,255,0.12);
   }
 
-  .logo-icon {
-    width: 34px; height: 34px;
-    position: relative;
-    flex-shrink: 0;
-    border-radius: 9px;
+  .gc-icon{
+    width:32px;height:32px;border-radius:9px;
+    display:flex;align-items:center;justify-content:center;
+    background:rgba(79,140,255,0.12);
+    border:1px solid rgba(79,140,255,0.25);
+    color:#bcd4ff;
+    margin-bottom:14px;
+  }
+  .gc-icon svg{width:16px;height:16px;}
+  .glass-card:nth-child(2) .gc-icon{background:rgba(155,123,255,0.12);border-color:rgba(155,123,255,0.28);color:#d8cdff;}
+  .glass-card:nth-child(4) .gc-icon{background:rgba(245,185,92,0.1);border-color:rgba(245,185,92,0.25);color:#ffd9a0;}
+
+  .gc-label{font-size:13.5px;font-weight:600;color:#fff;margin-bottom:4px;letter-spacing:-0.01em;}
+  .gc-sub{font-size:11.5px;color:var(--muted-2);font-family:var(--mono);letter-spacing:0.02em;}
+  .gc-pulse{
+    position:absolute;top:16px;right:16px;width:6px;height:6px;border-radius:50%;
+    background:#4ade80;box-shadow:0 0 8px #4ade80;
+  }
+  .glass-card:nth-child(3) .gc-pulse{background:var(--spark);box-shadow:0 0 8px var(--spark);}
+  .glass-card:nth-child(4) .gc-pulse{display:none;}
+
+  @media (max-width:880px){
+    .hero-cards{grid-template-columns:repeat(2,1fr);}
+  }
+  @media (max-width:560px){
+    .hero-content{padding:136px 20px 0;}
+    .hero-cards{padding:0 4px 90px;gap:12px;}
+    .hero-ctas{width:100%;}
+    .hero-ctas .cta-lg{width:100%;justify-content:center;}
   }
 
-  .logo-img {
-    height: 38px;
-    width: auto;
-    transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-    filter: brightness(1) drop-shadow(0 0 8px rgba(0,212,255,0.15));
+  .scroll-cue{
+    position:absolute;bottom:26px;left:50%;transform:translateX(-50%);
+    z-index:6;display:flex;flex-direction:column;align-items:center;gap:8px;
+    font-family:var(--mono);font-size:10.5px;letter-spacing:0.18em;text-transform:uppercase;
+    color:var(--muted-2);
+    animation:fadeUp 0.8s 1.1s both;
+  }
+  .scroll-cue .chev{width:13px;height:13px;border-right:1.5px solid var(--muted-2);border-bottom:1.5px solid var(--muted-2);transform:rotate(45deg);animation:bob 1.8s ease-in-out infinite;}
+  @keyframes bob{0%,100%{transform:rotate(45deg) translate(0,0);opacity:.4;}50%{transform:rotate(45deg) translate(3px,3px);opacity:1;}}
+
+  /* ============== reveal utility ============== */
+  .reveal{opacity:0;transform:translateY(26px);transition:opacity 0.7s cubic-bezier(.16,1,.3,1), transform 0.7s cubic-bezier(.16,1,.3,1);}
+  .reveal.is-visible{opacity:1;transform:translateY(0);}
+
+  /* ============== section shell ============== */
+  .section{
+    width:100%;max-width:1240px;margin:0 auto;
+    padding:120px 32px;
+    position:relative;z-index:1;
+  }
+  @media (max-width:640px){.section{padding:72px 20px;}}
+
+  .section-head{max-width:640px;margin:0 auto 64px;text-align:center;}
+  .section-head.left{margin-left:0;text-align:left;}
+
+  .eyebrow{
+    display:inline-flex;align-items:center;gap:8px;
+    font-family:var(--mono);font-size:11.5px;letter-spacing:0.16em;text-transform:uppercase;
+    color:var(--violet);margin-bottom:18px;
+  }
+  .eyebrow::before{content:'';width:16px;height:1px;background:var(--violet);}
+
+  .section-title{
+    font-family:var(--display);font-weight:800;
+    font-size:clamp(28px,4vw,44px);
+    line-height:1.16;letter-spacing:-0.025em;
+    color:#fff;margin-bottom:16px;
+  }
+  .section-sub{font-size:16px;color:var(--muted);line-height:1.7;}
+
+  /* ============== TRUST / STATS ============== */
+  .trust-row{
+    display:flex;align-items:center;justify-content:center;gap:14px;
+    flex-wrap:wrap;
+    margin-bottom:64px;
+  }
+  .trust-pill{
+    display:flex;align-items:center;gap:9px;
+    padding:10px 18px;
+    border:1px solid var(--line);
+    border-radius:99px;
+    background:var(--surface);
+    font-size:13px;color:var(--muted);
+    transition:border-color 0.25s, color 0.25s;
+  }
+  .trust-pill:hover{border-color:rgba(79,140,255,0.3);color:var(--text);}
+  .trust-pill svg{width:14px;height:14px;color:var(--blue);flex-shrink:0;}
+
+  .stats-grid{
+    display:grid;grid-template-columns:repeat(4,1fr);
+    gap:1px;background:var(--line);
+    border:1px solid var(--line);border-radius:var(--radius-lg);
+    overflow:hidden;
+  }
+  .stat-cell{
+    background:var(--surface);
+    padding:36px 26px;
+    text-align:center;
+    transition:background 0.25s;
+  }
+  .stat-cell:hover{background:var(--surface-2);}
+  .stat-num{
+    font-family:var(--display);font-weight:800;font-size:40px;letter-spacing:-0.03em;line-height:1;
+    margin-bottom:8px;
+    background:linear-gradient(135deg,#fff,var(--blue) 70%,var(--violet));
+    -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+    display:inline-block;
+  }
+  .stat-label{font-size:13px;color:var(--muted);line-height:1.5;}
+
+  @media (max-width:880px){.stats-grid{grid-template-columns:repeat(2,1fr);}}
+  @media (max-width:560px){.stat-num{font-size:30px;}.stat-cell{padding:26px 16px;}}
+
+  /* ============== FEATURES ============== */
+  .feature-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;}
+
+  .feature-card{
+    background:linear-gradient(165deg, var(--surface) 0%, var(--surface-2) 100%);
+    border:1px solid var(--line);
+    border-radius:var(--radius-md);
+    padding:28px 24px;
+    position:relative;overflow:hidden;
+    transition:transform 0.35s cubic-bezier(.16,1,.3,1), border-color 0.3s, box-shadow 0.35s;
+  }
+  .feature-card::before{
+    content:'';position:absolute;inset:-1px;border-radius:var(--radius-md);padding:1px;
+    background:linear-gradient(135deg, rgba(79,140,255,0.45), transparent 40%, transparent 60%, rgba(155,123,255,0.45));
+    -webkit-mask:linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite:xor;mask-composite:exclude;
+    opacity:0;transition:opacity 0.35s;pointer-events:none;
+  }
+  .feature-card:hover{transform:translateY(-5px);border-color:transparent;box-shadow:0 18px 44px rgba(0,0,0,0.4);}
+  .feature-card:hover::before{opacity:1;}
+
+  .fc-icon{
+    width:42px;height:42px;border-radius:11px;
+    display:flex;align-items:center;justify-content:center;
+    background:rgba(79,140,255,0.1);border:1px solid rgba(79,140,255,0.22);color:#bcd4ff;
+    margin-bottom:20px;
+  }
+  .fc-icon svg{width:20px;height:20px;}
+  .feature-card:nth-child(2) .fc-icon,.feature-card:nth-child(6) .fc-icon{background:rgba(155,123,255,0.1);border-color:rgba(155,123,255,0.24);color:#d8cdff;}
+  .feature-card:nth-child(3) .fc-icon,.feature-card:nth-child(7) .fc-icon{background:rgba(245,185,92,0.08);border-color:rgba(245,185,92,0.22);color:#ffd9a0;}
+
+  .feature-card h3{font-family:var(--display);font-weight:700;font-size:17px;color:#fff;margin-bottom:9px;letter-spacing:-0.01em;}
+  .feature-card p{font-size:13.5px;line-height:1.65;color:var(--muted);}
+
+  @media (max-width:980px){.feature-grid{grid-template-columns:repeat(2,1fr);}}
+  @media (max-width:560px){.feature-grid{grid-template-columns:1fr;}}
+
+  /* ============== EXPERIENCE (immersive) ============== */
+  .experience{
+    position:relative;
+    border-radius:32px;
+    border:1px solid var(--line);
+    background:radial-gradient(900px 500px at 30% 0%, rgba(79,140,255,0.1), transparent 60%),
+               radial-gradient(800px 500px at 90% 100%, rgba(155,123,255,0.1), transparent 60%),
+               var(--surface);
+    padding:72px 56px;
+    overflow:hidden;
+  }
+  .experience-grid-bg{
+    position:absolute;inset:0;z-index:0;pointer-events:none;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+    background-size:48px 48px;
+    mask-image:radial-gradient(ellipse 70% 60% at 50% 40%, black 0%, transparent 75%);
+  }
+  .experience-inner{position:relative;z-index:1;display:grid;grid-template-columns:1fr 1.1fr;gap:56px;align-items:center;}
+
+  .experience-copy .eyebrow{margin-bottom:18px;}
+  .experience-copy h2{
+    font-family:var(--display);font-weight:800;font-size:clamp(26px,3.4vw,38px);
+    line-height:1.18;letter-spacing:-0.025em;color:#fff;margin-bottom:18px;
+  }
+  .experience-copy p{font-size:15.5px;color:var(--muted);line-height:1.75;margin-bottom:28px;max-width:440px;}
+
+  .exp-list{display:flex;flex-direction:column;gap:16px;}
+  .exp-item{display:flex;align-items:flex-start;gap:12px;font-size:14px;color:var(--muted);}
+  .exp-check{
+    width:20px;height:20px;border-radius:6px;flex-shrink:0;margin-top:1px;
+    display:flex;align-items:center;justify-content:center;
+    background:rgba(79,140,255,0.1);border:1px solid rgba(79,140,255,0.25);color:var(--blue);
+  }
+  .exp-check svg{width:11px;height:11px;}
+  .exp-item strong{color:var(--text);font-weight:600;}
+
+  .experience-visual{position:relative;height:420px;}
+  .mock-panel{
+    position:absolute;
+    background:rgba(14,16,22,0.7);
+    border:1px solid var(--line-strong);
+    border-radius:16px;
+    backdrop-filter:blur(16px);
+    box-shadow:0 24px 60px rgba(0,0,0,0.5);
+    overflow:hidden;
+  }
+  .mock-panel .mp-head{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:12px 14px;border-bottom:1px solid var(--line);
+  }
+  .mp-dots{display:flex;gap:5px;}
+  .mp-dots span{width:6px;height:6px;border-radius:50%;background:var(--muted-2);}
+  .mp-tag{font-family:var(--mono);font-size:9.5px;letter-spacing:0.08em;color:var(--muted-2);text-transform:uppercase;}
+  .mock-panel .mp-body{padding:14px;}
+
+  .panel-a{width:280px;top:0;left:0;animation:floatA 7s ease-in-out infinite;}
+  .panel-b{width:230px;top:160px;left:200px;z-index:2;animation:floatB 8s ease-in-out infinite;}
+  .panel-c{width:200px;top:280px;left:10px;animation:floatC 6.5s ease-in-out infinite;}
+
+  @keyframes floatA{0%,100%{transform:translateY(0);}50%{transform:translateY(-10px);}}
+  @keyframes floatB{0%,100%{transform:translateY(0);}50%{transform:translateY(-16px);}}
+  @keyframes floatC{0%,100%{transform:translateY(0);}50%{transform:translateY(-8px);}}
+
+  .mp-bars{display:flex;align-items:flex-end;gap:5px;height:64px;}
+  .mp-bars span{flex:1;border-radius:3px 3px 0 0;background:linear-gradient(180deg, var(--blue), rgba(79,140,255,0.15));}
+
+  .mp-chat-line{display:flex;gap:8px;align-items:flex-start;margin-bottom:10px;}
+  .mp-avatar{width:18px;height:18px;border-radius:50%;background:linear-gradient(135deg,var(--blue),var(--violet));flex-shrink:0;}
+  .mp-chat-bubble{font-size:11px;color:var(--muted);line-height:1.5;background:rgba(255,255,255,0.04);padding:7px 10px;border-radius:8px;}
+
+  .mp-ring{width:90px;height:90px;margin:0 auto;}
+
+  @media (max-width:980px){
+    .experience{padding:48px 28px;}
+    .experience-inner{grid-template-columns:1fr;gap:48px;}
+    .experience-visual{height:340px;}
+    .panel-a{width:75%;}
+    .panel-b{left:auto;right:0;width:60%;}
+    .panel-c{width:55%;}
+  }
+  @media (max-width:560px){
+    .experience{padding:36px 18px;border-radius:22px;}
+    .experience-visual{height:300px;}
   }
 
-  .logo:hover .logo-img {
-    transform: scale(1.06) rotate(-2deg);
-    filter: brightness(1.1) drop-shadow(0 0 12px rgba(0,212,255,0.3));
+  /* ============== TESTIMONIAL STRIP ============== */
+  .quote-strip{
+    text-align:center;max-width:760px;margin:0 auto;
   }
-
-  .logo-text {
-    font-family: 'Sora', sans-serif;
-    font-weight: 700;
-    font-size: 17px;
-    letter-spacing: 0.04em;
-    background: linear-gradient(135deg, #ffffff 0%, var(--cyan) 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+  .quote-mark{font-family:var(--display);font-size:48px;color:var(--blue);opacity:0.5;line-height:1;margin-bottom:8px;}
+  .quote-text{
+    font-family:var(--display);font-weight:600;font-size:clamp(20px,2.6vw,28px);
+    line-height:1.45;letter-spacing:-0.01em;color:#fff;margin-bottom:28px;
   }
+  .quote-byline{display:flex;align-items:center;justify-content:center;gap:12px;}
+  .quote-avatar{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,var(--blue),var(--violet));flex-shrink:0;}
+  .quote-name{font-size:13.5px;font-weight:600;color:var(--text);}
+  .quote-role{font-size:12px;color:var(--muted-2);}
 
-  .nav-center {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    animation: fadeUp 0.6s 0.2s both;
+  /* ============== FAQ ============== */
+  .faq-list{display:flex;flex-direction:column;gap:10px;max-width:740px;margin:0 auto;}
+  .faq-item{background:var(--surface);border:1px solid var(--line);border-radius:14px;overflow:hidden;transition:border-color 0.22s;}
+  .faq-item:hover{border-color:rgba(79,140,255,0.18);}
+  .faq-item.open{border-color:rgba(79,140,255,0.28);}
+  .faq-q{
+    padding:19px 22px;font-family:var(--display);font-size:15px;font-weight:600;color:var(--text);
+    cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:14px;
+    user-select:none;background:none;border:none;width:100%;text-align:left;transition:color 0.18s;
   }
+  .faq-item.open .faq-q{color:#bcd4ff;}
+  .faq-chev{width:17px;height:17px;flex-shrink:0;color:var(--muted-2);transition:transform 0.3s cubic-bezier(.16,1,.3,1),color 0.2s;}
+  .faq-item.open .faq-chev{transform:rotate(180deg);color:var(--blue);}
+  .faq-body{display:grid;grid-template-rows:0fr;transition:grid-template-rows 0.32s cubic-bezier(.16,1,.3,1);}
+  .faq-item.open .faq-body{grid-template-rows:1fr;}
+  .faq-body-inner{overflow:hidden;font-size:14px;color:var(--muted);line-height:1.75;padding:0 22px;}
+  .faq-item.open .faq-body-inner{padding:0 22px 20px;}
 
-  .nav-center a {
-    padding: 8px 14px;
-    font-size: 13px;
-    font-weight: 500;
-    color: var(--muted);
-    text-decoration: none;
-    border-radius: 8px;
-    transition: all 0.22s;
-    letter-spacing: 0.01em;
-    position: relative;
-  }
-
-  .nav-center a:hover {
-    color: var(--text);
-    background: rgba(255,255,255,0.04);
-  }
-
-  .nav-center a::after {
-    content: '';
-    position: absolute;
-    bottom: 4px; left: 50%;
-    width: 0;
-    height: 2px;
-    background: linear-gradient(90deg, var(--cyan), var(--violet));
-    border-radius: 2px;
-    transform: translateX(-50%);
-    transition: width 0.25s cubic-bezier(0.16,1,0.3,1);
-    filter: blur(0.5px);
-  }
-
-  .nav-center a:hover::after { width: 60%; }
-
-  @keyframes fadeUp {
-    from { opacity: 0; transform: translateY(10px); }
-    to   { opacity: 1; transform: translateY(0); }
-  }
-
-  .nav-actions {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    animation: fadeUp 0.6s 0.3s both;
-  }
-
-  .btn-ghost, .btn-cta {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    padding: 0;
-    font-size: 13px;
-    font-weight: 500;
-    font-family: 'Inter', sans-serif;
-    background: transparent;
-    border: none;
-    cursor: pointer;
-    letter-spacing: 0.01em;
-    transition: all 0.22s;
-  }
-
-  .btn-ghost a, .btn-cta a {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    padding: 8px 18px;
-    border-radius: 10px;
-    width: 100%;
-    height: 100%;
-  }
-
-  .btn-ghost a {
-    color: var(--muted);
-    border: 1px solid rgba(255,255,255,0.08);
-  }
-
-  .btn-ghost:hover a {
-    color: #fff;
-    border-color: rgba(255,255,255,0.22);
-    background: rgba(255,255,255,0.04);
-  }
-
-  .btn-cta a {
-    font-weight: 600;
-    color: #06121a;
-    background: linear-gradient(135deg, var(--cyan) 0%, #00e5ff 100%);
-    padding: 9px 22px;
-    border-radius: 10px;
-    position: relative;
-    overflow: hidden;
-  }
-
-  .btn-cta {
-    position: relative;
-    overflow: hidden;
-    border-radius: 10px;
-  }
-
-  .btn-cta::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(135deg, rgba(255,255,255,0.25) 0%, transparent 60%);
-    pointer-events: none;
-    z-index: 1;
-    border-radius: 10px;
-  }
-
-  .btn-cta::after {
-    content: '';
-    position: absolute;
-    top: 50%; left: -40%;
-    width: 30%; height: 200%;
-    background: rgba(255,255,255,0.3);
-    transform: translateY(-50%) skewX(-20deg);
-    transition: left 0.5s ease;
-    pointer-events: none;
-    z-index: 1;
-  }
-
-  .btn-cta:hover::after { left: 140%; }
-  .btn-cta:hover {
-    transform: scale(1.04);
-    box-shadow: 0 0 28px rgba(0,212,255,0.5), 0 4px 16px rgba(0,212,255,0.3);
-  }
-  .btn-cta:active { transform: scale(0.98); }
-
-  .search-btn {
-    width: 38px; height: 38px;
-    display: flex; align-items: center; justify-content: center;
-    background: rgba(255,255,255,0.04);
-    border: 1px solid rgba(255,255,255,0.08);
-    border-radius: 10px;
-    cursor: pointer;
-    color: var(--muted);
-    font-size: 16px;
-    transition: all 0.22s;
-  }
-  .search-btn:hover {
-    color: var(--cyan);
-    border-color: rgba(0,212,255,0.3);
-    background: rgba(0,212,255,0.07);
-    box-shadow: 0 0 16px rgba(0,212,255,0.15);
-  }
-
-  /* ===================== CINEMATIC HERO ===================== */
-  .hero {
-    position: relative;
-    width: 100%;
-    min-height: 100vh;
-    min-height: 100dvh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    overflow: hidden;
-    background: #050609;
-    isolation: isolate;
-  }
-
-  .hero-video-bg {
-    position: absolute;
-    inset: 0;
-    z-index: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    object-position: center;
-    opacity: 0;
-    animation: videoFadeIn 1.5s 0.3s cubic-bezier(0.16,1,0.3,1) forwards;
-  }
-
-  @keyframes videoFadeIn {
-    from { opacity: 0; transform: scale(1.05); }
-    to   { opacity: 0.45; transform: scale(1); }
-  }
-
-  .hero-video-overlay {
-    position: absolute;
-    inset: 0;
-    z-index: 1;
+  /* ============== FINAL CTA ============== */
+  .cta-banner{
+    border-radius:28px;
+    border:1px solid rgba(79,140,255,0.2);
     background:
-      linear-gradient(to bottom, rgba(5,6,9,0.6) 0%, transparent 30%, transparent 60%, rgba(5,6,9,0.8) 100%);
-  }
-
-  .hero-canvas-layer {
-    position: absolute;
-    inset: 0;
-    z-index: 2;
-    display: block;
-    width: 100%;
-    height: 100%;
-    opacity: 0.6;
-    transition: opacity 0.8s;
-  }
-
-  .hero-vignette {
-    position: absolute;
-    inset: 0;
-    z-index: 3;
-    pointer-events: none;
-    background:
-      radial-gradient(ellipse 70% 60% at 50% 38%, transparent 0%, transparent 40%, rgba(5,6,9,0.45) 78%, rgba(5,6,9,0.88) 100%),
-      linear-gradient(to bottom, rgba(5,6,9,0.5) 0%, transparent 16%, transparent 72%, rgba(5,6,9,0.85) 100%);
-  }
-
-  .hero-grain {
-    position: absolute;
-    inset: 0;
-    z-index: 4;
-    pointer-events: none;
-    opacity: 0.035;
-    mix-blend-mode: overlay;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-  }
-
-  .hero-content {
-    position: relative;
-    z-index: 6;
-    width: 100%;
-    max-width: 1280px;
-    padding: 150px 32px 120px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-    pointer-events: none;
-  }
-
-  .hero-content a,
-  .hero-content button { pointer-events: auto; }
-
-  .hero .badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    padding: 6px 14px;
-    background: rgba(0,212,255,0.07);
-    border: 1px solid rgba(0,212,255,0.25);
-    border-radius: 99px;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 11.5px;
-    color: var(--cyan);
-    font-weight: 500;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    margin-bottom: 30px;
-    backdrop-filter: blur(8px);
-    animation: fadeUp 0.8s 0.4s both;
-  }
-
-  .badge-dot {
-    width: 6px; height: 6px;
-    border-radius: 50%;
-    background: var(--cyan);
-    box-shadow: 0 0 8px var(--cyan);
-    animation: pulse 2s ease-in-out infinite;
-  }
-
-  @keyframes pulse {
-    0%, 100% { opacity: 1; transform: scale(1); }
-    50%       { opacity: 0.5; transform: scale(0.85); }
-  }
-
-  .hero-title {
-    font-family: 'Sora', sans-serif;
-    font-size: clamp(36px, 6.4vw, 76px);
-    font-weight: 800;
-    line-height: 1.06;
-    letter-spacing: -0.02em;
-    color: #fff;
-    margin-bottom: 24px;
-    text-shadow: 0 4px 60px rgba(0,0,0,0.6);
-    animation: fadeUp 0.8s 0.55s both;
-  }
-
-  .hero-title span {
-    background: linear-gradient(135deg, var(--cyan) 0%, var(--violet) 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-  }
-
-  .hero-sub {
-    font-size: 17px;
-    color: var(--muted);
-    max-width: 540px;
-    line-height: 1.75;
-    animation: fadeUp 0.8s 0.7s both;
-    margin-bottom: 38px;
-    text-shadow: 0 2px 20px rgba(0,0,0,0.5);
-  }
-
-  .hero-ctas {
-    display: flex;
-    gap: 14px;
-    flex-wrap: wrap;
-    justify-content: center;
-    animation: fadeUp 0.8s 0.85s both;
-    margin-bottom: 46px;
-  }
-
-  .cta-primary {
-    padding: 15px 32px;
-    background: var(--cyan);
-    color: #06121a;
-    font-size: 14px;
-    font-weight: 700;
-    font-family: 'Inter', sans-serif;
-    border: none;
-    border-radius: 11px;
-    cursor: pointer;
-    letter-spacing: 0.02em;
-    position: relative;
-    overflow: hidden;
-    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-    text-decoration: none;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 0 40px rgba(0,212,255,0.25);
-  }
-
-  .cta-primary::after {
-    content: '';
-    position: absolute;
-    top: 50%; left: -40%;
-    width: 30%; height: 200%;
-    background: rgba(255,255,255,0.35);
-    transform: translateY(-50%) skewX(-20deg);
-    transition: left 0.5s ease;
-  }
-
-  .cta-primary:hover::after { left: 140%; }
-  .cta-primary:hover {
-    transform: translateY(-2px) scale(1.02);
-    box-shadow: 0 0 32px rgba(0,212,255,0.55), 0 8px 24px rgba(0,212,255,0.3);
-  }
-
-  .cta-secondary {
-    padding: 15px 32px;
-    background: rgba(255,255,255,0.04);
-    color: #fff;
-    font-size: 14px;
-    font-weight: 500;
-    font-family: 'Inter', sans-serif;
-    border: 1px solid rgba(255,255,255,0.14);
-    border-radius: 11px;
-    cursor: pointer;
-    letter-spacing: 0.01em;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    transition: all 0.22s;
-    text-decoration: none;
-    backdrop-filter: blur(8px);
-  }
-
-  .cta-secondary:hover {
-    border-color: rgba(255,255,255,0.32);
-    background: rgba(255,255,255,0.08);
-    transform: translateY(-2px);
-  }
-
-  .hero .trust-row {
-    display: flex;
-    align-items: center;
-    gap: 18px;
-    animation: fadeUp 0.8s 1s both;
-  }
-
-  .trust-avatars { display: flex; }
-
-  .trust-avatars span {
-    width: 30px; height: 30px;
-    border-radius: 50%;
-    border: 2px solid #050609;
-    margin-left: -8px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-family: 'Sora', sans-serif;
-    font-size: 11px;
-    font-weight: 700;
-    color: #06121a;
-  }
-  .trust-avatars span:first-child { margin-left: 0; }
-  .trust-avatars span:nth-child(1) { background: linear-gradient(135deg,#00d4ff,#5fe8ff); }
-  .trust-avatars span:nth-child(2) { background: linear-gradient(135deg,#a78bfa,#c9b8ff); }
-  .trust-avatars span:nth-child(3) { background: linear-gradient(135deg,#ffd166,#ffe9a8); }
-
-  .label-note {
-    font-size: 13px;
-    color: var(--muted-2);
-    letter-spacing: 0.01em;
-    line-height: 1.5;
-  }
-
-  .label-note strong { color: var(--text); font-weight: 600; }
-
-  .scroll-cue {
-    position: absolute;
-    bottom: 28px;
-    left: 50%;
-    transform: translateX(-50%);
-    z-index: 5;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 8px;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 10.5px;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-    color: var(--muted-2);
-    animation: fadeUp 0.8s 1.2s both;
-  }
-
-  .scroll-cue .chevron {
-    width: 14px; height: 14px;
-    border-right: 1.5px solid var(--muted-2);
-    border-bottom: 1.5px solid var(--muted-2);
-    transform: rotate(45deg);
-    animation: bob 1.8s ease-in-out infinite;
-  }
-
-  @keyframes bob {
-    0%, 100% { transform: rotate(45deg) translate(0,0); opacity: 0.5; }
-    50%      { transform: rotate(45deg) translate(3px,3px); opacity: 1; }
-  }
-
-  @media (max-width: 640px) {
-    .hero-content { padding: 130px 20px 100px; }
-  }
-  /* ===================== /CINEMATIC HERO ===================== */
-
-  .proof-strip {
-    width: 100%;
-    max-width: 1280px;
-    padding: 0 32px 64px;
-    position: relative;
-    z-index: 1;
-  }
-
-  .proof-strip-inner {
-    border-top: 1px solid var(--line);
-    padding-top: 28px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    gap: 20px;
-  }
-
-  .proof-label {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 11.5px;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-    color: var(--muted-2);
-    white-space: nowrap;
-  }
-
-  .proof-tags { display: flex; gap: 12px; flex-wrap: wrap; }
-
-  .proof-tag {
-    font-family: 'Sora', sans-serif;
-    font-weight: 600;
-    font-size: 14px;
-    color: var(--muted);
-    padding: 8px 18px;
-    border: 1px solid var(--line);
-    border-radius: 9px;
-    transition: all 0.25s;
-  }
-
-  .proof-tag:hover {
-    color: #fff;
-    border-color: rgba(0,212,255,0.25);
-    background: rgba(0,212,255,0.04);
-    transform: translateY(-2px);
-  }
-
-  .section {
-    width: 100%;
-    max-width: 1280px;
-    padding: 90px 32px;
-    position: relative;
-    z-index: 1;
-  }
-
-  .section-head {
-    max-width: 620px;
-    margin: 0 auto 56px;
-    text-align: center;
-  }
-
-  .eyebrow {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 11.5px;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-    color: var(--violet);
-    margin-bottom: 16px;
-  }
-
-  .eyebrow::before { content: ''; width: 18px; height: 1px; background: var(--violet); }
-
-  .section-title {
-    font-family: 'Sora', sans-serif;
-    font-weight: 800;
-    font-size: clamp(26px, 4vw, 42px);
-    line-height: 1.18;
-    letter-spacing: -0.02em;
-    color: #fff;
-    margin-bottom: 14px;
-  }
-
-  .section-sub { font-size: 15.5px; color: var(--muted); line-height: 1.7; }
-
-  .reveal {
-    opacity: 0;
-    transform: translateY(28px);
-    transition: opacity 0.7s cubic-bezier(0.16,1,0.3,1), transform 0.7s cubic-bezier(0.16,1,0.3,1);
-  }
-
-  .reveal.is-visible { opacity: 1; transform: translateY(0); }
-
-  .feature-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 20px;
-  }
-
-  .feature-card {
-    background: linear-gradient(160deg, var(--surface) 0%, var(--surface-2) 100%);
-    border: 1px solid var(--line);
-    border-radius: 16px;
-    padding: 28px;
-    position: relative;
-    overflow: hidden;
-    transition: border-color 0.3s, transform 0.3s, box-shadow 0.3s;
-  }
-
-  .feature-card::before {
-    content: '';
-    position: absolute;
-    inset: -1px;
-    border-radius: 16px;
-    padding: 1px;
-    background: linear-gradient(135deg, rgba(0,212,255,0.4), transparent 40%, transparent 60%, rgba(167,139,250,0.4));
-    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
-    -webkit-mask-composite: xor;
-    mask-composite: exclude;
-    opacity: 0;
-    transition: opacity 0.3s;
-    pointer-events: none;
-  }
-
-  .feature-card:hover { transform: translateY(-4px); border-color: transparent; box-shadow: 0 16px 40px rgba(0,0,0,0.35); }
-  .feature-card:hover::before { opacity: 1; }
-
-  .feature-icon {
-    width: 44px; height: 44px;
-    border-radius: 11px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-bottom: 22px;
-    background: rgba(0,212,255,0.08);
-    border: 1px solid rgba(0,212,255,0.16);
-    color: var(--cyan);
-  }
-
-  .feature-card:nth-child(2) .feature-icon,
-  .feature-card:nth-child(5) .feature-icon {
-    background: rgba(167,139,250,0.08);
-    border: 1px solid rgba(167,139,250,0.18);
-    color: var(--violet);
-  }
-
-  .feature-icon svg { width: 22px; height: 22px; }
-
-  .feature-card h3 {
-    font-family: 'Sora', sans-serif;
-    font-weight: 700;
-    font-size: 18px;
-    color: #fff;
-    margin-bottom: 10px;
-    letter-spacing: -0.01em;
-  }
-
-  .feature-card p { font-size: 14px; line-height: 1.7; color: var(--muted); }
-
-  .steps {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 0;
-    border: 1px solid var(--line);
-    border-radius: 16px;
-    overflow: hidden;
-    background: var(--surface);
-  }
-
-  .step { padding: 36px 32px; border-right: 1px solid var(--line); position: relative; }
-  .step:last-child { border-right: none; }
-
-  .step-num {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 12px;
-    letter-spacing: 0.12em;
-    color: var(--cyan);
-    margin-bottom: 18px;
-    display: block;
-  }
-
-  .step h3 {
-    font-family: 'Sora', sans-serif;
-    font-weight: 700;
-    font-size: 19px;
-    color: #fff;
-    margin-bottom: 10px;
-    letter-spacing: -0.01em;
-  }
-
-  .step p { font-size: 14px; color: var(--muted); line-height: 1.7; }
-
-  /* ===================== NEW: STATS BAR ===================== */
-  .stats-bar {
-    width: 100%;
-    max-width: 1280px;
-    padding: 0 32px 72px;
-    position: relative;
-    z-index: 1;
-  }
-
-  .stats-bar-inner {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 1px;
-    background: var(--line);
-    border: 1px solid var(--line);
-    border-radius: 16px;
-    overflow: hidden;
-  }
-
-  .stat-item {
-    background: var(--surface);
-    padding: 28px 24px;
-    text-align: center;
-    transition: background 0.22s;
-  }
-  .stat-item:hover { background: var(--surface-2); }
-
-  .stat-number {
-    font-family: 'Sora', sans-serif;
-    font-size: 36px;
-    font-weight: 800;
-    letter-spacing: -0.03em;
-    line-height: 1;
-    margin-bottom: 6px;
-    background: linear-gradient(135deg, var(--cyan), var(--violet));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-  }
-
-  .stat-label {
-    font-size: 13px;
-    color: var(--muted);
-    line-height: 1.4;
-  }
-
-  /* ===================== NEW: TESTIMONIALS ===================== */
-  .testimonials-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 18px;
-  }
-
-  .testimonial-card {
-    background: linear-gradient(160deg, var(--surface) 0%, var(--surface-2) 100%);
-    border: 1px solid var(--line);
-    border-radius: 16px;
-    padding: 26px;
-    position: relative;
-    overflow: hidden;
-    transition: border-color 0.25s, transform 0.25s;
-  }
-
-  .testimonial-card:hover {
-    border-color: rgba(0,212,255,0.18);
-    transform: translateY(-3px);
-  }
-
-  .testimonial-card:nth-child(2):hover { border-color: rgba(167,139,250,0.22); }
-  .testimonial-card:nth-child(3):hover { border-color: rgba(255,209,102,0.18); }
-
-  .tcard-quote {
-    font-size: 28px;
-    line-height: 1;
-    margin-bottom: 14px;
-    color: var(--cyan);
-    font-family: 'Sora', sans-serif;
-    font-weight: 800;
-    opacity: 0.5;
-  }
-
-  .testimonial-card:nth-child(2) .tcard-quote { color: var(--violet); }
-  .testimonial-card:nth-child(3) .tcard-quote { color: var(--amber); }
-
-  .tcard-text {
-    font-size: 14px;
-    color: var(--text);
-    line-height: 1.75;
-    margin-bottom: 20px;
-    opacity: 0.88;
-  }
-
-  .tcard-footer {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding-top: 16px;
-    border-top: 1px solid var(--line);
-  }
-
-  .tcard-avatar {
-    width: 36px; height: 36px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-family: 'Sora', sans-serif;
-    font-size: 13px;
-    font-weight: 700;
-    color: #06121a;
-    flex-shrink: 0;
-  }
-
-  .tcard-avatar.cyan { background: linear-gradient(135deg,#00d4ff,#5fe8ff); }
-  .tcard-avatar.violet { background: linear-gradient(135deg,#a78bfa,#c9b8ff); }
-  .tcard-avatar.amber { background: linear-gradient(135deg,#ffd166,#ffe9a8); }
-
-  .tcard-name {
-    font-family: 'Sora', sans-serif;
-    font-size: 13.5px;
-    font-weight: 600;
-    color: var(--text);
-    margin-bottom: 2px;
-  }
-
-  .tcard-meta {
-    font-size: 12px;
-    color: var(--muted-2);
-  }
-
-  .tcard-stars {
-    margin-left: auto;
-    display: flex;
-    gap: 2px;
-    color: var(--amber);
-    font-size: 12px;
-  }
-
-  /* ===================== NEW: PRICING ===================== */
-  .pricing-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 20px;
-    max-width: 860px;
-    margin: 0 auto;
-  }
-
-  .pricing-card {
-    background: linear-gradient(160deg, var(--surface) 0%, var(--surface-2) 100%);
-    border: 1px solid var(--line);
-    border-radius: 20px;
-    padding: 32px 28px;
-    position: relative;
-    overflow: hidden;
-    transition: border-color 0.25s, transform 0.25s, box-shadow 0.25s;
-  }
-
-  .pricing-card:hover { transform: translateY(-4px); box-shadow: 0 20px 50px rgba(0,0,0,0.4); }
-
-  .pricing-card.featured {
-    border-color: rgba(167,139,250,0.3);
-    background: linear-gradient(160deg, #110e1f 0%, #0d1117 100%);
-    box-shadow: 0 0 50px rgba(167,139,250,0.08);
-  }
-
-  .pricing-card.featured:hover { border-color: rgba(167,139,250,0.5); }
-
-  .pricing-ribbon {
-    position: absolute;
-    top: -1px; right: 24px;
-    background: linear-gradient(135deg, var(--violet), #7c3aed);
-    color: #fff;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 10px;
-    font-weight: 600;
-    letter-spacing: 0.1em;
-    padding: 5px 12px;
-    border-radius: 0 0 10px 10px;
-    text-transform: uppercase;
-  }
-
-  .pricing-name {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 11px;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-    color: var(--muted-2);
-    margin-bottom: 8px;
-  }
-
-  .pricing-title {
-    font-family: 'Sora', sans-serif;
-    font-size: 26px;
-    font-weight: 800;
-    letter-spacing: -0.03em;
-    color: #fff;
-    margin-bottom: 4px;
-  }
-
-  .pricing-title.gradient {
-    background: linear-gradient(135deg, var(--violet), #c4b5fd);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-  }
-
-  .pricing-price {
-    font-family: 'Sora', sans-serif;
-    font-size: 13px;
-    color: var(--muted);
-    margin-bottom: 24px;
-  }
-
-  .pricing-price strong {
-    font-size: 38px;
-    color: #fff;
-    font-weight: 800;
-    letter-spacing: -0.04em;
-    font-family: 'JetBrains Mono', monospace;
-  }
-
-  .pricing-price.free-badge strong {
-    background: linear-gradient(135deg, var(--cyan), var(--violet));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-  }
-
-  .pricing-divider { height: 1px; background: var(--line); margin: 20px 0; }
-
-  .pricing-features {
-    list-style: none;
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    margin-bottom: 28px;
-  }
-
-  .pricing-feature {
-    display: flex;
-    align-items: flex-start;
-    gap: 10px;
-    font-size: 13.5px;
-    color: var(--muted);
-  }
-
-  .pf-check {
-    width: 18px; height: 18px;
-    border-radius: 5px;
-    flex-shrink: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-top: 1px;
-    background: rgba(0,212,255,0.08);
-    border: 1px solid rgba(0,212,255,0.2);
-    color: var(--cyan);
-  }
-
-  .pricing-card.featured .pf-check {
-    background: rgba(167,139,250,0.1);
-    border-color: rgba(167,139,250,0.25);
-    color: var(--violet);
-  }
-
-  .pf-check svg { width: 10px; height: 10px; }
-
-  .pf-strong { color: var(--text); font-weight: 500; }
-  .pf-sub { font-size: 12px; color: var(--muted-2); display: block; }
-
-  .pricing-btn {
-    width: 100%;
-    padding: 13px;
-    border-radius: 11px;
-    font-family: 'Inter', sans-serif;
-    font-size: 14px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.22s;
-    text-decoration: none;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 7px;
-    border: none;
-  }
-
-  .pricing-btn.free-btn {
-    background: rgba(255,255,255,0.04);
-    border: 1px solid rgba(255,255,255,0.12);
-    color: var(--text);
-  }
-
-  .pricing-btn.free-btn:hover {
-    background: rgba(255,255,255,0.08);
-    border-color: rgba(255,255,255,0.22);
-    transform: translateY(-1px);
-  }
-
-  .pricing-btn.pro-btn {
-    background: linear-gradient(135deg, rgba(167,139,250,0.2), rgba(109,40,217,0.2));
-    border: 1px solid rgba(167,139,250,0.4);
-    color: var(--violet);
-    position: relative;
-    overflow: hidden;
-  }
-
-  .pricing-btn.pro-btn::after {
-    content: '';
-    position: absolute;
-    top: 50%; left: -40%;
-    width: 30%; height: 200%;
-    background: rgba(255,255,255,0.1);
-    transform: translateY(-50%) skewX(-20deg);
-    transition: left 0.5s ease;
-  }
-
-  .pricing-btn.pro-btn:hover::after { left: 140%; }
-
-  .pricing-btn.pro-btn:hover {
-    background: linear-gradient(135deg, rgba(167,139,250,0.3), rgba(109,40,217,0.3));
-    border-color: rgba(167,139,250,0.6);
-    transform: translateY(-1px);
-    box-shadow: 0 8px 24px rgba(167,139,250,0.2);
-  }
-
-  .pricing-note {
-    text-align: center;
-    font-size: 13px;
-    color: var(--muted-2);
-    margin-top: 20px;
-  }
-
-  /* ===================== NEW: DISCORD BANNER ===================== */
-  .discord-banner {
-    width: 100%;
-    max-width: 1280px;
-    padding: 0 32px 90px;
-    position: relative;
-    z-index: 1;
-  }
-
-  .discord-inner {
-    border-radius: 20px;
-    border: 1px solid rgba(88,101,242,0.3);
-    background:
-      radial-gradient(600px 280px at 10% 50%, rgba(88,101,242,0.12), transparent 70%),
-      radial-gradient(400px 200px at 90% 50%, rgba(167,139,250,0.10), transparent 70%),
+      radial-gradient(700px 320px at 18% 0%, rgba(79,140,255,0.16), transparent 70%),
+      radial-gradient(700px 320px at 88% 100%, rgba(155,123,255,0.16), transparent 70%),
       var(--surface);
-    padding: 48px 56px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 32px;
-    flex-wrap: wrap;
-    position: relative;
-    overflow: hidden;
+    padding:76px 48px;
+    text-align:center;
+    position:relative;overflow:hidden;
+  }
+  .cta-banner h2{
+    font-family:var(--display);font-weight:800;font-size:clamp(28px,4vw,42px);
+    color:#fff;margin-bottom:16px;letter-spacing:-0.025em;
+  }
+  .cta-banner p{font-size:16px;color:var(--muted);max-width:460px;margin:0 auto 36px;line-height:1.7;}
+  .cta-banner .hero-ctas{margin-bottom:0;}
+
+  @media (max-width:560px){.cta-banner{padding:48px 22px;border-radius:20px;}}
+
+  /* ============== FOOTER ============== */
+  .site-footer{
+    width:100%;max-width:1240px;margin:0 auto;
+    padding:56px 32px 40px;
+    border-top:1px solid var(--line);
+    position:relative;z-index:1;
+  }
+  .footer-grid{display:grid;grid-template-columns:1.5fr 1fr 1fr 1fr;gap:40px;margin-bottom:48px;}
+  .footer-brand p{font-size:13.5px;color:var(--muted);line-height:1.7;max-width:280px;margin-top:14px;}
+  .footer-social{display:flex;gap:10px;margin-top:22px;}
+  .footer-social a{
+    width:34px;height:34px;border-radius:9px;border:1px solid var(--line);
+    display:flex;align-items:center;justify-content:center;color:var(--muted);
+    transition:all 0.2s;
+  }
+  .footer-social a:hover{color:#fff;border-color:rgba(79,140,255,0.3);background:rgba(79,140,255,0.06);}
+  .footer-social svg{width:15px;height:15px;}
+
+  .footer-col h4{
+    font-family:var(--mono);font-size:11px;letter-spacing:0.14em;text-transform:uppercase;
+    color:var(--muted-2);margin-bottom:18px;
+  }
+  .footer-col a{display:block;font-size:13.5px;color:var(--muted);text-decoration:none;margin-bottom:12px;transition:color 0.2s;}
+  .footer-col a:hover{color:var(--blue);}
+
+  .footer-bottom{
+    display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;
+    padding-top:28px;border-top:1px solid var(--line);
+    font-size:12.5px;color:var(--muted-2);
+  }
+  .footer-bottom-links{display:flex;gap:20px;}
+  .footer-bottom-links a{text-decoration:none;color:var(--muted-2);transition:color 0.2s;}
+  .footer-bottom-links a:hover{color:var(--muted);}
+
+  @media (max-width:880px){
+    .footer-grid{grid-template-columns:repeat(2,1fr);}
+    .footer-brand{grid-column:1/-1;}
+  }
+  @media (max-width:560px){
+    .site-footer{padding:40px 20px 32px;}
+    .footer-grid{grid-template-columns:1fr;gap:30px;}
+    .footer-bottom{flex-direction:column;align-items:flex-start;}
   }
 
-  .discord-inner::before {
-    content: '';
-    position: absolute;
-    right: -40px; top: -40px;
-    width: 200px; height: 200px;
-    border-radius: 50%;
-    background: rgba(88,101,242,0.07);
-    pointer-events: none;
-  }
-
-  .discord-left { flex: 1; min-width: 240px; }
-
-  .discord-eyebrow {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 11px;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-    color: #7289da;
-    margin-bottom: 12px;
-  }
-
-  .discord-title {
-    font-family: 'Sora', sans-serif;
-    font-size: clamp(20px, 3vw, 28px);
-    font-weight: 800;
-    color: #fff;
-    letter-spacing: -0.02em;
-    margin-bottom: 10px;
-  }
-
-  .discord-sub {
-    font-size: 14px;
-    color: var(--muted);
-    line-height: 1.7;
-    max-width: 440px;
-  }
-
-  .discord-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 10px;
-    padding: 14px 28px;
-    background: #5865f2;
-    color: #fff;
-    font-family: 'Inter', sans-serif;
-    font-size: 14px;
-    font-weight: 700;
-    border-radius: 11px;
-    text-decoration: none;
-    transition: all 0.22s;
-    border: none;
-    cursor: pointer;
-    white-space: nowrap;
-    box-shadow: 0 4px 20px rgba(88,101,242,0.35);
-    position: relative;
-    overflow: hidden;
-  }
-
-  .discord-btn::after {
-    content: '';
-    position: absolute;
-    top: 50%; left: -40%;
-    width: 30%; height: 200%;
-    background: rgba(255,255,255,0.15);
-    transform: translateY(-50%) skewX(-20deg);
-    transition: left 0.5s ease;
-  }
-
-  .discord-btn:hover::after { left: 140%; }
-  .discord-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 32px rgba(88,101,242,0.5);
-    background: #4f5fe8;
-  }
-
-  .discord-meta {
-    display: flex;
-    align-items: center;
-    gap: 20px;
-    margin-top: 16px;
-    flex-wrap: wrap;
-  }
-
-  .discord-stat {
-    font-size: 12.5px;
-    color: var(--muted-2);
-    display: flex;
-    align-items: center;
-    gap: 6px;
-  }
-
-  .discord-stat span {
-    color: var(--text);
-    font-weight: 600;
-    font-family: 'Sora', sans-serif;
-  }
-
-  .d-dot {
-    width: 7px; height: 7px;
-    border-radius: 50%;
-    background: #3ba55d;
-    box-shadow: 0 0 6px #3ba55d;
-    flex-shrink: 0;
-  }
-
-  /* ===================== NEW: FAQ ===================== */
-  .faq-list {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    max-width: 760px;
-    margin: 0 auto;
-  }
-
-  .faq-item {
-    background: var(--surface);
-    border: 1px solid var(--line);
-    border-radius: 14px;
-    overflow: hidden;
-    transition: border-color 0.22s;
-  }
-
-  .faq-item:hover { border-color: rgba(0,212,255,0.15); }
-  .faq-item.open { border-color: rgba(0,212,255,0.22); }
-
-  .faq-q {
-    padding: 18px 22px;
-    font-family: 'Sora', sans-serif;
-    font-size: 15px;
-    font-weight: 600;
-    color: var(--text);
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 14px;
-    user-select: none;
-    transition: color 0.18s;
-  }
-
-  .faq-item.open .faq-q { color: var(--cyan); }
-
-  .faq-chevron {
-    width: 18px; height: 18px;
-    flex-shrink: 0;
-    color: var(--muted-2);
-    transition: transform 0.28s cubic-bezier(0.16,1,0.3,1), color 0.18s;
-  }
-
-  .faq-item.open .faq-chevron { transform: rotate(180deg); color: var(--cyan); }
-
-  .faq-body {
-    display: grid;
-    grid-template-rows: 0fr;
-    transition: grid-template-rows 0.32s cubic-bezier(0.16,1,0.3,1);
-  }
-
-  .faq-item.open .faq-body { grid-template-rows: 1fr; }
-
-  .faq-body-inner {
-    overflow: hidden;
-    font-size: 14px;
-    color: var(--muted);
-    line-height: 1.8;
-    padding: 0 22px;
-  }
-
-  .faq-item.open .faq-body-inner { padding: 0 22px 18px; }
-
-  /* ===================== CTA BANNER (unchanged) ===================== */
-  .cta-banner {
-    width: 100%;
-    max-width: 1280px;
-    margin: 0 auto 90px;
-    padding: 0 32px;
-    position: relative;
-    z-index: 1;
-  }
-
-  .cta-banner-inner {
-    border-radius: 22px;
-    border: 1px solid rgba(0,212,255,0.18);
-    background:
-      radial-gradient(600px 280px at 20% 0%, rgba(0,212,255,0.14), transparent 70%),
-      radial-gradient(600px 280px at 85% 100%, rgba(167,139,250,0.14), transparent 70%),
-      var(--surface);
-    padding: 64px 48px;
-    text-align: center;
-    position: relative;
-    overflow: hidden;
-  }
-
-  .cta-banner h2 {
-    font-family: 'Sora', sans-serif;
-    font-weight: 800;
-    font-size: clamp(26px, 4vw, 40px);
-    color: #fff;
-    margin-bottom: 16px;
-    letter-spacing: -0.02em;
-  }
-
-  .cta-banner p {
-    font-size: 15.5px;
-    color: var(--muted);
-    max-width: 440px;
-    margin: 0 auto 32px;
-    line-height: 1.7;
-  }
-
-  .cta-banner .hero-ctas { justify-content: center; margin-bottom: 0; }
-
-  /* ===================== FOOTER (unchanged) ===================== */
-  .site-footer {
-    width: 100%;
-    max-width: 1280px;
-    padding: 48px 32px 64px;
-    position: relative;
-    z-index: 1;
-    border-top: 1px solid var(--line);
-  }
-
-  .footer-grid {
-    display: grid;
-    grid-template-columns: 1.4fr 1fr 1fr 1fr;
-    gap: 32px;
-    margin-bottom: 40px;
-  }
-
-  .footer-brand .logo { margin-bottom: 16px; }
-
-  .footer-brand p {
-    font-size: 13.5px;
-    color: var(--muted);
-    line-height: 1.7;
-    max-width: 280px;
-  }
-
-  .footer-col h4 {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 11.5px;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    color: var(--muted-2);
-    margin-bottom: 16px;
-  }
-
-  .footer-col a {
-    display: block;
-    font-size: 13.5px;
-    color: var(--muted);
-    text-decoration: none;
-    margin-bottom: 12px;
-    transition: color 0.2s;
-  }
-
-  .footer-col a:hover { color: var(--cyan); }
-
-  .footer-bottom {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    gap: 12px;
-    padding-top: 28px;
-    border-top: 1px solid var(--line);
-    font-size: 12.5px;
-    color: var(--muted-2);
-  }
-
-  .sr-only {
-    position: absolute;
-    width: 1px; height: 1px;
-    padding: 0; margin: -1px;
-    overflow: hidden;
-    clip: rect(0,0,0,0);
-    white-space: nowrap;
-    border: 0;
-  }
-
-  /* ===================== RESPONSIVE ===================== */
-  @media (max-width: 980px) {
-    .feature-grid { grid-template-columns: repeat(2, 1fr); }
-    .steps { grid-template-columns: 1fr; }
-    .step { border-right: none; border-bottom: 1px solid var(--line); }
-    .step:last-child { border-bottom: none; }
-    .footer-grid { grid-template-columns: repeat(2, 1fr); }
-    .footer-brand { grid-column: 1 / -1; }
-    .stats-bar-inner { grid-template-columns: repeat(2, 1fr); }
-    .testimonials-grid { grid-template-columns: 1fr; }
-    .pricing-grid { grid-template-columns: 1fr; max-width: 480px; }
-    .discord-inner { padding: 36px 32px; flex-direction: column; }
-    .navbar-curve-svg { display: none; }
-  }
-
-  @media (max-width: 860px) {
-    .nav-center { display: none; }
-  }
-
-  @media (max-width: 640px) {
-    .navbar { margin: 10px 12px 0; padding: 0 10px 0 8px; height: 60px; }
-    .logo-img { height: 32px; }
-    .nav-actions { gap: 6px; }
-    .nav-actions .btn-ghost span { display: none; }
-    .nav-actions .btn-ghost a { padding: 8px 10px; }
-    .nav-actions .btn-cta a { padding: 8px 14px; font-size: 12.5px; }
-    .nav-actions .btn-cta span { display: none; }
-    .search-btn { width: 34px; height: 34px; }
-    .hero-title { font-size: clamp(30px, 9vw, 42px); }
-    .hero-sub { font-size: 15px; padding: 0 4px; }
-    .hero-ctas { flex-direction: column; align-items: stretch; gap: 12px; width: 100%; }
-    .hero-ctas .cta-primary, .hero-ctas .cta-secondary { width: 100%; }
-    .trust-row { flex-direction: column; align-items: center; gap: 10px; text-align: center; }
-    .feature-grid { grid-template-columns: 1fr; }
-    .section { padding: 56px 18px; }
-    .section-head { margin-bottom: 36px; }
-    .proof-strip { padding: 0 18px 40px; }
-    .proof-strip-inner { flex-direction: column; align-items: flex-start; gap: 14px; }
-    .proof-tags { gap: 8px; }
-    .proof-tag { font-size: 12.5px; padding: 7px 14px; }
-    .cta-banner { padding: 0 18px; margin-bottom: 56px; }
-    .cta-banner-inner { padding: 40px 20px; }
-    .cta-banner .hero-ctas { width: 100%; }
-    .site-footer { padding: 36px 18px 48px; }
-    .footer-grid { grid-template-columns: 1fr; gap: 28px; }
-    .footer-bottom { flex-direction: column; align-items: flex-start; text-align: left; }
-    .stats-bar { padding: 0 18px 48px; }
-    .stats-bar-inner { grid-template-columns: repeat(2, 1fr); }
-    .stat-number { font-size: 28px; }
-    .discord-banner { padding: 0 18px 56px; }
-    .discord-inner { padding: 28px 20px; }
-    .faq-list { padding: 0; }
-    .navbar-curve-svg { display: none; }
+  /* ============== misc responsive section tightening ============== */
+  @media (max-width:640px){
+    .trust-row{gap:8px;}
+    .trust-pill{padding:8px 14px;font-size:12px;}
+    .section-head{margin-bottom:40px;}
   }
 </style>
-
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@graph": [
-    {
-      "@type": "Organization",
-      "name": "Aquila AI",
-      "url": "https://aquila-ai.vercel.app/",
-      "logo": "https://aquila-ai.vercel.app/logo.png",
-      "description": "Aquila AI is an AI-powered study companion platform for JEE, NEET, and Board exam aspirants."
-    },
-    {
-      "@type": "WebSite",
-      "name": "Aquila AI",
-      "url": "https://aquila-ai.vercel.app/",
-      "potentialAction": {
-        "@type": "SearchAction",
-        "target": "https://aquila-ai.vercel.app/search?q={search_term_string}",
-        "query-input": "required name=search_term_string"
-      }
-    },
-    {
-      "@type": "SoftwareApplication",
-      "name": "Aquila AI",
-      "applicationCategory": "EducationalApplication",
-      "operatingSystem": "Web",
-      "description": "AI study assistant offering AI tutor support, AI quiz generator, AI flashcards, study planner, and personalized learning for JEE, NEET, and Board exam preparation.",
-      "offers": {
-        "@type": "Offer",
-        "price": "0",
-        "priceCurrency": "INR"
-      },
-      "url": "https://aquila-ai.vercel.app/"
-    },
-    {
-      "@type": "FAQPage",
-      "mainEntity": [
-        {
-          "@type": "Question",
-          "name": "What is Aquila AI?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "Aquila AI is an AI-powered study companion that helps students prepare for JEE, NEET, and Board exams with personalized learning, AI tutoring, quiz generation, and flashcards."
-          }
-        },
-        {
-          "@type": "Question",
-          "name": "Does Aquila AI create a study planner?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "Yes, Aquila AI generates a personalized study planner based on your syllabus, exam date, and weak areas, and adapts it as you progress."
-          }
-        },
-        {
-          "@type": "Question",
-          "name": "Is Aquila AI free to use?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "Aquila AI offers free access to its core AI tutor, study planner, and quiz generator features for students."
-          }
-        }
-      ]
-    }
-  ]
-}
-</script>
 </head>
 <body>
 
-<div class="ambient" aria-hidden="true"></div>
+<div class="ambient-grid" aria-hidden="true"></div>
 
-<div class="nb-root">
-
-  <header>
-    <nav class="navbar" aria-label="Main navigation">
-      <div class="navbar-scan" aria-hidden="true"></div>
-      <div class="navbar-glow" aria-hidden="true"></div>
-      <svg class="navbar-curve-svg" viewBox="0 0 1280 18" preserveAspectRatio="none" aria-hidden="true">
-        <path d="M0,0 Q320,18 640,10 Q960,2 1280,0 L1280,0 L0,0 Z"/>
+<header>
+  <nav class="navbar" aria-label="Main navigation">
+    <a class="logo" href="/" aria-label="Aquila AI home">
+      <svg class="logo-mark" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="logoGrad" x1="0" y1="0" x2="32" y2="32">
+            <stop offset="0%" stop-color="#9fc3ff"/>
+            <stop offset="55%" stop-color="#4f8cff"/>
+            <stop offset="100%" stop-color="#9b7bff"/>
+          </linearGradient>
+        </defs>
+        <path d="M16 2 L29 27 H20.5 L16 17 L11.5 27 H3 Z" fill="url(#logoGrad)"/>
       </svg>
+      <span class="logo-text">Aquila AI</span>
+    </a>
 
-      <a class="logo" href="/" aria-label="Aquila AI home">
-        <img src="logo.png" alt="Aquila AI" class="logo-img">
-      </a>
+    <div class="nav-links">
+      <a href="#features">Features</a>
+      <a href="#experience">Experience</a>
+      <a href="#faq">FAQ</a>
+    </div>
 
-      <div class="nav-center">
-        <a href="#features-heading">Features</a>
-        <a href="#how-heading">How it Works</a>
-        <a href="#pricing">Pricing</a>
+    <div class="nav-actions">
+      <a class="btn-ghost-nav" href="login.html">Log in</a>
+      <span class="magnetic"><a class="btn-primary" href="signup.html">Get Started</a></span>
+    </div>
+  </nav>
+</header>
+
+<main>
+  <!-- ============ HERO ============ -->
+  <section class="hero" id="hero" aria-labelledby="hero-heading">
+    <video
+      class="hero-video-layer"
+      autoplay
+      muted
+      loop
+      playsinline
+      preload="auto"
+      poster=""
+      aria-hidden="true">
+      <source src="1782715809423_Hailuo_Video_Create_a_cinematic_12-second_p_526075646858424325__1_.mp4" type="video/mp4">
+    </video>
+    <canvas class="hero-canvas-layer" id="heroCanvas" aria-hidden="true"></canvas>
+    <div class="hero-scrim" aria-hidden="true"></div>
+    <div class="hero-grain" aria-hidden="true"></div>
+
+    <div class="hero-content">
+      <div class="hero-eyebrow">
+        <span class="eyebrow-dot" aria-hidden="true"></span>
+        Your thinking partner, always on
       </div>
 
-      <div class="nav-actions">
-        <button class="search-btn" aria-label="Search Aquila AI">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.35-4.35"/></svg>
+      <h1 class="hero-title" id="hero-heading">
+        The AI that helps students<br><span class="grad">think bigger.</span>
+      </h1>
+
+      <p class="hero-sub">
+        Aquila AI is a trusted companion for learning, creativity, productivity, and growth — built to meet you where you study, think, and plan your future.
+      </p>
+
+      <div class="hero-ctas">
+        <span class="magnetic"><a class="btn-primary cta-lg" href="signup.html">Get Started</a></span>
+        <span class="magnetic"><a class="btn-secondary cta-lg" href="#experience" aria-label="Watch the Aquila AI demo">
+          Watch Demo
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </a></span>
+      </div>
+
+      <div class="hero-cards" role="list" aria-label="Aquila AI capabilities">
+        <div class="glass-card" role="listitem">
+          <span class="gc-pulse" aria-hidden="true"></span>
+          <div class="gc-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          </div>
+          <div class="gc-label">AI Chat</div>
+          <div class="gc-sub">thinking, live</div>
+        </div>
+        <div class="glass-card" role="listitem">
+          <span class="gc-pulse" aria-hidden="true"></span>
+          <div class="gc-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+          </div>
+          <div class="gc-label">Study Planner</div>
+          <div class="gc-sub">adapts daily</div>
+        </div>
+        <div class="glass-card" role="listitem">
+          <span class="gc-pulse" aria-hidden="true"></span>
+          <div class="gc-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>
+          </div>
+          <div class="gc-label">Daily Question</div>
+          <div class="gc-sub">new at 7am</div>
+        </div>
+        <div class="glass-card" role="listitem">
+          <div class="gc-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2M12 19v3"/></svg>
+          </div>
+          <div class="gc-label">Voice Community</div>
+          <div class="gc-sub">open now</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="scroll-cue" aria-hidden="true">
+      <span>Scroll</span>
+      <span class="chev"></span>
+    </div>
+  </section>
+
+  <!-- ============ TRUST / STATS ============ -->
+  <section class="section reveal" aria-labelledby="trust-heading" style="padding-top:88px;">
+    <h2 class="sr-only" id="trust-heading">Why students trust Aquila AI</h2>
+    <div class="trust-row">
+      <div class="trust-pill"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 2 7l10 5 10-5-10-5Z"/><path d="m2 17 10 5 10-5"/><path d="m2 12 10 5 10-5"/></svg> Trusted by students worldwide</div>
+      <div class="trust-pill"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 14h7l-1 8 10-12h-7l1-8Z"/></svg> Fast responses</div>
+      <div class="trust-pill"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg> Secure conversations</div>
+      <div class="trust-pill"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22c4.97-2.5 8-6 8-11V5l-8-3-8 3v6c0 5 3.03 8.5 8 11Z"/></svg> Privacy-first AI</div>
+    </div>
+
+    <div class="stats-grid">
+      <div class="stat-cell"><div class="stat-num" data-count="50000" data-suffix="+">0</div><div class="stat-label">Conversations held with students</div></div>
+      <div class="stat-cell"><div class="stat-num" data-count="98" data-suffix="%">0</div><div class="stat-label">Would recommend Aquila to a friend</div></div>
+      <div class="stat-cell"><div class="stat-num" data-count="24" data-suffix="/7">0</div><div class="stat-label">Available whenever you need it</div></div>
+      <div class="stat-cell"><div class="stat-num" data-count="0" data-suffix="" data-text="Encrypted">0</div><div class="stat-label">Every conversation, end to end</div></div>
+    </div>
+  </section>
+
+  <!-- ============ FEATURES ============ -->
+  <section class="section" id="features" aria-labelledby="features-heading">
+    <div class="section-head reveal">
+      <span class="eyebrow">What Aquila does</span>
+      <h2 class="section-title" id="features-heading">One companion, every part of student life</h2>
+      <p class="section-sub">Aquila AI isn't a single tool bolted onto another — it's one continuous mind that follows you from a hard question to a hard year.</p>
+    </div>
+
+    <div class="feature-grid">
+      <div class="feature-card reveal">
+        <div class="fc-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div>
+        <h3>AI Chat</h3>
+        <p>Ask anything, in plain language. Aquila explains, questions back, and adapts to how you actually think.</p>
+      </div>
+      <div class="feature-card reveal">
+        <div class="fc-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18M8 14h.01M12 14h.01M16 14h.01"/></svg></div>
+        <h3>Study Assistant</h3>
+        <p>A plan that rewrites itself around your real progress — not a static checklist you abandon by Tuesday.</p>
+      </div>
+      <div class="feature-card reveal">
+        <div class="fc-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2M12 19v3"/></svg></div>
+        <h3>Voice Community</h3>
+        <p>Talk through tough topics out loud with peers and Aquila in live voice rooms — no typing required.</p>
+      </div>
+      <div class="feature-card reveal">
+        <div class="fc-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg></div>
+        <h3>Daily Reflection</h3>
+        <p>One short prompt each evening turns a busy day into something you actually remember and learn from.</p>
+      </div>
+      <div class="feature-card reveal">
+        <div class="fc-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg></div>
+        <h3>Future Me</h3>
+        <p>Write to the person you're becoming. Aquila keeps your goals visible and checks in as you close the gap.</p>
+      </div>
+      <div class="feature-card reveal">
+        <div class="fc-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22V12M12 12 6 6M12 12l6-6M6 6a4 4 0 1 1 0-.01M18 6a4 4 0 1 1 0-.01M9 22h6"/></svg></div>
+        <h3>Legacy Tree</h3>
+        <p>Every milestone you reach branches into the next. Watch your growth take shape as a living record.</p>
+      </div>
+      <div class="feature-card reveal">
+        <div class="fc-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6M10 3h4a2 2 0 0 1 2 2v1.34a6 6 0 1 1-8 0V5a2 2 0 0 1 2-2Z"/></svg></div>
+        <h3>Smart Notes</h3>
+        <p>Aquila listens to your lessons and turns them into clean, searchable notes — no rewriting required.</p>
+      </div>
+      <div class="feature-card reveal">
+        <div class="fc-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg></div>
+        <h3>Exam Preparation</h3>
+        <p>Fresh practice questions on exactly what you're weak on, with explanations that actually teach.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ EXPERIENCE ============ -->
+  <section class="section" id="experience" aria-labelledby="experience-heading" style="padding-top:0;">
+    <div class="experience reveal">
+      <div class="experience-grid-bg" aria-hidden="true"></div>
+      <div class="experience-inner">
+        <div class="experience-copy">
+          <span class="eyebrow">Inside Aquila</span>
+          <h2 id="experience-heading">Built to feel like one continuous mind</h2>
+          <p>Every panel you see is talking to the same model — your chats, your plan, your notes, and your progress all stay connected, so nothing you tell Aquila is ever lost between tools.</p>
+          <div class="exp-list">
+            <div class="exp-item">
+              <span class="exp-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></span>
+              <span><strong>Context that carries over.</strong> Ask a follow-up next week — Aquila still remembers.</span>
+            </div>
+            <div class="exp-item">
+              <span class="exp-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></span>
+              <span><strong>Visual progress, not guesswork.</strong> See exactly where your effort is going.</span>
+            </div>
+            <div class="exp-item">
+              <span class="exp-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></span>
+              <span><strong>Built for focus.</strong> Calm interfaces, no notifications competing for attention.</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="experience-visual" aria-hidden="true">
+          <div class="mock-panel panel-a">
+            <div class="mp-head"><div class="mp-dots"><span></span><span></span><span></span></div><span class="mp-tag">Weekly focus</span></div>
+            <div class="mp-body">
+              <div class="mp-bars">
+                <span style="height:40%;"></span><span style="height:65%;"></span><span style="height:50%;"></span>
+                <span style="height:80%;"></span><span style="height:55%;"></span><span style="height:90%;"></span><span style="height:70%;"></span>
+              </div>
+            </div>
+          </div>
+          <div class="mock-panel panel-b">
+            <div class="mp-head"><div class="mp-dots"><span></span><span></span><span></span></div><span class="mp-tag">Aquila chat</span></div>
+            <div class="mp-body">
+              <div class="mp-chat-line"><span class="mp-avatar"></span><span class="mp-chat-bubble">Let's break that into three steps.</span></div>
+              <div class="mp-chat-line"><span class="mp-avatar"></span><span class="mp-chat-bubble">Nice — your accuracy is up 12% this week.</span></div>
+            </div>
+          </div>
+          <div class="mock-panel panel-c">
+            <div class="mp-head"><div class="mp-dots"><span></span><span></span><span></span></div><span class="mp-tag">Syllabus</span></div>
+            <div class="mp-body">
+              <svg class="mp-ring" viewBox="0 0 90 90">
+                <circle cx="45" cy="45" r="38" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="7"/>
+                <circle cx="45" cy="45" r="38" fill="none" stroke="#4f8cff" stroke-width="7" stroke-linecap="round"
+                  stroke-dasharray="180 238" transform="rotate(-90 45 45)"/>
+                <text x="45" y="50" text-anchor="middle" fill="#fff" font-family="Inter" font-weight="700" font-size="18">76%</text>
+              </svg>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ QUOTE ============ -->
+  <section class="section reveal" aria-label="Student testimonial" style="padding-top:0;">
+    <div class="quote-strip">
+      <div class="quote-mark" aria-hidden="true">&ldquo;</div>
+      <p class="quote-text">Aquila doesn't just answer my questions. It asks me better ones — the kind that make me actually understand, not just finish.</p>
+      <div class="quote-byline">
+        <span class="quote-avatar" aria-hidden="true"></span>
+        <div style="text-align:left;">
+          <div class="quote-name">Early Access Student</div>
+          <div class="quote-role">Beta cohort, 2026</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ FAQ ============ -->
+  <section class="section" id="faq" aria-labelledby="faq-heading" style="padding-top:0;">
+    <div class="section-head reveal">
+      <span class="eyebrow">FAQ</span>
+      <h2 class="section-title" id="faq-heading">Questions, answered plainly</h2>
+      <p class="section-sub">Everything worth knowing before you start.</p>
+    </div>
+    <div class="faq-list reveal">
+      <div class="faq-item">
+        <button class="faq-q" aria-expanded="false">
+          Is Aquila AI free to start?
+          <svg class="faq-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
         </button>
-        <div class="btn-ghost" aria-label="Login to Aquila AI">
-          <a href="login.html">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-            <span>Log in</span>
-          </a>
-        </div>
-        <div class="btn-cta" aria-label="Get started with Aquila AI for free">
-          <a href="signup.html">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M13 2 3 14h7l-1 8 10-12h-7l1-8Z"/></svg>
-            <span>Get Started</span>
-          </a>
-        </div>
+        <div class="faq-body"><div class="faq-body-inner">Yes. You can start chatting with Aquila, build a study plan, and join the community at no cost — no card required to begin.</div></div>
       </div>
-    </nav>
-  </header>
-
-  <main>
-    <!-- ===== HERO ===== -->
-    <section class="hero" id="hero" aria-labelledby="hero-heading">
-      <video class="hero-video-bg" autoplay muted loop playsinline poster="logo.png"
-        aria-hidden="true"
-        src="hero-bg.mp4">
-      </video>
-      <div class="hero-video-overlay" aria-hidden="true"></div>
-      <canvas class="hero-canvas-layer" id="heroCanvas" aria-hidden="true"></canvas>
-      <div class="hero-vignette" aria-hidden="true"></div>
-      <div class="hero-grain" aria-hidden="true"></div>
-
-      <div class="hero-content">
-        <div class="badge">
-          <span class="badge-dot" aria-hidden="true"></span>
-          Powered by advanced AI
-        </div>
-
-        <h1 class="hero-title" id="hero-heading">
-          Your AI study assistant<br>for <span>smarter learning</span>
-        </h1>
-
-        <p class="hero-sub">
-          Aquila AI is your personal AI tutor and study planner. It understands your full syllabus, generates AI quizzes and flashcards, tracks your weak areas, and helps you study like a topper for JEE, NEET, and Board Exams.
-        </p>
-
-        <div class="hero-ctas">
-          <a class="cta-primary" href="signup.html">Start for Free</a>
-          <a class="cta-secondary" href="#" aria-label="Watch Aquila AI demo video">
-            Watch Demo
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
-          </a>
-        </div>
-
-        <h2 class="sr-only">AI-powered personalized learning platform for competitive exam students</h2>
-
-        <div class="trust-row">
-          <div class="trust-avatars" aria-hidden="true">
-            <span>JE</span>
-            <span>NE</span>
-            <span>12</span>
-          </div>
-          <span class="label-note">Built for <strong>JEE</strong>, <strong>NEET</strong> &amp; <strong>Board</strong> aspirants — join students learning smarter with Aquila AI.</span>
-        </div>
+      <div class="faq-item">
+        <button class="faq-q" aria-expanded="false">
+          How is my data kept private?
+          <svg class="faq-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="faq-body"><div class="faq-body-inner">Conversations are encrypted in transit and at rest, tied to your account only, and never sold or shared with advertisers.</div></div>
       </div>
-
-      <div class="scroll-cue" aria-hidden="true">
-        <span>Scroll</span>
-        <span class="chevron"></span>
+      <div class="faq-item">
+        <button class="faq-q" aria-expanded="false">
+          Does Aquila replace my teacher?
+          <svg class="faq-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="faq-body"><div class="faq-body-inner">No — think of Aquila as a study partner who's always available between classes, not a substitute for instruction. Always check critical facts against your coursework.</div></div>
       </div>
-    </section>
-
-    <!-- ===== PROOF STRIP (unchanged) ===== -->
-    <section class="proof-strip" aria-label="Exams supported">
-      <div class="proof-strip-inner">
-        <span class="proof-label">Trusted for exam prep across</span>
-        <div class="proof-tags">
-          <span class="proof-tag">JEE Main &amp; Advanced</span>
-          <span class="proof-tag">NEET</span>
-          <span class="proof-tag">CBSE Boards</span>
-          <span class="proof-tag">State Boards</span>
-        </div>
-      </div>
-    </section>
-
-    <!-- ===== NEW: STATS BAR ===== -->
-    <section class="stats-bar reveal" aria-label="Platform statistics">
-      <div class="stats-bar-inner">
-        <div class="stat-item">
-          <div class="stat-number">10k+</div>
-          <div class="stat-label">Questions answered by AI</div>
-        </div>
-        <div class="stat-item">
-          <div class="stat-number">3</div>
-          <div class="stat-label">Exams supported — JEE, NEET, Boards</div>
-        </div>
-        <div class="stat-item">
-          <div class="stat-number">100%</div>
-          <div class="stat-label">Free during Early Access</div>
-        </div>
-        <div class="stat-item">
-          <div class="stat-number">24/7</div>
-          <div class="stat-label">AI tutor always available</div>
-        </div>
-      </div>
-    </section>
-
-    <!-- ===== FEATURES (unchanged) ===== -->
-    <section class="section" aria-labelledby="features-heading">
-      <div class="section-head reveal">
-        <span class="eyebrow">Core features</span>
-        <h2 class="section-title" id="features-heading">Everything a topper's toolkit needs, in one place</h2>
-        <p class="section-sub">Aquila AI brings together tutoring, planning, practice, and progress tracking — so you spend less time organising and more time studying.</p>
-      </div>
-
-      <div class="feature-grid">
-        <div class="feature-card reveal">
-          <div class="feature-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 2 7l10 5 10-5-10-5Z"/><path d="m2 17 10 5 10-5"/><path d="m2 12 10 5 10-5"/></svg>
-          </div>
-          <h3>AI Tutor Chat</h3>
-          <p>Ask doubts in plain language and get clear, step-by-step explanations tailored to your syllabus and exam pattern — available any time.</p>
-        </div>
-        <div class="feature-card reveal">
-          <div class="feature-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11H3v10h6V11Z"/><path d="M15 4H9v17h6V4Z"/><path d="M21 8h-6v13h6V8Z"/></svg>
-          </div>
-          <h3>Smart Study Planner</h3>
-          <p>Tell Aquila your exam date and weak topics — it builds a day-by-day plan and reshuffles automatically as your progress changes.</p>
-        </div>
-        <div class="feature-card reveal">
-          <div class="feature-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>
-          </div>
-          <h3>AI Quiz Generator</h3>
-          <p>Generate fresh, exam-style questions on any chapter instantly, with instant scoring and explanations for every answer.</p>
-        </div>
-        <div class="feature-card reveal">
-          <div class="feature-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="14" rx="2"/><path d="M8 21h8M12 18v3"/></svg>
-          </div>
-          <h3>Smart Flashcards</h3>
-          <p>Auto-generated flashcards with spaced repetition help key formulas, reactions, and facts stick for the long run.</p>
-        </div>
-        <div class="feature-card reveal">
-          <div class="feature-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M18 17V9M13 17V5M8 17v-3"/></svg>
-          </div>
-          <h3>Progress Tracking</h3>
-          <p>Visual dashboards highlight strong and weak areas across subjects, so you always know exactly what to revise next.</p>
-        </div>
-        <div class="feature-card reveal">
-          <div class="feature-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22c4.97-2.5 8-6 8-11V5l-8-3-8 3v6c0 5 3.03 8.5 8 11Z"/></svg>
-          </div>
-          <h3>Secure &amp; Private</h3>
-          <p>Your data is protected with secure authentication and encrypted storage, so you can focus on studying with peace of mind.</p>
-        </div>
-      </div>
-    </section>
-
-    <!-- ===== HOW IT WORKS (unchanged) ===== -->
-    <section class="section" aria-labelledby="how-heading" style="padding-top:0;">
-      <div class="section-head reveal">
-        <span class="eyebrow">How it works</span>
-        <h2 class="section-title" id="how-heading">From syllabus to score, in three steps</h2>
-        <p class="section-sub">Aquila AI maps your exam, your timeline, and your habits into a single adaptive study system.</p>
-      </div>
-      <div class="steps reveal">
-        <div class="step">
-          <span class="step-num">01 / SET UP</span>
-          <h3>Tell Aquila your exam</h3>
-          <p>Pick JEE, NEET, or your Board, set your exam date, and mark the topics you find toughest.</p>
-        </div>
-        <div class="step">
-          <span class="step-num">02 / STUDY</span>
-          <h3>Follow your AI plan</h3>
-          <p>Get a daily plan with lessons, practice questions, and flashcards — ask the AI tutor whenever you're stuck.</p>
-        </div>
-        <div class="step">
-          <span class="step-num">03 / IMPROVE</span>
-          <h3>Track and adapt</h3>
-          <p>Aquila watches your quiz scores and study streaks, then adjusts your plan to focus where it matters most.</p>
-        </div>
-      </div>
-    </section>
-
-    <!-- ===== NEW: SOCIAL PROOF / TESTIMONIALS ===== -->
-    <section class="section" aria-labelledby="testimonials-heading" style="padding-top:0;">
-      <div class="section-head reveal">
-        <span class="eyebrow">Student stories</span>
-        <h2 class="section-title" id="testimonials-heading">Early users are already studying smarter</h2>
-        <p class="section-sub">Aquila AI is in Early Access — here's what students on the waitlist and beta testers are saying.</p>
-      </div>
-      <div class="testimonials-grid">
-        <div class="testimonial-card reveal">
-          <div class="tcard-quote">"</div>
-          <p class="tcard-text">I used to spend an hour just figuring out what to study next. Aquila gives me a daily plan in seconds — and the AI tutor actually explains things the way my teacher does, not in some robotic way.</p>
-          <div class="tcard-footer">
-            <div class="tcard-avatar cyan">AR</div>
-            <div>
-              <div class="tcard-name">Aryan R.</div>
-              <div class="tcard-meta">JEE Aspirant, Class 12 · Delhi</div>
-            </div>
-            <div class="tcard-stars">★★★★★</div>
-          </div>
-        </div>
-        <div class="testimonial-card reveal">
-          <div class="tcard-quote">"</div>
-          <p class="tcard-text">The quiz generator is insane. I tell it "NEET Biology — Cell Division" and it gives me 20 MCQs with explanations instantly. I've been testing it every day. Nothing else comes close for NEET prep.</p>
-          <div class="tcard-footer">
-            <div class="tcard-avatar violet">PS</div>
-            <div>
-              <div class="tcard-name">Priya S.</div>
-              <div class="tcard-meta">NEET Aspirant, Dropper · Mumbai</div>
-            </div>
-            <div class="tcard-stars">★★★★★</div>
-          </div>
-        </div>
-        <div class="testimonial-card reveal">
-          <div class="tcard-quote">"</div>
-          <p class="tcard-text">As a Class 12 student juggling Boards and JEE, I needed something that keeps both in sync. Aquila's planner actually does that. It's free right now which is wild — I'd honestly pay for this.</p>
-          <div class="tcard-footer">
-            <div class="tcard-avatar amber">KM</div>
-            <div>
-              <div class="tcard-name">Kabir M.</div>
-              <div class="tcard-meta">JEE + Boards · Pune</div>
-            </div>
-            <div class="tcard-stars">★★★★★</div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- ===== NEW: PRICING ===== -->
-    <section class="section" id="pricing" aria-labelledby="pricing-heading" style="padding-top:0;">
-      <div class="section-head reveal">
-        <span class="eyebrow">Pricing</span>
-        <h2 class="section-title" id="pricing-heading">Simple, honest pricing</h2>
-        <p class="section-sub">Everything is free right now. During Early Access, even Pro is available at no cost — just request access.</p>
-      </div>
-      <div class="pricing-grid reveal">
-
-        <!-- Free -->
-        <div class="pricing-card">
-          <div class="pricing-name">Starter</div>
-          <div class="pricing-title">Free</div>
-          <div class="pricing-price free-badge"><strong>₹0</strong> &nbsp;/ forever</div>
-          <div class="pricing-divider"></div>
-          <ul class="pricing-features">
-            <li class="pricing-feature">
-              <span class="pf-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></span>
-              <span><span class="pf-strong">20 AI Chats per day</span><span class="pf-sub">Resets every 24 hours</span></span>
-            </li>
-            <li class="pricing-feature">
-              <span class="pf-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></span>
-              <span><span class="pf-strong">20 AI Analyses per day</span><span class="pf-sub">Quiz & performance analysis</span></span>
-            </li>
-            <li class="pricing-feature">
-              <span class="pf-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></span>
-              <span><span class="pf-strong">30 min Study Planner/day</span><span class="pf-sub">Build your daily schedule</span></span>
-            </li>
-            <li class="pricing-feature">
-              <span class="pf-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></span>
-              <span><span class="pf-strong">Community access</span><span class="pf-sub">Connect with other aspirants</span></span>
-            </li>
-          </ul>
-          <a href="signup.html" class="pricing-btn free-btn">Get Started Free</a>
-        </div>
-
-        <!-- Pro -->
-        <div class="pricing-card featured">
-          <div class="pricing-ribbon">✨ Early Access</div>
-          <div class="pricing-name">Premium</div>
-          <div class="pricing-title gradient">Aquila Pro</div>
-          <div class="pricing-price"><strong>Free*</strong> &nbsp;<span style="font-size:12px;color:var(--muted-2)">during Early Access</span></div>
-          <div class="pricing-divider"></div>
-          <ul class="pricing-features">
-            <li class="pricing-feature">
-              <span class="pf-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></span>
-              <span><span class="pf-strong">Unlimited AI Chats</span><span class="pf-sub">No daily cap, ever</span></span>
-            </li>
-            <li class="pricing-feature">
-              <span class="pf-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></span>
-              <span><span class="pf-strong">Unlimited AI Analyses</span><span class="pf-sub">Deep-dive any quiz anytime</span></span>
-            </li>
-            <li class="pricing-feature">
-              <span class="pf-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></span>
-              <span><span class="pf-strong">Unlimited Study Planner</span><span class="pf-sub">Plan without restrictions</span></span>
-            </li>
-            <li class="pricing-feature">
-              <span class="pf-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></span>
-              <span><span class="pf-strong">Priority AI responses</span><span class="pf-sub">Faster, smarter answers</span></span>
-            </li>
-            <li class="pricing-feature">
-              <span class="pf-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></span>
-              <span><span class="pf-strong">Early access to new features</span><span class="pf-sub">Be first to try everything new</span></span>
-            </li>
-          </ul>
-          <a href="subscription.html" class="pricing-btn pro-btn">✨ Request Pro Access — Free</a>
-        </div>
-      </div>
-      <p class="pricing-note reveal">* Aquila Pro is free during Early Access. No credit card required, ever.</p>
-    </section>
-
-    <!-- ===== NEW: DISCORD COMMUNITY BANNER ===== -->
-    <section class="discord-banner reveal" aria-labelledby="discord-heading">
-      <div class="discord-inner">
-        <div class="discord-left">
-          <div class="discord-eyebrow">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057c.001.022.01.043.027.057a19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028c.462-.63.874-1.295 1.226-1.994a.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03z"/></svg>
-            Community
-          </div>
-          <h2 class="discord-title" id="discord-heading">Join the Aquila AI community on Discord</h2>
-          <p class="discord-sub">Connect with fellow JEE, NEET & Board aspirants. Share tips, get study help, request Pro access, and get early updates directly from the Aquila team.</p>
-          <div class="discord-meta">
-            <div class="discord-stat"><span class="d-dot"></span> <span>Active</span> community growing</div>
-            <div class="discord-stat">🎯 <span>JEE · NEET · Boards</span> channels</div>
-            <div class="discord-stat">⚡ <span>Direct</span> access to the team</div>
-          </div>
-        </div>
-        <a href="https://discord.gg/your-invite-link" target="_blank" rel="noopener noreferrer" class="discord-btn">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057c.001.022.01.043.027.057a19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028c.462-.63.874-1.295 1.226-1.994a.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03z"/></svg>
-          Join Discord
-        </a>
-      </div>
-    </section>
-
-    <!-- ===== NEW: FAQ ===== -->
-    <section class="section" aria-labelledby="faq-heading" style="padding-top:0;">
-      <div class="section-head reveal">
-        <span class="eyebrow">FAQ</span>
-        <h2 class="section-title" id="faq-heading">Questions? We've got answers.</h2>
-        <p class="section-sub">Everything you need to know about Aquila AI before you dive in.</p>
-      </div>
-      <div class="faq-list reveal">
-        <div class="faq-item">
-          <div class="faq-q" onclick="toggleFaq(this)">
-            Is Aquila AI really free?
-            <svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
-          </div>
-          <div class="faq-body"><div class="faq-body-inner">Yes — Aquila AI is completely free right now during Early Access. The Free plan gives you 20 AI chats and 20 analyses per day, plus 30 minutes of Study Planner time. Even Aquila Pro is available at no cost during this period — just request access and we'll upgrade you manually.</div></div>
-        </div>
-        <div class="faq-item">
-          <div class="faq-q" onclick="toggleFaq(this)">
-            Which exams does Aquila AI support?
-            <svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
-          </div>
-          <div class="faq-body"><div class="faq-body-inner">Aquila AI is built specifically for Indian students preparing for JEE Main, JEE Advanced, NEET, and Board exams (Class 10 & 12 — CBSE and most State Boards). Our AI tutor and quiz generator are tuned to the NCERT syllabus and official exam patterns.</div></div>
-        </div>
-        <div class="faq-item">
-          <div class="faq-q" onclick="toggleFaq(this)">
-            How do I get Aquila Pro access?
-            <svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
-          </div>
-          <div class="faq-body"><div class="faq-body-inner">Click "Request Pro Access" on the Subscription page or join our Discord and message the team. During Early Access, we upgrade accounts manually within 24 hours. No payment required — it's free for early supporters.</div></div>
-        </div>
-        <div class="faq-item">
-          <div class="faq-q" onclick="toggleFaq(this)">
-            Do daily limits reset?
-            <svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
-          </div>
-          <div class="faq-body"><div class="faq-body-inner">Yes — all Free plan limits (chats, analyses, planner time) reset every 24 hours automatically at midnight. Your usage counter starts fresh each day. Pro users have no limits at all.</div></div>
-        </div>
-        <div class="faq-item">
-          <div class="faq-q" onclick="toggleFaq(this)">
-            How accurate is the AI tutor?
-            <svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
-          </div>
-          <div class="faq-body"><div class="faq-body-inner">Aquila AI is powered by a large language model fine-tuned for academic content and cross-checked against NCERT material. It's very strong for conceptual explanations and problem-solving. That said, for critical facts or exam-specific rules, always verify against official NCERT books or your teacher — no AI is 100% perfect.</div></div>
-        </div>
-        <div class="faq-item">
-          <div class="faq-q" onclick="toggleFaq(this)">
-            Is my data safe?
-            <svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
-          </div>
-          <div class="faq-body"><div class="faq-body-inner">Absolutely. Aquila AI uses Firebase Authentication with Google OAuth, and all data is stored in Firestore with strict security rules. Your chats and study data are private to your account and never shared or sold.</div></div>
-        </div>
-        <div class="faq-item">
-          <div class="faq-q" onclick="toggleFaq(this)">
-            Will Aquila AI become paid in the future?
-            <svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
-          </div>
-          <div class="faq-body"><div class="faq-body-inner">The Free plan will always stay free. We plan to introduce paid Pro plans in the future, but Early Access users who join now will be given priority and generous benefits. Anyone who gets Pro access for free during Early Access keeps it for an extended period.</div></div>
-        </div>
-      </div>
-    </section>
-
-    <!-- ===== CTA BANNER (unchanged) ===== -->
-    <section class="cta-banner reveal" aria-labelledby="cta-heading">
-      <div class="cta-banner-inner">
-        <h2 id="cta-heading">Start studying smarter today</h2>
-        <p>Create your free Aquila AI account and get a personalized study plan in minutes.</p>
-        <div class="hero-ctas">
-          <a class="cta-primary" href="signup.html">Start for Free</a>
-          <a class="cta-secondary" href="login.html">Log in</a>
-        </div>
-      </div>
-    </section>
-  </main>
-
-  <footer class="site-footer">
-    <div class="footer-grid">
-      <div class="footer-brand">
-        <a class="logo" href="/" aria-label="Aquila AI home">
-          <img src="logo.png" alt="Aquila AI" class="logo-img">
-        </a>
-        <p>An AI-powered study companion for JEE, NEET, and Board exam aspirants — personalized plans, AI tutoring, quizzes, and flashcards in one place.</p>
-      </div>
-      <div class="footer-col">
-        <h4>Product</h4>
-        <a href="#features-heading">Features</a>
-        <a href="#how-heading">How it works</a>
-        <a href="#pricing">Pricing</a>
-        <a href="signup.html">Get Started</a>
-        <a href="login.html">Log in</a>
-      </div>
-      <div class="footer-col">
-        <h4>Exams</h4>
-        <a href="#">JEE Main &amp; Advanced</a>
-        <a href="#">NEET</a>
-        <a href="#">CBSE Boards</a>
-        <a href="#">State Boards</a>
-      </div>
-      <div class="footer-col">
-        <h4>Company</h4>
-        <a href="#">About</a>
-        <a href="https://discord.gg/your-invite-link" target="_blank">Discord Community</a>
-        <a href="#">Privacy</a>
-        <a href="#">Terms</a>
-        <a href="#">Contact</a>
+      <div class="faq-item">
+        <button class="faq-q" aria-expanded="false">
+          Can I use Aquila on my phone?
+          <svg class="faq-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="faq-body"><div class="faq-body-inner">Aquila works in any modern browser on desktop or mobile, and stays in sync across both automatically.</div></div>
       </div>
     </div>
-    <div class="footer-bottom">
-      <span>&copy; 2026 Aquila AI. All rights reserved.</span>
-      <span>AI study assistant, AI tutor, AI quiz generator, AI flashcards, and study planner for JEE, NEET, and Board exam students.</span>
+  </section>
+
+  <!-- ============ FINAL CTA ============ -->
+  <section class="section reveal" aria-labelledby="cta-heading" style="padding-top:0;">
+    <div class="cta-banner">
+      <h2 id="cta-heading">Start thinking bigger today</h2>
+      <p>Create your free Aquila AI account and have your first conversation in under a minute.</p>
+      <div class="hero-ctas">
+        <span class="magnetic"><a class="btn-primary cta-lg" href="signup.html">Get Started</a></span>
+        <span class="magnetic"><a class="btn-secondary cta-lg" href="login.html">Log in</a></span>
+      </div>
     </div>
-  </footer>
-</div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="footer-grid">
+    <div class="footer-brand">
+      <a class="logo" href="/" aria-label="Aquila AI home">
+        <svg class="logo-mark" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M16 2 L29 27 H20.5 L16 17 L11.5 27 H3 Z" fill="url(#logoGrad)"/>
+        </svg>
+        <span class="logo-text">Aquila AI</span>
+      </a>
+      <p>A trusted AI companion for learning, creativity, productivity, and student empowerment.</p>
+      <div class="footer-social">
+        <a href="#" aria-label="Aquila AI on X"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.9 2H22l-7.6 8.7L23 22h-6.9l-5.4-7-6.2 7H1.4l8.1-9.3L1 2h7l4.9 6.4L18.9 2Zm-2.4 18h1.9L7.6 4H5.6l10.9 16Z"/></svg></a>
+        <a href="#" aria-label="Aquila AI on Discord"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.3 4.4a19.8 19.8 0 0 0-4.9-1.5.08.08 0 0 0-.08.04 13.7 13.7 0 0 0-.6 1.25 18.3 18.3 0 0 0-5.49 0 12.5 12.5 0 0 0-.62-1.25.08.08 0 0 0-.08-.04 19.7 19.7 0 0 0-4.88 1.5.07.07 0 0 0-.04.03C1 9 0.4 13.6 0.8 18.1a.08.08 0 0 0 .03.05 19.9 19.9 0 0 0 6 3 .08.08 0 0 0 .08-.03c.46-.62.87-1.28 1.23-1.98a.08.08 0 0 0-.04-.11 13 13 0 0 1-1.87-.9.08.08 0 0 1-.01-.12c.13-.1.25-.2.37-.3a.07.07 0 0 1 .08 0c3.93 1.8 8.18 1.8 12.06 0a.07.07 0 0 1 .08 0c.12.1.25.2.37.3a.08.08 0 0 1-.01.12 12.3 12.3 0 0 1-1.87.9.08.08 0 0 0-.04.11c.36.7.77 1.36 1.23 1.98a.08.08 0 0 0 .08.03 19.8 19.8 0 0 0 6-3 .08.08 0 0 0 .03-.05c.4-5.2-.7-9.7-3.5-13.66a.06.06 0 0 0-.03-.03ZM8.5 15.1c-1.18 0-2.15-1.08-2.15-2.42 0-1.33.95-2.42 2.15-2.42 1.2 0 2.17 1.1 2.15 2.42 0 1.34-.95 2.42-2.15 2.42Zm7 0c-1.18 0-2.15-1.08-2.15-2.42 0-1.33.95-2.42 2.15-2.42 1.2 0 2.17 1.1 2.15 2.42 0 1.34-.94 2.42-2.15 2.42Z"/></svg></a>
+        <a href="#" aria-label="Aquila AI on Instagram"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1"/></svg></a>
+      </div>
+    </div>
+    <div class="footer-col">
+      <h4>Product</h4>
+      <a href="#features">Features</a>
+      <a href="#experience">Experience</a>
+      <a href="signup.html">Get Started</a>
+      <a href="login.html">Log in</a>
+    </div>
+    <div class="footer-col">
+      <h4>Company</h4>
+      <a href="#">About</a>
+      <a href="#">Careers</a>
+      <a href="#">Contact</a>
+    </div>
+    <div class="footer-col">
+      <h4>Resources</h4>
+      <a href="#faq">FAQ</a>
+      <a href="#">Privacy</a>
+      <a href="#">Terms</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>&copy; 2026 Aquila AI. All rights reserved.</span>
+    <div class="footer-bottom-links">
+      <a href="#">Privacy</a>
+      <a href="#">Terms</a>
+    </div>
+  </div>
+</footer>
+
+<svg width="0" height="0" style="position:absolute;">
+  <defs>
+    <linearGradient id="logoGrad" x1="0" y1="0" x2="32" y2="32">
+      <stop offset="0%" stop-color="#9fc3ff"/>
+      <stop offset="55%" stop-color="#4f8cff"/>
+      <stop offset="100%" stop-color="#9b7bff"/>
+    </linearGradient>
+  </defs>
+</svg>
 
 <script>
 /* ── FAQ accordion ── */
-function toggleFaq(btn) {
-  var item = btn.closest('.faq-item');
-  var isOpen = item.classList.contains('open');
-  // close all
-  document.querySelectorAll('.faq-item.open').forEach(function(el) { el.classList.remove('open'); });
-  if (!isOpen) item.classList.add('open');
-}
+document.querySelectorAll('.faq-q').forEach(function(btn){
+  btn.addEventListener('click', function(){
+    var item = btn.closest('.faq-item');
+    var isOpen = item.classList.contains('open');
+    document.querySelectorAll('.faq-item.open').forEach(function(el){
+      el.classList.remove('open');
+      el.querySelector('.faq-q').setAttribute('aria-expanded','false');
+    });
+    if(!isOpen){ item.classList.add('open'); btn.setAttribute('aria-expanded','true'); }
+  });
+});
 
 /* ── Scroll reveal ── */
-(function () {
-  if (!('IntersectionObserver' in window)) {
-    document.querySelectorAll('.reveal').forEach(function (el) { el.classList.add('is-visible'); });
+(function(){
+  if(!('IntersectionObserver' in window)){
+    document.querySelectorAll('.reveal').forEach(function(el){ el.classList.add('is-visible'); });
     return;
   }
-  var io = new IntersectionObserver(function (entries) {
-    entries.forEach(function (entry) {
-      if (entry.isIntersecting) { entry.target.classList.add('is-visible'); io.unobserve(entry.target); }
+  var io = new IntersectionObserver(function(entries){
+    entries.forEach(function(entry){
+      if(entry.isIntersecting){ entry.target.classList.add('is-visible'); io.unobserve(entry.target); }
     });
-  }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+  }, { threshold:0.12, rootMargin:'0px 0px -40px 0px' });
+  document.querySelectorAll('.reveal').forEach(function(el){ io.observe(el); });
 
-  document.querySelectorAll('.reveal').forEach(function (el) { io.observe(el); });
+  document.querySelectorAll('.feature-grid .feature-card').forEach(function(el,i){
+    el.style.transitionDelay = (i*60)+'ms';
+  });
+}());
 
-  document.querySelectorAll('.feature-grid .feature-card').forEach(function (el, i) {
-    el.style.transitionDelay = (i * 70) + 'ms';
+/* ── Count-up stats ── */
+(function(){
+  var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var cells = document.querySelectorAll('.stat-num');
+  function animate(el){
+    var text = el.getAttribute('data-text');
+    if(text){ el.textContent = text; return; }
+    var target = parseInt(el.getAttribute('data-count'),10) || 0;
+    var suffix = el.getAttribute('data-suffix') || '';
+    if(reduceMotion){ el.textContent = target.toLocaleString() + suffix; return; }
+    var start = 0, duration = 1400, startTime = null;
+    function step(ts){
+      if(!startTime) startTime = ts;
+      var progress = Math.min((ts-startTime)/duration, 1);
+      var eased = 1 - Math.pow(1-progress, 3);
+      var val = Math.floor(eased * target);
+      el.textContent = val.toLocaleString() + suffix;
+      if(progress < 1) requestAnimationFrame(step);
+      else el.textContent = target.toLocaleString() + suffix;
+    }
+    requestAnimationFrame(step);
+  }
+  if('IntersectionObserver' in window){
+    var io2 = new IntersectionObserver(function(entries){
+      entries.forEach(function(entry){
+        if(entry.isIntersecting){ animate(entry.target); io2.unobserve(entry.target); }
+      });
+    }, { threshold:0.4 });
+    cells.forEach(function(el){ io2.observe(el); });
+  } else {
+    cells.forEach(animate);
+  }
+}());
+
+/* ── Magnetic buttons ── */
+(function(){
+  var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if(reduceMotion) return;
+  document.querySelectorAll('.magnetic').forEach(function(wrap){
+    var btn = wrap.querySelector('a, button');
+    if(!btn) return;
+    wrap.addEventListener('mousemove', function(e){
+      var r = wrap.getBoundingClientRect();
+      var x = (e.clientX - r.left - r.width/2) * 0.18;
+      var y = (e.clientY - r.top - r.height/2) * 0.28;
+      btn.style.transform = 'translate('+x+'px,'+y+'px)';
+    });
+    wrap.addEventListener('mouseleave', function(){
+      btn.style.transform = 'translate(0,0)';
+      btn.style.transition = 'transform 0.35s cubic-bezier(.16,1,.3,1)';
+      setTimeout(function(){ btn.style.transition=''; }, 360);
+    });
   });
-  document.querySelectorAll('.testimonials-grid .testimonial-card').forEach(function (el, i) {
-    el.style.transitionDelay = (i * 90) + 'ms';
-  });
-})();
+}());
 </script>
 
 <script>
-/* ── CINEMATIC HERO ENGINE (unchanged) ── */
-(function () {
+/* ── Hero ambient particle canvas (complements bg video) ── */
+(function(){
   var canvas = document.getElementById('heroCanvas');
-  if (!canvas) return;
-  var ctx = canvas.getContext('2d', { alpha: true });
+  if(!canvas) return;
+  var ctx = canvas.getContext('2d', { alpha:true });
   var hero = document.getElementById('hero');
   var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   var DPR = Math.min(window.devicePixelRatio || 1, 2);
-  var W = 0, H = 0, isMobile = false, panelScale = 1;
-  var pointer = { x: 0.5, y: 0.5 };
-  var parallax = { x: 0, y: 0 };
+  var W=0, H=0, isMobile=false;
+  var pointer = { x:0.5, y:0.5 };
+  var parallax = { x:0, y:0 };
+  var points = [];
+  var CYAN='79,140,255', VIOLET='155,123,255';
 
-  function resize() {
+  function resize(){
     var rect = hero.getBoundingClientRect();
-    W = rect.width; H = rect.height;
-    isMobile = W < 720;
-    panelScale = W >= 1180 ? 1 : W <= 720 ? 0.62 : 0.62 + (W - 720) / (1180 - 720) * 0.38;
-    canvas.width = Math.floor(W * DPR); canvas.height = Math.floor(H * DPR);
-    canvas.style.width = W + 'px'; canvas.style.height = H + 'px';
-    ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
-    buildScene();
+    W = rect.width; H = rect.height; isMobile = W < 720;
+    canvas.width = Math.floor(W*DPR); canvas.height = Math.floor(H*DPR);
+    canvas.style.width = W+'px'; canvas.style.height = H+'px';
+    ctx.setTransform(DPR,0,0,DPR,0,0);
+    buildPoints();
   }
 
-  var CYAN = '0,212,255', VIOLET = '167,139,250', AMBER = '255,209,102';
-  var particleLayers = [], streams = [], panels = [];
-  var core = { x: 0, y: 0, baseR: 0 };
-
-  function textSafeZone() {
-    var xInset = isMobile ? 0.04 : lerp(0.30, 0.26, panelScale);
-    return { x0: W*xInset, x1: W*(1-xInset), y0: H*(isMobile?0.22:0.24), y1: H*(isMobile?0.82:0.84) };
-  }
-  function inSafeZone(x,y,z){return x>z.x0&&x<z.x1&&y>z.y0&&y<z.y1;}
-  function pointOutsideSafeZone(z){var x,y,t=0;do{x=Math.random()*W;y=Math.random()*H;t++;}while(inSafeZone(x,y,z)&&t<12);return{x,y};}
-
-  function buildParticles() {
-    particleLayers = [];
-    var density = isMobile ? 0.00022 : 0.00038;
-    var count = Math.min(160, Math.max(50, Math.floor(W*H*density)));
-    var defs = [
-      {depth:0.15,speed:0.06,size:[0.6,1.4],alpha:[0.25,0.5],color:CYAN},
-      {depth:0.35,speed:0.12,size:[0.9,2.0],alpha:[0.35,0.7],color:VIOLET},
-      {depth:0.6, speed:0.22,size:[1.1,2.6],alpha:[0.4,0.85],color:CYAN}
-    ];
-    defs.forEach(function(def){
-      var pts=[],n=Math.floor(count/defs.length),zone=textSafeZone();
-      for(var i=0;i<n;i++){
-        var pos=Math.random()<0.12?{x:Math.random()*W,y:Math.random()*H}:pointOutsideSafeZone(zone);
-        pts.push({x:pos.x,y:pos.y,baseX:pos.x,baseY:pos.y,r:def.size[0]+Math.random()*(def.size[1]-def.size[0]),a:def.alpha[0]+Math.random()*(def.alpha[1]-def.alpha[0]),phase:Math.random()*Math.PI*2,driftSpeed:0.15+Math.random()*0.25,color:def.color});
-      }
-      particleLayers.push({def,points:pts});
-    });
-  }
-
-  function buildStreams() {
-    streams=[];var n=isMobile?4:8,zone=textSafeZone();
-    for(var i=0;i<n;i++){
-      var p1=pointOutsideSafeZone(zone),p2=pointOutsideSafeZone(zone);
-      var ccx=(p1.x+p2.x)/2+(Math.random()-0.5)*220,ccy=(p1.y+p2.y)/2+(Math.random()-0.5)*160;
-      if(inSafeZone(ccx,ccy,zone))ccy=ccy<(zone.y0+zone.y1)/2?zone.y0-30:zone.y1+30;
-      streams.push({x1:p1.x,y1:p1.y,x2:p2.x,y2:p2.y,cx:ccx,cy:ccy,color:Math.random()>0.5?CYAN:VIOLET,speed:0.00028+Math.random()*0.00035,offset:Math.random(),width:1+Math.random()*1.2,depth:0.2+Math.random()*0.25});
+  function buildPoints(){
+    points = [];
+    var density = isMobile ? 0.00012 : 0.00018;
+    var count = Math.min(70, Math.max(28, Math.floor(W*H*density)));
+    for(var i=0;i<count;i++){
+      points.push({
+        x: Math.random()*W, y: Math.random()*H,
+        r: 0.6 + Math.random()*1.6,
+        a: 0.25 + Math.random()*0.4,
+        phase: Math.random()*Math.PI*2,
+        speed: 0.15 + Math.random()*0.25,
+        color: Math.random() > 0.5 ? CYAN : VIOLET,
+        depth: 0.2 + Math.random()*0.5
+      });
     }
   }
 
-  function basePanel(x,y,w,h,color,depth){return{x,y,w,h,color,depth,baseX:x,baseY:y,floatPhase:Math.random()*Math.PI*2,floatSpeed:0.25+Math.random()*0.2,floatAmp:6+Math.random()*5,appear:0};}
-  function makeLineChartPanel(x,y,w,h,color,depth){var p=basePanel(x,y,w,h,color,depth);p.type='line';p.label='PERFORMANCE';p.points=[];for(var i=0;i<18;i++)p.points.push(0.3+Math.random()*0.5);p.tick=0;return p;}
-  function makeBarChartPanel(x,y,w,h,color,depth){var p=basePanel(x,y,w,h,color,depth);p.type='bar';p.label='TOPIC MASTERY';p.bars=[];for(var i=0;i<6;i++)p.bars.push({target:0.25+Math.random()*0.7,cur:0});return p;}
-  function makeStatPanel(x,y,w,h,color,depth){var p=basePanel(x,y,w,h,color,depth);p.type='stat';p.label='STUDY STREAK';p.value=0;p.target=24+Math.floor(Math.random()*60);p.unit='DAYS';return p;}
-  function makeRingPanel(x,y,size,color,depth){var p=basePanel(x,y,size,size,color,depth);p.type='ring';p.label='SYLLABUS';p.progress=0;p.target=0.6+Math.random()*0.3;return p;}
-
-  function buildPanels(){
-    panels=[];
-    if(isMobile){panels.push(makeLineChartPanel(W*0.97-118,H*0.1,118,64,CYAN,0.45));panels.push(makeStatPanel(W*0.03,H*0.78,96,52,AMBER,0.4));return;}
-    var s=panelScale,marginX=lerp(0.1,0.04,s);
-    panels.push(makeLineChartPanel(W*marginX,H*0.16,196*s,102*s,CYAN,0.5));
-    panels.push(makeRingPanel(W*(marginX+0.02),H*0.62,92*s,VIOLET,0.4));
-    panels.push(makeBarChartPanel(W*(1-marginX)-184*s,H*0.18,184*s,98*s,VIOLET,0.45));
-    panels.push(makeStatPanel(W*(1-marginX)-156*s,H*0.64,156*s,84*s,AMBER,0.5));
-  }
-
-  function buildScene(){buildParticles();buildStreams();buildPanels();core.x=W/2;core.y=isMobile?H*0.9:H*0.95;core.baseR=Math.min(W,H)*0.05;}
-  function lerp(a,b,t){return a+(b-a)*t;}
-  function roundRectPath(x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();}
-
-  function drawBackground(t){
-    var gx=W*0.5+Math.sin(t*0.00006)*W*0.08,gy=H*0.4+Math.cos(t*0.00005)*H*0.06;
-    var g=ctx.createRadialGradient(gx,gy,0,gx,gy,Math.max(W,H)*0.75);
-    g.addColorStop(0,'#0a1018');g.addColorStop(0.45,'#070a10');g.addColorStop(1,'#040508');
-    ctx.fillStyle=g;ctx.fillRect(0,0,W,H);
-    var n1x=W*(0.22+Math.sin(t*0.00004)*0.04),n1y=H*(0.25+Math.cos(t*0.00003)*0.03);
-    var neb1=ctx.createRadialGradient(n1x,n1y,0,n1x,n1y,Math.max(W,H)*0.4);
-    neb1.addColorStop(0,'rgba('+CYAN+',0.10)');neb1.addColorStop(1,'rgba('+CYAN+',0)');
-    ctx.fillStyle=neb1;ctx.fillRect(0,0,W,H);
-    var n2x=W*(0.8-Math.sin(t*0.000035)*0.05),n2y=H*(0.3+Math.sin(t*0.000045)*0.04);
-    var neb2=ctx.createRadialGradient(n2x,n2y,0,n2x,n2y,Math.max(W,H)*0.42);
-    neb2.addColorStop(0,'rgba('+VIOLET+',0.11)');neb2.addColorStop(1,'rgba('+VIOLET+',0)');
-    ctx.fillStyle=neb2;ctx.fillRect(0,0,W,H);
-  }
-
-  function drawParticles(t,o){
-    particleLayers.forEach(function(layer){
-      var def=layer.def,px=parallax.x*def.depth*40,py=parallax.y*def.depth*40;
-      layer.points.forEach(function(p){
-        var dx=p.baseX+px+Math.sin(t*0.0002*p.driftSpeed+p.phase)*14*def.depth*4;
-        var dy=p.baseY+py+Math.cos(t*0.00018*p.driftSpeed+p.phase)*10;
-        var tw=0.6+0.4*Math.sin(t*0.0016+p.phase*3);
-        ctx.beginPath();ctx.fillStyle='rgba('+p.color+','+(p.a*tw*o).toFixed(3)+')';
-        ctx.shadowColor='rgba('+p.color+',0.8)';ctx.shadowBlur=p.r*3;
-        ctx.arc(dx,dy,p.r,0,Math.PI*2);ctx.fill();
-      });
-    });ctx.shadowBlur=0;
-  }
-
-  function quadPoint(x1,y1,cx,cy,x2,y2,t){var u=1-t;return{x:u*u*x1+2*u*t*cx+t*t*x2,y:u*u*y1+2*u*t*cy+t*t*y2};}
-
-  function drawStreams(t,o){
-    streams.forEach(function(s){
-      var px=parallax.x*s.depth*30,py=parallax.y*s.depth*30;
-      ctx.beginPath();ctx.moveTo(s.x1+px,s.y1+py);ctx.quadraticCurveTo(s.cx+px,s.cy+py,s.x2+px,s.y2+py);
-      ctx.strokeStyle='rgba('+s.color+','+(0.10*o).toFixed(3)+')';ctx.lineWidth=s.width;ctx.stroke();
-      var prog=(t*s.speed+s.offset)%1,pt=quadPoint(s.x1+px,s.y1+py,s.cx+px,s.cy+py,s.x2+px,s.y2+py,prog);
-      var grad=ctx.createRadialGradient(pt.x,pt.y,0,pt.x,pt.y,10);
-      grad.addColorStop(0,'rgba('+s.color+','+(0.85*o).toFixed(3)+')');grad.addColorStop(1,'rgba('+s.color+',0)');
-      ctx.fillStyle=grad;ctx.beginPath();ctx.arc(pt.x,pt.y,10,0,Math.PI*2);ctx.fill();
-    });
-  }
-
-  function drawCore(t,o){
-    var px=parallax.x*12,py=parallax.y*12,cx=core.x+px,cy=core.y+py;
-    var r=core.baseR*(1+0.06*Math.sin(t*0.0012));
-    var halo=ctx.createRadialGradient(cx,cy,0,cx,cy,r*3.4);
-    halo.addColorStop(0,'rgba('+CYAN+','+(0.22*o).toFixed(3)+')');halo.addColorStop(0.5,'rgba('+VIOLET+','+(0.10*o).toFixed(3)+')');halo.addColorStop(1,'rgba('+VIOLET+',0)');
-    ctx.fillStyle=halo;ctx.beginPath();ctx.arc(cx,cy,r*3.4,0,Math.PI*2);ctx.fill();
-    [1.5,2.05,2.55].forEach(function(mult,i){
-      var ringR=r*mult;ctx.save();ctx.translate(cx,cy);ctx.rotate(t*(i%2===0?1:-1)*(0.00012+i*0.00004));
-      ctx.beginPath();ctx.ellipse(0,0,ringR,ringR*0.38,0,0,Math.PI*2);
-      ctx.strokeStyle='rgba('+(i===1?VIOLET:CYAN)+','+(0.18*o).toFixed(3)+')';ctx.lineWidth=1;ctx.stroke();
-      var ang=t*0.0009*(i+1)*(i%2===0?1:-1);
-      ctx.beginPath();ctx.fillStyle='rgba('+(i===1?VIOLET:CYAN)+','+(0.9*o).toFixed(3)+')';
-      ctx.shadowColor='rgba('+(i===1?VIOLET:CYAN)+',1)';ctx.shadowBlur=10;
-      ctx.arc(Math.cos(ang)*ringR,Math.sin(ang)*ringR*0.38,2.4,0,Math.PI*2);ctx.fill();ctx.shadowBlur=0;ctx.restore();
-    });
-    var bg=ctx.createRadialGradient(cx-r*0.3,cy-r*0.3,0,cx,cy,r);
-    bg.addColorStop(0,'rgba(255,255,255,0.9)');bg.addColorStop(0.25,'rgba('+CYAN+',0.85)');bg.addColorStop(1,'rgba('+VIOLET+',0.55)');
-    ctx.fillStyle=bg;ctx.globalAlpha=o;ctx.beginPath();ctx.arc(cx,cy,r,0,Math.PI*2);ctx.fill();ctx.globalAlpha=1;
-    ctx.save();ctx.translate(cx,cy);ctx.rotate(t*0.00018);ctx.beginPath();
-    for(var i=0;i<=6;i++){var a=(i/6)*Math.PI*2,fr=r*(0.55+0.08*Math.sin(t*0.001+i));if(i===0)ctx.moveTo(Math.cos(a)*fr,Math.sin(a)*fr);else ctx.lineTo(Math.cos(a)*fr,Math.sin(a)*fr);}
-    ctx.closePath();ctx.strokeStyle='rgba(255,255,255,0.5)';ctx.lineWidth=1;ctx.stroke();ctx.restore();
-  }
-
-  function drawPanelFrame(p,x,y){
-    ctx.save();roundRectPath(x,y,p.w,p.h,10);
-    ctx.fillStyle='rgba(10,13,20,'+(0.55*p.appear).toFixed(3)+')';ctx.fill();
-    ctx.strokeStyle='rgba('+p.color+','+(0.35*p.appear).toFixed(3)+')';ctx.lineWidth=1;ctx.stroke();
-    ctx.beginPath();ctx.moveTo(x+12,y);ctx.lineTo(x+p.w-12,y);
-    ctx.strokeStyle='rgba('+p.color+','+(0.5*p.appear).toFixed(3)+')';ctx.lineWidth=1.4;ctx.stroke();
-    ctx.font='600 8px "JetBrains Mono",monospace';ctx.fillStyle='rgba(255,255,255,'+(0.55*p.appear).toFixed(3)+')';
-    ctx.textBaseline='top';ctx.fillText(p.label,x+12,y+11);
-    ctx.beginPath();ctx.arc(x+p.w-14,y+15,2.4,0,Math.PI*2);
-    ctx.fillStyle='rgba('+p.color+','+(0.9*p.appear).toFixed(3)+')';ctx.shadowColor='rgba('+p.color+',1)';ctx.shadowBlur=6;ctx.fill();ctx.shadowBlur=0;ctx.restore();
-  }
-
-  function drawLinePanel(p,x,y){
-    drawPanelFrame(p,x,y);var padX=12,padTop=26,padBottom=10,plotW=p.w-padX*2,plotH=p.h-padTop-padBottom;
-    p.tick++;if(p.tick%38===0){p.points.shift();var last=p.points[p.points.length-1];p.points.push(Math.max(0.15,Math.min(0.95,last+(Math.random()-0.45)*0.22)));}
-    ctx.save();roundRectPath(x,y,p.w,p.h,10);ctx.clip();ctx.beginPath();
-    p.points.forEach(function(v,i){var px2=x+padX+(i/(p.points.length-1))*plotW,py2=y+padTop+(1-v)*plotH;if(i===0)ctx.moveTo(px2,py2);else ctx.lineTo(px2,py2);});
-    var lg=ctx.createLinearGradient(x,y,x+p.w,y);lg.addColorStop(0,'rgba('+p.color+','+(0.9*p.appear).toFixed(3)+')');lg.addColorStop(1,'rgba('+p.color+','+(0.5*p.appear).toFixed(3)+')');
-    ctx.strokeStyle=lg;ctx.lineWidth=1.6;ctx.lineJoin='round';ctx.stroke();
-    ctx.lineTo(x+padX+plotW,y+p.h-padBottom);ctx.lineTo(x+padX,y+p.h-padBottom);ctx.closePath();
-    var fg=ctx.createLinearGradient(x,y+padTop,x,y+p.h-padBottom);fg.addColorStop(0,'rgba('+p.color+','+(0.22*p.appear).toFixed(3)+')');fg.addColorStop(1,'rgba('+p.color+',0)');
-    ctx.fillStyle=fg;ctx.fill();ctx.restore();
-  }
-
-  function drawBarPanel(p,x,y){
-    drawPanelFrame(p,x,y);var padX=12,padTop=26,padBottom=10,plotW=p.w-padX*2,plotH=p.h-padTop-padBottom,gap=6,bw=(plotW-gap*(p.bars.length-1))/p.bars.length;
-    p.bars.forEach(function(b,i){
-      b.cur=lerp(b.cur,b.target,0.02);if(Math.random()<0.003)b.target=0.25+Math.random()*0.7;
-      var bx=x+padX+i*(bw+gap),bh=plotH*b.cur,by=y+padTop+(plotH-bh);
-      roundRectPath(bx,by,bw,bh,2);
-      var g=ctx.createLinearGradient(bx,by,bx,by+bh);g.addColorStop(0,'rgba('+p.color+','+(0.85*p.appear).toFixed(3)+')');g.addColorStop(1,'rgba('+p.color+','+(0.25*p.appear).toFixed(3)+')');
-      ctx.fillStyle=g;ctx.fill();
-    });
-  }
-
-  function drawStatPanel(p,x,y){
-    drawPanelFrame(p,x,y);p.value=lerp(p.value,p.target,0.015);
-    ctx.save();ctx.font='700 '+Math.round(p.h*0.34)+'px "Sora",sans-serif';
-    ctx.fillStyle='rgba(255,255,255,'+(0.92*p.appear).toFixed(3)+')';ctx.textBaseline='alphabetic';
-    var val=Math.round(p.value).toString();ctx.fillText(val,x+12,y+p.h-16);
-    ctx.font='600 9px "JetBrains Mono",monospace';ctx.fillStyle='rgba('+p.color+','+(0.8*p.appear).toFixed(3)+')';
-    ctx.fillText(p.unit,x+16+ctx.measureText(val).width,y+p.h-16);ctx.restore();
-  }
-
-  function drawRingPanel(p,x,y){
-    var cx2=x+p.w/2,cy2=y+p.h/2,r=p.w/2-8;
-    ctx.save();ctx.beginPath();ctx.arc(cx2,cy2,r,0,Math.PI*2);
-    ctx.fillStyle='rgba(10,13,20,'+(0.5*p.appear).toFixed(3)+')';ctx.fill();
-    ctx.strokeStyle='rgba(255,255,255,'+(0.08*p.appear).toFixed(3)+')';ctx.lineWidth=6;ctx.stroke();
-    p.progress=lerp(p.progress,p.target,0.01);
-    ctx.beginPath();ctx.arc(cx2,cy2,r,-Math.PI/2,-Math.PI/2+Math.PI*2*p.progress);
-    ctx.strokeStyle='rgba('+p.color+','+(0.85*p.appear).toFixed(3)+')';ctx.lineWidth=6;ctx.lineCap='round';
-    ctx.shadowColor='rgba('+p.color+',0.6)';ctx.shadowBlur=10;ctx.stroke();ctx.shadowBlur=0;
-    ctx.font='700 15px "Sora",sans-serif';ctx.fillStyle='rgba(255,255,255,'+(0.9*p.appear).toFixed(3)+')';
-    ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(Math.round(p.progress*100)+'%',cx2,cy2-4);
-    ctx.font='600 7px "JetBrains Mono",monospace';ctx.fillStyle='rgba('+p.color+','+(0.75*p.appear).toFixed(3)+')';
-    ctx.fillText(p.label,cx2,cy2+12);ctx.textAlign='left';ctx.textBaseline='alphabetic';ctx.restore();
-  }
-
-  function drawPanels(t,o){
-    panels.forEach(function(p){
-      p.appear=Math.min(1,p.appear+0.012);
-      var floatY=Math.sin(t*0.0006*p.floatSpeed+p.floatPhase)*p.floatAmp;
-      var floatX=Math.cos(t*0.0004*p.floatSpeed+p.floatPhase)*(p.floatAmp*0.5);
-      var x=p.baseX+floatX+parallax.x*p.depth*50,y=p.baseY+floatY+parallax.y*p.depth*50;
-      ctx.globalAlpha=o;
-      if(p.type==='line')drawLinePanel(p,x,y);
-      else if(p.type==='bar')drawBarPanel(p,x,y);
-      else if(p.type==='stat')drawStatPanel(p,x,y);
-      else if(p.type==='ring')drawRingPanel(p,x,y);
-      ctx.globalAlpha=1;
-    });
-  }
-
-  var running=true,fadeOpacity=1;
+  function lerp(a,b,t){ return a+(b-a)*t; }
 
   function frame(now){
-    if(!running)return;
-    parallax.x=lerp(parallax.x,(pointer.x-0.5)*2,0.04);
-    parallax.y=lerp(parallax.y,(pointer.y-0.5)*2,0.04);
     ctx.clearRect(0,0,W,H);
-    drawBackground(now);drawStreams(now,fadeOpacity);drawParticles(now,fadeOpacity);drawCore(now,fadeOpacity);drawPanels(now,fadeOpacity);
+    parallax.x = lerp(parallax.x, (pointer.x-0.5)*2, 0.04);
+    parallax.y = lerp(parallax.y, (pointer.y-0.5)*2, 0.04);
+    points.forEach(function(p){
+      var px = p.x + parallax.x*p.depth*30 + Math.sin(now*0.0002*p.speed+p.phase)*10;
+      var py = p.y + parallax.y*p.depth*30 + Math.cos(now*0.00018*p.speed+p.phase)*8;
+      var tw = 0.6 + 0.4*Math.sin(now*0.0014+p.phase*3);
+      ctx.beginPath();
+      ctx.fillStyle = 'rgba('+p.color+','+(p.a*tw).toFixed(3)+')';
+      ctx.shadowColor = 'rgba('+p.color+',0.8)';
+      ctx.shadowBlur = p.r*3;
+      ctx.arc(px,py,p.r,0,Math.PI*2);
+      ctx.fill();
+    });
+    ctx.shadowBlur = 0;
     requestAnimationFrame(frame);
   }
 
   function staticFrame(){
-    ctx.clearRect(0,0,W,H);drawBackground(0);drawStreams(0,1);drawParticles(0,1);drawCore(0,1);
-    panels.forEach(function(p){p.appear=1;p.value=p.target;p.progress=p.target;p.bars&&p.bars.forEach(function(b){b.cur=b.target;});});
-    drawPanels(0,1);
+    ctx.clearRect(0,0,W,H);
+    points.forEach(function(p){
+      ctx.beginPath();
+      ctx.fillStyle = 'rgba('+p.color+','+p.a.toFixed(3)+')';
+      ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+      ctx.fill();
+    });
   }
 
-  window.addEventListener('resize',function(){clearTimeout(window._rTimer);window._rTimer=setTimeout(function(){resize();if(reduceMotion)staticFrame();},120);});
-  window.addEventListener('orientationchange',function(){setTimeout(function(){resize();if(reduceMotion)staticFrame();},120);});
-  window.addEventListener('scroll',function(){
-    var rect=hero.getBoundingClientRect();
-    fadeOpacity=Math.max(0.15,Math.min(1,rect.bottom/(rect.height+window.innerHeight*0.2)));
-    var inView=rect.bottom>-200&&rect.top<window.innerHeight+200;
-    if(inView&&!running){running=true;requestAnimationFrame(frame);}
-    if(!inView)running=false;
-  },{passive:true});
-  hero.addEventListener('pointermove',function(e){var r=hero.getBoundingClientRect();pointer.x=(e.clientX-r.left)/r.width;pointer.y=(e.clientY-r.top)/r.height;},{passive:true});
-  hero.addEventListener('pointerleave',function(){pointer.x=0.5;pointer.y=0.5;},{passive:true});
+  window.addEventListener('resize', function(){
+    clearTimeout(window._heroResizeTimer);
+    window._heroResizeTimer = setTimeout(function(){
+      resize();
+      if(reduceMotion) staticFrame();
+    }, 120);
+  });
+  hero.addEventListener('pointermove', function(e){
+    var r = hero.getBoundingClientRect();
+    pointer.x = (e.clientX-r.left)/r.width;
+    pointer.y = (e.clientY-r.top)/r.height;
+  }, { passive:true });
+  hero.addEventListener('pointerleave', function(){
+    pointer.x = 0.5; pointer.y = 0.5;
+  }, { passive:true });
 
   resize();
-  if(reduceMotion)staticFrame();else requestAnimationFrame(frame);
-})();
+  if(reduceMotion) staticFrame();
+  else requestAnimationFrame(frame);
+}());
 </script>
 
-<script type="module">
-  import { inject } from 'https://esm.sh/@vercel/analytics';
-  inject();
-</script>
-<script type="module">
-  import { injectSpeedInsights } from 'https://esm.sh/@vercel/speed-insights';
-  injectSpeedInsights();
-</script>
 </body>
 </html>
+
