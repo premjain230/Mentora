@@ -1,5 +1,6 @@
 ﻿<!DOCTYPE html>
 <html lang="en">
+<script>document.documentElement.className=localStorage.getItem('aquila-theme')==='light'?'light-mode':''</script>
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -23,6 +24,12 @@
 --radius-sm:10px;--radius-md:16px;--radius-lg:24px;--sidebar-w:248px;
 --glass:rgba(18,21,31,0.65);
 --cat-jee:#00d4ff;--cat-neet:#06d6cf;--cat-boards:#a78bfa;--cat-school:#ffd166;--cat-policy:#ff6b6b;--cat-suggest:#f472b6;--cat-wellbeing:#34d399;
+}
+.light-mode{
+--bg-base:#f4f5f9;--bg-sidebar:#ecedf2;--bg-card:#ffffff;--bg-input:#f0f1f5;
+--border:rgba(0,0,0,0.08);--border-hover:rgba(0,212,255,0.5);
+--text-primary:#16162a;--text-secondary:#5a5d72;--text-muted:#9ea0b4;
+--glass:rgba(255,255,255,0.72);
 }
 html,body{height:100%}
 body{font-family:var(--font-main);background:var(--bg-base);color:var(--text-primary);height:100vh;display:flex;overflow:hidden;-webkit-font-smoothing:antialiased}
@@ -76,6 +83,11 @@ svg{display:block}
 .main{flex:1;display:flex;flex-direction:column;overflow:hidden;background:var(--bg-base);min-width:0;position:relative;z-index:1}
 .topbar{display:flex;align-items:center;justify-content:space-between;padding:14px 28px;border-bottom:1px solid var(--border);flex-shrink:0;gap:12px;backdrop-filter:blur(6px)}
 .topbar-left{display:flex;align-items:center;gap:12px;min-width:0}
+.topbar-right{display:flex;align-items:center;gap:8px;flex-shrink:0}
+.theme-toggle-switch{width:42px;height:24px;background:var(--bg-input);border:1px solid var(--border);border-radius:12px;cursor:pointer;position:relative;transition:all 0.3s ease;flex-shrink:0}
+.theme-toggle-switch.active{background:var(--accent);border-color:var(--accent)}
+.theme-toggle-knob{position:absolute;top:2px;left:2px;width:18px;height:18px;border-radius:50%;background:var(--text-muted);transition:all 0.3s cubic-bezier(0.34,1.56,0.64,1);box-shadow:0 2px 6px rgba(0,0,0,0.2)}
+.theme-toggle-switch.active .theme-toggle-knob{left:20px;background:#fff}
 .menu-btn{display:none;width:38px;height:38px;border-radius:10px;border:1px solid var(--border);background:var(--bg-card);color:var(--text-secondary);align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;transition:all 0.18s}
 .menu-btn:hover{color:var(--text-primary);border-color:var(--border-hover)}
 .topbar-mobile-logo{display:none;align-items:center;gap:8px;font-size:15px;font-weight:700;color:var(--text-primary)}
@@ -536,6 +548,11 @@ svg{display:block}
       </div>
       <div class="model-selector"><span class="model-dot"></span>Community Board</div>
     </div>
+    <div class="topbar-right">
+      <div class="theme-toggle-switch" id="themeSwitch" role="button" tabindex="0" aria-label="Toggle theme">
+        <div class="theme-toggle-knob"></div>
+      </div>
+    </div>
   </div>
 
   <div class="content-wrap" id="contentWrap">
@@ -848,6 +865,17 @@ function renderNews(text) {
     </div>
   `).join('');
 }
+
+// ── Theme Toggle ──
+const saved = localStorage.getItem('aquila-theme');
+if (saved === 'light') document.documentElement.classList.add('light-mode');
+const sw = document.getElementById('themeSwitch');
+if (saved === 'light') sw.classList.add('active');
+sw.addEventListener('click', () => {
+  const isLight = document.documentElement.classList.toggle('light-mode');
+  sw.classList.toggle('active');
+  localStorage.setItem('aquila-theme', isLight ? 'light' : 'dark');
+});
 </script>
 
 <script type="module">import { inject } from 'https://esm.sh/@vercel/analytics'; inject();</script>
