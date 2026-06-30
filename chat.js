@@ -57,42 +57,42 @@ const ICON_SHARE = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" 
       font-family: 'Sora', sans-serif;
       font-weight: 400;
       border-radius: 8px;
-      border: 1px solid rgba(255,255,255,0.08);
+      border: 1px solid var(--border);
       background: transparent;
-      color: #4a4d62;
+      color: var(--text-muted);
       cursor: pointer;
       transition: all 0.15s;
       line-height: 1;
     }
     .ai-action-btn:hover {
-      color: #8b8fa8;
-      border-color: rgba(255,255,255,0.16);
+      color: var(--text-secondary);
+      border-color: var(--border-hover);
       background: rgba(255,255,255,0.04);
     }
     .ai-action-btn.active-good {
-      color: #00d4ff;
+      color: var(--accent);
       border-color: rgba(0,212,255,0.4);
       background: rgba(0,212,255,0.08);
     }
     .ai-action-btn.active-bad {
-      color: #ff6b6b;
+      color: var(--accent3);
       border-color: rgba(255,107,107,0.4);
       background: rgba(255,107,107,0.08);
     }
     .ai-action-btn.active-copy {
-      color: #00d4ff;
+      color: var(--accent);
       border-color: rgba(0,212,255,0.4);
       background: rgba(0,212,255,0.08);
     }
     .ai-action-btn.active-share {
-      color: #a78bfa;
+      color: var(--accent2);
       border-color: rgba(167,139,250,0.4);
       background: rgba(167,139,250,0.08);
     }
     .ai-action-divider {
       width: 1px;
       height: 16px;
-      background: rgba(255,255,255,0.08);
+      background: var(--border);
       flex-shrink: 0;
       margin: 0 2px;
     }
@@ -322,8 +322,8 @@ export function renderMessage(role, content) {
     const wrap = document.createElement("div");
     wrap.style.cssText = "display:flex;gap:12px;padding:6px 20px;align-items:flex-start;";
     const bubble = document.createElement("div");
-    bubble.className = "ai-message";
-    bubble.style.cssText = "flex:1;font-size:14px;line-height:1.75;color:#e8ecf0;word-break:break-word;";
+    bubble.className = "ai-bubble";
+    bubble.style.cssText = "flex:1;font-size:14px;line-height:1.75;word-break:break-word;";
     bubble.innerHTML = renderMarkdown(content);
     bubble.appendChild(createActionButtons(content));
     wrap.innerHTML = `
@@ -344,8 +344,8 @@ function createAiBubble() {
   const wrap = document.createElement("div");
   wrap.style.cssText = "display:flex;gap:12px;padding:6px 20px;align-items:flex-start;";
   const bubble = document.createElement("div");
-  bubble.className = "ai-message";
-  bubble.style.cssText = "flex:1;font-size:14px;line-height:1.75;color:#e8ecf0;word-break:break-word;";
+  bubble.className = "ai-bubble";
+  bubble.style.cssText = "flex:1;font-size:14px;line-height:1.75;word-break:break-word;";
   bubble.innerHTML = typingIndicator();
   wrap.innerHTML = `
     <div style="
@@ -375,25 +375,25 @@ function renderMarkdown(md) {
   let html = escapeHtml(md);
 
   html = html.replace(/```[\w]*\n?([\s\S]*?)```/g, (_, code) =>
-    `<pre style="background:#1a1d27;border:1px solid rgba(255,255,255,0.07);border-radius:10px;padding:14px 16px;overflow-x:auto;font-family:'Space Mono',monospace;font-size:12.5px;margin:10px 0;"><code>${code.trim()}</code></pre>`
+    `<pre style="background:var(--bg-card);border:1px solid var(--border);border-radius:10px;padding:14px 16px;overflow-x:auto;font-family:'Space Mono',monospace;font-size:12.5px;margin:10px 0;"><code>${code.trim()}</code></pre>`
   );
 
   html = html.replace(/`([^`]+)`/g,
-    `<code style="background:rgba(108,99,255,0.15);border-radius:4px;padding:2px 6px;font-family:'Space Mono',monospace;font-size:12.5px;color:#a78bfa;">$1</code>`
+    `<code style="background:rgba(108,99,255,0.15);border-radius:4px;padding:2px 6px;font-family:'Space Mono',monospace;font-size:12.5px;color:var(--accent2);">$1</code>`
   );
 
   html = html.replace(/^### (.+)$/gm,
-    `<h3 style="font-size:15px;font-weight:600;color:#f0f0f8;margin:14px 0 6px;">$1</h3>`
+    `<h3 style="font-size:15px;font-weight:600;margin:14px 0 6px;">$1</h3>`
   );
   html = html.replace(/^## (.+)$/gm,
-    `<h2 style="font-size:17px;font-weight:700;color:#f0f0f8;margin:16px 0 8px;border-bottom:1px solid rgba(255,255,255,0.07);padding-bottom:6px;">$1</h2>`
+    `<h2 style="font-size:17px;font-weight:700;margin:16px 0 8px;border-bottom:1px solid var(--border);padding-bottom:6px;">$1</h2>`
   );
   html = html.replace(/^# (.+)$/gm,
-    `<h1 style="font-size:20px;font-weight:700;color:#f0f0f8;margin:18px 0 10px;">$1</h1>`
+    `<h1 style="font-size:20px;font-weight:700;margin:18px 0 10px;">$1</h1>`
   );
 
   html = html.replace(/\*\*(.+?)\*\*/g,
-    `<strong style="color:#f0f0f8;font-weight:600;">$1</strong>`
+    `<strong style="font-weight:600;">$1</strong>`
   );
 
   html = html.replace(/\*(.+?)\*/g, `<em>$1</em>`);
@@ -410,7 +410,7 @@ function renderMarkdown(md) {
   );
 
   html = html.replace(/^---$/gm,
-    `<hr style="border:none;border-top:1px solid rgba(255,255,255,0.08);margin:16px 0;">`
+    `<hr style="border:none;border-top:1px solid var(--border);margin:16px 0;">`
   );
 
   html = html.replace(/\n/g, "<br>");
