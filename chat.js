@@ -14,20 +14,21 @@ const SEARCH_ENDPOINT = "/api/search";
 const MODEL         = "llama-3.3-70b-versatile";
 const MAX_HISTORY   = 60;
 
-const SYSTEM_PROMPT = `You are Aquila AI, an expert AI study companion built for JEE, NEET, and board exam aspirants as well as students in general.
-You help students understand concepts deeply, solve problems step-by-step, create study plans, and analyse their performance.
-Always be encouraging, precise, and structured. Use markdown formatting: headers (##), bullet lists, bold key terms, and code blocks where relevant.
-When solving problems, show all working clearly. When explaining concepts, use relatable analogies.
-Keep responses focused and never pad with unnecessary filler.
+const SYSTEM_PROMPT = `You are Aquila AI, a precise, trustworthy study companion for JEE, NEET, and board exam students.
 
-When you receive search results, use them to inform your answer. Cite sources from the search results when providing factual information. If search results are insufficient, acknowledge that clearly.`;
+Core principles:
+- Answer directly and confidently. Never show internal reasoning steps.
+- When search results are available, use them to give specific, current answers. Say "As of today..." or "As of [date]" when answering time-sensitive questions.
+- Cite sources naturally in the response (e.g., "According to the official JEE Advanced website...").
+- If the search results don't contain enough info, say so clearly.
+- Use markdown: headers (##), bullet lists, bold for key terms.
+- Be encouraging but concise. No filler, no padding, no meta-commentary about what you're doing.`;
 
 const ICON_THUMBUP = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3H14z"/><path d="M7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"/></svg>`;
 const ICON_THUMBDOWN = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 15v4a3 3 0 0 0 3 3l4-9V2H5.72a2 2 0 0 0-2 1.7l-1.38 9a2 2 0 0 0 2 2.3H10z"/><path d="M17 2h2.67A2.31 2.31 0 0 1 22 4v7a2.31 2.31 0 0 1-2.33 2H17"/></svg>`;
 const ICON_COPY = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>`;
 const ICON_COPY_CHECK = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>`;
 const ICON_SHARE = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>`;
-const ICON_SEARCH = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.35-4.35"/></svg>`;
 
 (function injectActionButtonStyles() {
   if (document.getElementById("aquila-action-styles")) return;
@@ -90,75 +91,21 @@ const ICON_SEARCH = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none"
       margin: 0 2px;
     }
     @keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
-    .thinking-section {
-      margin: 8px 0;
-      border: 1px solid rgba(167,139,250,0.2);
-      border-radius: 10px;
-      background: rgba(167,139,250,0.04);
-      overflow: hidden;
+    .search-pulse {
+      position: relative;
     }
-    .thinking-header {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      padding: 10px 14px;
-      cursor: pointer;
-      user-select: none;
-      font-size: 13px;
-      font-weight: 500;
-      color: var(--accent2);
-      transition: background 0.15s;
+    .search-pulse::after {
+      content: '';
+      position: absolute;
+      inset: -2px;
+      border-radius: 11px;
+      border: 2px solid var(--accent2);
+      opacity: 0;
+      animation: pulseRing 1.2s ease-out infinite;
     }
-    .thinking-header:hover {
-      background: rgba(167,139,250,0.06);
-    }
-    .thinking-dots {
-      display: flex;
-      gap: 3px;
-    }
-    .thinking-dots span {
-      width: 5px;
-      height: 5px;
-      border-radius: 50%;
-      background: var(--accent2);
-      animation: thinkDot 1.2s ease-in-out infinite;
-    }
-    .thinking-dots span:nth-child(2) { animation-delay: 200ms; }
-    .thinking-dots span:nth-child(3) { animation-delay: 400ms; }
-    @keyframes thinkDot {
-      0%,80%,100%{ opacity: 0.3; transform: scale(0.8); }
-      40%{ opacity: 1; transform: scale(1.2); }
-    }
-    .thinking-chevron {
-      margin-left: auto;
-      transition: transform 0.25s;
-      color: var(--text-muted);
-    }
-    .thinking-chevron.open { transform: rotate(90deg); }
-    .thinking-body {
-      font-size: 13px;
-      line-height: 1.7;
-      color: var(--text-secondary);
-      padding: 0 14px 14px;
-      white-space: pre-wrap;
-    }
-    .search-indicator {
-      display: inline-flex;
-      align-items: center;
-      gap: 5px;
-      font-size: 12px;
-      color: var(--accent2);
-      padding: 4px 10px;
-      border-radius: 6px;
-      background: rgba(167,139,250,0.08);
-      margin-bottom: 8px;
-    }
-    .search-indicator svg {
-      animation: searchPulse 1.4s ease-in-out infinite;
-    }
-    @keyframes searchPulse {
-      0%,100%{ opacity: 0.5; }
-      50%{ opacity: 1; }
+    @keyframes pulseRing {
+      0% { opacity: 0.6; transform: scale(1); }
+      100% { opacity: 0; transform: scale(1.2); }
     }
   `;
   document.head.appendChild(style);
@@ -177,19 +124,8 @@ export function toggleSearch() {
   if (btn) {
     btn.classList.toggle("active", isSearchEnabled);
     btn.setAttribute("aria-pressed", String(isSearchEnabled));
-    btn.querySelector("span").textContent = isSearchEnabled ? "Search on" : "Search";
   }
   return isSearchEnabled;
-}
-
-export function setSearchEnabled(val) {
-  isSearchEnabled = val;
-  const btn = document.getElementById("searchToggleBtn");
-  if (btn) {
-    btn.classList.toggle("active", isSearchEnabled);
-    btn.setAttribute("aria-pressed", String(isSearchEnabled));
-    btn.querySelector("span").textContent = isSearchEnabled ? "Search on" : "Search";
-  }
 }
 
 async function performWebSearch(query) {
@@ -209,9 +145,17 @@ async function performWebSearch(query) {
 function formatSearchResults(results) {
   if (!results || results.length === 0) return "";
   const parts = results.map((r, i) =>
-    `Source ${i + 1}: ${r.title}\nURL: ${r.link}\nSnippet: ${r.snippet}`
+    `[${i + 1}] "${r.title}" - ${r.snippet}\nSource: ${r.link}`
   );
-  return `\n\nWeb search results for context:\n${parts.join("\n\n")}\n\nUse these search results to provide an accurate, up-to-date answer. Cite relevant sources naturally in your response. If the search results don't contain enough information to answer the question fully, acknowledge that clearly.`;
+  return `\n\nCurrent web search results (use these to answer accurately):\n${parts.join("\n")}\n\nAnswer directly using these results where relevant. If the results don't contain enough information, say so. Always cite sources naturally.`;
+}
+
+function pulseSearchBtn(pulse) {
+  const btn = document.getElementById("searchToggleBtn");
+  if (btn) {
+    if (pulse) btn.classList.add("search-pulse");
+    else btn.classList.remove("search-pulse");
+  }
 }
 
 export async function sendMessage() {
@@ -237,19 +181,13 @@ export async function sendMessage() {
   let searchError = null;
 
   if (isSearchEnabled) {
-    const searchIndicator = document.createElement("div");
-    searchIndicator.className = "search-indicator";
-    searchIndicator.id = "searchIndicator";
-    searchIndicator.innerHTML = `${ICON_SEARCH} Searching the web for current information...`;
-    conversationHistory.push({ role: "assistant", content: "[Searching the web...]" });
-    renderRawMessage("assistant", searchIndicator.outerHTML);
-
+    pulseSearchBtn(true);
     try {
       searchResults = await performWebSearch(rawText);
-      document.getElementById("searchIndicator")?.remove();
     } catch (err) {
       searchError = err.message;
-      document.getElementById("searchIndicator")?.remove();
+    } finally {
+      pulseSearchBtn(false);
     }
   }
 
@@ -261,52 +199,21 @@ export async function sendMessage() {
   const chatRef = await ensureChatSession(rawText);
   await saveMessage(chatRef, "user", rawText);
 
-  const thinkingContainer = document.createElement("div");
-  thinkingContainer.className = "thinking-section";
-  thinkingContainer.id = "thinkingSection";
-
-  const thinkingHeader = document.createElement("div");
-  thinkingHeader.className = "thinking-header";
-  thinkingHeader.innerHTML = `
-    <span class="thinking-dots"><span></span><span></span><span></span></span>
-    Aquila is thinking
-    <span class="thinking-chevron">▶</span>
-  `;
-
-  const thinkingBody = document.createElement("div");
-  thinkingBody.className = "thinking-body";
-  thinkingBody.id = "thinkingBody";
-
-  thinkingContainer.appendChild(thinkingHeader);
-  thinkingContainer.appendChild(thinkingBody);
-
   const aiBubble = createAiBubble();
-  aiBubble.parentElement?.insertBefore(thinkingContainer, aiBubble);
-
   isStreaming = true;
 
   try {
     let enhancedPrompt = SYSTEM_PROMPT;
 
-    if (searchResults.length > 0 && isSearchEnabled) {
-      const searchContext = formatSearchResults(searchResults);
-      enhancedPrompt += searchContext;
-      thinkingBody.textContent = "I found some web results. Let me analyze them to give you the best answer...";
-    } else if (searchError && isSearchEnabled) {
-      thinkingBody.textContent = `I tried to search the web but encountered an issue: ${searchError}. Let me answer based on what I know.`;
+    if (searchResults.length > 0) {
+      enhancedPrompt += formatSearchResults(searchResults);
+    } else if (searchError) {
+      enhancedPrompt += `\n\nNote: Web search was attempted but failed (${searchError}). Answer based on your existing knowledge.`;
     } else if (isSearchEnabled) {
-      thinkingBody.textContent = "I searched the web but didn't find relevant results. Let me answer based on my knowledge.";
-    } else {
-      thinkingBody.textContent = "Let me think through this step by step...";
+      enhancedPrompt += `\n\nNote: Web search returned no relevant results. Answer based on your existing knowledge.`;
     }
 
-    const replyText = await streamGroqResponse(aiBubble, enhancedPrompt, thinkingBody);
-
-    thinkingHeader.querySelector(".thinking-dots")?.remove();
-    thinkingHeader.querySelector(".thinking-chevron")?.classList.add("open");
-    thinkingHeader.addEventListener("click", () => {
-      thinkingBody.style.display = thinkingBody.style.display === "none" ? "" : "none";
-    });
+    const replyText = await streamGroqResponse(aiBubble, enhancedPrompt);
 
     const actions = createActionButtons(replyText);
     aiBubble.appendChild(actions);
@@ -402,7 +309,7 @@ function createActionButtons(rawText) {
   return wrap;
 }
 
-async function streamGroqResponse(bubble, systemPrompt, thinkingBody) {
+async function streamGroqResponse(bubble, systemPrompt) {
   const res = await fetch(API_ENDPOINT, {
     method : "POST",
     headers: { "Content-Type" : "application/json" },
@@ -454,29 +361,6 @@ async function streamGroqResponse(bubble, systemPrompt, thinkingBody) {
   bubble.innerHTML = renderMarkdown(fullText);
   smoothScrollToBottom();
   return fullText;
-}
-
-function renderRawMessage(role, htmlContent) {
-  const chatArea = document.getElementById("chatArea");
-  if (!chatArea) return;
-
-  if (role === "assistant") {
-    const wrap = document.createElement("div");
-    wrap.style.cssText = "display:flex;gap:12px;padding:6px 20px;align-items:flex-start;";
-    wrap.innerHTML = `
-      <div style="
-        width:30px;height:30px;flex-shrink:0;
-        background:linear-gradient(135deg,#6c63ff,#00d4aa);
-        border-radius:8px;display:flex;align-items:center;
-        justify-content:center;font-size:14px;margin-top:2px;
-      ">\u{1F4DD}</div>`;
-    const contentDiv = document.createElement("div");
-    contentDiv.style.cssText = "flex:1;";
-    contentDiv.innerHTML = htmlContent;
-    wrap.appendChild(contentDiv);
-    chatArea.appendChild(wrap);
-    smoothScrollToBottom();
-  }
 }
 
 export function renderMessage(role, content) {
@@ -608,13 +492,13 @@ function typingIndicator() {
     ${[0, 200, 400].map(d =>
       `<span style="
         width:6px;height:6px;border-radius:50%;background:#6c63ff;
-        animation:mentoraDot 1.2s ease-in-out ${d}ms infinite;
+        animation:aquilaDot 1.2s ease-in-out ${d}ms infinite;
         display:inline-block;
       "></span>`
     ).join("")}
   </span>
   <style>
-    @keyframes mentoraDot {
+    @keyframes aquilaDot {
       0%,80%,100%{transform:translateY(0);opacity:.4}
       40%{transform:translateY(-6px);opacity:1}
     }
