@@ -1,11 +1,3 @@
-// ── chat.js ──
-// Powers the AI chat in home.html.
-// - Calls Groq API (llama-3.3-70b-versatile) with full conversation history.
-// - Streams the response token-by-token into the UI.
-// - Persists each session to Firestore under users/{uid}/chats/{chatId}/messages.
-// - Action buttons: thumbs up, thumbs down, copy, share on every AI response.
-// - Exports: sendMessage(), renderMessage(), clearWelcome(), setActiveChatId()
-
 import { escapeHtml } from "./xss.js";
 import { auth, db } from "./firebase-config.js";
 import {
@@ -17,25 +9,26 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 import { checkAndGate } from "./limits.js";
 
-// ─── Constants ────────────────────────────────────────────────────────────────
 const API_ENDPOINT  = "/api/groq-proxy";
+const SEARCH_ENDPOINT = "/api/search";
 const MODEL         = "llama-3.3-70b-versatile";
 const MAX_HISTORY   = 60;
 
-const SYSTEM_PROMPT = `You are Mentora, an expert AI study companion built for JEE and NEET aspirants and students in general.
+const SYSTEM_PROMPT = `You are Aquila AI, an expert AI study companion built for JEE, NEET, and board exam aspirants as well as students in general.
 You help students understand concepts deeply, solve problems step-by-step, create study plans, and analyse their performance.
 Always be encouraging, precise, and structured. Use markdown formatting: headers (##), bullet lists, bold key terms, and code blocks where relevant.
 When solving problems, show all working clearly. When explaining concepts, use relatable analogies.
-Keep responses focused and never pad with unnecessary filler.`;
+Keep responses focused and never pad with unnecessary filler.
 
-// ─── SVG Icons ────────────────────────────────────────────────────────────────
+When you receive search results, use them to inform your answer. Cite sources from the search results when providing factual information. If search results are insufficient, acknowledge that clearly.`;
+
 const ICON_THUMBUP = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3H14z"/><path d="M7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"/></svg>`;
 const ICON_THUMBDOWN = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 15v4a3 3 0 0 0 3 3l4-9V2H5.72a2 2 0 0 0-2 1.7l-1.38 9a2 2 0 0 0 2 2.3H10z"/><path d="M17 2h2.67A2.31 2.31 0 0 1 22 4v7a2.31 2.31 0 0 1-2.33 2H17"/></svg>`;
 const ICON_COPY = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>`;
 const ICON_COPY_CHECK = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>`;
 const ICON_SHARE = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>`;
+const ICON_SEARCH = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.35-4.35"/></svg>`;
 
-// ─── Action buttons CSS (injected once) ──────────────────────────────────────
 (function injectActionButtonStyles() {
   if (document.getElementById("aquila-action-styles")) return;
   const style = document.createElement("style");
@@ -97,18 +90,130 @@ const ICON_SHARE = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" 
       margin: 0 2px;
     }
     @keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+    .thinking-section {
+      margin: 8px 0;
+      border: 1px solid rgba(167,139,250,0.2);
+      border-radius: 10px;
+      background: rgba(167,139,250,0.04);
+      overflow: hidden;
+    }
+    .thinking-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 14px;
+      cursor: pointer;
+      user-select: none;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--accent2);
+      transition: background 0.15s;
+    }
+    .thinking-header:hover {
+      background: rgba(167,139,250,0.06);
+    }
+    .thinking-dots {
+      display: flex;
+      gap: 3px;
+    }
+    .thinking-dots span {
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: var(--accent2);
+      animation: thinkDot 1.2s ease-in-out infinite;
+    }
+    .thinking-dots span:nth-child(2) { animation-delay: 200ms; }
+    .thinking-dots span:nth-child(3) { animation-delay: 400ms; }
+    @keyframes thinkDot {
+      0%,80%,100%{ opacity: 0.3; transform: scale(0.8); }
+      40%{ opacity: 1; transform: scale(1.2); }
+    }
+    .thinking-chevron {
+      margin-left: auto;
+      transition: transform 0.25s;
+      color: var(--text-muted);
+    }
+    .thinking-chevron.open { transform: rotate(90deg); }
+    .thinking-body {
+      font-size: 13px;
+      line-height: 1.7;
+      color: var(--text-secondary);
+      padding: 0 14px 14px;
+      white-space: pre-wrap;
+    }
+    .search-indicator {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 12px;
+      color: var(--accent2);
+      padding: 4px 10px;
+      border-radius: 6px;
+      background: rgba(167,139,250,0.08);
+      margin-bottom: 8px;
+    }
+    .search-indicator svg {
+      animation: searchPulse 1.4s ease-in-out infinite;
+    }
+    @keyframes searchPulse {
+      0%,100%{ opacity: 0.5; }
+      50%{ opacity: 1; }
+    }
   `;
   document.head.appendChild(style);
 })();
 
-// ─── State ───────────────────────────────────────────────────────────────────
 let conversationHistory = [];
 let activeChatId        = null;
 let isStreaming         = false;
+let isSearchEnabled     = false;
 
 export function setActiveChatId(id) { activeChatId = id; }
 
-// ─── Public: sendMessage ──────────────────────────────────────────────────────
+export function toggleSearch() {
+  isSearchEnabled = !isSearchEnabled;
+  const btn = document.getElementById("searchToggleBtn");
+  if (btn) {
+    btn.classList.toggle("active", isSearchEnabled);
+    btn.setAttribute("aria-pressed", String(isSearchEnabled));
+    btn.querySelector("span").textContent = isSearchEnabled ? "Search on" : "Search";
+  }
+  return isSearchEnabled;
+}
+
+export function setSearchEnabled(val) {
+  isSearchEnabled = val;
+  const btn = document.getElementById("searchToggleBtn");
+  if (btn) {
+    btn.classList.toggle("active", isSearchEnabled);
+    btn.setAttribute("aria-pressed", String(isSearchEnabled));
+    btn.querySelector("span").textContent = isSearchEnabled ? "Search on" : "Search";
+  }
+}
+
+async function performWebSearch(query) {
+  const res = await fetch(SEARCH_ENDPOINT, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ query: query.slice(0, 400) }),
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err?.error || `Search failed (${res.status})`);
+  }
+  const data = await res.json();
+  return data.results || [];
+}
+
+function formatSearchResults(results) {
+  if (!results || results.length === 0) return "";
+  const parts = results.map((r, i) =>
+    `Source ${i + 1}: ${r.title}\nURL: ${r.link}\nSnippet: ${r.snippet}`
+  );
+  return `\n\nWeb search results for context:\n${parts.join("\n\n")}\n\nUse these search results to provide an accurate, up-to-date answer. Cite relevant sources naturally in your response. If the search results don't contain enough information to answer the question fully, acknowledge that clearly.`;
+}
+
 export async function sendMessage() {
   if (isStreaming) return;
 
@@ -128,20 +233,81 @@ export async function sendMessage() {
   clearWelcome();
   renderMessage("user", rawText);
 
-    conversationHistory.push({ role: "user", content: rawText });
-    if (conversationHistory.length > MAX_HISTORY) {
-      conversationHistory.splice(0, conversationHistory.length - MAX_HISTORY);
+  let searchResults = [];
+  let searchError = null;
+
+  if (isSearchEnabled) {
+    const searchIndicator = document.createElement("div");
+    searchIndicator.className = "search-indicator";
+    searchIndicator.id = "searchIndicator";
+    searchIndicator.innerHTML = `${ICON_SEARCH} Searching the web for current information...`;
+    conversationHistory.push({ role: "assistant", content: "[Searching the web...]" });
+    renderRawMessage("assistant", searchIndicator.outerHTML);
+
+    try {
+      searchResults = await performWebSearch(rawText);
+      document.getElementById("searchIndicator")?.remove();
+    } catch (err) {
+      searchError = err.message;
+      document.getElementById("searchIndicator")?.remove();
     }
+  }
+
+  conversationHistory.push({ role: "user", content: rawText });
+  if (conversationHistory.length > MAX_HISTORY) {
+    conversationHistory.splice(0, conversationHistory.length - MAX_HISTORY);
+  }
 
   const chatRef = await ensureChatSession(rawText);
   await saveMessage(chatRef, "user", rawText);
 
+  const thinkingContainer = document.createElement("div");
+  thinkingContainer.className = "thinking-section";
+  thinkingContainer.id = "thinkingSection";
+
+  const thinkingHeader = document.createElement("div");
+  thinkingHeader.className = "thinking-header";
+  thinkingHeader.innerHTML = `
+    <span class="thinking-dots"><span></span><span></span><span></span></span>
+    Aquila is thinking
+    <span class="thinking-chevron">▶</span>
+  `;
+
+  const thinkingBody = document.createElement("div");
+  thinkingBody.className = "thinking-body";
+  thinkingBody.id = "thinkingBody";
+
+  thinkingContainer.appendChild(thinkingHeader);
+  thinkingContainer.appendChild(thinkingBody);
+
   const aiBubble = createAiBubble();
-  isStreaming     = true;
+  aiBubble.parentElement?.insertBefore(thinkingContainer, aiBubble);
+
+  isStreaming = true;
 
   try {
-    const replyText = await streamGroqResponse(aiBubble);
-    // Append action buttons after streaming finishes
+    let enhancedPrompt = SYSTEM_PROMPT;
+
+    if (searchResults.length > 0 && isSearchEnabled) {
+      const searchContext = formatSearchResults(searchResults);
+      enhancedPrompt += searchContext;
+      thinkingBody.textContent = "I found some web results. Let me analyze them to give you the best answer...";
+    } else if (searchError && isSearchEnabled) {
+      thinkingBody.textContent = `I tried to search the web but encountered an issue: ${searchError}. Let me answer based on what I know.`;
+    } else if (isSearchEnabled) {
+      thinkingBody.textContent = "I searched the web but didn't find relevant results. Let me answer based on my knowledge.";
+    } else {
+      thinkingBody.textContent = "Let me think through this step by step...";
+    }
+
+    const replyText = await streamGroqResponse(aiBubble, enhancedPrompt, thinkingBody);
+
+    thinkingHeader.querySelector(".thinking-dots")?.remove();
+    thinkingHeader.querySelector(".thinking-chevron")?.classList.add("open");
+    thinkingHeader.addEventListener("click", () => {
+      thinkingBody.style.display = thinkingBody.style.display === "none" ? "" : "none";
+    });
+
     const actions = createActionButtons(replyText);
     aiBubble.appendChild(actions);
 
@@ -152,23 +318,21 @@ export async function sendMessage() {
     await saveMessage(chatRef, "assistant", replyText);
 
     if (conversationHistory.length === 2) {
-      const title = rawText.slice(0, 60) + (rawText.length > 60 ? "…" : "");
+      const title = rawText.slice(0, 60) + (rawText.length > 60 ? "\u2026" : "");
       await updateChatTitle(chatRef, title);
       updateSidebarTitle(activeChatId, title);
     }
   } catch (err) {
-    aiBubble.innerHTML = `<span style="color:#f472b6;">⚠ ${err.message}</span>`;
+    aiBubble.innerHTML = `<span style="color:#f472b6;">\u26a0 ${err.message}</span>`;
   } finally {
     isStreaming = false;
   }
 }
 
-// ─── Create action buttons ────────────────────────────────────────────────────
 function createActionButtons(rawText) {
   const wrap = document.createElement("div");
   wrap.className = "ai-actions";
 
-  // Thumbs up
   const likeBtn = document.createElement("button");
   likeBtn.className = "ai-action-btn";
   likeBtn.title = "Good response";
@@ -180,7 +344,6 @@ function createActionButtons(rawText) {
     dislikeBtn.querySelector("span").textContent = "Bad";
   });
 
-  // Thumbs down
   const dislikeBtn = document.createElement("button");
   dislikeBtn.className = "ai-action-btn";
   dislikeBtn.title = "Bad response";
@@ -192,11 +355,9 @@ function createActionButtons(rawText) {
     likeBtn.querySelector("span").textContent = "Good";
   });
 
-  // Divider
   const divider = document.createElement("div");
   divider.className = "ai-action-divider";
 
-  // Copy
   const copyBtn = document.createElement("button");
   copyBtn.className = "ai-action-btn";
   copyBtn.title = "Copy response";
@@ -211,7 +372,6 @@ function createActionButtons(rawText) {
     }, 2200);
   });
 
-  // Share
   const shareBtn = document.createElement("button");
   shareBtn.className = "ai-action-btn";
   shareBtn.title = "Share response";
@@ -242,15 +402,14 @@ function createActionButtons(rawText) {
   return wrap;
 }
 
-// ─── Groq streaming ───────────────────────────────────────────────────────────
-async function streamGroqResponse(bubble) {
+async function streamGroqResponse(bubble, systemPrompt, thinkingBody) {
   const res = await fetch(API_ENDPOINT, {
     method : "POST",
     headers: { "Content-Type" : "application/json" },
     body: JSON.stringify({
       model    : MODEL,
       messages : [
-        { role: "system", content: SYSTEM_PROMPT },
+        { role: "system", content: systemPrompt },
         ...conversationHistory,
       ],
       max_tokens : 2048,
@@ -286,18 +445,40 @@ async function streamGroqResponse(bubble) {
         if (delta) {
           fullText += delta;
           bubble.innerHTML = renderMarkdown(fullText) + cursorHtml();
-          scrollChatToBottom();
+          smoothScrollToBottom();
         }
       } catch { /* ignore parse errors on partial chunks */ }
     }
   }
 
   bubble.innerHTML = renderMarkdown(fullText);
-  scrollChatToBottom();
+  smoothScrollToBottom();
   return fullText;
 }
 
-// ─── DOM helpers ──────────────────────────────────────────────────────────────
+function renderRawMessage(role, htmlContent) {
+  const chatArea = document.getElementById("chatArea");
+  if (!chatArea) return;
+
+  if (role === "assistant") {
+    const wrap = document.createElement("div");
+    wrap.style.cssText = "display:flex;gap:12px;padding:6px 20px;align-items:flex-start;";
+    wrap.innerHTML = `
+      <div style="
+        width:30px;height:30px;flex-shrink:0;
+        background:linear-gradient(135deg,#6c63ff,#00d4aa);
+        border-radius:8px;display:flex;align-items:center;
+        justify-content:center;font-size:14px;margin-top:2px;
+      ">\u{1F4DD}</div>`;
+    const contentDiv = document.createElement("div");
+    contentDiv.style.cssText = "flex:1;";
+    contentDiv.innerHTML = htmlContent;
+    wrap.appendChild(contentDiv);
+    chatArea.appendChild(wrap);
+    smoothScrollToBottom();
+  }
+}
+
 export function renderMessage(role, content) {
   const chatArea = document.getElementById("chatArea");
   if (!chatArea) return;
@@ -332,11 +513,11 @@ export function renderMessage(role, content) {
         background:linear-gradient(135deg,#6c63ff,#00d4aa);
         border-radius:8px;display:flex;align-items:center;
         justify-content:center;font-size:14px;margin-top:2px;
-      ">🎓</div>`;
+      ">\u{1F4DD}</div>`;
     wrap.appendChild(bubble);
     chatArea.appendChild(wrap);
   }
-  scrollChatToBottom();
+  smoothScrollToBottom();
 }
 
 function createAiBubble() {
@@ -353,10 +534,10 @@ function createAiBubble() {
       background:linear-gradient(135deg,#6c63ff,#00d4aa);
       border-radius:8px;display:flex;align-items:center;
       justify-content:center;font-size:14px;margin-top:2px;
-    ">🎓</div>`;
+    ">\u{1F4DD}</div>`;
   wrap.appendChild(bubble);
   chatArea.appendChild(wrap);
-  scrollChatToBottom();
+  smoothScrollToBottom();
   return bubble;
 }
 
@@ -365,12 +546,16 @@ export function clearWelcome() {
   if (welcome) welcome.remove();
 }
 
-function scrollChatToBottom() {
+function smoothScrollToBottom() {
   const ca = document.getElementById("chatArea");
-  if (ca) ca.scrollTop = ca.scrollHeight;
+  if (ca) {
+    ca.scrollTo({
+      top: ca.scrollHeight,
+      behavior: "smooth",
+    });
+  }
 }
 
-// ─── Minimal markdown renderer ────────────────────────────────────────────────
 function renderMarkdown(md) {
   let html = escapeHtml(md);
 
@@ -444,7 +629,6 @@ function cursorHtml() {
   "></span>`;
 }
 
-// ─── Firestore persistence ────────────────────────────────────────────────────
 async function ensureChatSession(firstMessage) {
   const user = auth.currentUser;
   if (!user) return null;
@@ -453,7 +637,7 @@ async function ensureChatSession(firstMessage) {
     return doc(db, "users", user.uid, "chats", activeChatId);
   }
 
-  const title  = firstMessage.slice(0, 60) + (firstMessage.length > 60 ? "…" : "");
+  const title  = firstMessage.slice(0, 60) + (firstMessage.length > 60 ? "\u2026" : "");
   const chatRef = await addDoc(
     collection(db, "users", user.uid, "chats"),
     {
@@ -489,6 +673,6 @@ function updateSidebarTitle(chatId, title) {
   if (titleEl) titleEl.textContent = title;
 }
 
-// ─── Expose globally for home.html inline handlers ───────────────────────────
 window.sendMessage   = sendMessage;
 window.clearWelcome  = clearWelcome;
+window.toggleSearch  = toggleSearch;

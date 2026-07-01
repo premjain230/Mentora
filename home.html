@@ -262,7 +262,7 @@
   .topbar-mobile-logo span { color: var(--accent); }
 
   /* ===== Chat area ===== */
-  .chat-area { flex: 1; overflow-y: auto; padding: 36px 60px 20px; display: flex; flex-direction: column; gap: 26px; }
+  .chat-area { flex: 1; overflow-y: auto; padding: 36px 60px 20px; display: flex; flex-direction: column; gap: 26px; scroll-behavior: smooth; }
   .chat-area::-webkit-scrollbar, .nav-section::-webkit-scrollbar { width: 4px; }
   .chat-area::-webkit-scrollbar-thumb, .nav-section::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
 
@@ -332,6 +332,21 @@
   }
   .input-box textarea::placeholder { color: var(--text-muted); }
   .input-actions { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
+  .search-toggle-btn {
+    width: 36px; height: 36px; border-radius: 10px;
+    border: 1px solid var(--border);
+    background: transparent;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; color: var(--text-muted);
+    transition: all 0.18s; flex-shrink: 0;
+  }
+  .search-toggle-btn:hover { color: var(--text-secondary); border-color: var(--border-hover); background: rgba(255,255,255,0.04); }
+  .search-toggle-btn.active {
+    color: var(--accent2);
+    border-color: rgba(167,139,250,0.4);
+    background: rgba(167,139,250,0.12);
+    box-shadow: 0 0 12px rgba(167,139,250,0.15);
+  }
   .send-btn {
     width: 36px; height: 36px; border-radius: 10px;
     background: var(--accent); border: none;
@@ -534,8 +549,11 @@
   <div class="chat-area" id="chatArea"></div>
   <div class="input-area">
     <div class="input-box">
-      <textarea id="chatInput" rows="1" placeholder="Ask Aquila AI anything — explain, analyze, or plan your study..." oninput="resizeInput(this)" onkeydown="handleKey(event)"></textarea>
+      <textarea id="chatInput" rows="1" placeholder="Ask Aquila AI anything — explain, analyze, or search the web..." oninput="resizeInput(this)" onkeydown="handleKey(event)"></textarea>
       <div class="input-actions">
+        <button class="search-toggle-btn" id="searchToggleBtn" title="Toggle web search" onclick="toggleSearch()" aria-pressed="false">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.35-4.35"/></svg>
+        </button>
         <button class="send-btn" id="sendBtn" title="Send" onclick="sendMessage()">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
         </button>
@@ -543,7 +561,8 @@
     </div>
     <div class="input-footer">
       <span>Encrypted in transit</span>
-      <span>Aquila AI can make mistakes — verify important answers</span>
+      <span>Enable search icon for web-aware answers</span>
+      <span>Aquila can make mistakes — verify important info</span>
     </div>
   </div>
 </main>
