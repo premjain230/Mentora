@@ -554,6 +554,7 @@ import { getUserPlan } from "./subscription.js";
 const authInstance = auth || getAuth();
 
 onAuthStateChanged(authInstance, async (user) => {
+  if (user && !user.emailVerified) { window.location.href = "verify-email.html"; return; }
   if (!user) { window.location.href = "login.html"; return; }
 
   const name = user.displayName || user.email?.split("@")[0] || "Guest";

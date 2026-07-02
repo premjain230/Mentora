@@ -758,6 +758,7 @@ const PERSONALITIES = [
 ];
 
 onAuthStateChanged(authInstance, async (user) => {
+  if (user && !user.emailVerified) { window.location.href = "verify-email.html"; return; }
   try {
     if (!user) { window.location.href = 'login.html'; return; }
     currentUser = user;

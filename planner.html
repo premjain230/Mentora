@@ -462,6 +462,7 @@ let appState = { user: null, profile: null, plan: null, tasks: [], progress: nul
 let _getProgress = getProgress;
 
 onAuthStateChanged(auth, async (user) => {
+  if (user && !user.emailVerified) { window.location.href = "verify-email.html"; return; }
   if (!user) { window.location.href = "login.html"; return; }
   appState.user = user;
 
