@@ -278,6 +278,7 @@ import { saveExamProfile, saveStudyPlan, createTasksFromPlan, logEvent } from ".
 
 // ── Auth guard ───────────────────────────────────────────────
 onAuthStateChanged(auth, (user) => {
+  if (user && !user.emailVerified) { window.location.href = "verify-email.html"; return; }
   if (!user) window.location.replace("/index.html");
 });
 

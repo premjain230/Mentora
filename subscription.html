@@ -469,7 +469,7 @@
       import('./firebase-config.js').then(({ auth }) => {
         import('https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js').then(({ onAuthStateChanged }) => {
           onAuthStateChanged(auth, (user) => {
-            if (user) requestProAccess(user.uid, user.email);
+            if (user && user.emailVerified) requestProAccess(user.uid, user.email);
           });
         });
       });
@@ -666,6 +666,7 @@
   // Auth + data load
   onAuthStateChanged(auth, async (user) => {
     if (!user) { window.location.href = 'login.html'; return; }
+    if (user && !user.emailVerified) { window.location.href = 'verify-email.html'; return; }
 
     // Sidebar user info
     document.getElementById('userName').textContent = user.displayName || user.email;

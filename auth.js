@@ -15,7 +15,9 @@ import {
   createUserWithEmailAndPassword,
   signInWithPopup,
   sendPasswordResetEmail,
+  sendEmailVerification,
   updateProfile,
+  reload,
   onAuthStateChanged,
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
@@ -121,7 +123,13 @@ export async function signIn(btnEl) {
 
   setLoading(btn, true);
   try {
-    await signInWithEmailAndPassword(auth, email, password);
+    const cred = await signInWithEmailAndPassword(auth, email, password);
+    if (!cred.user.emailVerified) {
+      await sendEmailVerification(cred.user);
+      showMsg("Email not verified. A new verification link has been sent. Please verify before signing in.");
+      setLoading(btn, false);
+      return;
+    }
     redirectToHome();
   } catch (err) {
     showMsg(friendlyError(err.code));
@@ -160,7 +168,8 @@ export async function signUp(btnEl, extra = {}) {
     const displayName = `${firstName} ${lastName}`.trim();
     await updateProfile(cred.user, { displayName });
     await ensureUserDoc(cred.user, { displayName, exam: extra.goal || "" });
-    redirectToHome();
+    await sendEmailVerification(cred.user);
+    window.location.href = "verify-email.html";
   } catch (err) {
     showMsg(friendlyError(err.code));
     setLoading(btn, false);
@@ -184,10 +193,41 @@ export async function forgotPassword() {
   }
 }
 
+// ─── Resend Email Verification ────────────────────────────────────────────────
+
+export async function resendVerificationEmail() {
+  const user = auth.currentUser;
+  if (!user) {
+    showMsg("You must be signed in to resend verification.");
+    return;
+  }
+  try {
+    await sendEmailVerification(user);
+    showMsg("Verification email sent! Check your inbox.", false);
+  } catch (err) {
+    showMsg(friendlyError(err.code));
+  }
+}
+
+// ─── Check Email Verification & Reload User ──────────────────────────────────
+
+export async function checkEmailVerified() {
+  const user = auth.currentUser;
+  if (!user) return false;
+  try {
+    await reload(user);
+    return user.emailVerified;
+  } catch {
+    return false;
+  }
+}
+
 // ─── Auth State: redirect away from auth pages if already signed in ──────────
 
 onAuthStateChanged(auth, (user) => {
-  if (user) redirectToHome();
+  if (user) {
+    if (user.emailVerified) redirectToHome();
+  }
 });
 
 // ─── Error code → human message ──────────────────────────────────────────────

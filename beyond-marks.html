@@ -1177,6 +1177,7 @@ const SAMPLE_STORIES = [
 ];
 
 onAuthStateChanged(authInstance, async (user) => {
+  if (user && !user.emailVerified) { window.location.href = "verify-email.html"; return; }
   if (!user) { window.location.href = "login.html"; return; }
   currentUser = user;
 

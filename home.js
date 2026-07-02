@@ -32,6 +32,10 @@ onAuthStateChanged(auth, async (user) => {
     window.location.href = "login.html";
     return;
   }
+  if (!user.emailVerified) {
+    window.location.href = "verify-email.html";
+    return;
+  }
   currentUser = user;
   populateUserCard(user);
   await loadRecentChats(user.uid);
