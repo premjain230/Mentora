@@ -5,7 +5,13 @@
 <meta charset="UTF-8" /> 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 <meta http-equiv="Content-Security-Policy" content="default-src 'self' https:; script-src 'self' 'unsafe-inline' https://www.gstatic.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://www.googletagmanager.com https://esm.sh; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: https:; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://firestore.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://analytics.vercel.com; object-src 'none'; frame-src 'none';">
-<meta name="description" content="Manage your Aquila AI profile and account settings." />
+<meta name="description" content="Manage your Aquila AI profile, AI personality preferences, and account settings." />
+<meta property="og:title" content="Profile - Aquila AI" />
+<meta property="og:description" content="Manage your Aquila AI profile and account settings." />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://aquila-ai.vercel.app/profile.html" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="keywords" content="Aquila AI profile, account settings, AI personality, student profile" />
 <link rel="canonical" href="https://aquila-ai.vercel.app/profile.html" />
 <title>Profile – Aquila AI</title>
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
@@ -665,10 +671,10 @@
       <div class="glass-card letter-card">
         <div class="section-card letter-card-inner">
           <div class="section-header">
-            <div class="section-title">
+            <h2 class="section-title">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M22 6v12H2V6l10 7 10-7z"/><path d="M2 6l10 7 10-7"/></svg>
               A Letter from Future Me
-            </div>
+            </h2>
           </div>
           <div class="letter-preview" id="letterPreview">
             <div class="letter-placeholder" id="letterPlaceholder">
@@ -690,10 +696,10 @@
       <div class="glass-card">
         <div class="section-card">
           <div class="section-header">
-            <div class="section-title">
+            <h2 class="section-title">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2a4 4 0 0 0-4 4v1a4 4 0 0 0 8 0V6a4 4 0 0 0-4-4z"/><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
               AI Personality
-            </div>
+            </h2>
           </div>
           <p style="font-size:13px;color:var(--text-muted);margin-bottom:18px;line-height:1.6;">
             Choose how your AI companion sounds. This changes the tone of every chat.
@@ -1034,6 +1040,9 @@ function esc(str) { return String(str||'').replace(/[&<>"']/g, c=>({'&':'&amp;',
     });
   });
 }());
+</script>
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"WebPage","name":"Profile - Aquila AI","description":"Manage your Aquila AI profile and account settings.","url":"https://aquila-ai.vercel.app/profile.html","breadcrumb":{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://aquila-ai.vercel.app/"},{"@type":"ListItem","position":2,"name":"Profile","item":"https://aquila-ai.vercel.app/profile.html"}]}}
 </script>
 </body>
 </html>
