@@ -14,47 +14,59 @@ const SEARCH_ENDPOINT = "/api/search";
 const MODEL         = "llama-3.3-70b-versatile";
 const MAX_HISTORY   = 60;
 
-const SYSTEM_PROMPT = `You are Aquila AI, a Socratic learning catalyst for JEE, NEET, and board exam students.
+const SYSTEM_PROMPT = `You are Aquila AI, the world's most effective learning companion. Your design is based on neuroscience research.
 
-CORE IDENTITY:
-- You are a thinking partner, NOT an encyclopedia
-- Your goal is to help students THINK, not just KNOW
-- You ask questions before giving answers
-- You adapt difficulty to match the student's level
+HOW YOU WORK:
+You are NOT a chatbot. You are a learning engine. Every interaction must actively strengthen memory.
 
-RULES:
-1. ASK BEFORE TELLING: When a student asks "What is X?", respond 70% of the time with:
-   "What do you think it might be, based on what you already know?"
-   Only give direct answers when:
-   - The student explicitly says "just tell me"
-   - They've failed 2+ attempts on the same concept
-   - It's a factual definition they're trying to memorize
+CORE RULES:
 
-2. LAYERED FEEDBACK: When a student answers incorrectly:
-   - Layer 1 (first attempt): "Not quite. Think about the relationship between A and B."
-   - Layer 2 (second attempt): Give a partial hint
-   - Layer 3 (third attempt): Provide the explanation with example
+1. NEVER GIVE DIRECT ANSWERS FIRST. Always respond with a question or prompt that makes the student retrieve from memory.
+   - Student: "What is photosynthesis?" 
+   - You: "Good question! Before I explain — what do you already know about how plants get energy? Even a guess helps."
 
-3. METACOGNITIVE PROMPTS: After key responses, ask:
-   - "How confident are you in this answer? (1-5)"
-   - "Did you guess or do you actually know this?"
+2. AFTER EVERY EXPLANATION, immediately test retrieval:
+   - "Can you explain that back to me in your own words?"
+   - "What would happen if [related scenario]?"
+   - "How does this connect to [previous concept]?"
 
-4. CONCISE RESPONSES: Maximum 3 sentences per response unless asked for detail.
+3. CONFIDENCE CHECK: After the student answers, ask:
+   - "On a scale of 1-5, how confident are you? (1=guessed, 5=absolutely sure)"
+   - Track this. If confidence > accuracy, they need more practice.
 
-5. ADAPTIVE DIFFICULTY: Track accuracy:
-   - If accuracy > 90% for 5 questions: Increase difficulty
-   - If accuracy < 50% for 3 questions: Decrease difficulty + offer hint
+4. ACTIVE RECALL FLOW:
+   a) Ask what they know (activate prior knowledge)
+   b) Explain ONE concept briefly (chunking — max 3 sentences)
+   c) Immediately ask them to recall it
+   d) Give feedback (correct → harder question; incorrect → hint layer 1)
+   e) If wrong again → hint layer 2 → if still wrong → brief explanation → ask again
 
-6. SPACED RETRIEVAL HOOKS: At end of session, say:
-   - "I'll remind you about this in [X] days"
-   - "This connects to [related concept] - want to review both?"
+5. SPACED REPETITION: After a concept is learned:
+   - "I'll ask you about this again in 1 day / 3 days / 1 week"
+   - "This connects to [X] — we'll review both together later"
 
-7. CURIOUSITY HOOKS: End sessions with intriguing facts:
-   - "Fun fact: [related interesting application]"
+6. INTERLEAVING: Don't stay on one topic too long. After 3-4 exchanges on one concept, mix in a question from a different topic.
 
-When search results are available, use them to give specific, current answers. Cite sources naturally.
-Use markdown: headers (##), bullet lists, bold for key terms.
-Be encouraging but concise.`;
+7. DESIRABLE DIFFICULTIES: Make it slightly harder when they're doing well:
+   - "You got that right! Now what if [harder variation]?"
+   - "That's correct. Can you think of an exception?"
+
+8. METACOGNITION: Regularly ask:
+   - "What confused you most about this?"
+   - "What would you teach differently about this topic?"
+   - "Where did you get stuck?"
+
+9. CONCISE: Maximum 3 sentences per response. Make every word count.
+
+10. EMOTIONAL STATE: Detect frustration (short wrong answers) → be encouraging. Detect boredom (fast correct) → increase challenge.
+
+FORMATTING: Use markdown sparingly. Bold key terms. Keep it scannable.
+
+NEVER:
+- Give a long explanation without testing recall first
+- Say "great question!" without following up with a challenge
+- End a response without asking something back
+- Let the student passively read`;
 
 const ICON_THUMBUP = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3H14z"/><path d="M7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"/></svg>`;
 const ICON_THUMBDOWN = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 15v4a3 3 0 0 0 3 3l4-9V2H5.72a2 2 0 0 0-2 1.7l-1.38 9a2 2 0 0 0 2 2.3H10z"/><path d="M17 2h2.67A2.31 2.31 0 0 1 22 4v7a2.31 2.31 0 0 1-2.33 2H17"/></svg>`;
@@ -139,6 +151,34 @@ const ICON_SHARE = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" 
       0% { opacity: 0.6; transform: scale(1); }
       100% { opacity: 0; transform: scale(1.2); }
     }
+    .confidence-bar {
+      display: flex;
+      gap: 6px;
+      margin-top: 10px;
+      flex-wrap: wrap;
+    }
+    .conf-btn {
+      padding: 4px 10px;
+      font-size: 11px;
+      font-family: 'Sora', sans-serif;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      background: transparent;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .conf-btn:hover { border-color: var(--border-hover); color: var(--text-secondary); }
+    .conf-btn.selected { background: rgba(0,212,255,0.1); border-color: rgba(0,212,255,0.3); color: var(--accent); }
+    .recall-prompt {
+      margin-top: 12px;
+      padding: 12px 16px;
+      background: rgba(0,212,255,0.05);
+      border: 1px solid rgba(0,212,255,0.15);
+      border-radius: 10px;
+      font-size: 13px;
+      color: var(--accent);
+    }
   `;
   document.head.appendChild(style);
 })();
@@ -147,6 +187,16 @@ let conversationHistory = [];
 let activeChatId        = null;
 let isStreaming         = false;
 let isSearchEnabled     = false;
+
+// Learning state tracking
+let learningState = {
+  currentConcept: null,
+  attemptCount: 0,
+  correctCount: 0,
+  totalQuestions: 0,
+  confidenceHistory: [],
+  lastActivity: Date.now()
+};
 
 export function setActiveChatId(id) { activeChatId = id; }
 
@@ -237,6 +287,13 @@ export async function sendMessage() {
   try {
     let enhancedPrompt = SYSTEM_PROMPT;
 
+    // Add learning state context
+    enhancedPrompt += `\n\nLEARNING STATE:
+- Current concept: ${learningState.currentConcept || "none"}
+- Attempts so far: ${learningState.attemptCount}
+- Correct: ${learningState.correctCount}/${learningState.totalQuestions}
+- Time since last activity: ${Math.round((Date.now() - learningState.lastActivity) / 1000)}s`;
+
     if (searchResults.length > 0) {
       enhancedPrompt += formatSearchResults(searchResults);
     } else if (searchError) {
@@ -247,8 +304,16 @@ export async function sendMessage() {
 
     const replyText = await streamGroqResponse(aiBubble, enhancedPrompt);
 
+    // Update learning state
+    learningState.totalQuestions++;
+    learningState.lastActivity = Date.now();
+
     const actions = createActionButtons(replyText);
     aiBubble.appendChild(actions);
+
+    // Add confidence rating UI
+    const confBar = createConfidenceBar();
+    aiBubble.appendChild(confBar);
 
     conversationHistory.push({ role: "assistant", content: replyText });
     if (conversationHistory.length > MAX_HISTORY) {
@@ -341,6 +406,40 @@ function createActionButtons(rawText) {
   return wrap;
 }
 
+function createConfidenceBar() {
+  const wrap = document.createElement("div");
+  wrap.className = "confidence-bar";
+  
+  const label = document.createElement("span");
+  label.style.cssText = "font-size:11px;color:var(--text-muted);margin-right:4px;";
+  label.textContent = "How confident? ";
+  wrap.appendChild(label);
+
+  for (let i = 1; i <= 5; i++) {
+    const btn = document.createElement("button");
+    btn.className = "conf-btn";
+    btn.textContent = i;
+    btn.title = i === 1 ? "Guessed" : i === 5 ? "Absolutely sure" : "";
+    btn.addEventListener("click", () => {
+      wrap.querySelectorAll(".conf-btn").forEach(b => b.classList.remove("selected"));
+      btn.classList.add("selected");
+      learningState.confidenceHistory.push(i);
+      
+      // Auto-send confidence as a message to track it
+      const confMsg = `[Confidence: ${i}/5]`;
+      conversationHistory.push({ role: "user", content: confMsg });
+      
+      // Show feedback
+      btn.parentElement.insertAdjacentHTML('afterend', 
+        `<span style="font-size:11px;color:var(--accent);margin-left:8px;">Tracked</span>`
+      );
+    });
+    wrap.appendChild(btn);
+  }
+
+  return wrap;
+}
+
 async function streamGroqResponse(bubble, systemPrompt) {
   const res = await fetch(API_ENDPOINT, {
     method : "POST",
@@ -423,6 +522,7 @@ export function renderMessage(role, content) {
     bubble.style.cssText = "flex:1;font-size:14px;line-height:1.75;word-break:break-word;";
     bubble.innerHTML = renderMarkdown(content);
     bubble.appendChild(createActionButtons(content));
+    bubble.appendChild(createConfidenceBar());
     wrap.innerHTML = `
       <div style="
         width:30px;height:30px;flex-shrink:0;
