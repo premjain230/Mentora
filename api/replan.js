@@ -1,0 +1,78 @@
+const { applyCors, rateLimit, readJsonBody, sendError } = require("./_shared");
+
+module.exports = async function handler(req, res) {
+  if (!applyCors(req, res, ["POST", "OPTIONS"])) return;
+
+  if (req.method !== "POST") {
+    res.setHeader("Allow", "POST, OPTIONS");
+    return res.status(405).json({ error: "Method not allowed." });
+  }
+
+  if (!rateLimit(req, res, { name: "replan", limit: 10 })) return;
+
+  try {
+    const body = await readJsonBody(req);
+    const { missedTasks, dailyHours, examDate, examType } = body;
+
+    if (!missedTasks || !Array.isArray(missedTasks) || missedTasks.length === 0) {
+      return res.status(200).json({ message: "No missed tasks to replan.", adjustments: [] });
+    }
+
+    const apiKey = process.env.GROQ_API_KEY;
+    if (!apiKey) {
+      return res.status(500).json({ error: "AI provider is not configured." });
+    }
+
+    const prompt = `I have ${missedTasks.length} missed study tasks that need to be rescheduled:
+${missedTasks.map((t, i) => `${i + 1}. ${t.subject}: ${t.topic} (${t.durationMinutes || 30} min)`).join("\n")}
+
+Daily study hours available: ${dailyHours || 6}
+Exam date: ${examDate || "Not specified"}
+Exam type: ${examType || "academic"}
+
+Return a strict JSON array (no markdown, no code fences) with catch-up suggestions. Each entry:
+{
+  "subject": string,
+  "topic": string,
+  "suggestedDate": "YYYY-MM-DD",
+  "priority": "high" | "medium" | "low"
+}
+
+Distribute tasks across the available days before the exam.`;
+
+    const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${apiKey}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        model: process.env.GROQ_MODEL || "llama-3.3-70b-versatile",
+        messages: [
+          { role: "system", content: "You are an expert study planner. Always return valid JSON arrays." },
+          { role: "user", content: prompt },
+        ],
+        temperature: 0.3,
+        max_tokens: 3000,
+      }),
+    });
+
+    const data = await response.json();
+    if (!response.ok) {
+      throw new Error(data?.error?.message || `AI request failed (${response.status})`);
+    }
+
+    let adjustments;
+    try {
+      const content = data.choices?.[0]?.message?.content?.trim() || "[]";
+      adjustments = JSON.parse(content.replace(/```json?|```/g, "").trim());
+    } catch (e) {
+      console.error("Failed to parse replan response:", e.message);
+      adjustments = [];
+    }
+
+    res.status(200).json({ adjustments, message: `Rescheduled ${adjustments.length} tasks.` });
+  } catch (err) {
+    return sendError(req, res, err, "Could not generate catch-up plan right now.");
+  }
+};
