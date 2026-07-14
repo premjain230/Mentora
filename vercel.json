@@ -1,17 +1,5 @@
 {
   "functions": {
-    "api/generate-plan.js": {
-      "memory": 512,
-      "maxDuration": 60
-    },
-    "api/replan.js": {
-      "memory": 512,
-      "maxDuration": 60
-    },
-    "api/groq-proxy.js": {
-      "memory": 256,
-      "maxDuration": 60
-    },
     "api/*.js": {
       "memory": 256,
       "maxDuration": 30
