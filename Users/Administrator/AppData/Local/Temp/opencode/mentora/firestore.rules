@@ -1,0 +1,390 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function notChangingOwner(field) {
+      return !(field in request.resource.data.diff(resource.data).affectedKeys());
+    }
+
+    /* ──────────────────────────────────────────────
+       users/{userId}
+    ────────────────────────────────────────────── */
+
+    match /users/{userId} {
+
+      allow read: if isOwner(userId);
+
+      allow create: if isOwner(userId)
+        && request.resource.data.uid == request.auth.uid
+        && request.resource.data.name is string
+        && request.resource.data.name.size() <= 100;
+
+      allow update: if isOwner(userId)
+        && notChangingOwner('uid')
+        && (
+          !('plan' in request.resource.data)
+          || request.resource.data.plan == resource.data.plan
+        );
+
+      allow delete: if isOwner(userId);
+
+      /* chats */
+      match /chats/{chatId} {
+
+        allow read: if isOwner(userId);
+
+        allow create: if isOwner(userId)
+          && request.resource.data.title is string
+          && request.resource.data.title.size() <= 200;
+
+        allow update: if isOwner(userId);
+
+        allow delete: if isOwner(userId);
+
+        match /messages/{messageId} {
+
+          allow read: if isOwner(userId);
+
+          allow create: if isOwner(userId)
+            && request.resource.data.role in ['user', 'assistant']
+            && request.resource.data.content is string
+            && request.resource.data.content.size() > 0
+            && request.resource.data.content.size() <= 32000;
+
+          allow update, delete: if false;
+        }
+      }
+
+      /* quizAttempts */
+      match /quizAttempts/{attemptId} {
+
+        allow read: if isOwner(userId);
+
+        allow create: if isOwner(userId)
+          && request.resource.data.subject is string
+          && request.resource.data.subject.size() <= 100
+          && request.resource.data.topic is string
+          && request.resource.data.topic.size() <= 200
+          && request.resource.data.title is string
+          && request.resource.data.title.size() <= 300
+          && request.resource.data.totalQ is int
+          && request.resource.data.totalQ > 0
+          && request.resource.data.totalQ <= 200
+          && request.resource.data.correct is int
+          && request.resource.data.correct >= 0
+          && request.resource.data.correct <= request.resource.data.totalQ
+          && request.resource.data.incorrect is int
+          && request.resource.data.incorrect >= 0
+          && request.resource.data.incorrect <= request.resource.data.totalQ
+          && request.resource.data.score is number
+          && request.resource.data.maxScore is number
+          && request.resource.data.maxScore > 0
+          && request.resource.data.takenAt != null;
+
+        allow update: if isOwner(userId);
+
+        allow delete: if isOwner(userId);
+      }
+
+      /* dailyQuestions */
+      match /dailyQuestions/{questionId} {
+        allow read, write: if isOwner(userId);
+      }
+
+      /* learning profile */
+      match /learning/{doc} {
+        allow read, write: if isOwner(userId);
+      }
+
+      /* memory cards */
+      match /cards/{cardId} {
+        allow read, write: if isOwner(userId);
+      }
+
+      /* interactions */
+      match /interactions/{interactionId} {
+        allow read, write: if isOwner(userId);
+      }
+
+      /* misconceptions */
+      match /misconceptions/{misconceptionId} {
+        allow read, write: if isOwner(userId);
+      }
+
+      /* analytics subcollection */
+      match /analytics/{eventId} {
+        allow read, write: if isOwner(userId);
+      }
+    }
+
+    /* ──────────────────────────────────────────────
+       usage
+    ────────────────────────────────────────────── */
+
+    match /usage/{userId} {
+
+      allow read: if isOwner(userId);
+
+      allow create: if isOwner(userId)
+        && request.resource.data.date is string
+        && request.resource.data.dailyChatCount is number
+        && request.resource.data.dailyAnalysisCount is number
+        && request.resource.data.plannerUsageMinutes is number;
+
+      allow update: if isOwner(userId);
+
+      allow delete: if false;
+    }
+
+    /* ──────────────────────────────────────────────
+       proRequests
+    ────────────────────────────────────────────── */
+
+    match /proRequests/{userId} {
+
+      allow create: if isOwner(userId)
+        && request.resource.data.uid == request.auth.uid;
+
+      allow read: if isOwner(userId);
+
+      allow update, delete: if false;
+    }
+
+    /* ──────────────────────────────────────────────
+       studyPlans
+    ────────────────────────────────────────────── */
+
+    match /studyPlans/{planId} {
+
+      allow read: if isSignedIn()
+        && resource.data.userId == request.auth.uid;
+
+      allow create: if isSignedIn()
+        && request.resource.data.userId == request.auth.uid
+        && request.resource.data.title is string
+        && request.resource.data.title.size() <= 200
+        && request.resource.data.status in ['active','archived','completed'];
+
+      allow update: if isSignedIn()
+        && resource.data.userId == request.auth.uid
+        && request.resource.data.userId == resource.data.userId;
+
+      allow delete: if isSignedIn()
+        && resource.data.userId == request.auth.uid;
+    }
+
+    /* ──────────────────────────────────────────────
+       tasks
+    ────────────────────────────────────────────── */
+
+    match /tasks/{taskId} {
+
+      allow read: if isSignedIn()
+        && resource.data.userId == request.auth.uid;
+
+      allow create: if isSignedIn()
+        && request.resource.data.userId == request.auth.uid
+        && request.resource.data.status in
+          ['pending','completed','skipped','rescheduled']
+        && request.resource.data.durationMinutes is number
+        && request.resource.data.durationMinutes >= 5
+        && request.resource.data.durationMinutes <= 480
+        && request.resource.data.subject is string
+        && request.resource.data.subject.size() <= 100
+        && request.resource.data.topic is string
+        && request.resource.data.topic.size() <= 200;
+
+      allow update: if isSignedIn()
+        && resource.data.userId == request.auth.uid
+        && request.resource.data.userId == resource.data.userId
+        && request.resource.data.planId == resource.data.planId
+        && request.resource.data.status in
+          ['pending','completed','skipped','rescheduled'];
+
+      allow delete: if isSignedIn()
+        && resource.data.userId == request.auth.uid;
+    }
+
+    /* ──────────────────────────────────────────────
+       progress
+    ────────────────────────────────────────────── */
+
+    match /progress/{userId} {
+
+      allow read: if isOwner(userId);
+
+      allow write: if isOwner(userId);
+    }
+
+    /* ──────────────────────────────────────────────
+       analytics/{userId}/events
+    ────────────────────────────────────────────── */
+
+    match /analytics/{userId}/events/{eventId} {
+
+      allow read: if isOwner(userId);
+
+      allow create: if isOwner(userId)
+        && request.resource.data.type is string
+        && request.resource.data.type.size() <= 50;
+
+      allow update, delete: if false;
+    }
+
+    /* ──────────────────────────────────────────────
+       support_requests
+    ────────────────────────────────────────────── */
+
+    match /support_requests/{docId} {
+
+      allow create: if isSignedIn()
+        && request.resource.data.uid == request.auth.uid
+        && request.resource.data.email is string
+        && request.resource.data.subject is string
+        && request.resource.data.message is string
+        && request.resource.data.subject.size() > 0
+        && request.resource.data.message.size() > 0
+        && request.resource.data.subject.size() <= 100
+        && request.resource.data.message.size() <= 1000;
+
+      allow read: if isSignedIn()
+        && resource.data.uid == request.auth.uid;
+
+      allow update, delete: if false;
+    }
+
+    /* ──────────────────────────────────────────────
+       beyondMarks — dreams
+    ────────────────────────────────────────────── */
+
+    match /dreams/{doc} {
+
+      allow read: if true;
+
+      allow create: if isSignedIn()
+        && request.resource.data.text is string
+        && request.resource.data.text.size() >= 3
+        && request.resource.data.text.size() <= 120
+        && request.resource.data.uid == request.auth.uid;
+
+      allow update, delete: if false;
+    }
+
+    /* ──────────────────────────────────────────────
+       beyondMarks — stories
+    ────────────────────────────────────────────── */
+
+    match /stories/{doc} {
+
+      allow read: if true;
+
+      allow create: if isSignedIn()
+        && request.resource.data.title is string
+        && request.resource.data.title.size() >= 1
+        && request.resource.data.title.size() <= 100
+        && request.resource.data.category is string
+        && request.resource.data.body is string
+        && request.resource.data.body.size() >= 1
+        && request.resource.data.body.size() <= 5000
+        && request.resource.data.readingTime is number
+        && request.resource.data.reactions is number
+        && request.resource.data.comments is number
+        && request.resource.data.bookmarks is number;
+
+      allow update: if isSignedIn()
+        && request.resource.data.title == resource.data.title
+        && request.resource.data.body == resource.data.body
+        && request.resource.data.category == resource.data.category;
+
+      allow delete: if false;
+
+      match /comments/{commentId} {
+
+        allow read: if true;
+
+        allow create: if isSignedIn()
+          && request.resource.data.text is string
+          && request.resource.data.text.size() >= 1
+          && request.resource.data.text.size() <= 200
+          && request.resource.data.uid == request.auth.uid;
+
+        allow update, delete: if false;
+      }
+    }
+
+    /* ──────────────────────────────────────────────
+       beyondMarks — dailyReflections
+    ────────────────────────────────────────────── */
+
+    match /dailyReflections/{doc} {
+
+      allow read: if true;
+
+      allow create: if isSignedIn()
+        && request.resource.data.question is string
+        && request.resource.data.question.size() >= 5
+        && request.resource.data.question.size() <= 200;
+
+      allow update, delete: if false;
+
+      match /responses/{responseId} {
+
+        allow read: if true;
+
+        allow create: if isSignedIn()
+          && request.resource.data.text is string
+          && request.resource.data.text.size() >= 1
+          && request.resource.data.text.size() <= 200
+          && request.resource.data.uid == request.auth.uid;
+
+        allow update, delete: if false;
+      }
+    }
+
+    /* ──────────────────────────────────────────────
+       beyondMarks — legacyTrees
+    ────────────────────────────────────────────── */
+
+    match /legacyTrees/{userId} {
+
+      allow read: if isOwner(userId);
+
+      allow write: if isOwner(userId)
+        && request.resource.data.stage is number
+        && request.resource.data.xp is number
+        && request.resource.data.uid == request.auth.uid;
+    }
+
+    /* ──────────────────────────────────────────────
+       referralCodes — managed server-side only (service account)
+    ────────────────────────────────────────────── */
+
+    match /referralCodes/{code} {
+      allow read, write: if false;
+    }
+
+    /* ──────────────────────────────────────────────
+       referrals — managed server-side only (service account)
+    ────────────────────────────────────────────── */
+
+    match /referrals/{referralId} {
+      allow read, write: if false;
+    }
+
+    /* ──────────────────────────────────────────────
+       Default deny
+    ────────────────────────────────────────────── */
+
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
