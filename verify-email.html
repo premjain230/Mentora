@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<script>document.documentElement.className=localStorage.getItem('aquila-theme')==='dark'?'':'light-mode'</script>
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta http-equiv="Content-Security-Policy" content="default-src 'self' https:; script-src 'self' 'unsafe-inline' 'unsafe-eval' blob: https://www.gstatic.com https://apis.google.com https://accounts.google.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://www.googletagmanager.com https://esm.sh; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: https:; font-src 'self' https://fonts.gstatic.com; connect-src 'self' blob: https://www.googleapis.com https://apis.google.com https://accounts.google.com https://esm.sh https://www.gstatic.com https://firestore.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://analytics.vercel.com; object-src 'none'; frame-src 'self' https://www.gstatic.com https://accounts.google.com https://mentora-c6dca.firebaseapp.com; object-src 'none';">
+<meta name="description" content="Verify your email to activate your Aquila AI account." />
+<meta name="keywords" content="email verification, Aquila AI, activate account, verify email" />
+<link rel="canonical" href="https://aquila-sand.vercel.app/verify-email.html" />
+<meta property="og:title" content="Verify Email · Aquila AI" />
+<meta property="og:description" content="Verify your email to start using Aquila AI." />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://aquila-sand.vercel.app/verify-email.html" />
+<title>Aquila AI — Verify Email</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%234f8cff'/><text x='16' y='22' text-anchor='middle' fill='white' font-size='18' font-weight='bold'>A</text></svg>">
+<meta name="referrer" content="no-referrer-when-downgrade">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet"/>
+<style>
+:root {
+  --bg: #070810;
+  --surface: #0f1117;
+  --card: #13151f;
+  --card2: #1a1d27;
+  --border: rgba(255,255,255,0.07);
+  --border-focus: rgba(0,212,255,0.5);
+  --text: #f0f0f8;
+  --sub: #6b6f8a;
+  --muted: #3a3d52;
+  --accent: #00d4ff;
+  --violet: #a78bfa;
+  --error: #ff6b6b;
+  --success: #34d399;
+  --font: 'Sora', sans-serif;
+  --mono: 'Space Mono', monospace;
+}
+.light-mode {
+  --bg: #f4f5f9;
+  --surface: #ecedf2;
+  --card: #ffffff;
+  --card2: #f0f1f5;
+  --border: rgba(0,0,0,0.08);
+  --text: #16162a;
+  --sub: #5a5d72;
+  --muted: #9ea0b4;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { height: 100%; }
+body {
+  font-family: var(--font);
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.35s ease, color 0.35s ease;
+  overflow-x: hidden;
+  position: relative;
+  -webkit-font-smoothing: antialiased;
+}
+.bg-layer {
+  position: fixed; inset: 0; pointer-events: none; z-index: 0;
+  background:
+    radial-gradient(ellipse 700px 500px at 50% 0%, rgba(0,212,255,0.07) 0%, transparent 60%),
+    radial-gradient(ellipse 600px 500px at 50% 100%, rgba(167,139,250,0.07) 0%, transparent 60%);
+}
+.page {
+  position: relative; z-index: 10;
+  width: 100%; min-height: 100vh;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  padding: 40px 20px;
+}
+.logo {
+  display: flex; align-items: center; gap: 11px;
+  margin-bottom: 28px;
+  animation: fadeDown 0.7s cubic-bezier(0.16,1,0.3,1) both;
+  text-decoration: none;
+}
+.logo-img { height: 38px; width: auto; }
+.logo-name { font-size: 19px; font-weight: 700; letter-spacing: -0.03em; color: var(--text); }
+.logo-name span { color: var(--accent); }
+.card {
+  width: 100%; max-width: 440px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 22px;
+  padding: 36px 36px 32px;
+  position: relative;
+  animation: fadeUp 0.7s cubic-bezier(0.16,1,0.3,1) both;
+  text-align: center;
+}
+.card::before {
+  content: '';
+  position: absolute; top: 0; left: 50%; transform: translateX(-50%);
+  width: 60%; height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(167,139,250,0.4), transparent);
+}
+@keyframes fadeUp { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes fadeDown { from { opacity: 0; transform: translateY(-16px); } to { opacity: 1; transform: translateY(0); } }
+.icon-wrap {
+  width: 64px; height: 64px; border-radius: 50%;
+  background: rgba(0,212,255,0.1);
+  display: flex; align-items: center; justify-content: center;
+  margin: 0 auto 20px;
+}
+.icon-wrap svg { width: 32px; height: 32px; color: var(--accent); }
+.card h1 { font-size: 22px; font-weight: 700; letter-spacing: -0.03em; margin-bottom: 8px; }
+.card p { font-size: 14px; color: var(--sub); line-height: 1.6; margin-bottom: 8px; }
+.email-display {
+  font-family: var(--mono);
+  font-size: 13px;
+  color: var(--accent);
+  background: var(--card2);
+  border-radius: 8px;
+  padding: 8px 16px;
+  display: inline-block;
+  margin: 12px 0 20px;
+}
+.btn-primary {
+  width: 100%; padding: 15px;
+  border-radius: 12px; border: none;
+  background: linear-gradient(135deg, #00b4d8, #00d4ff 50%, #48e3ff);
+  color: #040d12;
+  font-family: var(--font);
+  font-size: 14px; font-weight: 700;
+  cursor: pointer;
+  position: relative; overflow: hidden;
+  transition: transform 0.18s, box-shadow 0.18s;
+  letter-spacing: 0.02em;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  margin-top: 12px;
+}
+.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 12px 36px rgba(0,212,255,0.38); }
+.btn-primary:active { transform: translateY(0) scale(0.99); }
+.btn-primary.loading { pointer-events: none; opacity: 0.7; }
+.btn-secondary {
+  width: 100%; padding: 13px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--sub); font-family: var(--font);
+  font-size: 13px; font-weight: 500;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  transition: border-color 0.2s, color 0.2s, background 0.2s;
+  margin-top: 10px;
+}
+.btn-secondary:hover { border-color: var(--border-focus); color: var(--accent); background: rgba(0,212,255,0.04); }
+#authMsg {
+  margin: 12px 0 0;
+  padding: 11px 16px;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 500;
+  animation: fadeUp .3s ease;
+}
+.card-foot {
+  text-align: center; margin-top: 22px;
+  font-size: 13px; color: var(--sub);
+  animation: fadeUp 0.7s cubic-bezier(0.16,1,0.3,1) 0.2s both;
+}
+.card-foot a { color: var(--accent); text-decoration: none; font-weight: 600; transition: color 0.2s; }
+.card-foot a:hover { color: #33ddff; }
+@media (max-width: 480px) {
+  .card { padding: 28px 22px 24px; border-radius: 18px; }
+}
+</style>
+</head>
+<body>
+<div class="bg-layer"></div>
+<div class="page">
+  <a href="index.html" class="logo"><img src="logo.png" alt="Aquila AI" class="logo-img"><span class="logo-name">Aquila <span>AI</span></span></a>
+  <div class="card">
+    <div class="icon-wrap">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+    </div>
+    <h1>Verify your email</h1>
+    <p>We sent a verification link to</p>
+    <div class="email-display" id="emailDisplay">—</div>
+    <p style="font-size:13px">Click the link in the email to activate your account. If you don't see it, check your spam folder.</p>
+    <div id="authMsg"></div>
+    <button class="btn-primary" id="checkBtn" onclick="checkVerification()">I've verified — continue</button>
+    <button class="btn-secondary" id="resendBtn" onclick="resendEmail()">Resend verification email</button>
+  </div>
+  <div class="card-foot">
+    <a href="login.html">Back to sign in</a>
+  </div>
+</div>
+<script>
+async function checkVerification() {
+  const btn = document.getElementById('checkBtn');
+  btn.classList.add('loading');
+  btn.textContent = 'Checking…';
+  try {
+    const { checkEmailVerified } = await import('./auth.js');
+    const verified = await checkEmailVerified();
+    if (verified) {
+      window.location.href = 'home.html';
+    } else {
+      showMsg('Not verified yet. Please click the link in your email, then try again.');
+      btn.classList.remove('loading');
+      btn.textContent = "I've verified — continue";
+    }
+  } catch (e) {
+    showMsg('Something went wrong. Please try again.');
+    btn.classList.remove('loading');
+    btn.textContent = "I've verified — continue";
+  }
+}
+async function resendEmail() {
+  const btn = document.getElementById('resendBtn');
+  btn.textContent = 'Sending…';
+  btn.style.pointerEvents = 'none';
+  try {
+    const { resendVerificationEmail } = await import('./auth.js');
+    await resendVerificationEmail();
+  } catch (e) {}
+  btn.textContent = 'Resend verification email';
+  btn.style.pointerEvents = '';
+}
+function showMsg(text, isError = true) {
+  const el = document.getElementById('authMsg');
+  el.textContent = text;
+  el.style.background = isError ? 'rgba(244,114,182,0.12)' : 'rgba(6,214,207,0.12)';
+  el.style.border = isError ? '1px solid rgba(244,114,182,0.3)' : '1px solid rgba(6,214,207,0.3)';
+  el.style.color = isError ? '#f472b6' : '#06d6cf';
+}
+(async function init() {
+  const { auth } = await import('./firebase-config.js');
+  const { onAuthStateChanged } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js');
+  onAuthStateChanged(auth, (user) => {
+    if (!user) {
+      window.location.href = 'login.html';
+      return;
+    }
+    if (user.emailVerified) {
+      window.location.href = 'home.html';
+      return;
+    }
+    document.getElementById('emailDisplay').textContent = user.email;
+  });
+})();
+</script>
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"WebPage","name":"Verify Email - Aquila AI","description":"Verify your email to activate your Aquila AI account.","url":"https://aquila-sand.vercel.app/verify-email.html","breadcrumb":{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://aquila-sand.vercel.app/"},{"@type":"ListItem","position":2,"name":"Verify Email","item":"https://aquila-sand.vercel.app/verify-email.html"}]}}
+</script>
+</body>
+</html>
