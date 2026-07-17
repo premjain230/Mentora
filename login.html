@@ -1,22 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
-<script>document.documentElement.className=localStorage.getItem('aquila-theme')==='dark'?'':'light-mode'</script>
+<script>document.documentElement.className=localStorage.getItem('aquila-theme')==='light'?'light-mode':''</script>
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<meta http-equiv="Content-Security-Policy" content="default-src 'self' https:; script-src 'self' 'unsafe-inline' 'unsafe-eval' blob: https://www.gstatic.com https://apis.google.com https://accounts.google.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://www.googletagmanager.com https://esm.sh; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: https:; font-src 'self' https://fonts.gstatic.com; connect-src 'self' blob: https://www.googleapis.com https://apis.google.com https://accounts.google.com https://esm.sh https://www.gstatic.com https://firestore.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://analytics.vercel.com; object-src 'none'; frame-src 'self' https://www.gstatic.com https://accounts.google.com https://mentora-c6dca.firebaseapp.com; object-src 'none';">
-<meta name="description" content="Sign in to Aquila AI — your AI-powered study assistant and tutor for JEE, NEET & Board exams." />
-<meta name="keywords" content="Aquila AI login, sign in, AI study assistant, JEE preparation, NEET preparation" />
-<link rel="canonical" href="https://aquila-sand.vercel.app/login.html" />
-<meta property="og:title" content="Sign In · Aquila AI" />
-<meta property="og:description" content="Sign in to Aquila AI — your AI-powered study assistant and tutor." />
-<meta property="og:type" content="website" />
-<meta property="og:url" content="https://aquila-sand.vercel.app/login.html" />
-<meta name="twitter:card" content="summary_large_image" />
+<meta http-equiv="Content-Security-Policy" content="default-src 'self' https:; script-src 'self' 'unsafe-inline' https://www.gstatic.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://www.googletagmanager.com https://esm.sh; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: https:; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://firestore.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://analytics.vercel.com; object-src 'none'; frame-src 'none';">
 <title>Aquila AI — Sign In</title>
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%234f8cff'/><text x='16' y='22' text-anchor='middle' fill='white' font-size='18' font-weight='bold'>A</text></svg>">
-<meta name="referrer" content="no-referrer-when-downgrade">
-<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Sora:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet" />
+<link href="css/design-system.css" rel="stylesheet" />
 <style>
 :root {
   --bg: #070810;
@@ -46,7 +37,6 @@
   --muted: #9ea0b4;
 }
 
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html { height: 100%; }
 body {
   font-family: var(--font);
@@ -362,22 +352,14 @@ body {
 .feat-chip:hover { border-color: rgba(0,212,255,0.2); color: var(--text); }
 .feat-chip svg { width: 13px; height: 13px; color: var(--accent); flex-shrink: 0; }
 
-/* ── Reduced motion ── */
-@media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
-}
-
 /* ── Mobile ── */
 @media (max-width: 480px) {
   .card { padding: 28px 22px 24px; border-radius: 18px; }
   .features { gap: 10px; }
 }
-@keyframes rippleAnim{to{transform:scale(2);opacity:0;}}
 </style>
 </head>
 <body>
-<div class="ambient-orb orb-1" aria-hidden="true"></div>
-<div class="ambient-orb orb-2" aria-hidden="true"></div>
 
 <div class="bg-layer"></div>
 <div class="grid-bg"></div>
@@ -386,7 +368,7 @@ body {
 
 <div class="page">
 
-  <a href="index.html" class="logo"><img src="logo.png" alt="Aquila AI" class="logo-img"><span class="logo-text">Aquila AI</span></a>
+  <a href="index.html" class="logo"><img src="logo.png" alt="Aquila AI" class="logo-img"></a>
 
   <div class="card" id="loginCard">
     <div class="card-hdr">
@@ -668,44 +650,6 @@ document.getElementById('forgotLink').addEventListener('click', async (e) => {
 <script type="module">
   import { injectSpeedInsights } from 'https://esm.sh/@vercel/speed-insights';
   injectSpeedInsights();
-
-/* ── Scroll progress bar ── */
-(function(){
-  var bar = document.createElement('div');
-  bar.className = 'scroll-progress';
-  document.body.prepend(bar);
-  var ticking = false;
-  window.addEventListener('scroll', function(){
-    if(!ticking){ requestAnimationFrame(function(){
-      var h = document.documentElement.scrollHeight - window.innerHeight;
-      bar.style.width = h > 0 ? ((window.scrollY / h) * 100) + '%' : '0%';
-      ticking = false;
-    }); ticking = true; }
-  });
-}());
-
-/* ── Ripple effect ── */
-(function(){
-  var rm = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  if(rm) return;
-  document.querySelectorAll('.btn-primary, .btn-secondary, .btn-ghost-nav, .signout-btn, .new-chat-btn, .upgrade-nav-btn, .send-btn').forEach(function(btn){
-    btn.addEventListener('click', function(e){
-      var rp = document.createElement('span');
-      var r = btn.getBoundingClientRect();
-      var s = Math.max(r.width, r.height);
-      rp.style.cssText = 'position:absolute;top:'+(e.clientY-r.top-s/2)+'px;left:'+(e.clientX-r.left-s/2)+'px;width:'+s+'px;height:'+s+'px;border-radius:50%;background:rgba(255,255,255,0.15);transform:scale(0);animation:rippleAnim .5s ease-out;pointer-events:none;z-index:0;';
-      btn.style.position = 'relative';
-      btn.style.overflow = 'hidden';
-      btn.appendChild(rp);
-      setTimeout(function(){ rp.remove(); }, 600);
-    });
-  });
-}());
-</script>
-<script type="application/ld+json">
-{"@context":"https://schema.org","@type":"WebPage","name":"Sign In - Aquila AI","description":"Sign in to Aquila AI — your AI-powered study assistant and tutor.","url":"https://aquila-sand.vercel.app/login.html","breadcrumb":{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://aquila-sand.vercel.app/"},{"@type":"ListItem","position":2,"name":"Sign In","item":"https://aquila-sand.vercel.app/login.html"}]}}
 </script>
 </body>
 </html>
-
-

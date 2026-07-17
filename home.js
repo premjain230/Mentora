@@ -27,40 +27,21 @@ import {
 export let currentUser = null;
 
 // ─── Auth guard ───────────────────────────────────────────────────────────────
-if (!auth) {
-  document.body.innerHTML = `<div style="display:flex;align-items:center;justify-content:center;height:100vh;background:#0d0e16;color:#f0f0f8;font-family:'Sora',sans-serif;padding:24px;text-align:center;"><div><h1 style="font-size:20px;margin-bottom:12px;">Unable to connect</h1><p style="color:#888;font-size:14px;">Firebase configuration is unavailable. Please check your environment settings and try again.</p></div></div>`;
-} else {
-  onAuthStateChanged(auth, async (user) => {
-    if (!user) {
-      window.location.href = "login.html";
-      return;
-    }
-    if (!user.emailVerified) {
-      window.location.href = "verify-email.html";
-      return;
-    }
-    currentUser = user;
-    populateUserCard(user);
-    await loadRecentChats(user.uid);
-    wireNewChatBtn();
-    wireSignOutBtn();
-
-    // Initialize Aquila learning modules
-    import("./chat.js").then(({ ensureModulesInitialized }) => {
-      ensureModulesInitialized();
-    }).catch(() => {});
-
-    // Daily question popup (non-blocking, shown once per day)
-    import("./dailyQuestion.js").then(({ checkDailyQuestion }) => {
-      checkDailyQuestion(user);
-    }).catch(() => {});
-
-    // Auto-claim referral if user signed up with a referral code
-    import("./modules/referral-system.js").then(({ autoClaimReferral }) => {
-      autoClaimReferral(user.uid);
-    }).catch(() => {});
-  });
-}
+onAuthStateChanged(auth, async (user) => {
+  if (!user) {
+    window.location.href = "login.html";
+    return;
+  }
+  currentUser = user;
+  populateUserCard(user);
+  await loadRecentChats(user.uid);
+  wireNewChatBtn();
+  wireSignOutBtn();
+  // Daily question popup (non-blocking, shown once per day)
+  import("./dailyQuestion.js").then(({ checkDailyQuestion }) => {
+    checkDailyQuestion(user);
+  }).catch(() => {});
+});
 
 // ─── Sidebar user card ────────────────────────────────────────────────────────
 function populateUserCard(user) {
@@ -168,12 +149,7 @@ async function loadChat(chatId, itemEl) {
   const chatArea = document.getElementById("chatArea");
   const welcome  = document.getElementById("welcomeScreen");
   if (welcome) welcome.remove();
-  chatArea.innerHTML = `
-    <div class="chat-loading">
-      <span class="chat-loading-dot"></span>
-      <span class="chat-loading-dot"></span>
-      <span class="chat-loading-dot"></span>
-    </div>`;
+  chatArea.innerHTML = `<div class="loading-dots"><span class="loading-dot"></span><span class="loading-dot"></span><span class="loading-dot"></span></div>`;
 
   try {
     const msgsSnap = await getDocs(
@@ -195,7 +171,7 @@ async function loadChat(chatId, itemEl) {
     chatArea.scrollTop = chatArea.scrollHeight;
 
   } catch (e) {
-    chatArea.innerHTML = `<div class="chat-loading" style="color:#ff6b6b;">Failed to load chat.</div>`;
+    chatArea.innerHTML = `<div style="display:flex;justify-content:center;padding:40px 20px;color:var(--red);font-size:13px;">Failed to load chat.</div>`;
     console.error(e);
   }
 

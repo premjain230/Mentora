@@ -1,24 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
-<script>document.documentElement.className=localStorage.getItem('aquila-theme')==='dark'?'':'light-mode'</script>
+<script>document.documentElement.className=localStorage.getItem('aquila-theme')==='light'?'light-mode':''</script>
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<meta http-equiv="Content-Security-Policy" content="default-src 'self' https:; script-src 'self' 'unsafe-inline' 'unsafe-eval' blob: https://www.gstatic.com https://apis.google.com https://accounts.google.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://www.googletagmanager.com https://esm.sh; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: https:; font-src 'self' https://fonts.gstatic.com; connect-src 'self' blob: https://www.googleapis.com https://apis.google.com https://accounts.google.com https://esm.sh https://www.gstatic.com https://firestore.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://analytics.vercel.com; object-src 'none'; frame-src 'self' https://www.gstatic.com https://accounts.google.com https://mentora-c6dca.firebaseapp.com; object-src 'none';">
-<meta name="description" content="Analyze your study performance and track progress with Aquila AI's analytics dashboard." />
-<meta property="og:title" content="Study Analytics - Aquila AI" />
-<meta property="og:description" content="Analyze your study performance and track progress with Aquila AI's analytics dashboard." />
-<meta property="og:type" content="website" />
-<meta property="og:url" content="https://aquila-sand.vercel.app/analyze.html" />
-<meta name="twitter:card" content="summary_large_image" />
-<meta name="keywords" content="study analytics, exam performance tracker, JEE progress, NEET preparation analysis, study dashboard" />
-<link rel="canonical" href="https://aquila-sand.vercel.app/analyze.html" />
+<meta http-equiv="Content-Security-Policy" content="default-src 'self' https:; script-src 'self' 'unsafe-inline' https://www.gstatic.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://www.googletagmanager.com https://esm.sh; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: https:; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://firestore.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://analytics.vercel.com; object-src 'none'; frame-src 'none';">
 <title>Analyze · Aquila AI</title>
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%234f8cff'/><text x='16' y='22' text-anchor='middle' fill='white' font-size='18' font-weight='bold'>A</text></svg>">
-<meta name="referrer" content="no-referrer-when-downgrade">
-<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Sora:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet" />
+<link href="css/design-system.css" rel="stylesheet" />
 <style>
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 :root {
   --bg-base:      #0a0b0f;
   --bg-sidebar:   #0f1117;
@@ -333,12 +323,9 @@ svg { display: block; }
   .stats-grid { grid-template-columns: 1fr; }
   .take-quiz-btn span { display: none; }
 }
-@keyframes rippleAnim{to{transform:scale(2);opacity:0;}}
 </style>
 </head>
 <body>
-<div class="ambient-orb orb-1" aria-hidden="true"></div>
-<div class="ambient-orb orb-2" aria-hidden="true"></div>
 
 <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
@@ -346,7 +333,6 @@ svg { display: block; }
   <div class="logo-area">
     <a href="index.html" class="logo">
       <img src="logo.png" alt="Aquila AI" class="logo-img">
-      <span class="logo-text">Aquila AI</span>
     </a>
     <button class="sidebar-close" id="sidebarClose" aria-label="Close menu">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
@@ -367,6 +353,7 @@ svg { display: block; }
     <a href="analyze.html" class="nav-item active">
       <span class="nav-icon"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.35-4.35"/><path d="M11 8v6M8 11h6"/></svg></span>
       Analyze
+      <span class="nav-badge green">AI</span>
     </a>
     <a href="planner.html" class="nav-item">
       <span class="nav-icon"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M3 10h18M8 2v4M16 2v4"/></svg></span>
@@ -427,7 +414,6 @@ svg { display: block; }
       </button>
       <div class="topbar-mobile-logo">
         <img src="logo.png" alt="Aquila AI" class="logo-img">
-        <span class="logo-text">Aquila AI</span>
       </div>
       <div class="model-selector"><span class="model-dot"></span>Quiz Analysis</div>
     </div>
@@ -561,7 +547,6 @@ import { getUserPlan } from "./subscription.js";
 const authInstance = auth || getAuth();
 
 onAuthStateChanged(authInstance, async (user) => {
-  if (user && !user.emailVerified) { window.location.href = "verify-email.html"; return; }
   if (!user) { window.location.href = "login.html"; return; }
 
   const name = user.displayName || user.email?.split("@")[0] || "Guest";
@@ -828,44 +813,6 @@ function esc(str)          { return String(str??"").replace(/[&<>"']/g,c=>({"&":
 </script>
 <script type="module">
   import { injectSpeedInsights } from 'https://esm.sh/@vercel/speed-insights'; injectSpeedInsights();
-
-/* ── Scroll progress bar ── */
-(function(){
-  var bar = document.createElement('div');
-  bar.className = 'scroll-progress';
-  document.body.prepend(bar);
-  var ticking = false;
-  window.addEventListener('scroll', function(){
-    if(!ticking){ requestAnimationFrame(function(){
-      var h = document.documentElement.scrollHeight - window.innerHeight;
-      bar.style.width = h > 0 ? ((window.scrollY / h) * 100) + '%' : '0%';
-      ticking = false;
-    }); ticking = true; }
-  });
-}());
-
-/* ── Ripple effect ── */
-(function(){
-  var rm = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  if(rm) return;
-  document.querySelectorAll('.btn-primary, .btn-secondary, .btn-ghost-nav, .signout-btn, .new-chat-btn, .upgrade-nav-btn, .send-btn').forEach(function(btn){
-    btn.addEventListener('click', function(e){
-      var rp = document.createElement('span');
-      var r = btn.getBoundingClientRect();
-      var s = Math.max(r.width, r.height);
-      rp.style.cssText = 'position:absolute;top:'+(e.clientY-r.top-s/2)+'px;left:'+(e.clientX-r.left-s/2)+'px;width:'+s+'px;height:'+s+'px;border-radius:50%;background:rgba(255,255,255,0.15);transform:scale(0);animation:rippleAnim .5s ease-out;pointer-events:none;z-index:0;';
-      btn.style.position = 'relative';
-      btn.style.overflow = 'hidden';
-      btn.appendChild(rp);
-      setTimeout(function(){ rp.remove(); }, 600);
-    });
-  });
-}());
-</script>
-<script type="application/ld+json">
-{"@context":"https://schema.org","@type":"WebPage","name":"Study Analytics - Aquila AI","description":"Analyze your study performance and track progress with Aquila AI's analytics dashboard.","url":"https://aquila-sand.vercel.app/analyze.html","breadcrumb":{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://aquila-sand.vercel.app/"},{"@type":"ListItem","position":2,"name":"Analyze","item":"https://aquila-sand.vercel.app/analyze.html"}]}}
 </script>
 </body>
 </html>
-
-
