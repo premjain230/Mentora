@@ -55,6 +55,18 @@
   --shadow-glow: 0 0 40px rgba(0, 212, 255, 0.25);
 }
 
+/* ── Legacy Variable Aliases ──────────────────────────────────────────── */
+:root {
+  --accent: var(--cyan);
+  --accent2: var(--violet);
+  --accent3: var(--red);
+  --accent4: var(--amber);
+  --text-primary: var(--text);
+  --font-main: var(--font-sans);
+  --bg-sidebar: var(--bg-surface);
+  --radius-card: var(--radius-lg);
+}
+
 /* ── Light Mode ────────────────────────────────────────────────────────── */
 .light-mode {
   --bg-base: #f4f5f9;

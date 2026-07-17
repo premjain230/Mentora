@@ -409,6 +409,21 @@ function updateSidebarTitle(chatId, title) {
   if (titleEl) titleEl.textContent = title;
 }
 
+// ─── Public: resetChat ───────────────────────────────────────────────────────
+export function resetChat() {
+  conversationHistory = [];
+  activeChatId = null;
+  isStreaming = false;
+  const input = document.getElementById("chatInput");
+  if (input) { input.value = ""; input.disabled = false; input.focus(); }
+  const sendBtn = document.getElementById("sendBtn");
+  if (sendBtn) sendBtn.disabled = false;
+  const chatArea = document.getElementById("chatArea");
+  if (chatArea) chatArea.innerHTML = "";
+  const welcome = document.getElementById("welcomeScreen");
+  if (welcome) welcome.style.display = "flex";
+}
+
 // ─── Expose globally for home.html inline handlers ───────────────────────────
 window.sendMessage   = sendMessage;
 window.clearWelcome  = clearWelcome;

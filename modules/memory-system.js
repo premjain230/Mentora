@@ -45,6 +45,9 @@ export async function saveProfile(uid, profile) {
       learningGoals: profile.learningGoals,
       sessionCount: profile.sessionCount,
       totalInteractions: profile.totalInteractions,
+      reviewHistory: profile.reviewHistory || [],
+      mistakeHistory: profile.mistakeHistory || [],
+      commonMisconceptions: profile.commonMisconceptions || [],
       createdAt: profile.createdAt,
       updatedAt: serverTimestamp()
     };

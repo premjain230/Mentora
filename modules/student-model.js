@@ -118,7 +118,7 @@ export function getRecommendedDifficulty(profile) {
 }
 
 function updateLearningVelocity(profile) {
-  if (profile.reviewHistory.length < 10) return;
+  if ((profile.reviewHistory || []).length < 10) return;
   const recent = profile.reviewHistory.slice(-10);
   const correct = recent.filter(r => r.correct).length;
   profile.learningVelocity = correct / 10;
@@ -126,8 +126,8 @@ function updateLearningVelocity(profile) {
 
 export function getSessionSummary(profile) {
   const total = profile.totalInteractions;
-  const mistakes = profile.mistakeHistory.length;
-  const unresolvedMisconceptions = profile.commonMisconceptions.filter(m => !m.resolved).length;
+  const mistakes = (profile.mistakeHistory || []).length;
+  const unresolvedMisconceptions = (profile.commonMisconceptions || []).filter(m => !m.resolved).length;
   const avgMastery = Object.values(profile.conceptMastery).length > 0
     ? Object.values(profile.conceptMastery).reduce((a, b) => a + b, 0) / Object.values(profile.conceptMastery).length
     : 0;
