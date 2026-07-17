@@ -6,6 +6,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 <meta http-equiv="Content-Security-Policy" content="default-src 'self' https:; script-src 'self' 'unsafe-inline' https://www.gstatic.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://www.googletagmanager.com https://esm.sh; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: https:; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://firestore.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://analytics.vercel.com; object-src 'none'; frame-src 'none';">
 <title>Aquila AI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Sora:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet" />
 <link href="css/design-system.css" rel="stylesheet" />
 <style>
@@ -154,6 +156,13 @@
     .message-row { padding: 0 4px; }
     .input-footer { flex-direction: column; gap: 4px; }
   }
+  .focus-toggle {
+    width: 36px; height: 36px; border-radius: 10px;
+    border: 1px solid var(--border); background: transparent;
+    color: var(--text-muted); display: flex; align-items: center; justify-content: center;
+    cursor: pointer; transition: all 0.18s;
+  }
+  .focus-toggle:hover { color: var(--text-secondary); border-color: var(--border-hover); }
   @media (max-width: 420px) { .topbar-mobile-logo span.full { display: none; } }
 </style>
 </head>
@@ -243,7 +252,12 @@
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
       </button>
       <div class="topbar-mobile-logo"><img src="logo.png" alt="Aquila AI" class="logo-img"></div>
-      <div class="model-selector"><span class="model-dot"></span>Aquila AI</div>
+      <div class="model-selector"><span class="model-dot"></span>Mentora</div>
+    </div>
+    <div class="topbar-right">
+      <button class="focus-toggle" id="focusToggle" title="Focus mode" onclick="toggleFocus()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg>
+      </button>
     </div>
   </div>
   <div class="chat-area" id="chatArea"></div>
@@ -281,28 +295,27 @@ function handleKey(e) {
   if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
 }
 
-/* ── Mobile sidebar ── */
-const sidebar         = document.getElementById('sidebar');
-const sidebarOverlay  = document.getElementById('sidebarOverlay');
-const menuBtn         = document.getElementById('menuBtn');
-const sidebarCloseBtn = document.getElementById('sidebarClose');
-
-function openSidebar()  { sidebar.classList.add('open');    sidebarOverlay.classList.add('open'); }
-function closeSidebar() { sidebar.classList.remove('open'); sidebarOverlay.classList.remove('open'); }
-
-menuBtn.addEventListener('click', openSidebar);
-sidebarCloseBtn.addEventListener('click', closeSidebar);
-sidebarOverlay.addEventListener('click', closeSidebar);
-
-document.querySelectorAll('.nav-item:not(.nav-group-toggle)').forEach((link) => {
-  link.addEventListener('click', () => { if (window.innerWidth <= 880) closeSidebar(); });
-});
-
-function toggleNavGroup(el) {
-  el.classList.toggle('open');
-  const children = el.nextElementSibling;
-  if (children) children.classList.toggle('open');
+/* ── Focus Mode ── */
+body.focus-mode .welcome { display: none; }
+body.focus-mode .suggestion-grid { display: none; }
+body.focus-mode .input-footer span:not(.model-info) { display: none; }
+body.focus-mode .focus-toggle { color: var(--cyan); border-color: rgba(0,212,255,0.4); background: rgba(0,212,255,0.08); }
+function toggleFocus() {
+  document.body.classList.toggle('focus-mode');
+  localStorage.setItem('mentora-focus-mode', document.body.classList.contains('focus-mode'));
 }
+if (localStorage.getItem('mentora-focus-mode') === 'true') document.body.classList.add('focus-mode');
+
+/* ── Keyboard shortcuts ── */
+document.addEventListener('keydown', (e) => {
+  if (e.key === '/' && e.target.tagName !== 'INPUT' && e.target.tagName !== 'TEXTAREA') {
+    e.preventDefault(); document.getElementById('chatInput')?.focus();
+  }
+  if (e.key === 'Escape') {
+    const s = document.getElementById('sidebar');
+    if (s?.classList.contains('open')) { s.classList.remove('open'); document.getElementById('sidebarOverlay')?.classList.remove('open'); }
+  }
+});
 </script>
 
 <!-- ===== Module scripts ===== -->

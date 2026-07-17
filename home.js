@@ -12,16 +12,9 @@ import {
   signOut as fbSignOut,
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 import {
-  collection,
-  query,
-  orderBy,
-  limit,
-  getDocs,
-  doc,
-  getDoc,
-  setDoc,
-  serverTimestamp,
+  collection, query, orderBy, limit, getDocs, doc, getDoc, setDoc, serverTimestamp,
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { loadStudentProfile } from "./chat.js";
 
 // ─── Global state ─────────────────────────────────────────────────────────────
 export let currentUser = null;
@@ -34,6 +27,7 @@ onAuthStateChanged(auth, async (user) => {
   }
   currentUser = user;
   populateUserCard(user);
+  loadStudentProfile(user.uid);
   await loadRecentChats(user.uid);
   wireNewChatBtn();
   wireSignOutBtn();
