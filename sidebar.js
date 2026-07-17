@@ -88,6 +88,7 @@ export function initSidebar() {
     }
   });
 
+  if (!auth) return;
   onAuthStateChanged(auth, async (user) => {
     const nameEl = document.getElementById("sidebarName");
     const avatarEl = document.getElementById("sidebarAvatar");
