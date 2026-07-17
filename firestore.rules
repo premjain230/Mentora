@@ -383,6 +383,15 @@ service cloud.firestore {
        Default deny
     ────────────────────────────────────────────── */
 
+    /* ──────────────────────────────────────────────
+       billing — subscription status (read by sidebar.js)
+    ────────────────────────────────────────────── */
+
+    match /users/{userId}/billing/subscription {
+      allow read: if isOwner(userId);
+      allow write: if false; /* managed server-side */
+    }
+
     match /{document=**} {
       allow read, write: if false;
     }
