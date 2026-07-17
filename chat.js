@@ -9,24 +9,63 @@
 import { escapeHtml } from "./xss.js";
 import { auth, db } from "./firebase-config.js";
 import {
-  collection,
-  addDoc,
-  doc,
-  setDoc,
-  serverTimestamp,
+  collection, addDoc, doc, setDoc, serverTimestamp,
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 import { checkAndGate } from "./limits.js";
+import { loadProfile, saveProfile } from "./modules/memory-system.js";
+import { createProfile, getWeakestConcepts, getSessionSummary } from "./modules/student-model.js";
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 const API_ENDPOINT  = "/api/groq-proxy";
 const MODEL         = "llama-3.3-70b-versatile";
 const MAX_HISTORY   = 60;
 
-const SYSTEM_PROMPT = `You are Mentora, an expert AI study companion built for JEE and NEET aspirants and students in general.
+const BASE_SYSTEM_PROMPT = `You are Mentora, an expert AI study companion built for JEE and NEET aspirants and students in general.
 You help students understand concepts deeply, solve problems step-by-step, create study plans, and analyse their performance.
 Always be encouraging, precise, and structured. Use markdown formatting: headers (##), bullet lists, bold key terms, and code blocks where relevant.
 When solving problems, show all working clearly. When explaining concepts, use relatable analogies.
 Keep responses focused and never pad with unnecessary filler.`;
+
+// ─── Student Model ────────────────────────────────────────────────────────────
+let studentProfile = null;
+let sessionInteractions = 0;
+let sessionMistakes = 0;
+
+export async function loadStudentProfile(uid) {
+  if (!uid) return;
+  let profile = await loadProfile(uid);
+  if (!profile) {
+    profile = createProfile(uid);
+    await saveProfile(uid, profile);
+  }
+  studentProfile = profile;
+  sessionInteractions = 0;
+  sessionMistakes = 0;
+}
+
+function buildSystemPrompt() {
+  let context = BASE_SYSTEM_PROMPT;
+  if (!studentProfile) return context;
+  const weak = getWeakestConcepts(studentProfile, 5);
+  const summary = getSessionSummary(studentProfile);
+  const parts = [];
+  if (weak.length > 0) {
+    parts.push("Weak areas: " + weak.map(c => c.conceptId).join(", "));
+  }
+  if (summary.averageMastery > 0) {
+    parts.push("Avg mastery: " + summary.averageMastery + "%");
+  }
+  if (summary.conceptsLearned > 0) {
+    parts.push("Concepts learned: " + summary.conceptsLearned);
+  }
+  if (summary.totalMistakes > 0) {
+    parts.push("Total mistakes tracked: " + summary.totalMistakes);
+  }
+  if (parts.length > 0) {
+    context += "\n\nStudent Context:\n" + parts.join("\n");
+  }
+  return context;
+}
 
 // ─── SVG Icons ────────────────────────────────────────────────────────────────
 const ICON_THUMBUP = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3H14z"/><path d="M7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"/></svg>`;
@@ -186,7 +225,7 @@ async function streamGroqResponse(bubble) {
     body: JSON.stringify({
       model    : MODEL,
       messages : [
-        { role: "system", content: SYSTEM_PROMPT },
+        { role: "system", content: buildSystemPrompt() },
         ...conversationHistory,
       ],
       max_tokens : 2048,

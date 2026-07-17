@@ -1,0 +1,37 @@
+name: Daily Mentora Audit
+
+on:
+  schedule:
+    - cron: '30 11 * * *'
+  workflow_dispatch:
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Show Project Structure
+        run: |
+          echo "Checking project..."
+          ls -la
+
+      - name: Check JavaScript Syntax
+        run: |
+          find . -name "*.js" -exec node --check {} \;
+
+      - name: Scan For Secrets
+        run: |
+          grep -R "AIza" . || true
+          grep -R "gsk_" . || true
+          grep -R "sk-" . || true
+
+      - name: Generate Report
+        run: echo "Audit completed"
