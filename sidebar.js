@@ -30,7 +30,7 @@ export function renderSidebar(activePage) {
 <aside class="sidebar" id="sidebar">
   <div class="logo-area">
     <a href="index.html" class="logo">
-      <img src="logo.png" alt="Mentora" class="logo-img">
+      <img src="logo.png" alt="Aquila AI" class="logo-img">
     </a>
     <button class="sidebar-close" id="sidebarClose" aria-label="Close menu">${ICON_CLOSE}</button>
   </div>
