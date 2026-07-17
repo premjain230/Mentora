@@ -1,28 +1,18 @@
 <!DOCTYPE html>
 <html lang="en">
-<script>document.documentElement.className=localStorage.getItem('aquila-theme')==='dark'?'':'light-mode'</script>
+<script>document.documentElement.className=localStorage.getItem('aquila-theme')==='light'?'light-mode':''</script>
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<meta http-equiv="Content-Security-Policy" content="default-src 'self' https:; script-src 'self' 'unsafe-inline' 'unsafe-eval' blob: https://www.gstatic.com https://apis.google.com https://accounts.google.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://www.googletagmanager.com https://esm.sh; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: https:; font-src 'self' https://fonts.gstatic.com; connect-src 'self' blob: https://www.googleapis.com https://apis.google.com https://accounts.google.com https://esm.sh https://www.gstatic.com https://firestore.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://analytics.vercel.com; object-src 'none'; frame-src 'self' https://www.gstatic.com https://accounts.google.com https://mentora-c6dca.firebaseapp.com; object-src 'none';">
-<meta name="description" content="Take AI-generated quizzes tailored to your JEE, NEET & Board exam syllabus with Aquila AI." />
-<meta name="keywords" content="practice quiz, JEE mock test, NEET practice questions, board exam quiz, AI quiz generator, exam practice" />
-<link rel="canonical" href="https://aquila-sand.vercel.app/quiz.html" />
-<meta property="og:title" content="Take Quiz · Aquila AI" />
-<meta property="og:description" content="AI-generated quizzes for JEE, NEET & Board exams." />
-<meta property="og:type" content="website" />
-<meta property="og:url" content="https://aquila-sand.vercel.app/quiz.html" />
-<meta name="twitter:card" content="summary_large_image" />
+<meta http-equiv="Content-Security-Policy" content="default-src 'self' https:; script-src 'self' 'unsafe-inline' https://www.gstatic.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://www.googletagmanager.com https://esm.sh; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: https:; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://firestore.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://analytics.vercel.com; object-src 'none'; frame-src 'none';">
 <title>Take Quiz · Aquila AI</title>
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%234f8cff'/><text x='16' y='22' text-anchor='middle' fill='white' font-size='18' font-weight='bold'>A</text></svg>">
-<meta name="referrer" content="no-referrer-when-downgrade">
-<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Sora:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet" />
+<link href="css/design-system.css" rel="stylesheet" />
 <style>
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 :root{
   --bg-base:#0a0b0f; --bg-sidebar:#0f1117; --bg-card:#1a1d27; --bg-input:#1e2130;
-  --accent:#00d4ff; --accent2:#a78bfa; --accent3:#ff6b6b; --accent4:#ffd166;
-  --border:rgba(255,255,255,0.07); --border-hover:rgba(0,212,255,0.4);
+  --accent:#6c63ff; --accent2:#00d4aa; --accent3:#ff6b6b; --accent4:#ffd166;
+  --border:rgba(255,255,255,0.07); --border-hover:rgba(108,99,255,0.4);
   --text-primary:#f0f0f8; --text-secondary:#8b8fa8; --text-muted:#4a4d62;
   --font-main:'Sora',sans-serif; --font-mono:'Space Mono',monospace;
 }
@@ -63,26 +53,6 @@ body{font-family:var(--font-main);background:var(--bg-base);color:var(--text-pri
 .btn.secondary{background:transparent;border:1px solid var(--border);color:var(--text-secondary);}
 .btn.secondary:hover{color:var(--text-primary);border-color:var(--border-hover);}
 .btn:disabled{opacity:.5;cursor:not-allowed;transform:none;}
-.ai-badge{display:inline-block;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;margin-left:8px;vertical-align:middle;letter-spacing:0.3px;}
-.mode-toggle{display:flex;gap:0;margin-bottom:20px;background:var(--bg-input);border-radius:10px;overflow:hidden;border:1px solid var(--border);}
-.mode-btn{flex:1;padding:10px 16px;font-family:var(--font-main);font-size:13px;font-weight:500;border:none;cursor:pointer;transition:all .15s;color:var(--text-secondary);background:transparent;}
-.mode-btn.active{background:var(--accent);color:#16122b;font-weight:600;}
-.mode-btn:first-child{border-radius:9px 0 0 9px;}
-.mode-btn:last-child{border-radius:0 9px 9px 0;}
-.mode-btn:hover:not(.active){background:rgba(255,255,255,0.04);}
-.ai-setup{animation:fadeIn .3s ease;}
-@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
-.answer-mode-toggle{display:flex;align-items:center;gap:10px;margin-bottom:14px;padding:8px 12px;background:var(--bg-input);border-radius:8px;font-size:12px;color:var(--text-secondary);}
-.answer-mode-toggle label{display:flex;align-items:center;gap:6px;cursor:pointer;}
-.answer-mode-toggle input[type="radio"]{accent-color:var(--accent);}
-.answer-textarea{width:100%;background:var(--bg-input);border:1px solid var(--border);border-radius:10px;padding:12px 14px;color:var(--text-primary);font-family:var(--font-main);font-size:14px;outline:none;min-height:80px;resize:vertical;transition:border-color .2s;}
-.answer-textarea:focus{border-color:var(--border-hover);}
-.feedback-box{margin-top:14px;padding:14px 16px;border-radius:10px;font-size:13px;line-height:1.6;animation:fadeIn .25s ease;}
-.feedback-box.correct{background:rgba(0,212,170,0.08);border:1px solid rgba(0,212,170,0.25);color:#00d4aa;}
-.feedback-box.partial{background:rgba(255,209,102,0.08);border:1px solid rgba(255,209,102,0.25);color:var(--accent4);}
-.feedback-box.incorrect{background:rgba(255,107,107,0.08);border:1px solid rgba(255,107,107,0.25);color:var(--accent3);}
-.feedback-box .fb-label{font-weight:600;font-size:12px;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;}
-.fb-detail{margin-top:6px;font-size:12px;opacity:0.85;}
 
 /* Question card */
 .q-meta{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;font-size:12px;color:var(--text-muted);font-family:var(--font-mono);}
@@ -114,83 +84,39 @@ body{font-family:var(--font-main);background:var(--bg-base);color:var(--text-pri
 .saving{font-size:12px;color:var(--text-muted);text-align:center;margin-top:10px;}
 
 @media(max-width:480px){.row2{grid-template-columns:1fr;}}
-@keyframes rippleAnim{to{transform:scale(2);opacity:0;}}
 </style>
 </head>
 <body>
-<div class="ambient-orb orb-1" aria-hidden="true"></div>
-<div class="ambient-orb orb-2" aria-hidden="true"></div>
 <div class="wrap">
   <div class="topbar">
-    <div class="logo"><img src="logo.png" alt="Aquila AI" class="logo-img"><span class="logo-text">Aquila AI</span></div>
+    <div class="logo"><img src="logo.png" alt="Aquila AI" class="logo-img"></div>
     <a href="home.html" class="back-link">← Back to chat</a>
   </div>
 
   <!-- ── Step 1: Setup ─────────────────────────────────────────────── -->
   <div class="panel" id="setupPanel">
     <h2>Take a Quiz</h2>
-    <p class="sub">Choose Standard (local questions) or AI-powered adaptive quiz.</p>
+    <p class="sub">Choose a subject and topic. Questions are generated locally — no AI API used.</p>
 
-    <div class="mode-toggle">
-      <button class="mode-btn active" id="modeStandard" onclick="setQuizMode('standard')">Standard</button>
-      <button class="mode-btn" id="modeAI" onclick="setQuizMode('ai')">AI Adaptive <span class="ai-badge">AI</span></button>
+    <div class="row2">
+      <div class="field">
+        <label>Subject</label>
+        <select id="subjectSelect"></select>
+      </div>
+      <div class="field">
+        <label>Topic</label>
+        <select id="topicSelect"></select>
+      </div>
     </div>
-
-    <div id="standardSetup">
-      <div class="row2">
-        <div class="field">
-          <label>Subject</label>
-          <select id="subjectSelect"></select>
-        </div>
-        <div class="field">
-          <label>Topic</label>
-          <select id="topicSelect"></select>
-        </div>
-      </div>
-      <div class="field">
-        <label>Number of Questions</label>
-        <select id="countSelect">
-          <option value="5">5</option>
-          <option value="10" selected>10</option>
-          <option value="15">15</option>
-        </select>
-      </div>
-      <button class="btn" id="startBtn" style="width:100%;margin-top:6px;">Start Quiz</button>
+    <div class="field">
+      <label>Number of Questions</label>
+      <select id="countSelect">
+        <option value="5">5</option>
+        <option value="10" selected>10</option>
+        <option value="15">15</option>
+      </select>
     </div>
-
-    <div id="aiSetup" style="display:none;" class="ai-setup">
-      <div class="field">
-        <label>Your Name</label>
-        <input type="text" id="aiName" placeholder="e.g. Aarav" />
-      </div>
-      <div class="field">
-        <label>What are you studying?</label>
-        <input type="text" id="aiSubject" placeholder="e.g. Physics, JEE, NEET, Class 10 Maths" />
-      </div>
-      <div class="field">
-        <label>Specific topics to focus on (optional)</label>
-        <input type="text" id="aiTopic" placeholder="e.g. Kinematics, Chemical Bonding, Trigonometry" />
-      </div>
-      <div class="row2">
-        <div class="field">
-          <label>Difficulty</label>
-          <select id="aiDifficulty">
-            <option value="easy">Easy</option>
-            <option value="medium" selected>Medium</option>
-            <option value="hard">Hard</option>
-          </select>
-        </div>
-        <div class="field">
-          <label>Number of Questions</label>
-          <select id="aiCount">
-            <option value="5">5</option>
-            <option value="10" selected>10</option>
-            <option value="15">15</option>
-          </select>
-        </div>
-      </div>
-      <button class="btn" id="startAIBtn" style="width:100%;margin-top:6px;">✨ Start AI Quiz</button>
-    </div>
+    <button class="btn" id="startBtn" style="width:100%;margin-top:6px;">Start Quiz</button>
   </div>
 
   <!-- ── Step 2: Question ─────────────────────────────────────────── -->
@@ -198,22 +124,13 @@ body{font-family:var(--font-main);background:var(--bg-base);color:var(--text-pri
     <div class="q-meta">
       <span id="qCounter">Question 1 / 10</span>
       <span id="qTopicLabel">Subject · Topic</span>
-      <span id="aiIndicator" style="display:none;font-size:10px;padding:2px 8px;border-radius:20px;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;font-weight:600;">AI</span>
     </div>
     <div class="progress-track"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
-    <div class="answer-mode-toggle" id="answerModeRow" style="display:none;">
-      <span style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;color:var(--text-muted);">Answer mode:</span>
-      <label><input type="radio" name="ansMode" value="mcq" checked onchange="toggleAnswerMode('mcq')"> Multiple Choice</label>
-      <label><input type="radio" name="ansMode" value="written" onchange="toggleAnswerMode('written')"> Type Answer</label>
-    </div>
     <div class="q-text" id="qText"></div>
     <div class="options" id="optionsList"></div>
-    <textarea class="answer-textarea" id="answerInput" style="display:none;" placeholder="Type your answer here…"></textarea>
-    <div class="feedback-box" id="feedbackBox" style="display:none;"></div>
     <div class="nav-row">
       <button class="btn secondary" id="quitBtn">Quit</button>
-      <button class="btn" id="submitBtn" disabled>Submit Answer</button>
-      <button class="btn" id="nextBtn" style="display:none;">Next →</button>
+      <button class="btn" id="nextBtn" disabled>Next</button>
     </div>
   </div>
 
@@ -244,15 +161,14 @@ const authInstance = auth;
 let currentUser = null;
 onAuthStateChanged(authInstance, (user) => {
   if (!user) { window.location.href = "login.html"; return; }
-  if (!user.emailVerified) { window.location.href = "verify-email.html"; return; }
   currentUser = user;
 });
 
-const API_ENDPOINT = "/api/groq-proxy";
-const MODEL = "llama-3.3-70b-versatile";
-
 /* ─────────────────────────────────────────────────────────────────────
- * LOCAL QUESTION BANK
+ * LOCAL QUESTION BANK — no external/AI APIs.
+ * Organized by Subject → Topic → array of questions.
+ * Add more entries here to expand coverage. Each question:
+ * { q: "...", options: ["A","B","C","D"], answer: 0-based index }
  * ─────────────────────────────────────────────────────────────────── */
 const BANK = {
   Physics: {
@@ -355,10 +271,6 @@ const BANK = {
   },
 };
 
-/* ── DOM refs ────────────────────────────────────────────────────*/
-const setupPanel   = document.getElementById("setupPanel");
-const quizPanel    = document.getElementById("quizPanel");
-const resultPanel  = document.getElementById("resultPanel");
 const subjectSelect = document.getElementById("subjectSelect");
 const topicSelect   = document.getElementById("topicSelect");
 
@@ -378,289 +290,72 @@ function populateTopics() {
 subjectSelect.onchange = populateTopics;
 populateTopics();
 
-/* ── Quiz state ──────────────────────────────────────────────────*/
+/* ── Quiz state ─────────────────────────────────────────────────────*/
 let questions = [];
 let current = 0;
 let selectedIdx = null;
 let correctCount = 0;
 let answers = [];
 let subject = "", topic = "";
-let quizMode = "standard";
 
-/* ── Mode toggle ─────────────────────────────────────────────────*/
-window.setQuizMode = function(mode) {
-  quizMode = mode;
-  document.getElementById("modeStandard").classList.toggle("active", mode === "standard");
-  document.getElementById("modeAI").classList.toggle("active", mode === "ai");
-  document.getElementById("standardSetup").style.display = mode === "standard" ? "block" : "none";
-  document.getElementById("aiSetup").style.display = mode === "ai" ? "block" : "none";
-};
+const setupPanel  = document.getElementById("setupPanel");
+const quizPanel   = document.getElementById("quizPanel");
+const resultPanel = document.getElementById("resultPanel");
 
-window.selectOption = function(i, el) {
-  document.querySelectorAll("#optionsList .option").forEach(o => o.classList.remove("selected"));
-  el.classList.add("selected");
-  selectedIdx = i;
-  if (quizMode === "standard") {
-    document.getElementById("nextBtn").disabled = false;
-  } else {
-    document.getElementById("submitBtn").disabled = false;
-  }
-};
-
-/* ── Answer mode toggle (MCQ vs Written) ────────────────────────*/
-window.toggleAnswerMode = function(mode) {
-  const opts = document.getElementById("optionsList");
-  const input = document.getElementById("answerInput");
-  if (mode === "mcq") {
-    opts.style.display = "flex";
-    input.style.display = "none";
-    checkAnswerReady();
-  } else {
-    opts.style.display = "none";
-    input.style.display = "block";
-    input.value = "";
-    input.focus();
-    checkAnswerReady();
-  }
-};
-
-function checkAnswerReady() {
-  const isWritten = document.querySelector('input[name="ansMode"]:checked')?.value === "written";
-  const submitBtn = document.getElementById("submitBtn");
-  if (isWritten) {
-    const val = document.getElementById("answerInput").value.trim();
-    submitBtn.disabled = !val;
-  } else {
-    submitBtn.disabled = selectedIdx === null;
-  }
-}
-
-document.getElementById("answerInput").oninput = checkAnswerReady;
-
-/* ── Start Standard Quiz ─────────────────────────────────────────*/
 document.getElementById("startBtn").onclick = () => {
   document.getElementById("startBtn").disabled = true;
   subject = subjectSelect.value;
   topic   = topicSelect.value;
   const count = parseInt(document.getElementById("countSelect").value, 10);
   const pool = [...BANK[subject][topic]];
+
+  // Shuffle and pick `count` questions (or all if fewer available)
   shuffle(pool);
   questions = pool.slice(0, Math.min(count, pool.length));
+
   current = 0; correctCount = 0; answers = [];
-  showQuiz();
+  setupPanel.style.display = "none";
+  quizPanel.style.display = "block";
+  renderQuestion();
 };
 
-/* ── Start AI Quiz ───────────────────────────────────────────────*/
-document.getElementById("startAIBtn").onclick = async () => {
-  document.getElementById("startAIBtn").disabled = true;
-  document.getElementById("startAIBtn").textContent = "⏳ Generating first question…";
-  subject = document.getElementById("aiSubject").value.trim() || "General Studies";
-  topic = document.getElementById("aiTopic").value.trim() || "";
-  const count = parseInt(document.getElementById("aiCount").value, 10);
-  questions = new Array(count).fill(null);
-  current = 0; correctCount = 0; answers = [];
-
-  document.getElementById("aiIndicator").style.display = "inline";
-  document.getElementById("answerModeRow").style.display = "flex";
-  document.getElementById("nextBtn").style.display = "inline";
-  showQuiz();
-  await loadAIQuestion();
-};
-
-async function loadAIQuestion() {
-  const name = document.getElementById("aiName").value.trim() || "Student";
-  const difficulty = document.getElementById("aiDifficulty").value;
-  const prevResults = answers.map(a => ({
-    correct: a.isCorrect,
-    topic: a.topic
-  }));
-  const isLastAttemptCorrect = answers.length > 0 ? answers[answers.length-1].isCorrect : null;
-
-  let adjustDifficulty = difficulty;
-  if (answers.length >= 2) {
-    const recent = answers.slice(-2);
-    const bothCorrect = recent.every(a => a.isCorrect);
-    const bothWrong = recent.every(a => !a.isCorrect);
-    if (bothCorrect && difficulty !== "hard") adjustDifficulty = difficulty === "easy" ? "medium" : "hard";
-    if (bothWrong && difficulty !== "easy") adjustDifficulty = difficulty === "hard" ? "medium" : "easy";
-  }
-
-  const prompt = `You are an exam coach for ${name}. Generate a ${adjustDifficulty} level question about "${subject}"${topic ? ` focusing on "${topic}"` : ""}.
-    Previous performance: ${answers.length} questions answered, ${prevResults.filter(r => r.correct).length} correct.
-    ${isLastAttemptCorrect === true ? "The last answer was correct — make this slightly harder." : ""}
-    ${isLastAttemptCorrect === false ? "The last was wrong — make this slightly easier." : ""}
-
-    Format your response as a JSON object with these fields:
-    {
-      "q": "the question text",
-      "options": ["A) option1", "B) option2", "C) option3", "D) option4"],
-      "answer": "the correct option letter (A, B, C, or D)",
-      "explanation": "brief explanation of the correct answer"
-    }
-
-    Return ONLY valid JSON, no other text.`;
-
-  try {
-    const res = await fetch(API_ENDPOINT, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        model: MODEL,
-        messages: [{ role: "user", content: prompt }],
-        temperature: 0.7,
-        max_tokens: 500,
-      }),
-    });
-    const data = await res.json();
-    const text = data.choices?.[0]?.message?.content || "";
-    const parsed = JSON.parse(text.replace(/```json|```/g, "").trim());
-    questions[current] = {
-      q: parsed.q,
-      options: parsed.options,
-      answer: parsed.answer,
-      explanation: parsed.explanation || "",
-    };
-  } catch (err) {
-    console.error("AI question generation error:", err);
-    questions[current] = {
-      q: "What is the primary function of mitochondria in a cell?",
-      options: ["A) Protein synthesis", "B) Energy production", "C) Lipid storage", "D) DNA replication"],
-      answer: "B",
-      explanation: "Mitochondria are known as the powerhouse of the cell — they produce ATP through cellular respiration.",
-    };
-  }
-  document.getElementById("startAIBtn").disabled = false;
-  document.getElementById("startAIBtn").textContent = "✨ Start AI Quiz";
-  renderAIQuestion();
-}
-
-function renderAIQuestion() {
-  const q = questions[current];
-  if (!q) return;
+function renderQuestion() {
   selectedIdx = null;
+  const q = questions[current];
   document.getElementById("qCounter").textContent = `Question ${current + 1} / ${questions.length}`;
-  document.getElementById("qTopicLabel").textContent = `${subject}`;
+  document.getElementById("qTopicLabel").textContent = `${subject} · ${topic}`;
   document.getElementById("progressFill").style.width = `${((current + 1) / questions.length) * 100}%`;
   document.getElementById("qText").textContent = q.q;
-  document.getElementById("submitBtn").disabled = true;
-  document.getElementById("nextBtn").style.display = "none";
-  document.getElementById("submitBtn").style.display = "inline";
-  document.getElementById("feedbackBox").style.display = "none";
+  document.getElementById("nextBtn").disabled = true;
+  document.getElementById("nextBtn").textContent = current === questions.length - 1 ? "Finish" : "Next";
 
   const optsEl = document.getElementById("optionsList");
   optsEl.innerHTML = "";
-  optsEl.style.display = "flex";
-  document.getElementById("answerInput").style.display = "none";
-  document.querySelector('input[name="ansMode"][value="mcq"]').checked = true;
-
   q.options.forEach((opt, i) => {
     const div = document.createElement("div");
     div.className = "option";
-    const label = opt.replace(/^[A-D][\)\.]\s*/, "");
-    div.innerHTML = `<span class="key">${opt.charAt(0)}</span><span>${label}</span>`;
+    div.innerHTML = `<span class="key">${String.fromCharCode(65 + i)}</span><span>${opt}</span>`;
     div.onclick = () => selectOption(i, div);
     optsEl.appendChild(div);
   });
 }
 
-document.getElementById("submitBtn").onclick = async () => {
-  const q = questions[current];
-  const isWritten = document.querySelector('input[name="ansMode"]:checked')?.value === "written";
-  let isCorrect, explanation;
-
-  if (isWritten) {
-    const userAns = document.getElementById("answerInput").value.trim();
-    explanation = await evaluateWrittenAnswer(q.q, q.options, userAns);
-    isCorrect = explanation.startsWith("CORRECT");
-    answers.push({ q: q.q, selected: userAns, correct: q.answer, isCorrect, mode: "written", topic });
-    if (isCorrect) correctCount++;
-    showFeedback(isCorrect, explanation.replace(/^(CORRECT|PARTIAL|INCORRECT):?\s*/i, ""), q.explanation);
-  } else {
-    const selectedText = q.options[selectedIdx] || "";
-    const selectedLetter = selectedText.charAt(0);
-    isCorrect = selectedLetter === q.answer;
-    if (isCorrect) correctCount++;
-    answers.push({ q: q.q, selected: selectedIdx, correct: q.answer, isCorrect, mode: "mcq", topic });
-    showFeedback(isCorrect, "", q.explanation);
-  }
-
-  document.getElementById("submitBtn").style.display = "none";
-  document.getElementById("nextBtn").style.display = "inline";
-  document.querySelectorAll("#optionsList .option").forEach(o => {
-    o.style.pointerEvents = "none";
-    if (o.querySelector(".key")?.textContent === q.answer) {
-      o.style.borderColor = "var(--accent)";
-      o.style.background = "rgba(0,212,255,0.1)";
-    }
-  });
-};
-
-async function evaluateWrittenAnswer(question, options, userAnswer) {
-  const prompt = `You are an exam grader for a ${subject} quiz. Evaluate this student's written answer:
-
-Question: "${question}"
-${options && options.length ? `Correct answer: "${options.find(o => o.charAt(0) === questions[current]?.answer) || ""}"\nAll options: ${options.join(", ")}` : ""}
-Student's answer: "${userAnswer}"
-
-Respond with EXACTLY one of these:
-- "CORRECT: [brief praise]" if the answer captures the key concepts correctly
-- "PARTIAL: [what was good and what was missing]"
-- "INCORRECT: [what was wrong and the correct answer]"
-
-Be generous with partial credit — if the student shows understanding, mark it CORRECT or PARTIAL.`;
-
-  try {
-    const res = await fetch(API_ENDPOINT, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        model: MODEL,
-        messages: [{ role: "user", content: prompt }],
-        temperature: 0.3,
-        max_tokens: 200,
-      }),
-    });
-    const data = await res.json();
-    return data.choices?.[0]?.message?.content || "INCORRECT: Could not evaluate.";
-  } catch {
-    return "INCORRECT: Evaluation error.";
-  }
-}
-
-function showFeedback(isCorrect, evalDetail, explanation) {
-  const box = document.getElementById("feedbackBox");
-  box.style.display = "block";
-  if (typeof isCorrect === "string" && isCorrect === "partial") {
-    box.className = "feedback-box partial";
-    box.innerHTML = `<div class="fb-label">⚠ Partially Correct</div>${evalDetail}`;
-  } else if (isCorrect) {
-    box.className = "feedback-box correct";
-    box.innerHTML = `<div class="fb-label">✓ Correct!</div>${evalDetail || explanation}`;
-  } else {
-    box.className = "feedback-box incorrect";
-    box.innerHTML = `<div class="fb-label">✗ Incorrect</div>${evalDetail || explanation}`;
-  }
+function selectOption(i, el) {
+  document.querySelectorAll("#optionsList .option").forEach(o => o.classList.remove("selected"));
+  el.classList.add("selected");
+  selectedIdx = i;
+  document.getElementById("nextBtn").disabled = false;
 }
 
 document.getElementById("nextBtn").onclick = () => {
-  if (quizMode === "standard") {
-    const q = questions[current];
-    if (selectedIdx === null) return;
-    const isCorrect = selectedIdx === q.answer;
-    if (isCorrect) correctCount++;
-    answers.push({ q: q.q, selected: selectedIdx, correct: q.answer, isCorrect, mode: "mcq", topic });
-  }
+  const q = questions[current];
+  const isCorrect = selectedIdx === q.answer;
+  if (isCorrect) correctCount++;
+  answers.push({ q: q.q, selected: selectedIdx, correct: q.answer, isCorrect });
+
   if (current < questions.length - 1) {
     current++;
-    if (quizMode === "ai" && !questions[current]) {
-      document.getElementById("nextBtn").style.display = "none";
-      document.getElementById("submitBtn").style.display = "none";
-      document.getElementById("qText").textContent = "⏳ Generating next question…";
-      loadAIQuestion();
-    } else {
-      if (quizMode === "ai") renderAIQuestion();
-      else renderStandardQuestion();
-    }
+    renderQuestion();
   } else {
     finishQuiz();
   }
@@ -677,47 +372,8 @@ document.getElementById("retakeBtn").onclick = () => {
   setupPanel.style.display = "block";
   current = 0; correctCount = 0; answers = []; questions = [];
   document.getElementById("startBtn").disabled = false;
-  document.getElementById("startAIBtn").disabled = false;
-  document.getElementById("startAIBtn").textContent = "✨ Start AI Quiz";
 };
 
-/* ── Shared rendering ───────────────────────────────────────────*/
-function showQuiz() {
-  setupPanel.style.display = "none";
-  quizPanel.style.display = "block";
-  if (quizMode === "standard") renderStandardQuestion();
-}
-
-function renderStandardQuestion() {
-  selectedIdx = null;
-  document.getElementById("aiIndicator").style.display = "none";
-  document.getElementById("answerModeRow").style.display = "none";
-  document.getElementById("nextBtn").style.display = "inline";
-  document.getElementById("submitBtn").style.display = "none";
-  document.getElementById("feedbackBox").style.display = "none";
-
-  const q = questions[current];
-  document.getElementById("qCounter").textContent = `Question ${current + 1} / ${questions.length}`;
-  document.getElementById("qTopicLabel").textContent = `${subject} · ${topic}`;
-  document.getElementById("progressFill").style.width = `${((current + 1) / questions.length) * 100}%`;
-  document.getElementById("qText").textContent = q.q;
-  document.getElementById("nextBtn").disabled = true;
-  document.getElementById("nextBtn").textContent = current === questions.length - 1 ? "Finish" : "Next";
-
-  const optsEl = document.getElementById("optionsList");
-  optsEl.innerHTML = "";
-  optsEl.style.display = "flex";
-  document.getElementById("answerInput").style.display = "none";
-  q.options.forEach((opt, i) => {
-    const div = document.createElement("div");
-    div.className = "option";
-    div.innerHTML = `<span class="key">${String.fromCharCode(65 + i)}</span><span>${opt}</span>`;
-    div.onclick = () => selectOption(i, div);
-    optsEl.appendChild(div);
-  });
-}
-
-/* ── Results ────────────────────────────────────────────────────*/
 async function finishQuiz() {
   quizPanel.style.display = "none";
   resultPanel.style.display = "block";
@@ -734,20 +390,20 @@ async function finishQuiz() {
   document.getElementById("rIncorrect").textContent = incorrect;
   document.getElementById("rTotal").textContent = total;
 
+  // ── Save attempt to Firestore (matches schema used by analyze.html) ─
   const savingEl = document.getElementById("savingMsg");
   try {
     if (!currentUser) throw new Error("Not signed in");
     await addDoc(collection(db, "users", currentUser.uid, "quizAttempts"), {
       subject,
-      topic: topic || "AI Generated",
-      title: topic ? `${topic} Quiz` : `${subject} Quiz`,
+      topic,
+      title: `${topic} Quiz`,
       totalQ: total,
       correct: correctCount,
       incorrect,
       skipped: 0,
       score: correctCount,
       maxScore: total,
-      mode: quizMode,
       takenAt: serverTimestamp(),
     });
     savingEl.textContent = "✅ Saved — visible in Quiz Analysis";
@@ -767,44 +423,6 @@ function shuffle(arr) {
 <!-- Vercel Web Analytics -->
 <script type="module">import { inject } from 'https://esm.sh/@vercel/analytics'; inject();</script>
 <!-- Vercel Speed Insights -->
-<script type="module">import { injectSpeedInsights } from 'https://esm.sh/@vercel/speed-insights'; injectSpeedInsights();
-/* ── Scroll progress bar ── */
-(function(){
-  var bar = document.createElement('div');
-  bar.className = 'scroll-progress';
-  document.body.prepend(bar);
-  var ticking = false;
-  window.addEventListener('scroll', function(){
-    if(!ticking){ requestAnimationFrame(function(){
-      var h = document.documentElement.scrollHeight - window.innerHeight;
-      bar.style.width = h > 0 ? ((window.scrollY / h) * 100) + '%' : '0%';
-      ticking = false;
-    }); ticking = true; }
-  });
-}());
-
-/* ── Ripple effect ── */
-(function(){
-  var rm = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  if(rm) return;
-  document.querySelectorAll('.btn-primary, .btn-secondary, .btn-ghost-nav, .signout-btn, .new-chat-btn, .upgrade-nav-btn, .send-btn').forEach(function(btn){
-    btn.addEventListener('click', function(e){
-      var rp = document.createElement('span');
-      var r = btn.getBoundingClientRect();
-      var s = Math.max(r.width, r.height);
-      rp.style.cssText = 'position:absolute;top:'+(e.clientY-r.top-s/2)+'px;left:'+(e.clientX-r.left-s/2)+'px;width:'+s+'px;height:'+s+'px;border-radius:50%;background:rgba(255,255,255,0.15);transform:scale(0);animation:rippleAnim .5s ease-out;pointer-events:none;z-index:0;';
-      btn.style.position = 'relative';
-      btn.style.overflow = 'hidden';
-      btn.appendChild(rp);
-      setTimeout(function(){ rp.remove(); }, 600);
-    });
-  });
-}());
-</script>
-<script type="application/ld+json">
-{"@context":"https://schema.org","@type":"WebPage","name":"Take Quiz - Aquila AI","description":"AI-generated quizzes for JEE, NEET & Board exam preparation.","url":"https://aquila-sand.vercel.app/quiz.html","breadcrumb":{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://aquila-sand.vercel.app/"},{"@type":"ListItem","position":2,"name":"Quiz","item":"https://aquila-sand.vercel.app/quiz.html"}]}}
-</script>
+<script type="module">import { injectSpeedInsights } from 'https://esm.sh/@vercel/speed-insights'; injectSpeedInsights();</script>
 </body>
 </html>
-
-
