@@ -726,7 +726,7 @@ import {
   collection, getDocs
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-const authInstance = auth || getAuth();
+const authInstance = auth;
 let currentUser = null;
 let profileData = {};
 const GROQ_ENDPOINT = "/api/groq-proxy";

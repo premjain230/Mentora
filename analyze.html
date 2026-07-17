@@ -195,6 +195,15 @@
 </main>
 
 <script type="module">
+window.addEventListener("error", (e) => {
+  const el = document.getElementById("stateLoading");
+  if (el) { el.innerHTML = '<div class="state-icon">⚠️</div><div class="state-title">Something went wrong</div><div class="state-desc">' + (e.message || "Unknown error") + '</div>'; }
+});
+window.addEventListener("unhandledrejection", (e) => {
+  const el = document.getElementById("stateLoading");
+  if (el) { el.innerHTML = '<div class="state-icon">⚠️</div><div class="state-title">Something went wrong</div><div class="state-desc">' + (e.reason?.message || "Unknown error") + '</div>'; }
+});
+
 import { renderSidebar, initSidebar } from "./sidebar.js";
 import { auth, db } from "./firebase-config.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
