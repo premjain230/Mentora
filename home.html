@@ -4,7 +4,7 @@
 <head>
 <meta charset="UTF-8" /> 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-<meta http-equiv="Content-Security-Policy" content="default-src 'self' https:; script-src 'self' 'unsafe-inline' https://www.gstatic.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://www.googletagmanager.com https://esm.sh; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: https:; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://firestore.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://analytics.vercel.com; object-src 'none'; frame-src 'none';">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self' https:; script-src 'self' 'unsafe-inline' https://www.gstatic.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://www.googletagmanager.com https://esm.sh; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: https:; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://esm.sh https://www.gstatic.com https://firestore.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://analytics.vercel.com; object-src 'none'; frame-src 'none';">
 <title>Aquila AI</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -164,6 +164,12 @@
   }
   .focus-toggle:hover { color: var(--text-secondary); border-color: var(--border-hover); }
   @media (max-width: 420px) { .topbar-mobile-logo span.full { display: none; } }
+
+  /* ── Focus Mode ── */
+  body.focus-mode .welcome { display: none; }
+  body.focus-mode .suggestion-grid { display: none; }
+  body.focus-mode .input-footer span:not(.model-info) { display: none; }
+  body.focus-mode .focus-toggle { color: var(--cyan); border-color: rgba(0,212,255,0.4); background: rgba(0,212,255,0.08); }
 </style>
 </head>
 <body>
@@ -292,11 +298,6 @@ function handleKey(e) {
   if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
 }
 
-/* ── Focus Mode ── */
-body.focus-mode .welcome { display: none; }
-body.focus-mode .suggestion-grid { display: none; }
-body.focus-mode .input-footer span:not(.model-info) { display: none; }
-body.focus-mode .focus-toggle { color: var(--cyan); border-color: rgba(0,212,255,0.4); background: rgba(0,212,255,0.08); }
 function toggleFocus() {
   document.body.classList.toggle('focus-mode');
   localStorage.setItem('mentora-focus-mode', document.body.classList.contains('focus-mode'));

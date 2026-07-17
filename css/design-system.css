@@ -91,11 +91,14 @@
 /* ── Base Reset ────────────────────────────────────────────────────────── */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html { scroll-behavior: smooth; height: 100%; }
+html, body { height: 100%; }
 body {
   font-family: var(--font-sans);
   background: var(--bg-base);
   color: var(--text);
-  min-height: 100vh;
+  height: 100vh;
+  display: flex;
+  overflow: hidden;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   transition: background 0.35s ease, color 0.35s ease;
@@ -491,6 +494,10 @@ body::before {
 .modal-actions .btn { flex: 1; justify-content: center; }
 
 /* ── Misc ────────────────────────────────────────────────────────────────── */
+.sub-loading-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--cyan); animation: dotBounce 1.2s ease-in-out infinite; }
+.take-quiz-btn { display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px; border-radius: 10px; font-size: 13px; font-weight: 600; background: rgba(0,212,255,0.1); border: 1px solid rgba(0,212,255,0.25); color: var(--cyan); cursor: pointer; transition: all 0.18s; text-decoration: none; white-space: nowrap; }
+.take-quiz-btn:hover { background: rgba(0,212,255,0.18); }
+.page-title { font-size: 15px; font-weight: 600; color: var(--text); }
 .spinner { width: 16px; height: 16px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.25); border-top-color: #06121a; animation: spin 0.7s linear infinite; flex-shrink: 0; }
 .loading-dots { display: flex; align-items: center; gap: 5px; }
 .loading-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--cyan); animation: dotBounce 1.2s ease-in-out infinite; }
