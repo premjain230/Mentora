@@ -426,6 +426,58 @@ async function callGroq(messages) {
   return { provider: "groq", reply };
 }
 
+async function callGroqStream(messages, systemPrompt, res) {
+  const apiKey = process.env.GROQ_API_KEY;
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 30000);
+
+  let groqRes;
+  try {
+    groqRes = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${apiKey}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        model: process.env.GROQ_MODEL || "llama-3.3-70b-versatile",
+        messages: [{ role: "system", content: systemPrompt || SYSTEM_PROMPT }, ...messages],
+        temperature: 0.6,
+        max_tokens: 2048,
+        stream: true,
+      }),
+      signal: controller.signal,
+    });
+  } finally {
+    clearTimeout(timeout);
+  }
+
+  if (!groqRes.ok) {
+    const errData = await groqRes.json().catch(() => ({}));
+    throw Object.assign(
+      new Error(errData?.error?.message || `Groq stream error ${groqRes.status}`),
+      { statusCode: groqRes.status >= 500 ? 502 : 400 }
+    );
+  }
+
+  res.setHeader("Content-Type", "text/event-stream");
+  res.setHeader("Cache-Control", "no-cache");
+  res.setHeader("Connection", "keep-alive");
+  res.setHeader("X-Accel-Buffering", "no");
+  res.status(200);
+
+  const reader = groqRes.body.getReader();
+  const decoder = new TextDecoder("utf-8");
+
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    const chunk = decoder.decode(value, { stream: true });
+    res.write(chunk);
+  }
+  res.end();
+}
+
 module.exports = async function handler(req, res) {
   if (!applyCors(req, res, ["POST", "OPTIONS"])) return;
 
@@ -446,6 +498,24 @@ module.exports = async function handler(req, res) {
 
     if (messages.length === 0) {
       return res.status(400).json({ error: "A non-empty message or messages array is required." });
+    }
+
+    // Streaming path — frontend sends stream: true and reads SSE
+    if (body.stream === true) {
+      // Extract system prompt from first message if present
+      const firstMsg = Array.isArray(body.messages) ? body.messages[0] : null;
+      const systemPrompt = (firstMsg && firstMsg.role === "system" ? firstMsg.content : null) ||
+        (typeof body.system === "string" ? body.system : null) || SYSTEM_PROMPT;
+      // Filter out system-role messages so they aren't duplicated in the conversation
+      const streamMessages = (Array.isArray(body.messages) ? body.messages : [])
+        .filter(m => m && m.role !== "system")
+        .map(m => ({ role: m.role === "assistant" ? "assistant" : "user", content: String(m.content || "").slice(0, MAX_MESSAGE_CHARS) }))
+        .filter(m => m.content)
+        .slice(-MAX_MESSAGES);
+      if (streamMessages.length === 0) {
+        return res.status(400).json({ error: "A non-empty message is required." });
+      }
+      return await callGroqStream(streamMessages, systemPrompt, res);
     }
 
     const startedAt = Date.now();
