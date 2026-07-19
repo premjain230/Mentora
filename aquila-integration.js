@@ -41,9 +41,9 @@ export function buildEnhancedSystemPrompt() {
   return parts.length > 0 ? "\n\nStudent Context:\n" + parts.join("\n") : "";
 }
 
-export function recordInteraction(data) {
+export function recordInteraction(concept, userAnswer, timeSpent, isCorrect) {
   if (!currentProfile || !currentSession) return;
   currentProfile.totalInteractions++;
   currentSession.interactions++;
-  if (!data.correct) currentSession.mistakes++;
+  if (isCorrect === false) currentSession.mistakes++;
 }
