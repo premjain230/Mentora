@@ -440,24 +440,38 @@
     `;
   }
 
-  // Auth + data load
-  onAuthStateChanged(auth, async (user) => {
-    if (!user) { window.location.href = 'login.html'; return; }
-
-    // Sidebar user info
-    document.getElementById('userName').textContent = user.displayName || user.email;
-    document.getElementById('userAvatar').textContent = (user.displayName || user.email || 'G')[0].toUpperCase();
-    if (user.photoURL) {
-      document.getElementById('userAvatar').innerHTML = `<img src="${user.photoURL}" alt="avatar" />`;
+  function initSubscriptionPage() {
+    if (!auth) {
+      document.getElementById('loadingState').textContent = 'Firebase unavailable. Please try again.';
+      return;
     }
 
-    const plan = await import('./subscription.js').then(m => m.getUserPlan(user.uid, user));
-    const usage = await import('./subscription.js').then(m => m.getUsage(user.uid));
-    document.getElementById('userPlanLabel').textContent = plan === 'pro' ? '✨ Aquila Pro' : 'Free Plan';
+    onAuthStateChanged(auth, async (user) => {
+      if (!user) { window.location.href = 'login.html'; return; }
 
-    document.getElementById('loadingState').style.display = 'none';
-    renderPage({ user, plan, usage });
-  });
+      try {
+        // Sidebar user info
+        document.getElementById('userName').textContent = user.displayName || user.email;
+        document.getElementById('userAvatar').textContent = (user.displayName || user.email || 'G')[0].toUpperCase();
+        if (user.photoURL) {
+          document.getElementById('userAvatar').innerHTML = `<img src="${user.photoURL}" alt="avatar" />`;
+        }
+
+        const { getUserPlan, getUsage } = await import('./subscription.js');
+        const plan = await getUserPlan(user.uid, user);
+        const usage = await getUsage(user.uid);
+        document.getElementById('userPlanLabel').textContent = plan === 'pro' ? '✨ Aquila Pro' : 'Free Plan';
+
+        document.getElementById('loadingState').style.display = 'none';
+        renderPage({ user, plan, usage });
+      } catch (err) {
+        console.error('Subscription page failed to load:', err);
+        document.getElementById('loadingState').textContent = 'Failed to load subscription data. Please refresh.';
+      }
+    });
+  }
+
+  initSubscriptionPage();
 
   // Sign out
   document.getElementById('signOutBtn').addEventListener('click', async () => {
