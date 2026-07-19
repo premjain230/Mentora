@@ -502,16 +502,47 @@ let learningState = {
 let modulesInitialized = false;
 let profileLoadAttempted = false;
 
+/* ---------------------------------------------------------------------- */
+/* Small defensive helpers (added for runtime safety; behavior-preserving) */
+/* ---------------------------------------------------------------------- */
+
+function toSafeString(v) {
+  if (typeof v === "string") return v;
+  if (v === null || v === undefined) return "";
+  try {
+    return String(v);
+  } catch {
+    return "";
+  }
+}
+
+function toSafeArray(v) {
+  return Array.isArray(v) ? v : [];
+}
+
+function safeErrorMessage(err, fallback = "Something went wrong") {
+  if (!err) return fallback;
+  if (typeof err === "string") return err;
+  if (typeof err?.message === "string" && err.message) return err.message;
+  try {
+    return String(err) || fallback;
+  } catch {
+    return fallback;
+  }
+}
+
+/* ---------------------------------------------------------------------- */
+
 export async function ensureModulesInitialized() {
   if (modulesInitialized || profileLoadAttempted) return;
   profileLoadAttempted = true;
   const uid = auth?.currentUser?.uid;
   if (uid) {
     try {
-      await Aquila.initializeModules(uid);
+      await Aquila.initializeModules?.(uid);
       modulesInitialized = true;
     } catch (e) {
-      console.warn("Module init deferred:", e.message);
+      console.warn("Module init deferred:", safeErrorMessage(e));
     }
   }
 }
@@ -554,24 +585,48 @@ export function toggleSearch() {
 }
 
 async function performWebSearch(query) {
-  const res = await fetch(SEARCH_ENDPOINT, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ query: query.slice(0, 400) }),
-  });
-  if (!res.ok) {
-    const err = await res.json().catch(() => ({}));
-    throw new Error(err?.error || `Search failed (${res.status})`);
+  const safeQuery = toSafeString(query).slice(0, 400);
+
+  let res;
+  try {
+    res = await fetch(SEARCH_ENDPOINT, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ query: safeQuery }),
+    });
+  } catch (networkErr) {
+    console.error(networkErr);
+    throw new Error(safeErrorMessage(networkErr, "Network error while searching"));
   }
-  const data = await res.json();
-  return data.results || [];
+
+  if (!res || !res.ok) {
+    let err = {};
+    try {
+      err = (await res?.json()) || {};
+    } catch { /* ignore parse errors on error body */ }
+    throw new Error(err?.error || `Search failed (${res?.status ?? "unknown"})`);
+  }
+
+  let data = {};
+  try {
+    data = (await res.json()) || {};
+  } catch (parseErr) {
+    console.error(parseErr);
+    data = {};
+  }
+
+  return toSafeArray(data?.results);
 }
 
 function formatSearchResults(results) {
-  if (!results || results.length === 0) return "";
-  const parts = results.map((r, i) =>
-    `[${i + 1}] "${r.title}" - ${r.snippet}\nSource: ${r.link}`
-  );
+  const list = toSafeArray(results);
+  if (list.length === 0) return "";
+  const parts = list.map((r, i) => {
+    const title   = toSafeString(r?.title);
+    const snippet = toSafeString(r?.snippet);
+    const link    = toSafeString(r?.link);
+    return `[${i + 1}] "${title}" - ${snippet}\nSource: ${link}`;
+  });
   return `\n\nCurrent web search results (use these to answer accurately):\n${parts.join("\n")}\n\nAnswer directly using these results where relevant. If the results don't contain enough information, say so. Always cite sources naturally.`;
 }
 
@@ -586,13 +641,21 @@ function pulseSearchBtn(pulse) {
 export async function sendMessage() {
   if (isStreaming) return;
 
+  if (!Array.isArray(conversationHistory)) conversationHistory = [];
+
   const input   = document.getElementById("chatInput");
   const rawText = input?.value?.trim();
   if (!rawText) return;
 
-  const uid = auth.currentUser?.uid;
+  const uid = auth?.currentUser?.uid;
   if (uid) {
-    const allowed = await checkAndGate(uid, "chat");
+    let allowed = true;
+    try {
+      allowed = await checkAndGate(uid, "chat");
+    } catch (gateErr) {
+      console.error(gateErr);
+      console.error(gateErr?.stack);
+    }
     if (!allowed) return;
   }
 
@@ -607,9 +670,10 @@ export async function sendMessage() {
 
   pulseSearchBtn(true);
   try {
-    searchResults = await performWebSearch(rawText);
+    searchResults = toSafeArray(await performWebSearch(rawText));
   } catch (err) {
-    searchError = err.message;
+    console.error(err);
+    searchError = safeErrorMessage(err, "Search failed");
   } finally {
     pulseSearchBtn(false);
   }
@@ -626,23 +690,45 @@ export async function sendMessage() {
   isStreaming = true;
 
   try {
-    let enhancedPrompt = Aquila.buildEnhancedSystemPrompt() || SYSTEM_PROMPT;
+    let enhancedPrompt;
+    try {
+      enhancedPrompt = Aquila.buildEnhancedSystemPrompt?.() || SYSTEM_PROMPT;
+    } catch (promptErr) {
+      console.error(promptErr);
+      enhancedPrompt = SYSTEM_PROMPT;
+    }
+    if (typeof enhancedPrompt !== "string" || !enhancedPrompt) {
+      enhancedPrompt = SYSTEM_PROMPT;
+    }
 
-    const profile = Aquila.getStudentProfile();
-    const session = Aquila.getCurrentSession();
+    let profile = {};
+    try {
+      profile = Aquila.getStudentProfile?.() ?? {};
+    } catch (profileErr) {
+      console.error(profileErr);
+      profile = {};
+    }
+
+    let session = {};
+    try {
+      session = Aquila.getCurrentSession?.() ?? {};
+    } catch (sessionErr) {
+      console.error(sessionErr);
+      session = {};
+    }
 
     enhancedPrompt += `\n\nLEARNING STATE:
-- Current concept: ${learningState.currentConcept || "none"}
-- Attempts so far: ${learningState.attemptCount}
-- Correct: ${learningState.correctCount}/${learningState.totalQuestions}
-- Time since last activity: ${Math.round((Date.now() - learningState.lastActivity) / 1000)}s`;
+- Current concept: ${learningState?.currentConcept || "none"}
+- Attempts so far: ${learningState?.attemptCount ?? 0}
+- Correct: ${learningState?.correctCount ?? 0}/${learningState?.totalQuestions ?? 0}
+- Time since last activity: ${Math.round((Date.now() - (learningState?.lastActivity ?? Date.now())) / 1000)}s`;
 
-    if (profile && profile.conceptMastery) {
+    if (profile && profile.conceptMastery && typeof profile.conceptMastery === "object") {
       const weakEntries = Object.entries(profile.conceptMastery)
-        .sort(([, a], [, b]) => a - b)
+        .sort(([, a], [, b]) => (Number(a) || 0) - (Number(b) || 0))
         .slice(0, 3);
       if (weakEntries.length > 0) {
-        enhancedPrompt += `\n\nAREAS NEEDING ATTENTION:\n${weakEntries.map(([id, mastery], i) => `${i+1}. ${id} (${Math.round(mastery * 100)}% mastery)`).join('\n')}`;
+        enhancedPrompt += `\n\nAREAS NEEDING ATTENTION:\n${weakEntries.map(([id, mastery], i) => `${i + 1}. ${toSafeString(id)} (${Math.round((Number(mastery) || 0) * 100)}% mastery)`).join('\n')}`;
       }
     }
 
@@ -654,26 +740,30 @@ export async function sendMessage() {
       enhancedPrompt += `\n\nNote: Web search returned no relevant results. Answer based on your existing knowledge.`;
     }
 
-    const replyText = await streamGroqResponse(aiBubble, enhancedPrompt);
+    const replyText = toSafeString(await streamGroqResponse(aiBubble, enhancedPrompt));
 
     // Update learning state
-    learningState.totalQuestions++;
+    learningState.totalQuestions = (learningState.totalQuestions ?? 0) + 1;
     learningState.lastActivity = Date.now();
 
     // Record interaction via student model (non-blocking)
-    Aquila.recordInteraction(
-      learningState.currentConcept,
-      null,
-      replyText.length * 10,
-      null
-    );
+    try {
+      Aquila.recordInteraction?.(
+        learningState.currentConcept,
+        null,
+        replyText.length * 10,
+        null
+      );
+    } catch (recordErr) {
+      console.error(recordErr);
+    }
 
     const actions = createActionButtons(replyText);
-    aiBubble.appendChild(actions);
+    if (aiBubble) aiBubble.appendChild(actions);
 
     // Add confidence rating UI
     const confBar = createConfidenceBar();
-    aiBubble.appendChild(confBar);
+    if (aiBubble) aiBubble.appendChild(confBar);
 
     conversationHistory.push({ role: "assistant", content: replyText });
     if (conversationHistory.length > MAX_HISTORY) {
@@ -687,13 +777,19 @@ export async function sendMessage() {
       updateSidebarTitle(activeChatId, title);
     }
   } catch (err) {
-    aiBubble.innerHTML = `<span style="color:#f472b6;">\u26a0 ${err.message}</span>`;
+    console.error(err);
+    console.error(err?.stack);
+    if (aiBubble) {
+      aiBubble.innerHTML = `<span style="color:#f472b6;">\u26a0 ${escapeHtml(safeErrorMessage(err, "Unknown error"))}</span>`;
+    }
   } finally {
     isStreaming = false;
   }
 }
 
 function createActionButtons(rawText) {
+  const safeText = toSafeString(rawText);
+
   const wrap = document.createElement("div");
   wrap.className = "ai-actions";
 
@@ -704,8 +800,10 @@ function createActionButtons(rawText) {
   likeBtn.addEventListener("click", () => {
     const isActive = likeBtn.classList.toggle("active-good");
     dislikeBtn.classList.remove("active-bad");
-    likeBtn.querySelector("span").textContent = isActive ? "Liked!" : "Good";
-    dislikeBtn.querySelector("span").textContent = "Bad";
+    const likeSpan = likeBtn.querySelector("span");
+    const dislikeSpan = dislikeBtn.querySelector("span");
+    if (likeSpan) likeSpan.textContent = isActive ? "Liked!" : "Good";
+    if (dislikeSpan) dislikeSpan.textContent = "Bad";
   });
 
   const dislikeBtn = document.createElement("button");
@@ -715,8 +813,10 @@ function createActionButtons(rawText) {
   dislikeBtn.addEventListener("click", () => {
     const isActive = dislikeBtn.classList.toggle("active-bad");
     likeBtn.classList.remove("active-good");
-    dislikeBtn.querySelector("span").textContent = isActive ? "Noted!" : "Bad";
-    likeBtn.querySelector("span").textContent = "Good";
+    const dislikeSpan = dislikeBtn.querySelector("span");
+    const likeSpan = likeBtn.querySelector("span");
+    if (dislikeSpan) dislikeSpan.textContent = isActive ? "Noted!" : "Bad";
+    if (likeSpan) likeSpan.textContent = "Good";
   });
 
   const divider = document.createElement("div");
@@ -727,7 +827,9 @@ function createActionButtons(rawText) {
   copyBtn.title = "Copy response";
   copyBtn.innerHTML = `${ICON_COPY}<span>Copy</span>`;
   copyBtn.addEventListener("click", () => {
-    navigator.clipboard.writeText(rawText).catch(() => {});
+    try {
+      navigator.clipboard?.writeText?.(safeText)?.catch(() => {});
+    } catch { /* clipboard unavailable */ }
     copyBtn.classList.add("active-copy");
     copyBtn.innerHTML = `${ICON_COPY_CHECK}<span>Copied!</span>`;
     setTimeout(() => {
@@ -743,19 +845,23 @@ function createActionButtons(rawText) {
   shareBtn.addEventListener("click", () => {
     const sharePayload = {
       title: "Aquila AI",
-      text: `Here's what Aquila AI said:\n\n${rawText}`,
+      text: `Here's what Aquila AI said:\n\n${safeText}`,
     };
-    if (navigator.share) {
-      navigator.share(sharePayload).catch(() => {});
-    } else {
-      navigator.clipboard.writeText(sharePayload.text).catch(() => {});
-      shareBtn.classList.add("active-share");
-      shareBtn.querySelector("span").textContent = "Link copied!";
-      setTimeout(() => {
-        shareBtn.classList.remove("active-share");
-        shareBtn.querySelector("span").textContent = "Share";
-      }, 2200);
-    }
+    try {
+      if (navigator.share) {
+        navigator.share(sharePayload).catch(() => {});
+      } else if (navigator.clipboard?.writeText) {
+        navigator.clipboard.writeText(sharePayload.text).catch(() => {});
+        shareBtn.classList.add("active-share");
+        const span = shareBtn.querySelector("span");
+        if (span) span.textContent = "Link copied!";
+        setTimeout(() => {
+          shareBtn.classList.remove("active-share");
+          const s = shareBtn.querySelector("span");
+          if (s) s.textContent = "Share";
+        }, 2200);
+      }
+    } catch { /* share/clipboard unavailable */ }
   });
 
   wrap.appendChild(likeBtn);
@@ -769,7 +875,7 @@ function createActionButtons(rawText) {
 function createConfidenceBar() {
   const wrap = document.createElement("div");
   wrap.className = "confidence-bar";
-  
+
   const label = document.createElement("span");
   label.style.cssText = "font-size:11px;color:var(--text-muted);margin-right:4px;";
   label.textContent = "How confident? ";
@@ -783,14 +889,18 @@ function createConfidenceBar() {
     btn.addEventListener("click", () => {
       wrap.querySelectorAll(".conf-btn").forEach(b => b.classList.remove("selected"));
       btn.classList.add("selected");
+      if (!Array.isArray(learningState.confidenceHistory)) {
+        learningState.confidenceHistory = [];
+      }
       learningState.confidenceHistory.push(i);
-      
+
       // Auto-send confidence as a message to track it
       const confMsg = `[Confidence: ${i}/5]`;
+      if (!Array.isArray(conversationHistory)) conversationHistory = [];
       conversationHistory.push({ role: "user", content: confMsg });
-      
+
       // Show feedback
-      btn.parentElement.insertAdjacentHTML('afterend', 
+      btn.parentElement?.insertAdjacentHTML('afterend',
         `<span style="font-size:11px;color:var(--accent);margin-left:8px;">Tracked</span>`
       );
     });
@@ -808,7 +918,7 @@ async function streamGroqResponse(bubble, systemPrompt) {
       model    : MODEL,
       messages : [
         { role: "system", content: systemPrompt },
-        ...conversationHistory,
+        ...toSafeArray(conversationHistory),
       ],
       max_tokens : 2048,
       temperature: 0.65,
@@ -817,8 +927,15 @@ async function streamGroqResponse(bubble, systemPrompt) {
   });
 
   if (!res.ok) {
-    const err = await res.json().catch(() => ({}));
+    let err = {};
+    try {
+      err = (await res.json()) || {};
+    } catch { /* ignore parse errors on error body */ }
     throw new Error(err?.error?.message || `Groq API error ${res.status}`);
+  }
+
+  if (!res.body || typeof res.body.getReader !== "function") {
+    throw new Error("No response stream received from the API");
   }
 
   const reader  = res.body.getReader();
@@ -832,24 +949,28 @@ async function streamGroqResponse(bubble, systemPrompt) {
 
     buffer += decoder.decode(value, { stream: true });
     const lines = buffer.split("\n");
-    buffer = lines.pop();
+    buffer = lines.pop() ?? "";
 
     for (const line of lines) {
-      const stripped = line.replace(/^data: /, "").trim();
+      const stripped = toSafeString(line).replace(/^data: /, "").trim();
       if (!stripped || stripped === "[DONE]") continue;
       try {
         const json  = JSON.parse(stripped);
-        const delta = json.choices?.[0]?.delta?.content || "";
+        const delta = json?.choices?.[0]?.delta?.content || "";
         if (delta) {
           fullText += delta;
-          bubble.innerHTML = renderMarkdown(fullText) + cursorHtml();
+          if (bubble) {
+            bubble.innerHTML = renderMarkdown(fullText) + cursorHtml();
+          }
           smoothScrollToBottom();
         }
       } catch { /* ignore parse errors on partial chunks */ }
     }
   }
 
-  bubble.innerHTML = renderMarkdown(fullText);
+  if (bubble) {
+    bubble.innerHTML = renderMarkdown(fullText);
+  }
   smoothScrollToBottom();
   return fullText;
 }
@@ -857,6 +978,8 @@ async function streamGroqResponse(bubble, systemPrompt) {
 export function renderMessage(role, content) {
   const chatArea = document.getElementById("chatArea");
   if (!chatArea) return;
+
+  const safeContent = toSafeString(content);
 
   if (role === "user") {
     const wrap = document.createElement("div");
@@ -872,7 +995,7 @@ export function renderMessage(role, content) {
         line-height:1.65;
         color:#f0f0f8;
         word-break:break-word;
-      ">${escapeHtml(content)}</div>`;
+      ">${escapeHtml(safeContent)}</div>`;
     chatArea.appendChild(wrap);
   } else {
     const wrap = document.createElement("div");
@@ -880,8 +1003,8 @@ export function renderMessage(role, content) {
     const bubble = document.createElement("div");
     bubble.className = "ai-bubble";
     bubble.style.cssText = "flex:1;font-size:14px;line-height:1.75;word-break:break-word;";
-    bubble.innerHTML = renderMarkdown(content);
-    bubble.appendChild(createActionButtons(content));
+    bubble.innerHTML = renderMarkdown(safeContent);
+    bubble.appendChild(createActionButtons(safeContent));
     bubble.appendChild(createConfidenceBar());
     wrap.innerHTML = `
       <div style="
@@ -912,7 +1035,7 @@ function createAiBubble() {
       justify-content:center;font-size:14px;margin-top:2px;
     ">\u{1F4DD}</div>`;
   wrap.appendChild(bubble);
-  chatArea.appendChild(wrap);
+  if (chatArea) chatArea.appendChild(wrap);
   smoothScrollToBottom();
   return bubble;
 }
@@ -933,10 +1056,12 @@ function smoothScrollToBottom() {
 }
 
 function renderMarkdown(md) {
-  let html = escapeHtml(md);
+  const safeMd = toSafeString(md);
+  let html = escapeHtml(safeMd);
+  if (typeof html !== "string") html = safeMd;
 
   html = html.replace(/```[\w]*\n?([\s\S]*?)```/g, (_, code) =>
-    `<pre style="background:var(--bg-card);border:1px solid var(--border);border-radius:10px;padding:14px 16px;overflow-x:auto;font-family:'Space Mono',monospace;font-size:12.5px;margin:10px 0;"><code>${code.trim()}</code></pre>`
+    `<pre style="background:var(--bg-card);border:1px solid var(--border);border-radius:10px;padding:14px 16px;overflow-x:auto;font-family:'Space Mono',monospace;font-size:12.5px;margin:10px 0;"><code>${toSafeString(code).trim()}</code></pre>`
   );
 
   html = html.replace(/`([^`]+)`/g,
@@ -1006,47 +1131,68 @@ function cursorHtml() {
 }
 
 async function ensureChatSession(firstMessage) {
-  const user = auth.currentUser;
+  const user = auth?.currentUser;
   if (!user) return null;
 
   if (activeChatId) {
-    return doc(db, "users", user.uid, "chats", activeChatId);
+    try {
+      return doc(db, "users", user.uid, "chats", activeChatId);
+    } catch (e) {
+      console.error(e);
+      return null;
+    }
   }
 
-  const title  = firstMessage.slice(0, 60) + (firstMessage.length > 60 ? "\u2026" : "");
-  const chatRef = await addDoc(
-    collection(db, "users", user.uid, "chats"),
-    {
-      title,
-      createdAt : serverTimestamp(),
-      updatedAt : serverTimestamp(),
-      messageCount: 0,
-    }
-  );
-  activeChatId = chatRef.id;
-  return chatRef;
+  const safeMessage = toSafeString(firstMessage);
+  const title = safeMessage.slice(0, 60) + (safeMessage.length > 60 ? "\u2026" : "");
+
+  try {
+    const chatRef = await addDoc(
+      collection(db, "users", user.uid, "chats"),
+      {
+        title,
+        createdAt : serverTimestamp(),
+        updatedAt : serverTimestamp(),
+        messageCount: 0,
+      }
+    );
+    activeChatId = chatRef.id;
+    return chatRef;
+  } catch (e) {
+    console.error(e);
+    return null;
+  }
 }
 
 async function saveMessage(chatRef, role, content) {
   if (!chatRef) return;
-  await addDoc(collection(chatRef, "messages"), {
-    role,
-    content,
-    ts: serverTimestamp(),
-  });
-  await setDoc(chatRef, { updatedAt: serverTimestamp() }, { merge: true });
+  try {
+    await addDoc(collection(chatRef, "messages"), {
+      role,
+      content: toSafeString(content),
+      ts: serverTimestamp(),
+    });
+    await setDoc(chatRef, { updatedAt: serverTimestamp() }, { merge: true });
+  } catch (e) {
+    console.error(e);
+  }
 }
 
 async function updateChatTitle(chatRef, title) {
   if (!chatRef) return;
-  await setDoc(chatRef, { title }, { merge: true });
+  try {
+    await setDoc(chatRef, { title: toSafeString(title) }, { merge: true });
+  } catch (e) {
+    console.error(e);
+  }
 }
 
 function updateSidebarTitle(chatId, title) {
+  if (!chatId) return;
   const el = document.querySelector(`[data-chat-id="${chatId}"]`);
   if (!el) return;
   const titleEl = el.querySelector(".chat-title") || el.childNodes[1];
-  if (titleEl) titleEl.textContent = title;
+  if (titleEl) titleEl.textContent = toSafeString(title);
 }
 
 window.sendMessage   = sendMessage;
