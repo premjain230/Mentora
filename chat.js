@@ -1166,10 +1166,12 @@ async function ensureChatSession(firstMessage) {
 
 async function saveMessage(chatRef, role, content) {
   if (!chatRef) return;
+  const safeContent = toSafeString(content).slice(0, 32000);
+  if (!safeContent) return;
   try {
     await addDoc(collection(chatRef, "messages"), {
       role,
-      content: toSafeString(content).slice(0, 32000),
+      content: safeContent,
       ts: serverTimestamp(),
     });
     await setDoc(chatRef, { updatedAt: serverTimestamp() }, { merge: true });
