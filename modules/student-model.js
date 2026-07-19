@@ -126,8 +126,8 @@ function updateLearningVelocity(profile) {
 
 export function getSessionSummary(profile) {
   const total = profile.totalInteractions;
-  const mistakes = profile.mistakeHistory.length;
-  const unresolvedMisconceptions = profile.commonMisconceptions.filter(m => !m.resolved).length;
+  const mistakes = (profile.mistakeHistory || []).length;
+  const unresolvedMisconceptions = (profile.commonMisconceptions || []).filter(m => !m.resolved).length;
   const avgMastery = Object.values(profile.conceptMastery).length > 0
     ? Object.values(profile.conceptMastery).reduce((a, b) => a + b, 0) / Object.values(profile.conceptMastery).length
     : 0;
