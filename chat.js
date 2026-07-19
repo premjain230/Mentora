@@ -1169,7 +1169,7 @@ async function saveMessage(chatRef, role, content) {
   try {
     await addDoc(collection(chatRef, "messages"), {
       role,
-      content: toSafeString(content),
+      content: toSafeString(content).slice(0, 32000),
       ts: serverTimestamp(),
     });
     await setDoc(chatRef, { updatedAt: serverTimestamp() }, { merge: true });
