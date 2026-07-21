@@ -172,7 +172,27 @@ export async function signUp(btnEl, extra = {}) {
     const cred = await createUserWithEmailAndPassword(auth, email, password);
     const displayName = `${firstName} ${lastName}`.trim();
     await updateProfile(cred.user, { displayName });
-    await ensureUserDoc(cred.user, { displayName, exam: extra.goal || "" });
+
+// Add user to Brevo contact list
+try {
+  await fetch("/api/add-contact", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      email: cred.user.email,
+      name: displayName,
+    }),
+  });
+} catch (error) {
+  console.error("Brevo contact error:", error);
+}
+
+await ensureUserDoc(cred.user, { 
+  displayName, 
+  exam: extra.goal || "" 
+});
     await sendEmailVerification(cred.user);
     window.location.href = "verify-email.html";
   } catch (err) {
