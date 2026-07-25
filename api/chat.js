@@ -357,6 +357,11 @@ The ultimate goal is not to produce answers quickly, but to help students become
 const MAX_MESSAGES = 24;
 const MAX_MESSAGE_CHARS = 6000;
 
+// FIX: Use a single safe model name constant so there's one place to update it.
+// "llama-3.3-70b-versatile" is valid on Groq. If GROQ_MODEL env var is wrong,
+// that alone causes a 400. Verify your env var matches a model at console.groq.com/docs/models
+const DEFAULT_MODEL = "llama-3.3-70b-versatile";
+
 function sanitizeMessage(message) {
   if (!message || typeof message !== "object") return null;
   const role = message.role === "assistant" ? "assistant" : "user";
@@ -376,6 +381,16 @@ function normalizeMessages(body) {
   }
 
   return [];
+}
+
+// FIX: Helper that maps Groq's HTTP status to a meaningful statusCode for the client.
+// Previously ALL non-5xx Groq errors (401 auth, 422 bad model, 413 too long) became 400,
+// hiding the real cause. Now they pass through so the client can distinguish them.
+function groqStatusToClientStatus(groqHttpStatus) {
+  if (groqHttpStatus >= 500) return 502; // Groq server error → bad gateway
+  if (groqHttpStatus === 401) return 401; // auth failure → surface it
+  if (groqHttpStatus === 429) return 429; // rate limit → surface it
+  return groqHttpStatus;               // 400, 413, 422, etc. → pass through
 }
 
 async function callGroq(messages) {
@@ -398,7 +413,7 @@ async function callGroq(messages) {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: process.env.GROQ_MODEL || "llama-3.3-70b-versatile",
+        model: process.env.GROQ_MODEL || DEFAULT_MODEL,
         messages: [{ role: "system", content: SYSTEM_PROMPT }, ...messages],
         temperature: 0.6,
         max_tokens: 1600,
@@ -412,7 +427,7 @@ async function callGroq(messages) {
   const data = await response.json().catch(() => ({}));
   if (!response.ok) {
     const err = new Error(data?.error?.message || `Groq request failed with status ${response.status}`);
-    err.statusCode = response.status >= 500 ? 502 : 400;
+    err.statusCode = groqStatusToClientStatus(response.status);
     throw err;
   }
 
@@ -427,7 +442,15 @@ async function callGroq(messages) {
 }
 
 async function callGroqStream(messages, systemPrompt, res) {
+  // FIX: callGroqStream was missing the API key check entirely.
+  // Without it, a missing GROQ_API_KEY sent "Bearer undefined" to Groq → 400 / 401.
   const apiKey = process.env.GROQ_API_KEY;
+  if (!apiKey) {
+    const err = new Error("GROQ_API_KEY is not configured.");
+    err.statusCode = 500;
+    throw err;
+  }
+
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), 30000);
 
@@ -440,7 +463,7 @@ async function callGroqStream(messages, systemPrompt, res) {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: process.env.GROQ_MODEL || "llama-3.3-70b-versatile",
+        model: process.env.GROQ_MODEL || DEFAULT_MODEL,
         messages: [{ role: "system", content: systemPrompt || SYSTEM_PROMPT }, ...messages],
         temperature: 0.6,
         max_tokens: 2048,
@@ -456,7 +479,7 @@ async function callGroqStream(messages, systemPrompt, res) {
     const errData = await groqRes.json().catch(() => ({}));
     throw Object.assign(
       new Error(errData?.error?.message || `Groq stream error ${groqRes.status}`),
-      { statusCode: groqRes.status >= 500 ? 502 : 400 }
+      { statusCode: groqStatusToClientStatus(groqRes.status) }
     );
   }
 
@@ -537,4 +560,3 @@ module.exports = async function handler(req, res) {
     return sendError(req, res, err, "Mentora could not generate a response right now.");
   }
 };
-
