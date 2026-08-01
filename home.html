@@ -434,6 +434,132 @@
   .chat-loading-dot:nth-child(3) { animation-delay: 360ms; }
   @keyframes aquilaDot { 0%,80%,100%{ transform:translateY(0);opacity:.4; } 40%{ transform:translateY(-5px);opacity:1; } }
 
+  /* ===== Dashboard ===== */
+  .dash-area { flex: 1; overflow-y: auto; padding: 30px 48px 48px; animation: fadeUp 0.4s cubic-bezier(0.16,1,0.3,1) both; }
+  .dash-area::-webkit-scrollbar { width: 4px; }
+  .dash-area::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+  .chat-area, .input-area { display: none; }
+  body.mode-chat .chat-area { display: flex; }
+  body.mode-chat .input-area { display: block; }
+  body.mode-chat .dash-area { display: none; }
+
+  .dash-hero { display: flex; align-items: flex-start; justify-content: space-between; gap: 20px; flex-wrap: wrap; }
+  .dash-hello { font-size: 12px; font-weight: 600; letter-spacing: 1.6px; text-transform: uppercase; color: var(--accent); margin-bottom: 8px; }
+  .dash-greet { font-size: 28px; font-weight: 800; letter-spacing: -0.5px; background: linear-gradient(135deg, var(--text-primary) 40%, var(--accent2)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+  .dash-sub { font-size: 14px; color: var(--text-secondary); margin-top: 6px; font-weight: 300; }
+  .dash-pills { display: flex; gap: 10px; }
+  .pill { display: inline-flex; align-items: center; gap: 7px; padding: 8px 14px; border-radius: 20px; font-size: 13px; font-weight: 500; border: 1px solid var(--border); background: var(--bg-card); color: var(--text-secondary); }
+  .pill-num { font-family: var(--font-mono); font-weight: 700; color: var(--text-primary); }
+  .streak-pill { border-color: rgba(255,107,107,0.3); background: rgba(255,107,107,0.08); color: var(--accent3); }
+  .streak-pill .pill-num { color: var(--accent3); }
+  .level-pill { border-color: rgba(167,139,250,0.3); background: rgba(167,139,250,0.08); color: var(--accent2); }
+  .level-pill .pill-num { color: var(--accent2); }
+
+  .dash-mentor { font-size: 15px; color: var(--text-secondary); line-height: 1.7; margin: 18px 0 26px; padding: 14px 18px; border-radius: 14px; border: 1px solid rgba(0,212,255,0.18); background: linear-gradient(90deg, rgba(0,212,255,0.06), rgba(167,139,250,0.06)); }
+
+  .dash-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+  .d-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 16px; padding: 20px 22px; box-shadow: 0 8px 24px rgba(0,0,0,0.12); }
+  .d-card-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 14px; }
+  .d-card-head h2 { font-size: 14px; font-weight: 700; letter-spacing: 0.2px; color: var(--text-primary); }
+  .d-card-link { font-size: 12px; color: var(--accent); text-decoration: none; font-weight: 500; }
+  .d-card-link:hover { text-decoration: underline; }
+  .d-card-xp { font-size: 11px; color: var(--text-muted); font-family: var(--font-mono); }
+
+  .d-empty { font-size: 13px; color: var(--text-secondary); line-height: 1.6; margin-bottom: 14px; }
+  .d-error { color: var(--accent3); font-size: 14px; text-align: center; padding: 60px 20px; }
+  .dash-cta { display: inline-block; padding: 10px 18px; border-radius: 10px; font-size: 13px; font-weight: 600; text-decoration: none; transition: all 0.18s; }
+  .btn-primary { background: var(--accent); color: #06121a; }
+  .btn-primary:hover { background: #33ddff; transform: translateY(-1px); }
+  .btn-secondary { background: transparent; border: 1px solid var(--border); color: var(--text-secondary); }
+  .btn-secondary:hover { color: var(--text-primary); border-color: var(--border-hover); }
+
+  /* missions */
+  .missions { display: flex; flex-direction: column; gap: 10px; }
+  .mission { display: flex; gap: 12px; padding: 12px 14px; border: 1px solid var(--border); border-radius: 12px; background: var(--bg-input); transition: all 0.2s; }
+  .mission.done { border-color: rgba(0,212,170,0.35); background: rgba(0,212,170,0.06); }
+  .mission-check { width: 22px; height: 22px; border-radius: 7px; border: 2px solid var(--border-hover); flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 12px; color: #06121a; background: transparent; }
+  .mission.done .mission-check { background: var(--accent); border-color: var(--accent); }
+  .mission-body { flex: 1; min-width: 0; }
+  .mission-top { display: flex; justify-content: space-between; gap: 8px; align-items: center; }
+  .mission-label { font-size: 13px; font-weight: 500; color: var(--text-primary); }
+  .mission-xp { font-size: 11px; color: var(--accent2); font-family: var(--font-mono); white-space: nowrap; }
+  .mission-track { height: 5px; background: rgba(255,255,255,0.06); border-radius: 6px; overflow: hidden; margin: 8px 0 6px; }
+  .mission-fill { height: 100%; border-radius: 6px; background: linear-gradient(90deg, var(--accent), var(--accent2)); transition: width 0.4s ease; }
+  .mission-bottom { display: flex; justify-content: space-between; align-items: center; }
+  .mission-count { font-size: 11px; color: var(--text-muted); font-family: var(--font-mono); }
+  .mission-cta { font-size: 11px; font-weight: 600; color: var(--accent); text-decoration: none; }
+  .mission-cta:hover { text-decoration: underline; }
+  .mission-done-label { font-size: 11px; color: #00d4aa; font-weight: 600; }
+
+  /* continue */
+  .continue-card { display: flex; align-items: center; gap: 14px; padding: 14px; border: 1px solid var(--border); border-radius: 12px; background: var(--bg-input); }
+  .continue-icon { width: 42px; height: 42px; border-radius: 12px; background: linear-gradient(135deg, rgba(0,212,255,0.14), rgba(167,139,250,0.14)); border: 1px solid rgba(0,212,255,0.2); display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
+  .continue-info { flex: 1; min-width: 0; }
+  .continue-title { font-size: 14px; font-weight: 600; color: var(--text-primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .continue-sub { font-size: 12px; color: var(--text-muted); margin-top: 3px; }
+  .continue-btn { flex-shrink: 0; padding: 8px 16px; border-radius: 9px; background: var(--accent); color: #06121a; font-size: 12px; font-weight: 600; border: none; cursor: pointer; text-decoration: none; transition: all 0.18s; }
+  .continue-btn:hover { background: #33ddff; transform: translateY(-1px); }
+
+  /* weak topics */
+  .weak-grid { display: flex; flex-direction: column; gap: 8px; }
+  .weak-chip { display: flex; align-items: center; gap: 10px; padding: 11px 14px; border: 1px solid var(--border); border-radius: 10px; background: var(--bg-input); text-decoration: none; transition: all 0.18s; }
+  .weak-chip:hover { border-color: rgba(255,107,107,0.4); background: rgba(255,107,107,0.05); transform: translateX(3px); }
+  .weak-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--accent3); box-shadow: 0 0 8px var(--accent3); flex-shrink: 0; }
+  .weak-name { flex: 1; font-size: 13px; color: var(--text-primary); font-weight: 500; }
+  .weak-pct { font-size: 11px; color: var(--accent3); font-family: var(--font-mono); }
+
+  /* progress */
+  .progress-top { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin-bottom: 16px; }
+  .level-badge { display: flex; align-items: center; gap: 12px; flex: 1; min-width: 240px; }
+  .level-icon { width: 44px; height: 44px; border-radius: 12px; background: linear-gradient(135deg, var(--accent), var(--accent2)); display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0; }
+  .level-num { font-size: 15px; font-weight: 700; color: var(--text-primary); }
+  .level-bar { width: 160px; height: 6px; background: rgba(255,255,255,0.07); border-radius: 6px; overflow: hidden; margin-top: 6px; }
+  .level-fill { height: 100%; background: linear-gradient(90deg, var(--accent), var(--accent2)); border-radius: 6px; transition: width 0.6s ease; }
+  .level-xp { font-size: 12px; color: var(--text-muted); font-family: var(--font-mono); white-space: nowrap; }
+  .ach-last { display: flex; align-items: center; gap: 10px; padding: 8px 14px; border: 1px solid rgba(255,209,102,0.25); background: rgba(255,209,102,0.06); border-radius: 12px; }
+  .ach-last-title { font-size: 12px; font-weight: 600; color: var(--accent4); }
+  .ach-last-desc { font-size: 11px; color: var(--text-muted); }
+  .pstats { display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px; }
+  .pstat { background: var(--bg-input); border: 1px solid var(--border); border-radius: 12px; padding: 12px 10px; text-align: center; }
+  .pstat-icon { font-size: 16px; }
+  .pstat-v { font-size: 17px; font-weight: 700; font-family: var(--font-mono); color: var(--text-primary); margin: 4px 0 2px; }
+  .pstat-l { font-size: 10px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.4px; }
+
+  /* recent */
+  .recent-list { display: flex; flex-direction: column; gap: 6px; }
+  .recent-item { display: flex; align-items: center; gap: 12px; padding: 11px 14px; border: 1px solid transparent; border-radius: 10px; cursor: pointer; transition: all 0.15s; }
+  .recent-item:hover { background: rgba(255,255,255,0.04); border-color: var(--border); }
+  .recent-icon { font-size: 15px; }
+  .recent-title { flex: 1; font-size: 13.5px; color: var(--text-primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .recent-time { font-size: 11px; color: var(--text-muted); font-family: var(--font-mono); }
+
+  /* quick actions */
+  .dash-actions { display: grid; grid-template-columns: repeat(6, 1fr); gap: 12px; margin-top: 4px; }
+  .qa { display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 16px 10px; border-radius: 14px; background: var(--bg-card); border: 1px solid var(--border); text-decoration: none; color: var(--text-secondary); font-size: 12.5px; font-weight: 500; transition: all 0.2s; }
+  .qa:hover { transform: translateY(-3px); border-color: var(--border-hover); color: var(--text-primary); box-shadow: 0 12px 28px rgba(0,0,0,0.2); }
+  .qa-ico { font-size: 20px; }
+
+  /* skeletons */
+  .sk { background: linear-gradient(90deg, rgba(255,255,255,0.04) 25%, rgba(255,255,255,0.09) 50%, rgba(255,255,255,0.04) 75%); background-size: 200% 100%; animation: shimmer 1.4s infinite; border-radius: 8px; }
+  .sk-h { background: linear-gradient(90deg, rgba(255,255,255,0.05) 25%, rgba(255,255,255,0.11) 50%, rgba(255,255,255,0.05) 75%); background-size: 200% 100%; }
+  @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+  .light-mode .sk { background: linear-gradient(90deg, rgba(0,0,0,0.05) 25%, rgba(0,0,0,0.09) 50%, rgba(0,0,0,0.05) 75%); background-size: 200% 100%; }
+
+  @media (max-width: 1080px) {
+    .dash-area { padding: 24px 22px 36px; }
+    .dash-grid { grid-template-columns: 1fr; }
+    .pstats { grid-template-columns: repeat(3, 1fr); }
+    .dash-actions { grid-template-columns: repeat(3, 1fr); }
+    .dash-greet { font-size: 23px; }
+  }
+  @media (max-width: 480px) {
+    .dash-pills { width: 100%; }
+    .pstats { grid-template-columns: repeat(2, 1fr); }
+    .dash-actions { grid-template-columns: repeat(2, 1fr); }
+    .level-bar { width: 110px; }
+  }
+
   @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
   }
@@ -485,12 +611,11 @@
   </button>
   <nav class="nav-section" id="navSection">
     <div class="nav-label">Main</div>
-    <a href="home.html" class="nav-item active">
+    <a href="home.html" class="nav-item active" id="navToday">
       <span class="nav-icon"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg></span>
       Today
-      <span class="nav-badge" style="background:rgba(0,212,255,0.15);color:var(--accent)" id="reviewBadge"></span>
     </a>
-    <a href="home.html?mode=chat" class="nav-item">
+    <a href="home.html?mode=chat" class="nav-item" id="navChat">
       <span class="nav-icon"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg></span>
       Chat
     </a>
@@ -501,6 +626,11 @@
     <a href="planner.html" class="nav-item">
       <span class="nav-icon"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M3 10h18M8 2v4M16 2v4"/></svg></span>
       Study Planner
+    </a>
+    <a href="review.html" class="nav-item" id="navReview">
+      <span class="nav-icon"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg></span>
+      Review & Mistakes
+      <span class="nav-badge green" id="reviewBadge"></span>
     </a>
     <div class="nav-label">Community</div>
     <div class="nav-group">
@@ -564,7 +694,38 @@
       <div class="model-selector"><span class="model-dot"></span>Aquila AI</div>
     </div>
   </div>
-  <div class="chat-area" id="chatArea"></div>
+  <div class="dash-area" id="dashArea"></div>
+  <div class="chat-area" id="chatArea">
+    <div class="welcome" id="welcomeScreen">
+      <div class="welcome-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+      </div>
+      <h1 id="welcomeTitle">Welcome back!</h1>
+      <p id="welcomeSub">Ask Aquila anything — or pick a suggestion to start a focused study session.</p>
+      <div class="suggestion-grid">
+        <div class="suggestion-card" onclick="fillPrompt('Explain Chemical Bonding like I am 12')">
+          <div class="sug-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg></div>
+          <div class="sug-title">Explain a concept</div>
+          <div class="sug-desc">Chemical Bonding, Kinematics & more</div>
+        </div>
+        <div class="suggestion-card" onclick="fillPrompt('Create a 7-day revision plan for my exam')">
+          <div class="sug-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg></div>
+          <div class="sug-title">Plan my study</div>
+          <div class="sug-desc">Get a personalized revision plan</div>
+        </div>
+        <div class="suggestion-card" onclick="fillPrompt('Quiz me on Thermodynamics, 10 questions')">
+          <div class="sug-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div>
+          <div class="sug-title">Practice questions</div>
+          <div class="sug-desc">Test yourself on any topic</div>
+        </div>
+        <div class="suggestion-card" onclick="fillPrompt('Help me with the Physics problem I got wrong yesterday')">
+          <div class="sug-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
+          <div class="sug-title">Review mistakes</div>
+          <div class="sug-desc">Turn wrong answers into learning</div>
+        </div>
+      </div>
+    </div>
+  </div>
   <div class="input-area">
     <div class="input-box">
       <textarea id="chatInput" rows="1" placeholder="Ask Aquila AI anything — explain, analyze, or search the web..." oninput="resizeInput(this)" onkeydown="handleKey(event)"></textarea>

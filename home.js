@@ -1,10 +1,8 @@
 // ── home.js ──
-// Auth guard for home.html.
+// Auth guard + view switching for home.html.
 // - Redirects to login.html if user is not signed in.
-// - Populates sidebar user card with display name / avatar initial.
-// - Loads recent chat history from Firestore into the sidebar.
-// - Wires up the "New Chat" button to reset state.
-// - Exports signOut() for the sign-out button.
+// - Shows the personalized Dashboard by default, chat on ?mode=chat.
+// - Tracks daily login (streak + XP), loads recent chats, wires buttons.
 
 import { auth, db } from "./firebase-config.js";
 import {
@@ -22,6 +20,7 @@ import {
   setDoc,
   serverTimestamp,
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { trackDailyLogin, updateLastSession, loadDueCards, loadMistakes } from "./retention.js";
 
 // ─── Global state ─────────────────────────────────────────────────────────────
 export let currentUser = null;
@@ -41,9 +40,18 @@ if (!auth) {
     }
     currentUser = user;
     populateUserCard(user);
+    personalizeWelcome(user);
+
+    // Daily login → streak + daily-login XP
+    try {
+      await trackDailyLogin(user.uid);
+    } catch {}
+
     await loadRecentChats(user.uid);
     wireNewChatBtn();
     wireSignOutBtn();
+    wireNav();
+    renderReviewBadge(user.uid);
 
     // Initialize Aquila learning modules
     import("./chat.js").then(({ ensureModulesInitialized }) => {
@@ -59,7 +67,121 @@ if (!auth) {
     import("./modules/referral-system.js").then(({ autoClaimReferral }) => {
       autoClaimReferral(user.uid);
     }).catch(() => {});
+
+    // Mount dashboard / enter chat based on URL
+    const params = new URLSearchParams(window.location.search);
+    const mode = params.get("mode") === "chat" ? "chat" : "today";
+    setView(mode);
+
+    if (mode === "today") {
+      mountDashboard(user);
+    } else {
+      const chatId = params.get("chat");
+      if (chatId) {
+        // Small delay so chat.js is ready
+        setTimeout(() => {
+          loadChat(chatId, null);
+        }, 150);
+      }
+    }
   });
+}
+
+// ─── View switching ───────────────────────────────────────────────────────────
+function setView(mode) {
+  const isChat = mode === "chat";
+  document.body.classList.toggle("mode-chat", isChat);
+  const navToday = document.getElementById("navToday");
+  const navChat = document.getElementById("navChat");
+  if (navToday) navToday.classList.toggle("active", !isChat);
+  if (navChat) navChat.classList.toggle("active", isChat);
+}
+
+function wireNav() {
+  const navToday = document.getElementById("navToday");
+  const navChat = document.getElementById("navChat");
+  if (navToday) {
+    navToday.addEventListener("click", (e) => {
+      e.preventDefault();
+      setView("today");
+      mountDashboard(currentUser);
+      window.history.replaceState({}, "", "home.html");
+    });
+  }
+  if (navChat) {
+    navChat.addEventListener("click", (e) => {
+      e.preventDefault();
+      enterChat();
+      window.history.replaceState({}, "", "home.html?mode=chat");
+    });
+  }
+}
+
+function enterChat() {
+  setView("chat");
+  import("./chat.js").then(({ resetChat }) => {
+    try { resetChat(); } catch {}
+    ensureWelcome();
+  }).catch(() => {});
+}
+
+const WELCOME_HTML = `
+  <div class="welcome" id="welcomeScreen">
+    <div class="welcome-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+    </div>
+    <h1 id="welcomeTitle">Welcome back!</h1>
+    <p id="welcomeSub">Ask Aquila anything — or pick a suggestion to start a focused study session.</p>
+    <div class="suggestion-grid">
+      <div class="suggestion-card" onclick="fillPrompt('Explain Chemical Bonding like I am 12')">
+        <div class="sug-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg></div>
+        <div class="sug-title">Explain a concept</div>
+        <div class="sug-desc">Chemical Bonding, Kinematics & more</div>
+      </div>
+      <div class="suggestion-card" onclick="fillPrompt('Create a 7-day revision plan for my exam')">
+        <div class="sug-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg></div>
+        <div class="sug-title">Plan my study</div>
+        <div class="sug-desc">Get a personalized revision plan</div>
+      </div>
+      <div class="suggestion-card" onclick="fillPrompt('Quiz me on Thermodynamics, 10 questions')">
+        <div class="sug-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div>
+        <div class="sug-title">Practice questions</div>
+        <div class="sug-desc">Test yourself on any topic</div>
+      </div>
+      <div class="suggestion-card" onclick="fillPrompt('Help me with the Physics problem I got wrong yesterday')">
+        <div class="sug-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
+        <div class="sug-title">Review mistakes</div>
+        <div class="sug-desc">Turn wrong answers into learning</div>
+      </div>
+    </div>
+  </div>`;
+
+function ensureWelcome() {
+  const chatArea = document.getElementById("chatArea");
+  if (!chatArea) return;
+  if (document.getElementById("welcomeScreen")) return;
+  const wrap = document.createElement("div");
+  wrap.innerHTML = WELCOME_HTML.trim();
+  chatArea.insertBefore(wrap.firstElementChild, chatArea.firstChild);
+  if (currentUser) personalizeWelcome(currentUser);
+}
+
+function mountDashboard(user) {
+  import("./dashboard.js").then(({ mountDashboard: m }) => {
+    m(user.uid, user, { onResumeChat: resumeChat });
+  }).catch(() => {});
+}
+
+function resumeChat(chatId) {
+  if (!chatId) {
+    enterChat();
+    return;
+  }
+  setView("chat");
+  window.history.replaceState({}, "", `home.html?mode=chat&chat=${encodeURIComponent(chatId)}`);
+  import("./chat.js").then(() => {
+    loadChat(chatId, null);
+  }).catch(() => {});
 }
 
 // ─── Sidebar user card ────────────────────────────────────────────────────────
@@ -104,6 +226,37 @@ function populateUserCard(user) {
   }).catch(() => {});
 }
 
+function personalizeWelcome(user) {
+  const title = document.getElementById("welcomeTitle");
+  const sub = document.getElementById("welcomeSub");
+  if (!title) return;
+  const name = (user.displayName || user.email?.split("@")[0] || "student").split(" ")[0];
+  const hour = new Date().getHours();
+  const greet = hour < 12 ? "Good morning" : hour < 17 ? "Good afternoon" : "Good evening";
+  title.textContent = `${greet}, ${name}!`;
+  if (sub) sub.textContent = "What do you want to master today? Ask Aquila anything or pick a suggestion below.";
+}
+
+// ─── Review badge (due reviews + unresolved mistakes) ─────────────────────────
+async function renderReviewBadge(uid) {
+  try {
+    const [due, mistakes] = await Promise.all([
+      loadDueCards(uid).catch(() => []),
+      loadMistakes(uid, 100).catch(() => []),
+    ]);
+    const count = due.length + mistakes.filter((m) => !m.resolved).length;
+    const badge = document.getElementById("reviewBadge");
+    if (badge) {
+      if (count > 0) {
+        badge.textContent = count > 9 ? "9+" : String(count);
+        badge.style.display = "";
+      } else {
+        badge.style.display = "none";
+      }
+    }
+  } catch {}
+}
+
 // ─── Load recent chat sessions into sidebar ───────────────────────────────────
 export async function loadRecentChats(uid) {
   const navSection = document.getElementById("navSection") || document.querySelector(".nav-section");
@@ -140,7 +293,9 @@ export async function loadRecentChats(uid) {
       item.dataset.chatId = chatId;
       item.title = title;
       item.textContent = title;
-      item.addEventListener("click", () => loadChat(chatId, item));
+      item.addEventListener("click", () => {
+        resumeChat(chatId);
+      });
       section.appendChild(item);
     });
 
@@ -155,8 +310,10 @@ export async function loadRecentChats(uid) {
 }
 
 // ─── Load a specific chat session into the chat area ──────────────────────────
-async function loadChat(chatId, itemEl) {
+export async function loadChat(chatId, itemEl) {
   if (!currentUser) return;
+
+  setView("chat");
 
   // Highlight active item
   document.querySelectorAll(".chat-history-item").forEach((el) => el.classList.remove("active"));
@@ -185,6 +342,12 @@ async function loadChat(chatId, itemEl) {
 
     chatArea.innerHTML = "";
 
+    let title = "";
+    try {
+      const chatDoc = await getDoc(doc(db, "users", currentUser.uid, "chats", chatId));
+      if (chatDoc.exists()) title = chatDoc.data().title || "";
+    } catch {}
+
     msgsSnap.forEach((d) => {
       const msg = d.data();
       if (msg.role === "user" || msg.role === "assistant") {
@@ -194,6 +357,14 @@ async function loadChat(chatId, itemEl) {
 
     chatArea.scrollTop = chatArea.scrollHeight;
 
+    // Remember where the user left off
+    if (title) {
+      updateLastSession(currentUser.uid, {
+        type: "chat",
+        title,
+        chatId,
+      }).catch(() => {});
+    }
   } catch (e) {
     chatArea.innerHTML = `<div class="chat-loading" style="color:#ff6b6b;">Failed to load chat.</div>`;
     console.error(e);
@@ -213,8 +384,7 @@ function wireNewChatBtn() {
   const btn = document.getElementById("newChatBtn");
   if (!btn) return;
   btn.addEventListener("click", async () => {
-    const { resetChat } = await import("./chat.js");
-    resetChat();
+    enterChat();
     document.querySelectorAll(".chat-history-item").forEach((el) => el.classList.remove("active"));
   });
 }
@@ -234,3 +404,4 @@ export async function signOut() {
 
 // Expose globally for any inline onclick fallbacks
 window.mentora_signOut = signOut;
+window.__resumeChat = (chatId) => resumeChat(chatId);

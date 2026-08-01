@@ -239,6 +239,7 @@ body{font-family:var(--font-main);background:var(--bg-base);color:var(--text-pri
 import { auth, db } from "./firebase-config.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 import { collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { recordQuizResult } from "./retention.js";
 
 const authInstance = auth;
 let currentUser = null;
@@ -377,6 +378,24 @@ function populateTopics() {
 }
 subjectSelect.onchange = populateTopics;
 populateTopics();
+
+/* ── URL prefill: quiz.html?subject=X&topic=Y (one-click practice) ── */
+(function prefillFromUrl() {
+  const params = new URLSearchParams(window.location.search);
+  const subj = params.get("subject");
+  const topic = params.get("topic");
+  if (subj && BANK[subj]) {
+    subjectSelect.value = subj;
+    populateTopics();
+  }
+  if (topic && BANK[subjectSelect.value]) {
+    const topics = Object.keys(BANK[subjectSelect.value]);
+    if (topics.includes(topic)) {
+      topicSelect.value = topic;
+      document.getElementById("startBtn").click();
+    }
+  }
+})();
 
 /* ── Quiz state ──────────────────────────────────────────────────*/
 let questions = [];
@@ -572,7 +591,7 @@ document.getElementById("submitBtn").onclick = async () => {
     const userAns = document.getElementById("answerInput").value.trim();
     explanation = await evaluateWrittenAnswer(q.q, q.options, userAns);
     isCorrect = explanation.startsWith("CORRECT");
-    answers.push({ q: q.q, selected: userAns, correct: q.answer, isCorrect, mode: "written", topic });
+    answers.push({ q: q.q, selected: userAns, correct: q.answer, isCorrect, mode: "written", topic, options: q.options });
     if (isCorrect) correctCount++;
     showFeedback(isCorrect, explanation.replace(/^(CORRECT|PARTIAL|INCORRECT):?\s*/i, ""), q.explanation);
   } else {
@@ -580,7 +599,7 @@ document.getElementById("submitBtn").onclick = async () => {
     const selectedLetter = selectedText.charAt(0);
     isCorrect = selectedLetter === q.answer;
     if (isCorrect) correctCount++;
-    answers.push({ q: q.q, selected: selectedIdx, correct: q.answer, isCorrect, mode: "mcq", topic });
+    answers.push({ q: q.q, selected: selectedIdx, correct: q.answer, isCorrect, mode: "mcq", topic, options: q.options });
     showFeedback(isCorrect, "", q.explanation);
   }
 
@@ -648,7 +667,7 @@ document.getElementById("nextBtn").onclick = () => {
     if (selectedIdx === null) return;
     const isCorrect = selectedIdx === q.answer;
     if (isCorrect) correctCount++;
-    answers.push({ q: q.q, selected: selectedIdx, correct: q.answer, isCorrect, mode: "mcq", topic });
+    answers.push({ q: q.q, selected: selectedIdx, correct: q.answer, isCorrect, mode: "mcq", topic, options: q.options });
   }
   if (current < questions.length - 1) {
     current++;
@@ -735,6 +754,7 @@ async function finishQuiz() {
   document.getElementById("rTotal").textContent = total;
 
   const savingEl = document.getElementById("savingMsg");
+  let gained = 0, level = 1, mistakeCount = 0;
   try {
     if (!currentUser) throw new Error("Not signed in");
     await addDoc(collection(db, "users", currentUser.uid, "quizAttempts"), {
@@ -750,7 +770,26 @@ async function finishQuiz() {
       mode: quizMode,
       takenAt: serverTimestamp(),
     });
-    savingEl.textContent = "✅ Saved — visible in Quiz Analysis";
+
+    // Retention: XP, mistake notebook, daily review cards, continue-learning
+    try {
+      const res = await recordQuizResult(currentUser.uid, {
+        subject,
+        topic: topic || "",
+        title: topic ? `${topic} Quiz` : `${subject} Quiz`,
+        correct: correctCount,
+        total,
+        answers,
+        mode: quizMode,
+      });
+      gained = res.gained || 0;
+      level = res.level || 1;
+      mistakeCount = res.mistakes || 0;
+    } catch (rErr) {
+      console.error(rErr);
+    }
+
+    savingEl.innerHTML = `✅ Saved — <b>+${gained} XP</b> (Level ${level})${mistakeCount ? ` · ${mistakeCount} mistake${mistakeCount > 1 ? "s" : ""} saved to your notebook` : ""}`;
   } catch (err) {
     console.error(err);
     savingEl.textContent = "⚠️ Could not save attempt: " + err.message;

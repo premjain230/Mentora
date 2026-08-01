@@ -205,6 +205,10 @@ function showModal(question, dqRef) {
           skipped: false,
           createdAt: serverTimestamp(),
         });
+        try {
+          const { recordXpEvent } = await import("./retention.js");
+          await recordXpEvent(dqRef.path.split("/")[1], "daily_question", 1);
+        } catch {}
       } catch {}
     } else {
       try {

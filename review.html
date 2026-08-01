@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<script>document.documentElement.className=localStorage.getItem('aquila-theme')==='dark'?'':'light-mode'</script>
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta http-equiv="Content-Security-Policy" content="default-src 'self' https:; script-src 'self' 'unsafe-inline' 'unsafe-eval' blob: https://www.gstatic.com https://apis.google.com https://accounts.google.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://www.googletagmanager.com https://esm.sh; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: https:; font-src 'self' https://fonts.gstatic.com; connect-src 'self' blob: https://www.googleapis.com https://apis.google.com https://accounts.google.com https://esm.sh https://www.gstatic.com https://firestore.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://analytics.vercel.com; object-src 'none';">
+<meta name="description" content="Review what you learned, revisit mistakes, and keep your memory sharp with Aquila AI's Daily Review." />
+<title>Daily Review · Aquila AI</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%234f8cff'/><text x='16' y='22' text-anchor='middle' fill='white' font-size='18' font-weight='bold'>A</text></svg>">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+<style>
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  :root{
+    --bg-base:#0a0b0f; --bg-card:#1a1d27; --bg-input:#1e2130;
+    --accent:#00d4ff; --accent2:#a78bfa; --accent3:#ff6b6b; --accent4:#ffd166;
+    --good:#00d4aa;
+    --border:rgba(255,255,255,0.07); --border-hover:rgba(0,212,255,0.4);
+    --text-primary:#f0f0f8; --text-secondary:#8b8fa8; --text-muted:#4a4d62;
+    --font-main:'Sora',sans-serif; --font-mono:'Space Mono',monospace;
+  }
+  .light-mode{
+    --bg-base:#f4f5f9; --bg-card:#ffffff; --bg-input:#f0f1f5;
+    --border:rgba(0,0,0,0.08);
+    --text-primary:#16162a; --text-secondary:#5a5d72; --text-muted:#9ea0b4;
+  }
+  body{font-family:var(--font-main);background:var(--bg-base);color:var(--text-primary);min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:32px 16px 60px;transition:background .35s ease,color .35s ease;}
+  .wrap{width:100%;max-width:720px;}
+  .topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;}
+  .logo{display:flex;align-items:center;gap:10px;}
+  .logo-img{height:34px;width:auto;display:block}
+  .logo-text{font-size:17px;font-weight:700;}
+  .logo-text span{color:var(--accent2);}
+  .back-link{font-size:13px;color:var(--text-secondary);text-decoration:none;display:flex;align-items:center;gap:6px;}
+  .back-link:hover{color:var(--text-primary);}
+
+  .head{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-bottom:20px;}
+  .head h1{font-size:24px;font-weight:800;letter-spacing:-0.4px;}
+  .head p{font-size:13px;color:var(--text-secondary);margin-top:6px;line-height:1.6;}
+  .head-pills{display:flex;gap:8px;flex-wrap:wrap;}
+  .pill{display:inline-flex;align-items:center;gap:6px;padding:7px 13px;border-radius:20px;font-size:12.5px;font-weight:500;border:1px solid var(--border);background:var(--bg-card);color:var(--text-secondary);}
+  .pill b{font-family:var(--font-mono);color:var(--text-primary);}
+  .streak-pill{border-color:rgba(255,107,107,0.3);background:rgba(255,107,107,0.08);color:var(--accent3);}
+  .streak-pill b{color:var(--accent3);}
+
+  .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:22px;}
+  .stat{background:var(--bg-card);border:1px solid var(--border);border-radius:12px;padding:14px 12px;text-align:center;}
+  .stat .v{font-size:19px;font-weight:700;font-family:var(--font-mono);}
+  .stat .l{font-size:10.5px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px;margin-top:3px;}
+  .stat.due .v{color:var(--accent);}
+  .stat.mis .v{color:var(--accent3);}
+  .stat.xp .v{color:var(--accent2);}
+  .stat.streak .v{color:var(--accent4);}
+
+  .panel{background:var(--bg-card);border:1px solid var(--border);border-radius:16px;padding:22px;margin-bottom:18px;}
+  .panel h2{font-size:15px;font-weight:700;margin-bottom:4px;}
+  .panel .sub{font-size:12.5px;color:var(--text-secondary);margin-bottom:16px;line-height:1.6;}
+
+  /* flashcards */
+  .fc-progress{font-size:12px;color:var(--text-muted);font-family:var(--font-mono);margin-bottom:10px;}
+  .fc-card{background:var(--bg-input);border:1px solid var(--border-hover);border-radius:14px;padding:24px 22px;min-height:120px;display:flex;flex-direction:column;gap:12px;}
+  .fc-tag{font-size:11px;color:var(--accent2);font-weight:600;text-transform:uppercase;letter-spacing:.8px;}
+  .fc-text{font-size:15px;line-height:1.7;color:var(--text-primary);}
+  .fc-back{margin-top:6px;border-top:1px dashed var(--border);padding-top:14px;}
+  .fc-back .fb-label{font-size:11px;color:var(--good);font-weight:600;text-transform:uppercase;letter-spacing:.6px;margin-bottom:6px;}
+  .fc-back p{font-size:13.5px;line-height:1.7;color:var(--text-secondary);}
+  .fc-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px;}
+  .grade-btn{flex:1;min-width:96px;padding:11px 12px;border-radius:10px;border:1px solid var(--border);background:transparent;color:var(--text-secondary);font-family:var(--font-main);font-size:12.5px;font-weight:600;cursor:pointer;transition:all .18s;}
+  .grade-btn:hover{transform:translateY(-1px);}
+  .grade-btn.forgot{border-color:rgba(255,107,107,.4);color:var(--accent3);}
+  .grade-btn.forgot:hover{background:rgba(255,107,107,.1);}
+  .grade-btn.hard{border-color:rgba(255,209,102,.4);color:var(--accent4);}
+  .grade-btn.hard:hover{background:rgba(255,209,102,.1);}
+  .grade-btn.good{border-color:rgba(0,212,170,.4);color:var(--good);}
+  .grade-btn.good:hover{background:rgba(0,212,170,.1);}
+  .grade-btn.easy{border-color:rgba(0,212,255,.4);color:var(--accent);}
+  .grade-btn.easy:hover{background:rgba(0,212,255,.1);}
+  .reveal-btn{width:100%;padding:12px;border-radius:10px;border:none;background:var(--accent);color:#06121a;font-family:var(--font-main);font-size:13.5px;font-weight:600;cursor:pointer;transition:all .18s;}
+  .reveal-btn:hover{background:#33ddff;transform:translateY(-1px);}
+  .fc-done{text-align:center;padding:26px 16px;color:var(--text-secondary);font-size:14px;line-height:1.7;}
+
+  /* notebook */
+  .mistake{background:var(--bg-input);border:1px solid var(--border);border-radius:12px;padding:14px 16px;margin-bottom:10px;}
+  .mistake.resolved{opacity:.5;}
+  .m-tags{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px;}
+  .m-tag{font-size:10.5px;font-weight:600;padding:3px 9px;border-radius:20px;background:rgba(167,139,250,.12);border:1px solid rgba(167,139,250,.25);color:var(--accent2);}
+  .m-q{font-size:13.5px;font-weight:500;color:var(--text-primary);line-height:1.6;margin-bottom:8px;}
+  .m-ans{font-size:12.5px;line-height:1.6;margin-bottom:6px;}
+  .m-wrong{color:var(--accent3);}
+  .m-right{color:var(--good);}
+  .m-actions{display:flex;gap:8px;margin-top:10px;}
+  .m-btn{padding:8px 14px;border-radius:8px;border:1px solid var(--border);background:transparent;color:var(--text-secondary);font-family:var(--font-main);font-size:12px;font-weight:500;cursor:pointer;transition:all .18s;}
+  .m-btn:hover{border-color:var(--border-hover);color:var(--text-primary);}
+  .m-btn.gotit{border-color:rgba(0,212,170,.4);color:var(--good);}
+  .m-btn.gotit:hover{background:rgba(0,212,170,.1);}
+
+  .empty{text-align:center;padding:28px 16px;color:var(--text-secondary);font-size:13.5px;line-height:1.7;}
+  .empty .big{font-size:30px;margin-bottom:8px;}
+
+  .sk{background:linear-gradient(90deg,rgba(255,255,255,.04) 25%,rgba(255,255,255,.09) 50%,rgba(255,255,255,.04) 75%);background-size:200% 100%;animation:shimmer 1.4s infinite;border-radius:8px;}
+  .light-mode .sk{background:linear-gradient(90deg,rgba(0,0,0,.05) 25%,rgba(0,0,0,.09) 50%,rgba(0,0,0,.05) 75%);background-size:200% 100%;}
+  @keyframes shimmer{0%{background-position:200% 0;}100%{background-position:-200% 0;}}
+  @keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+  .fade{animation:fadeUp .35s cubic-bezier(.16,1,.3,1) both;}
+  .xp-toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,rgba(0,212,255,.15),rgba(167,139,250,.15));border:1px solid rgba(0,212,255,.4);color:var(--accent);padding:12px 20px;border-radius:12px;font-size:13px;font-weight:600;z-index:99;box-shadow:0 12px 32px rgba(0,0,0,.4);animation:fadeUp .3s ease;}
+  @media(max-width:560px){.stats{grid-template-columns:repeat(2,1fr);}.head h1{font-size:20px;}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="topbar">
+    <div class="logo"><img src="logo.png" alt="Aquila AI" class="logo-img"><span class="logo-text">Aquila AI</span></div>
+    <a href="home.html" class="back-link">← Back</a>
+  </div>
+
+  <div class="head">
+    <div>
+      <h1>Daily Review</h1>
+      <p>Five minutes of review now saves an hour before the exam. Aquila spaces these reviews so you remember longer.</p>
+    </div>
+    <div class="head-pills" id="headPills">
+      <span class="pill streak-pill">🔥 <b id="pillStreak">0</b> day</span>
+      <span class="pill">🎓 Level <b id="pillLevel">1</b></span>
+    </div>
+  </div>
+
+  <div class="stats">
+    <div class="stat due"><div class="v" id="statDue">…</div><div class="l">Due now</div></div>
+    <div class="stat mis"><div class="v" id="statMis">…</div><div class="l">Mistakes</div></div>
+    <div class="stat xp"><div class="v" id="statXp">…</div><div class="l">XP today</div></div>
+    <div class="stat streak"><div class="v" id="statStreak">…</div><div class="l">Best streak</div></div>
+  </div>
+
+  <div class="panel">
+    <h2>Due for Review</h2>
+    <p class="sub">Recall these before you forget them. Be honest when grading — that's how Aquila learns your memory.</p>
+    <div id="flashArea"></div>
+  </div>
+
+  <div class="panel">
+    <h2>Mistake Notebook</h2>
+    <p class="sub">Every wrong answer is saved here automatically. Revisiting mistakes is the fastest way to improve accuracy.</p>
+    <div id="mistakeArea"></div>
+  </div>
+</div>
+
+<script type="module">
+import { auth, db } from "./firebase-config.js";
+import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { doc, getDoc, updateDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import {
+  trackDailyLogin,
+  loadDueCards,
+  loadMistakes,
+  reviewCard,
+  resolveMistake,
+  recordXpEvent,
+  updateLastSession,
+  computeLevel,
+  todayKey,
+} from "./retention.js";
+
+const $ = (id) => document.getElementById(id);
+
+function esc(value) {
+  return String(value ?? "").replace(/[&<>"']/g, (c) =>
+    ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c])
+  );
+}
+
+let uid = null;
+let due = [];
+let mistakes = [];
+let fcIndex = 0;
+let fcGained = 0;
+
+onAuthStateChanged(auth, async (user) => {
+  if (!user) { window.location.href = "login.html"; return; }
+  if (!user.emailVerified) { window.location.href = "verify-email.html"; return; }
+  uid = user.uid;
+
+  try {
+    await trackDailyLogin(uid);
+  } catch {}
+
+  await updateLastSession(uid, { type: "review", title: "Daily Review" }).catch(() => {});
+
+  try {
+    const [cards, mis] = await Promise.all([
+      loadDueCards(uid),
+      loadMistakes(uid, 100),
+    ]);
+    due = cards;
+    mistakes = mis.filter((m) => !m.resolved).concat(mis.filter((m) => m.resolved)).slice(0, 50);
+  } catch {}
+
+  await renderStats();
+  renderFlashcard();
+  renderMistakes();
+});
+
+async function renderStats() {
+  let progress = null;
+  try {
+    const snap = await getDoc(doc(db, "progress", uid));
+    progress = snap.exists() ? snap.data() : {};
+  } catch {}
+  const streak = Number(progress?.currentStreak) || 0;
+  const best = Number(progress?.longestStreak) || 0;
+  const today = todayKey();
+  const todayXp = progress && progress.todayDate === today ? Number(progress.todayXp) || 0 : 0;
+  const level = computeLevel(Number(progress?.totalXp) || 0).level;
+
+  $("statDue").textContent = due.length;
+  $("statMis").textContent = mistakes.filter((m) => !m.resolved).length;
+  $("statXp").textContent = todayXp;
+  $("statStreak").textContent = best;
+  $("pillStreak").textContent = streak;
+  $("pillLevel").textContent = level;
+}
+
+function renderFlashcard() {
+  const area = $("flashArea");
+  if (due.length === 0) {
+    area.innerHTML = `<div class="empty fade"><div class="big">🎉</div>Nothing is due right now.<br/>You're ahead of the curve. Come back tomorrow for your next review.</div>`;
+    return;
+  }
+  const card = due[fcIndex];
+  if (!card) {
+    area.innerHTML = `<div class="fc-done fade"><div class="big" style="font-size:30px;margin-bottom:8px;">🎯</div>Review complete — <b>+${fcGained} XP</b> earned.<br/><a href="home.html" style="color:var(--accent);text-decoration:none;">Back to Today →</a></div>`;
+    return;
+  }
+  area.innerHTML = `
+    <div class="fc-progress fade">Card ${fcIndex + 1} / ${due.length}</div>
+    <div class="fc-card fade">
+      <div class="fc-tag">${card.topic ? esc(card.topic) : card.subject ? esc(card.subject) : "Review"}</div>
+      <div class="fc-text">${esc(card.front)}</div>
+      <div class="fc-back" id="fcBack" hidden>
+        <div class="fb-label">Answer</div>
+        <p>${esc(card.back || "No explanation saved.")}</p>
+      </div>
+    </div>
+    <div class="fc-actions" id="fcActions">
+      <button class="reveal-btn" id="fcReveal">Show answer</button>
+    </div>`;
+
+  $("fcReveal").addEventListener("click", () => {
+    $("fcBack").hidden = false;
+    $("fcActions").innerHTML = `
+      <button class="grade-btn forgot" data-r="0">Forgot</button>
+      <button class="grade-btn hard" data-r="2">Hard</button>
+      <button class="grade-btn good" data-r="4">Good</button>
+      <button class="grade-btn easy" data-r="5">Easy</button>`;
+    $("fcActions").querySelectorAll(".grade-btn").forEach((b) => {
+      b.addEventListener("click", () => gradeCard(card, Number(b.dataset.r)));
+    });
+  });
+}
+
+async function gradeCard(card, rating) {
+  try {
+    const res = await reviewCard(uid, card.id, rating);
+    if (res && res.gained) {
+      fcGained += res.gained;
+      toast(`+${res.gained} XP`);
+    }
+  } catch (e) {
+    console.error(e);
+  }
+  fcIndex += 1;
+  renderFlashcard();
+  renderStats();
+}
+
+function renderMistakes() {
+  const area = $("mistakeArea");
+  const unresolved = mistakes.filter((m) => !m.resolved);
+  const resolved = mistakes.filter((m) => m.resolved);
+
+  if (mistakes.length === 0) {
+    area.innerHTML = `<div class="empty fade"><div class="big">📓</div>Your mistake notebook is empty.<br/>Take a <a href="quiz.html" style="color:var(--accent);text-decoration:none;">quiz</a> and every wrong answer will land here automatically.</div>`;
+    return;
+  }
+
+  area.innerHTML = `
+    <div style="font-size:12px;color:var(--text-muted);margin-bottom:12px;">${unresolved.length} to revisit · ${resolved.length} mastered</div>
+    ${unresolved.map((m) => mistakeItem(m)).join("")}
+    ${resolved.map((m) => mistakeItem(m)).join("")}`;
+
+  area.querySelectorAll(".m-btn.gotit").forEach((btn) => {
+    btn.addEventListener("click", async () => {
+      const id = btn.dataset.id;
+      try {
+        await resolveMistake(uid, id);
+        await recordXpEvent(uid, "review", 1);
+        toast("+5 XP · Mistake mastered");
+      } catch (e) { console.error(e); }
+      try {
+        const snap = await getDoc(doc(db, "users", uid, "misconceptions", id));
+        if (snap.exists()) {
+          mistakes = mistakes.map((m) => m.id === id ? { ...m, resolved: true } : m);
+        }
+      } catch {}
+      renderMistakes();
+      renderStats();
+    });
+  });
+}
+
+function mistakeItem(m) {
+  const isResolved = m.resolved;
+  return `
+    <div class="mistake ${isResolved ? "resolved" : ""} fade">
+      <div class="m-tags">
+        ${m.subject ? `<span class="m-tag">${esc(m.subject)}</span>` : ""}
+        ${m.topic ? `<span class="m-tag">${esc(m.topic)}</span>` : ""}
+        ${isResolved ? `<span class="m-tag" style="background:rgba(0,212,170,.12);border-color:rgba(0,212,170,.3);color:var(--good);">Mastered</span>` : ""}
+      </div>
+      <div class="m-q">${esc(m.question)}</div>
+      <div class="m-ans m-wrong">✗ You: ${esc(m.userAnswer || "—")}</div>
+      <div class="m-ans m-right">✓ Correct: ${esc(m.correctAnswer || "—")}</div>
+      ${isResolved ? "" : `<div class="m-actions"><button class="m-btn gotit" data-id="${esc(m.id)}">Got it ✓</button></div>`}
+    </div>`;
+}
+
+function toast(text) {
+  const old = document.querySelector(".xp-toast");
+  if (old) old.remove();
+  const el = document.createElement("div");
+  el.className = "xp-toast";
+  el.textContent = text;
+  document.body.appendChild(el);
+  setTimeout(() => el.remove(), 2200);
+}
+</script>
+</body>
+</html>

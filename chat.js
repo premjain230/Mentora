@@ -9,6 +9,7 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 import { checkAndGate } from "./limits.js";
 import * as Aquila from "./aquila-integration.js";
+import { recordXpEvent, updateLastSession } from "./retention.js";
 
 const API_ENDPOINT  = "/api/groq-proxy";
 const SEARCH_ENDPOINT = "/api/search";
@@ -685,6 +686,23 @@ export async function sendMessage() {
 
   const chatRef = await ensureChatSession(rawText);
   await saveMessage(chatRef, "user", rawText);
+
+  // Retention: award chat XP and remember where the user left off (non-blocking)
+  if (uid) {
+    try {
+      recordXpEvent(uid, "chat", 1).catch(() => {});
+      if (activeChatId) {
+        const sessionTitle = rawText.slice(0, 60) + (rawText.length > 60 ? "\u2026" : "");
+        updateLastSession(uid, {
+          type: "chat",
+          chatId: activeChatId,
+          title: sessionTitle,
+        }).catch(() => {});
+      }
+    } catch (retErr) {
+      console.warn(retErr);
+    }
+  }
 
   const aiBubble = createAiBubble();
   isStreaming = true;

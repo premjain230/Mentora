@@ -249,6 +249,15 @@ async function _updateProgressCounters(uid, task, newStatus) {
     );
     updates.totalMinutesStudied = increment(task.durationMinutes || 60);
     updates.tasksCompleted = increment(1);
+
+    try {
+      const { recordXpEvent, updateLastSession } = await import("./retention.js");
+      await recordXpEvent(uid, "planner_task", 1);
+      await updateLastSession(uid, {
+        type: "practice",
+        topic: task.topic || task.subject || "Planner task",
+      });
+    } catch {}
   }
 
   if (newStatus === "skipped") {
