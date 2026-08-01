@@ -222,7 +222,7 @@ body.app-no-shell .sidebar { position: fixed; top: 0; left: 0; bottom: 0; margin
 }
 
 @media (max-width: 880px) {
-  body.app-no-shell { padding-left: 0; }
+  body.app-no-shell { padding-left: 0; padding-top: 60px; }
   .sidebar, body.app-no-shell .sidebar { position: fixed; top: 0; left: 0; bottom: 0; margin-left: calc(-1 * var(--sidebar-w)); box-shadow: none; }
   .sidebar.open { margin-left: 0; box-shadow: 24px 0 60px rgba(0,0,0,0.45); }
   .sidebar-close { display: flex; }
@@ -363,8 +363,10 @@ body.app-no-shell .sidebar { position: fixed; top: 0; left: 0; bottom: 0; margin
       document.body.insertAdjacentElement("afterbegin", overlayEl);
     }
 
-    const orbs = '<div class="ambient-orb orb-1" aria-hidden="true"></div><div class="ambient-orb orb-2" aria-hidden="true"></div>';
-    document.body.insertAdjacentHTML("afterbegin", orbs);
+    if (!document.querySelector(".ambient-orb")) {
+      const orbs = '<div class="ambient-orb orb-1" aria-hidden="true"></div><div class="ambient-orb orb-2" aria-hidden="true"></div>';
+      document.body.insertAdjacentHTML("afterbegin", orbs);
+    }
 
     const wrap = document.createElement("div");
     wrap.innerHTML = sidebarHtml;
