@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<script>document.documentElement.className=localStorage.getItem('aquila-theme')==='dark'?'':'light-mode'</script>
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
+<title>Review — Aquila AI</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700&family=Space+Mono:wght@400&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="/css/tokens.css"/><link rel="stylesheet" href="/css/base.css"/><link rel="stylesheet" href="/css/graphs.css"/>
+<style>body{padding:24px;}.card{background:var(--bg-card);border:1px solid var(--border);border-radius:14px;padding:16px;margin:10px 0;}</style>
+</head>
+<body>
+<div style="max-width:640px;margin:0 auto;">
+  <a href="home.html" style="color:var(--text-secondary);text-decoration:none;">← Home</a>
+  <h1 style="font-size:22px;font-weight:700;margin:12px 0;">Today's Review</h1>
+  <div id="stats" style="display:flex;gap:8px;flex-wrap:wrap;"></div>
+  <div id="list"></div><div id="graph" class="aq-graph-card" style="margin-top:16px;"></div>
+  <button id="startBtn" style="margin-top:16px;padding:12px 18px;border-radius:10px;background:var(--accent);color:#06121a;border:none;font-weight:600;cursor:pointer;display:none;">Start Review</button>
+</div>
+<script type="module">
+import { auth, db } from "./firebase-config.js";
+import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { collection, getDocs } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { renderRetentionTimeline } from "./js/learning/graphs.js";
+
+onAuthStateChanged(auth, async (user)=>{
+  if(!user){ location.href="login.html"; return; }
+  const snap = await getDocs(collection(db,"users",user.uid,"reviews"));
+  const reviews = snap.docs.map(d=>d.data());
+  const counts = {due: reviews.filter(r=>r.reviewState==="due").length, overdue: reviews.filter(r=>r.reviewState==="overdue").length, practice: reviews.filter(r=>r.reviewState==="practice").length, reviewSoon: reviews.filter(r=>r.reviewState==="review_soon").length, stable: reviews.filter(r=>r.reviewState==="stable").length, notReady: reviews.filter(r=>r.reviewState==="not_ready").length };
+  document.getElementById("stats").innerHTML = Object.entries(counts).map(([k,v])=>`<span style="padding:6px 10px;background:var(--bg-input);border:1px solid var(--border);border-radius:999px;font-size:12px;">${k}: ${v}</span>`).join("");
+  const listEl=document.getElementById("list");
+  const display = reviews.filter(r=>["due","overdue","practice"].includes(r.reviewState)).slice(0,10);
+  function humanState(r){
+    if(r.reviewState==="due") return "Due today";
+    if(r.reviewState==="overdue"){
+      const days = r.nextReviewAtIso ? Math.floor((Date.now() - new Date(r.nextReviewAtIso).getTime())/86400000) : 0;
+      return days>0 ? `Overdue by ${days} day${days>1?'s':''}` : "Overdue";
+    }
+    if(r.reviewState==="practice") return "Practice recommended";
+    if(r.reviewState==="review_soon") return "Review soon";
+    return r.reviewState;
+  }
+  if(display.length===0) listEl.innerHTML=`<div class="card" style="color:var(--text-secondary);">No concepts due right now. Keep learning — Aquila will schedule reviews as you practice.</div>`;
+  else listEl.innerHTML = display.map(r=>`<div class="card"><strong>${r.conceptId}</strong> — ${humanState(r)}<div style="font-size:11px;color:var(--text-muted);">${r.subject||""} ${r.topic||""} • interval ${r.intervalDays}d • mastery ${Math.round((r.masteryScore||0)*100)}% • strength ${Math.round((r.evidenceStrength||0)*100)}% • retention ${Math.round((r.retentionScore||0)*100)}%</div><div style="font-size:11px;color:var(--text-muted);">Next: ${r.nextReviewAtIso? r.nextReviewAtIso.slice(0,10): (r.nextReviewAt? new Date(r.nextReviewAt.seconds*1000).toLocaleDateString() : "")}</div></div>`).join("");
+  if(display.length>0) document.getElementById("startBtn").style.display="block";
+  try{ renderRetentionTimeline(document.getElementById("graph"), reviews); }catch{}
+  document.getElementById("startBtn").onclick=()=> location.href="quiz.html";
+});
+</script>
+<script type="module" src="./js/avatar-sync.js"></script>
+</body>
+</html>

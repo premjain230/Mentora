@@ -1,0 +1,1803 @@
+<!DOCTYPE html>
+<html lang="en">
+<script>document.documentElement.className=localStorage.getItem('aquila-theme')==='dark'?'':'light-mode'</script>
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<meta http-equiv="Content-Security-Policy" content="default-src 'self' https:; script-src 'self' 'unsafe-inline' 'unsafe-eval' blob: https://www.gstatic.com https://apis.google.com https://accounts.google.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://www.googletagmanager.com https://esm.sh; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: https:; font-src 'self' https://fonts.gstatic.com; connect-src 'self' blob: https://www.googleapis.com https://apis.google.com https://accounts.google.com https://esm.sh https://www.gstatic.com https://firestore.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://analytics.vercel.com; object-src 'none'; frame-src 'self' https://www.gstatic.com https://accounts.google.com https://mentora-c6dca.firebaseapp.com">
+<meta name="description" content="Beyond Marks — explore student well-being, mental health resources, and stories from Indian exam aspirants." />
+<meta property="og:title" content="Beyond Marks - Aquila AI" />
+<meta property="og:description" content="Student well-being, mental health resources, and stories from Indian exam aspirants." />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://aquila-sand.vercel.app/beyond-marks.html" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="keywords" content="student well-being, mental health for students, exam stress, JEE aspirant stories, NEET motivation, Indian exam stress relief" />
+<link rel="canonical" href="https://aquila-sand.vercel.app/beyond-marks.html" />
+<title>Beyond Marks · Aquila AI</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%234f8cff'/><text x='16' y='22' text-anchor='middle' fill='white' font-size='18' font-weight='bold'>A</text></svg>">
+<meta name="referrer" content="no-referrer-when-downgrade">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="/css/tokens.css" />
+<link rel="stylesheet" href="/css/base.css" />
+<link rel="stylesheet" href="/css/shell.css" />
+<style>
+:root {
+  --accent5: #06d6cf;
+  --glass: rgba(18,21,31,0.65);
+  --radius-sm: 10px;
+  --radius-md: 16px;
+  --radius-lg: 24px;
+}
+.light-mode {
+  --glass: rgba(255,255,255,0.72);
+}
+
+body { transition: background 0.35s ease, color 0.35s ease; }
+
+.content { flex: 1; overflow-y: auto; padding: 0; }
+
+@keyframes scaleIn { from { opacity:0; transform:scale(0.92); } to { opacity:1; transform:scale(1); } }
+@keyframes twinkle { 0%,100% { opacity:0.3; } 50% { opacity:1; } }
+@keyframes float { 0%,100% { transform:translateY(0px); } 50% { transform:translateY(-8px); } }
+@keyframes glow { 0%,100% { box-shadow:0 0 12px rgba(167,139,250,0.3); } 50% { box-shadow:0 0 24px rgba(167,139,250,0.6); } }
+@keyframes shimmer { 0% { background-position:-200% 0; } 100% { background-position:200% 0; } }
+@keyframes breathe { 0%,100% { transform:scale(1); opacity:0.7; } 50% { transform:scale(1.05); opacity:1; } }
+@keyframes drift { 0%,100% { transform:translate(0, 0); } 25% { transform:translate(10px, -5px); } 50% { transform:translate(-5px, 8px); } 75% { transform:translate(-10px, -3px); } }
+
+.reveal { animation: fadeIn 0.6s cubic-bezier(0.16,1,0.3,1) both; }
+.reveal-delay-1 { animation-delay: 0.1s; }
+.reveal-delay-2 { animation-delay: 0.2s; }
+.reveal-delay-3 { animation-delay: 0.3s; }
+.reveal-delay-4 { animation-delay: 0.4s; }
+.reveal-delay-5 { animation-delay: 0.5s; }
+
+.glass-card {
+  background: var(--glass);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  transition: border-color 0.3s, transform 0.25s;
+}
+.glass-card:hover { border-color: rgba(167,139,250,0.2); }
+
+.glow-border { position: relative; }
+.glow-border::before {
+  content: ''; position: absolute; inset: -1px;
+  border-radius: inherit;
+  background: linear-gradient(135deg, rgba(167,139,250,0.3), rgba(0,212,255,0.2), rgba(6,214,207,0.2));
+  z-index: -1;
+  opacity: 0;
+  transition: opacity 0.4s;
+}
+.glow-border:hover::before { opacity: 1; }
+
+.btn-primary {
+  display: inline-flex; align-items: center; justify-content: center; gap: 7px;
+  padding: 10px 20px; border-radius: 10px; font-family: var(--font-main);
+  font-size: 13px; font-weight: 600; cursor: pointer; border: none;
+  transition: all 0.2s; white-space: nowrap;
+  background: linear-gradient(135deg, #7c6aff, var(--accent2));
+  color: #fff;
+  box-shadow: 0 4px 16px rgba(124,106,255,0.35);
+}
+.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(124,106,255,0.5); }
+.btn-primary:disabled { opacity: 0.5; cursor: not-allowed; transform: none; box-shadow: none; }
+
+.btn-secondary {
+  display: inline-flex; align-items: center; justify-content: center; gap: 7px;
+  padding: 10px 20px; border-radius: 10px; font-family: var(--font-main);
+  font-size: 13px; font-weight: 500; cursor: pointer;
+  background: rgba(255,255,255,0.04);
+  color: var(--text-secondary);
+  border: 1px solid var(--border);
+  transition: all 0.2s; white-space: nowrap;
+}
+.btn-secondary:hover { background: rgba(255,255,255,0.08); color: var(--text-primary); border-color: rgba(167,139,250,0.3); }
+
+.section-divider {
+  width: 100%; height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(167,139,250,0.2), rgba(0,212,255,0.2), transparent);
+  margin: 0;
+}
+
+/* ─── HERO ─── */
+.beyond-hero {
+  position: relative;
+  min-height: 92vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 80px 24px;
+  overflow: hidden;
+}
+#starCanvas {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+.beyond-hero-content {
+  position: relative;
+  z-index: 2;
+  max-width: 720px;
+}
+.beyond-hero-badge {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: rgba(167,139,250,0.1);
+  border: 1px solid rgba(167,139,250,0.25);
+  border-radius: 99px;
+  padding: 6px 16px;
+  font-size: 12px;
+  color: var(--accent2);
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  margin-bottom: 24px;
+}
+.beyond-hero-badge .dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--accent2);
+  animation: breathe 2.5s ease-in-out infinite;
+}
+.beyond-hero h1 {
+  font-size: clamp(36px, 6vw, 64px);
+  font-weight: 800;
+  line-height: 1.08;
+  letter-spacing: -0.03em;
+  margin-bottom: 18px;
+}
+.beyond-hero h1 .gradient {
+  background: linear-gradient(135deg, var(--accent2), #f472b6, #06d6cf);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.beyond-hero p {
+  font-size: 16px;
+  color: var(--text-secondary);
+  line-height: 1.8;
+  max-width: 520px;
+  margin: 0 auto 32px;
+  font-weight: 300;
+}
+.beyond-hero-quote {
+  font-size: 18px;
+  font-weight: 500;
+  color: rgba(167,139,250,0.6);
+  font-style: italic;
+  border-top: 1px solid rgba(167,139,250,0.1);
+  padding-top: 24px;
+  max-width: 480px;
+  margin: 0 auto;
+}
+.scroll-indicator {
+  position: absolute;
+  bottom: 28px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  color: var(--text-muted);
+  font-size: 10px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  animation: float 3s ease-in-out infinite;
+}
+.scroll-indicator .scroll-line {
+  width: 1px; height: 32px;
+  background: linear-gradient(to bottom, var(--text-muted), transparent);
+}
+
+/* ─── SECTION HEADERS ─── */
+.section-wrap {
+  padding: 80px 48px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+.section-header {
+  text-align: center;
+  margin-bottom: 48px;
+}
+.section-header .section-number {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--accent2);
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  margin-bottom: 8px;
+}
+.section-header h2 {
+  font-size: clamp(28px, 4vw, 38px);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  margin-bottom: 12px;
+}
+.section-header p {
+  font-size: 15px;
+  color: var(--text-secondary);
+  max-width: 520px;
+  margin: 0 auto;
+  line-height: 1.7;
+  font-weight: 300;
+}
+
+/* ─── 1. ONE MILLION DREAMS ─── */
+.dreams-section {
+  padding: 80px 48px;
+  background: linear-gradient(180deg, transparent 0%, rgba(167,139,250,0.03) 30%, rgba(10,8,20,1) 100%);
+}
+.dreams-container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+.dreams-sky {
+  position: relative;
+  width: 100%;
+  height: 480px;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  background: radial-gradient(ellipse at 30% 30%, #0f0a2a, #05040e 70%);
+  border: 1px solid rgba(167,139,250,0.08);
+  cursor: pointer;
+  margin-bottom: 24px;
+}
+#dreamsCanvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+.dream-tooltip {
+  position: absolute;
+  max-width: 280px;
+  padding: 14px 18px;
+  background: rgba(18,21,31,0.92);
+  border: 1px solid rgba(167,139,250,0.3);
+  border-radius: 12px;
+  backdrop-filter: blur(16px);
+  font-size: 13.5px;
+  color: var(--text-primary);
+  line-height: 1.6;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s;
+  z-index: 10;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+}
+.dream-tooltip.show { opacity: 1; }
+.dream-tooltip .dream-quote { font-style: italic; }
+.dream-tooltip .dream-author { font-size: 11px; color: var(--text-muted); margin-top: 6px; }
+
+.dreams-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-bottom: 24px;
+}
+.dream-stat {
+  background: var(--glass);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 20px;
+  text-align: center;
+  backdrop-filter: blur(12px);
+  transition: transform 0.2s;
+}
+.dream-stat:hover { transform: translateY(-3px); }
+.dream-stat-value {
+  font-size: 28px;
+  font-weight: 700;
+  font-family: var(--font-mono);
+  color: var(--text-primary);
+  letter-spacing: -1px;
+  line-height: 1;
+  margin-bottom: 4px;
+}
+.dream-stat-icon { font-size: 22px; margin-bottom: 6px; }
+.dream-stat-label { font-size: 12px; color: var(--text-secondary); font-weight: 400; }
+
+.dream-submit-wrap {
+  display: flex;
+  gap: 10px;
+  max-width: 520px;
+  margin: 0 auto;
+}
+.dream-submit-wrap input {
+  flex: 1;
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 12px 16px;
+  font-family: var(--font-main);
+  font-size: 14px;
+  color: var(--text-primary);
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.dream-submit-wrap input:focus {
+  border-color: rgba(167,139,250,0.4);
+  box-shadow: 0 0 0 3px rgba(167,139,250,0.08);
+}
+.dream-submit-wrap input::placeholder { color: var(--text-muted); }
+
+/* ─── 2. UNTOLD STORIES ─── */
+.stories-section {
+  padding: 80px 48px;
+}
+.stories-container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+.story-categories {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+  margin-bottom: 36px;
+}
+.category-pill {
+  padding: 7px 16px;
+  border-radius: 99px;
+  font-size: 12.5px;
+  font-weight: 500;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid var(--border);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.category-pill:hover { border-color: rgba(167,139,250,0.3); color: var(--text-primary); }
+.category-pill.active { background: rgba(167,139,250,0.12); border-color: rgba(167,139,250,0.3); color: var(--accent2); }
+
+.stories-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: 20px;
+}
+.story-card {
+  background: var(--glass);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 24px;
+  backdrop-filter: blur(14px);
+  transition: all 0.25s;
+  cursor: pointer;
+}
+.story-card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(167,139,250,0.2);
+  box-shadow: 0 12px 36px rgba(0,0,0,0.3);
+}
+.story-card-category {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  padding: 4px 10px;
+  border-radius: 20px;
+  background: rgba(167,139,250,0.1);
+  color: var(--accent2);
+  margin-bottom: 12px;
+}
+.story-card-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 8px;
+  line-height: 1.4;
+}
+.story-card-excerpt {
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.7;
+  margin-bottom: 14px;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.story-card-meta {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  font-size: 11.5px;
+  color: var(--text-muted);
+}
+.story-card-meta span { display: flex; align-items: center; gap: 4px; }
+.story-card-cta {
+  font-size: 12px;
+  color: var(--accent2);
+  font-weight: 500;
+  margin-top: 12px;
+  opacity: 0;
+  transition: opacity 0.25s;
+}
+.story-card:hover .story-card-cta { opacity: 1; }
+
+/* ─── 4. LEGACY TREE ─── */
+.tree-section {
+  padding: 80px 48px;
+}
+.tree-container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+.tree-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 32px;
+  align-items: start;
+}
+.tree-garden {
+  background: var(--glass);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 32px;
+  backdrop-filter: blur(14px);
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  min-height: 400px;
+}
+.tree-garden::before {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 40%;
+  background: linear-gradient(to top, rgba(6,214,207,0.04), transparent);
+  pointer-events: none;
+}
+.tree-stage-label {
+  position: absolute;
+  top: 16px; left: 50%;
+  transform: translateX(-50%);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--accent5);
+  background: rgba(6,214,207,0.08);
+  border: 1px solid rgba(6,214,207,0.2);
+  padding: 4px 12px;
+  border-radius: 20px;
+}
+#treeCanvas {
+  width: 100%;
+  height: 360px;
+  display: block;
+  cursor: default;
+}
+.tree-progress {
+  margin-top: 16px;
+  display: flex;
+  justify-content: space-between;
+  gap: 4px;
+}
+.tree-stage-dot {
+  flex: 1;
+  height: 4px;
+  border-radius: 4px;
+  background: rgba(255,255,255,0.06);
+  transition: background 0.5s;
+}
+.tree-stage-dot.active { background: var(--accent5); box-shadow: 0 0 8px rgba(6,214,207,0.4); }
+.tree-stage-dot.reached { background: rgba(6,214,207,0.3); }
+
+.tree-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.tree-actions-card {
+  background: var(--glass);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 20px;
+  backdrop-filter: blur(12px);
+}
+.tree-actions-card h3 {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 12px;
+  display: flex; align-items: center; gap: 8px;
+}
+.tree-action-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+}
+.tree-action-item:last-child { border-bottom: none; }
+.tree-action-label {
+  display: flex; align-items: center; gap: 10px;
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+.tree-action-check {
+  width: 20px; height: 20px;
+  border-radius: 50%;
+  border: 2px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 10px;
+  flex-shrink: 0;
+  transition: all 0.25s;
+}
+.tree-action-check.done {
+  background: var(--accent5);
+  border-color: var(--accent5);
+  color: #080a12;
+}
+.tree-action-xp {
+  font-size: 11px;
+  font-family: var(--font-mono);
+  color: var(--text-muted);
+}
+
+/* ─── RESPONSIVE ─── */
+@media (max-width: 880px) {
+  .topbar { padding: 12px 14px; }
+  .section-wrap { padding: 48px 20px; }
+  .dreams-section { padding: 48px 20px; }
+  .stories-section { padding: 48px 20px; }
+  .tree-section { padding: 48px 20px; }
+  .dreams-stats { grid-template-columns: 1fr; }
+  .stories-grid { grid-template-columns: 1fr; }
+  
+  .tree-layout { grid-template-columns: 1fr; }
+  .dreams-sky { height: 320px; }
+  .reflection-card { padding: 24px; }
+  .reflection-input-row { flex-direction: column; }
+}
+
+@media (max-width: 480px) {
+  .beyond-hero { min-height: 80vh; padding: 60px 20px; }
+  .beyond-hero-quote { font-size: 15px; }
+  .dreams-sky { height: 240px; }
+  .dream-submit-wrap { flex-direction: column; }
+  .dream-stat { padding: 16px; }
+  .dream-stat-number { font-size: 24px; }
+  .story-categories { gap: 6px; }
+  .category-pill { font-size: 11px; padding: 5px 12px; }
+  .stories-grid { grid-template-columns: 1fr; gap: 14px; }
+  .story-card { padding: 18px; }
+  .story-modal { padding: 20px; }
+  .tree-garden { min-height: 300px; }
+  .tree-actions-card { padding: 20px; }
+  .tree-action-item { gap: 10px; padding: 10px 0; }
+  .reflection-input-row { flex-direction: column; gap: 10px; }
+  .reflection-input-row input { width: 100%; }
+  .reflection-stat { padding: 16px; }
+  .info-wrap { padding: 18px; min-height: 220px; }
+}
+
+@media (max-width: 360px) {
+  .beyond-hero { min-height: 70vh; padding: 40px 16px; }
+  .dreams-sky { height: 200px; }
+  .stories-grid { gap: 10px; }
+  .story-card { padding: 14px; }
+  .dream-submit-wrap input { font-size: 13px; }
+  .dream-tooltip { max-width: 200px; font-size: 12px; padding: 10px 14px; }
+}
+
+a:focus-visible, button:focus-visible, [tabindex]:focus-visible {
+  outline: 2px solid var(--accent2);
+  outline-offset: 2px;
+}
+
+.story-modal-overlay {
+  display: none;
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.7);
+  backdrop-filter: blur(6px);
+  z-index: 100;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+.story-modal-overlay.open { display: flex; }
+.story-modal {
+  background: var(--bg-card);
+  border: 1px solid rgba(167,139,250,0.2);
+  border-radius: var(--radius-lg);
+  max-width: 620px;
+  width: 100%;
+  max-height: 85vh;
+  overflow-y: auto;
+  padding: 32px;
+  animation: scaleIn 0.3s cubic-bezier(0.16,1,0.3,1) both;
+}
+.story-modal-close {
+  float: right;
+  background: none; border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: 20px;
+  line-height: 1;
+  padding: 4px;
+  transition: color 0.2s;
+}
+.story-modal-close:hover { color: var(--text-primary); }
+.story-modal .story-card-category { margin-top: 4px; }
+.story-modal h2 {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 12px 0 16px;
+  line-height: 1.4;
+}
+.story-modal .story-body {
+  font-size: 14px;
+  color: var(--text-secondary);
+  line-height: 1.85;
+  white-space: pre-wrap;
+}
+.story-modal .story-modal-body {
+  font-size: 14px;
+  color: var(--text-secondary);
+  line-height: 1.85;
+  white-space: pre-wrap;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--text-muted);
+}
+.empty-state-icon { font-size: 36px; margin-bottom: 12px; }
+.empty-state-text { font-size: 14px; }
+@keyframes rippleAnim{to{transform:scale(2);opacity:0;}}
+</style>
+</head>
+<body>
+<div class="ambient-orb orb-1" aria-hidden="true"></div>
+<div class="ambient-orb orb-2" aria-hidden="true"></div>
+
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+<aside class="sidebar" id="sidebar">
+  <div class="logo-area">
+    <a href="index.html" class="logo">
+      <img src="logo.svg" alt="Aquila AI" class="logo-img">
+      <span class="logo-text">Aquila AI</span>
+    </a>
+    <button class="sidebar-close" id="sidebarClose" aria-label="Close menu">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+  </div>
+  <button class="new-chat-btn" id="newChatBtn">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+    New Chat
+  </button>
+  <nav class="nav-section" id="navSection">
+    <div class="nav-label">Main</div>
+    <a href="home.html" class="nav-item active">
+      <span class="nav-icon"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg></span>
+      Home
+      <span class="nav-badge" style="background:rgba(0,212,255,0.15);color:var(--accent)" id="reviewBadge"></span>
+    </a>
+    <a href="chat.html" class="nav-item">
+      <span class="nav-icon"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg></span>
+      Chat
+    </a>
+    <a href="analyze.html" class="nav-item">
+      <span class="nav-icon"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.35-4.35"/><path d="M11 8v6M8 11h6"/></svg></span>
+      Analyze
+    </a>
+    <a href="study-session.html" class="nav-item">
+      <span class="nav-icon"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/></svg></span>
+      Study Session
+      <span class="nav-badge green">New</span>
+    </a>
+    <a href="planner.html" class="nav-item">
+      <span class="nav-icon"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M3 10h18M8 2v4M16 2v4"/></svg></span>
+      Study Planner
+    </a>
+    <div class="nav-label">Community</div>
+    <div class="nav-group">
+      <div class="nav-group-toggle nav-item" onclick="toggleNavGroup(this)">
+        <span class="nav-icon"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></span>
+        Community
+        <span class="nav-group-chevron">▼</span>
+      </div>
+      <div class="nav-group-children open">
+        <a href="beyond-marks.html" class="nav-item nav-group-item">
+          Beyond Marks
+          <span class="nav-badge purple">New</span>
+        </a>
+        <a href="student-invoice.html" class="nav-item nav-group-item">
+          Community Board
+        </a>
+      </div>
+    </div>
+
+    <div class="nav-label">Account</div>
+    <a href="referral.html" class="nav-item">
+      <span class="nav-icon" style="color:var(--green)">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      </span>
+      Refer & Earn
+    </a>
+    <a href="subscription.html" class="upgrade-nav-btn">
+      <span class="nav-icon" style="color:var(--accent2)">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+      </span>
+      Subscription
+    </a>
+    <a href="profile.html" class="nav-item">
+      <span class="nav-icon"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span>
+      Profile
+    </a>
+    <a href="settings.html" class="nav-item">
+      <span class="nav-icon"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.6 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.6a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></span>
+      Settings
+    </a>
+  </nav>
+  <!-- Compact real syllabus + AIConsole — low height -->
+  <div style="padding:8px 10px 0;">
+    <div id="syllabusCard" style="background:linear-gradient(135deg, #0f172a 0%, #1e293b 100%);border:1px solid var(--border);border-radius:10px;padding:10px 12px;display:flex;align-items:center;gap:10px;min-height:52px;">
+      <div style="width:32px;height:32px;border-radius:8px;background:rgba(16,185,129,0.14);display:grid;place-items:center;flex-shrink:0;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="1.7"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
+      <div style="flex:1;min-width:0;">
+        <div style="font-size:11px;font-weight:600;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" id="syllabusLabel">Upload syllabus</div>
+        <div style="font-size:10px;color:rgba(255,255,255,0.55);" id="syllabusSub">JPG, PNG, PDF — personalises plan</div>
+      </div>
+      <input type="file" id="syllabusFile" accept=".jpg,.jpeg,.png,.pdf" hidden />
+      <button id="syllabusUploadBtn" style="background:#10b981;color:#fff;border:none;border-radius:999px;padding:6px 12px;font-size:11px;font-weight:600;cursor:pointer;flex-shrink:0;">Upload</button>
+    </div>
+    <div id="syllabusProgress" style="display:none;margin-top:6px;font-size:10px;color:var(--text-muted);"></div>
+  </div>
+  <div style="padding:8px 10px;">
+    <div style="background:linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);border:1px solid var(--border);border-radius:10px;padding:10px 12px;display:flex;align-items:center;gap:10px;min-height:52px;position:relative;overflow:hidden;">
+      <div style="position:absolute;inset:0;background:radial-gradient(200px 80px at 85% 100%, rgba(37,99,235,0.18), transparent 60%);pointer-events:none;"></div>
+      <div style="width:32px;height:32px;border-radius:8px;background:rgba(37,99,235,0.15);display:grid;place-items:center;flex-shrink:0;position:relative;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#60a5fa" stroke-width="1.7"><path d="M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8z"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="M4.93 4.93l1.41 1.41"/><path d="M17.66 17.66l1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="M6.34 17.66l-1.41 1.41"/><path d="M19.07 4.93l-1.41 1.41"/></svg></div>
+      <div style="flex:1;min-width:0;position:relative;">
+        <div style="font-size:11px;font-weight:700;color:#fff;">AIConsole</div>
+        <div style="font-size:10px;color:rgba(255,255,255,0.55);">Study assistant</div>
+      </div>
+      <button onclick="window.location.href='chat.html'" style="background:#2563eb;color:#fff;border:none;border-radius:999px;padding:6px 12px;font-size:11px;font-weight:600;cursor:pointer;flex-shrink:0;position:relative;">Ask</button>
+    </div>
+  </div>
+  <div class="sidebar-bottom">
+    <button class="signout-btn" id="signOutBtn">Sign out</button>
+    <div class="user-card">
+      <div class="avatar" id="userAvatar">G</div>
+      <div class="user-info">
+        <div class="user-name" id="userName">Guest</div>
+        <div class="user-plan" id="userPlan">Free Plan</div>
+      </div>
+    </div>
+  </div>
+</aside>
+
+<!-- Real syllabus upload — stores metadata in Firestore, no fake showpiece -->
+<script type="module">
+import { auth, db } from "./firebase-config.js";
+import { collection, doc, setDoc, getDocs, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { emitLearningEvent } from "./js/learning/evidence.js";
+const btn = document.getElementById("syllabusUploadBtn");
+const input = document.getElementById("syllabusFile");
+const prog = document.getElementById("syllabusProgress");
+const label = document.getElementById("syllabusLabel");
+const sub = document.getElementById("syllabusSub");
+function toast(msg){ const t=document.createElement("div"); t.textContent=msg; t.style.cssText="position:fixed;bottom:16px;left:50%;transform:translateX(-50%);background:#0f172a;color:#fff;border:1px solid var(--border);padding:8px 14px;border-radius:999px;font-size:12px;z-index:9999;"; document.body.appendChild(t); setTimeout(()=>t.remove(),2500); }
+if(btn && input){
+  btn.addEventListener("click", ()=> input.click());
+  // also clicking card triggers upload (except button)
+  document.getElementById("syllabusCard")?.addEventListener("click", (e)=>{ if(e.target===btn||e.target===input) return; input.click(); });
+  input.addEventListener("change", async ()=>{
+    const f = input.files?.[0];
+    if(!f) return;
+    const allowed = ["application/pdf","image/jpeg","image/png","image/jpg"];
+    if(!allowed.includes(f.type) && !f.name.match(/\.(pdf|jpe?g|png)$/i)){ toast("Only JPG, PNG, PDF"); input.value=""; return; }
+    if(f.size>8*1024*1024){ toast("Max 8MB"); input.value=""; return; }
+    const user = auth?.currentUser;
+    if(!user){ toast("Please sign in to upload your syllabus"); return; }
+    try { await user.getIdToken(true); } catch(e) { console.warn("Token refresh failed", e); }
+    if(prog){ prog.style.display="block"; prog.textContent = `Uploading ${f.name}…`; }
+    btn.disabled=true; btn.textContent="…";
+    try{
+      // Light parse: read first 4k as text snippet for personalisation (client-side)
+      let snippet = "";
+      try{
+        if(f.type==="application/pdf"){
+          snippet = `[PDF ${f.name} ${Math.round(f.size/1024)}KB] — will personalise after server parse`;
+        } else {
+          snippet = await new Promise(res=>{
+            const r=new FileReader(); r.onload=()=>res(String(r.result).slice(0,3000)); r.onerror=()=>res(""); r.readAsText(f.slice(0,8192));
+          });
+          if(!snippet) snippet = `[Image ${f.name}]`;
+        }
+      }catch{ snippet=""; }
+      const id = Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+      const ref = doc(collection(db, "users", user.uid, "syllabus"), id);
+      await setDoc(ref, { fileName:f.name, fileType:f.type||"unknown", fileSize:f.size, snippet: snippet.slice(0,4000), uploadedAt: serverTimestamp(), status:"ready" });
+      // Mirror to learning profile for personalisation
+      try{
+        const profRef = doc(db, "users", user.uid, "learning", "profile");
+        const { getDoc } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
+        const s = await getDoc(profRef);
+        const cur = s.exists()? s.data(): {};
+        await setDoc(profRef, { syllabus:{ fileName:f.name, uploadedAt: new Date().toISOString(), status:"ready" }, onboardingComplete: cur.onboardingComplete ?? false, updatedAt: serverTimestamp() }, { merge:true });
+      }catch{}
+      try{ await emitLearningEvent(db, user.uid, "syllabus_uploaded", { source:"syllabus", subject:"syllabus", topic:f.name, payload:{ fileName:f.name, fileType:f.type, fileSize:f.size } }); }catch{}
+      if(label) label.textContent = f.name.slice(0,28);
+      if(sub) sub.textContent = "Personalised ✓";
+      if(prog) prog.textContent = "Saved — personalising your plan";
+      toast("Syllabus saved — personalising ✓");
+      // Refresh hub subtitle if on home
+      setTimeout(()=>{ prog.style.display="none"; }, 2500);
+    }catch(e){
+      console.error("Syllabus upload error:", e);
+      let msg = e.message || "Unknown error";
+      if(msg.includes("Missing or insufficient permissions") || msg.includes("permission")){
+        msg = "We couldn't upload your syllabus. Please check your connection and try signing in again.";
+        try { await auth.currentUser?.getIdToken(true); } catch {}
+      } else if(msg.includes("network") || msg.includes("offline")){
+        msg = "No internet connection. Please check your connection and try again.";
+      }
+      if(prog) prog.textContent = msg;
+      toast(msg);
+    } finally { btn.disabled=false; btn.textContent="Upload"; input.value=""; }
+  });
+  // Show existing syllabus name on load
+  auth?.onAuthStateChanged?.(async (u)=>{
+    if(!u) return;
+    try{
+      const snap= await getDocs(collection(db, "users", u.uid, "syllabus"));
+      if(!snap.empty){
+        const d=snap.docs.sort((a,b)=> (b.data().uploadedAt?.toMillis?.()||0)-(a.data().uploadedAt?.toMillis?.()||0))[0]?.data();
+        if(d?.fileName && label){ label.textContent=d.fileName.slice(0,28); if(sub) sub.textContent="Personalising • tap to update"; }
+      }
+    }catch{}
+  });
+}
+</script>
+
+<main class="main">
+  <div class="topbar" style="background:var(--bg-base);border-bottom:1px solid var(--border-subtle);">
+    <div class="topbar-left">
+      <button class="menu-btn" id="menuBtn" aria-label="Open menu">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      </button>
+      <div class="topbar-mobile-logo"><img src="logo.svg" alt="Aquila AI" class="logo-img"><span class="logo-text">Aquila AI</span></div>
+      <div style="display:none;" class="model-selector"><span class="model-dot"></span>Aquila AI</div>
+      <div id="topbarGreeting" style="font-size:14px;font-weight:500;color:var(--text-secondary);margin-left:8px;">Hi, <span id="greetingName">there</span></div>
+    </div>
+    <div style="flex:1;display:flex;justify-content:center;max-width:480px;margin:0 16px;" class="topbar-center">
+      <div style="position:relative;width:100%;max-width:360px;">
+        <input id="topbarSearch" placeholder="search" style="width:100%;height:36px;background:var(--bg-card);border:1px solid var(--border);border-radius:999px;padding:0 36px 0 14px;font-size:13px;color:var(--text-primary);outline:none;" />
+        <svg style="position:absolute;right:10px;top:50%;transform:translateY(-50%);width:16px;height:16px;color:var(--text-muted);" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.35-4.35"/></svg>
+      </div>
+    </div>
+    <div style="display:flex;align-items:center;gap:12px;" class="topbar-right">
+      <button style="width:36px;height:36px;border-radius:999px;background:var(--bg-card);border:1px solid var(--border);display:grid;place-items:center;color:var(--text-muted);position:relative;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 8a6 6 0 0 1 12 0c0 7-6 11-6 11s-6-4-6-11"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg><span style="position:absolute;top:6px;right:7px;width:7px;height:7px;background:var(--green);border-radius:50%;border:1px solid var(--bg-card);"></span></button>
+      <div style="display:flex;align-items:center;gap:8px;cursor:pointer;">
+        <img id="topbarAvatar" src="" data-pending-avatar="1" alt="User" style="width:32px;height:32px;border-radius:50%;object-fit:cover;border:1px solid var(--border);" />
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--text-muted);"><path d="m6 9 6 6 6-6"/></svg>
+      </div>
+    </div>
+  </div>
+
+  <div class="content" id="content">
+    <!-- ═══════════ HERO ═══════════ -->
+    <section class="beyond-hero">
+      <canvas id="starCanvas"></canvas>
+      <div class="beyond-hero-content reveal">
+        <div class="beyond-hero-badge"><span class="dot"></span> Beyond Marks</div>
+        <h1>You Are More Than<br/><span class="gradient">Your Marks</span></h1>
+        <p>A sanctuary for every student who dreams, struggles, grows, and inspires. Your journey matters — not just your scores.</p>
+        <div class="beyond-hero-quote">"Your dreams matter. Your story matters. Your growth matters."</div>
+      </div>
+      <div class="scroll-indicator">
+        <span>Explore</span>
+        <div class="scroll-line"></div>
+      </div>
+    </section>
+
+    <!-- ═══════════ SECTION 1: ONE MILLION DREAMS ═══════════ -->
+    <section class="dreams-section" id="dreams">
+      <div class="dreams-container">
+        <div class="section-header reveal">
+          <div class="section-number">01</div>
+          <h2>✦ One Million Dreams</h2>
+          <p>Every star in this sky holds a dream. Click a star to read a dream, and add your own to the constellation.</p>
+        </div>
+
+        <div class="dreams-stats reveal reveal-delay-1">
+          <div class="dream-stat">
+            <div class="dream-stat-icon">⭐</div>
+            <div class="dream-stat-value" id="dreamsSharedCount">0</div>
+            <div class="dream-stat-label">Dreams Shared</div>
+          </div>
+          <div class="dream-stat">
+            <div class="dream-stat-icon">💫</div>
+            <div class="dream-stat-value" id="studentsInspired">0</div>
+            <div class="dream-stat-label">Students Inspired</div>
+          </div>
+          <div class="dream-stat">
+            <div class="dream-stat-icon">🌟</div>
+            <div class="dream-stat-value" id="dreamsAchieved">0</div>
+            <div class="dream-stat-label">Dreams Achieved</div>
+          </div>
+        </div>
+
+        <div class="dreams-sky reveal reveal-delay-2" id="dreamsSky">
+          <canvas id="dreamsCanvas"></canvas>
+          <div class="dream-tooltip" id="dreamTooltip"></div>
+        </div>
+
+        <div class="dream-submit-wrap reveal reveal-delay-3">
+          <input type="text" id="dreamInput" placeholder="Enter your dream anonymously..." maxlength="120" />
+          <button class="btn-primary" id="submitDreamBtn">Share Dream</button>
+        </div>
+      </div>
+    </section>
+
+    <div class="section-divider"></div>
+
+    <!-- ═══════════ SECTION 2: UNTOLD STORIES ═══════════ -->
+    <section class="stories-section" id="stories">
+      <div class="stories-container">
+        <div class="section-header reveal">
+          <div class="section-number">02</div>
+          <h2>📖 The Untold Stories</h2>
+          <p>Anonymous stories from real students — about resilience, growth, failure, and finding their way. Because one exam never defines your future.</p>
+        </div>
+
+        <div class="story-categories reveal reveal-delay-1" id="storyCategories">
+          <button class="category-pill active" data-cat="all">All Stories</button>
+          <button class="category-pill" data-cat="Failure to Success">Failure to Success</button>
+          <button class="category-pill" data-cat="Drop Year Journey">Drop Year Journey</button>
+          <button class="category-pill" data-cat="Burnout Recovery">Burnout Recovery</button>
+          <button class="category-pill" data-cat="Career Change">Career Change</button>
+          <button class="category-pill" data-cat="Mental Health">Mental Health</button>
+          <button class="category-pill" data-cat="Parents & Expectations">Parents & Expectations</button>
+          <button class="category-pill" data-cat="Motivation">Motivation</button>
+        </div>
+
+        <div class="text-center reveal" style="text-align:center;margin-bottom:24px;">
+          <button class="btn-primary" id="shareStoryBtn" style="font-size:14px;padding:12px 28px;">✍️ Share Your Untold Story</button>
+        </div>
+        <div class="stories-grid reveal reveal-delay-2" id="storiesGrid"></div>
+      </div>
+    </section>
+
+
+
+    <!-- ═══════════ SECTION 4: LEGACY TREE ═══════════ -->
+    <section class="tree-section" id="tree">
+      <div class="tree-container">
+        <div class="section-header reveal">
+          <div class="section-number">04</div>
+          <h2>🌱 Legacy Tree</h2>
+          <p>Your personal tree grows with every step you take — studying, helping others, reflecting, and growing.</p>
+        </div>
+
+        <div class="tree-layout reveal reveal-delay-1">
+          <div class="tree-garden">
+            <div class="tree-stage-label" id="treeStageLabel">🌱 Seed</div>
+            <canvas id="treeCanvas"></canvas>
+            <div class="tree-progress">
+              <div class="tree-stage-dot active" data-stage="0"></div>
+              <div class="tree-stage-dot" data-stage="1"></div>
+              <div class="tree-stage-dot" data-stage="2"></div>
+              <div class="tree-stage-dot" data-stage="3"></div>
+              <div class="tree-stage-dot" data-stage="4"></div>
+            </div>
+          </div>
+
+          <div class="tree-actions">
+            <div class="tree-actions-card">
+              <h3>🌿 Growth Actions</h3>
+              <div id="treeActionList"></div>
+            </div>
+            <div class="tree-actions-card">
+              <h3>🌸 Your Garden</h3>
+              <p style="font-size:13px;color:var(--text-secondary);line-height:1.7;">
+                <span id="treeTotalXp">0</span> XP earned<br/>
+                <span id="treeHelpedCount">0</span> students helped<br/>
+                <span id="treeFlowersCount">0</span> flowers blooming
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- ═══════════ STORY MODAL ═══════════ -->
+  <div class="story-modal-overlay" id="storyModalOverlay">
+    <div class="story-modal">
+      <button class="story-modal-close" id="storyModalClose">✕</button>
+      <div id="storyModalContent"></div>
+    </div>
+  </div>
+
+  <!-- ═══════════ SHARE STORY MODAL ═══════════ -->
+  <div class="story-modal-overlay" id="shareStoryOverlay">
+    <div class="story-modal" style="max-width:580px;">
+      <button class="story-modal-close" id="shareStoryClose">✕</button>
+      <h2 style="font-size:20px;font-weight:700;margin:4px 0 20px;">✍️ Share Your Untold Story</h2>
+      <p style="font-size:13px;color:var(--text-secondary);margin-bottom:20px;line-height:1.6;">
+        Your story will be shared anonymously. It could be about failure, growth, resilience, or any moment that shaped you.
+      </p>
+      <div style="display:flex;flex-direction:column;gap:14px;">
+        <input type="text" id="storyTitleInput" placeholder="Story title" maxlength="100" style="background:var(--bg-input);border:1px solid var(--border);border-radius:10px;padding:12px 16px;font-family:var(--font-main);font-size:14px;color:var(--text-primary);outline:none;" />
+        <select id="storyCategoryInput" style="background:var(--bg-input);border:1px solid var(--border);border-radius:10px;padding:12px 16px;font-family:var(--font-main);font-size:14px;color:var(--text-primary);outline:none;appearance:none;">
+          <option value="" disabled selected>Choose a category</option>
+          <option value="Failure to Success">Failure to Success</option>
+          <option value="Drop Year Journey">Drop Year Journey</option>
+          <option value="Burnout Recovery">Burnout Recovery</option>
+          <option value="Career Change">Career Change</option>
+          <option value="Mental Health">Mental Health</option>
+          <option value="Parents & Expectations">Parents & Expectations</option>
+          <option value="Motivation">Motivation</option>
+        </select>
+        <textarea id="storyBodyInput" placeholder="Write your story here..." maxlength="5000" style="background:var(--bg-input);border:1px solid var(--border);border-radius:10px;padding:12px 16px;font-family:var(--font-main);font-size:14px;color:var(--text-primary);outline:none;resize:vertical;min-height:180px;line-height:1.7;"></textarea>
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;">
+          <span style="font-size:11px;color:var(--text-muted);font-family:var(--font-mono);" id="storyCharCount">0 / 5000</span>
+          <button class="btn-primary" id="submitStoryBtn" style="padding:10px 24px;">Publish Story</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<script>
+const sidebar  = document.getElementById('sidebar');
+const overlay  = document.getElementById('sidebarOverlay');
+const menuBtn  = document.getElementById('menuBtn');
+const closeBtn = document.getElementById('sidebarClose');
+function openSidebar()  { sidebar.classList.add('open');    overlay.classList.add('open'); }
+function closeSidebar() { sidebar.classList.remove('open'); overlay.classList.remove('open'); }
+menuBtn.addEventListener('click', openSidebar);
+closeBtn.addEventListener('click', closeSidebar);
+overlay.addEventListener('click', closeSidebar);
+document.querySelectorAll('.nav-item:not(.nav-group-toggle)').forEach(el => {
+  el.addEventListener('click', () => { if (window.innerWidth <= 880) closeSidebar(); });
+});
+
+function toggleNavGroup(el) {
+  el.classList.toggle('open');
+  const children = el.nextElementSibling;
+  if (children) children.classList.toggle('open');
+}
+
+function esc(str) { return String(str??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function escAttr(v) { return esc(v).replace(/'/g,"&#39;"); }
+
+// ─── Intersection Observer for scroll reveals ───
+(function() {
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.style.animationPlayState = 'running';
+      }
+    });
+  }, { threshold: 0.1 });
+  document.querySelectorAll('.reveal').forEach(el => {
+    el.style.animationPlayState = 'paused';
+    observer.observe(el);
+  });
+})();
+</script>
+
+<script type="module">
+import { auth, db } from "./firebase-config.js";
+import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import {
+  collection, addDoc, getDocs, query, orderBy, limit, doc, getDoc, setDoc,
+  serverTimestamp, onSnapshot, where, Timestamp
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { getUserPlan } from "./subscription.js";
+
+const authInstance = auth || getAuth();
+let currentUser = null;
+let allDreams = [];
+let allStories = [];
+
+
+const STAGES = ['🌱 Seed', '🌿 Sapling', '🌳 Young Tree', '🌲 Strong Tree', '🌸 Blooming Tree'];
+const XP_PER_STAGE = [0, 20, 50, 100, 180];
+
+const CATEGORIES = ['all', 'Failure to Success', 'Drop Year Journey', 'Burnout Recovery', 'Career Change', 'Mental Health', 'Parents & Expectations', 'Motivation'];
+
+const SAMPLE_STORIES = [
+  { category:'Failure to Success', title:'From 27% to 92% — My Story', body:'I failed my first mid-term exam so badly that my parents were called to school. I scored 27% in mathematics. That night, I cried for hours. But then something clicked. I stopped comparing myself with others and started studying for myself. I woke up at 4 AM every day, solved one problem at a time, and slowly, things began to change. By the final exam, I scored 92%. But more importantly, I learned that failure is not the opposite of success — it\'s part of it.', readingTime:4 },
+  { category:'Drop Year Journey', title:'My Drop Year Was My Best Year', body:'Dropping a year felt like the end of the world. Watching all my friends go to college while I stayed home was devastating. But that year taught me more than any classroom ever could. I learned discipline, patience, and self-belief. I discovered that taking time doesn\'t mean falling behind — sometimes it means preparing for a better leap forward.', readingTime:5 },
+  { category:'Burnout Recovery', title:'I Ran on 4 Hours of Sleep for Months', body:'I thought working harder meant sleeping less. I was wrong. After months of 4-hour sleep schedules, my body gave up. I had panic attacks, memory loss, and extreme fatigue. Recovery was slow. I had to relearn how to rest, how to say no to extra study hours, and how to listen to my body. Now I tell every student: your health is your real superpower.', readingTime:6 },
+  { category:'Career Change', title:'From Engineering to Art — I Found Myself', body:'I spent two years in engineering because my parents wanted it. I was miserable. Every day felt like a chore. One night, I painted a small landscape and posted it online. The response was overwhelming. I realized I was chasing someone else\'s dream. Switching to art school was the hardest conversation I ever had with my family, but today I wake up excited to work. Follow your passion, not the crowd.', readingTime:5 },
+  { category:'Mental Health', title:'It\'s Okay to Not Be Okay', body:'For two years, I struggled with anxiety and depression while preparing for competitive exams. I thought if I just studied harder, the feelings would go away. They didn\'t. It took therapy, medication, and a lot of conversations to understand that mental health is not a weakness. If you\'re struggling, please reach out. You don\'t have to fight alone.', readingTime:7 },
+  { category:'Parents & Expectations', title:'My Parents Wanted a Doctor. I Wanted to Code.', body:'The pressure to become a doctor was immense. Every family gathering ended with "when will you start your medical practice?" I loved computers, not cadavers. When I finally told my parents I wanted to study computer science, they didn\'t speak to me for a week. But I built apps, won hackathons, and eventually they saw my passion. Today, they\'re my biggest supporters.', readingTime:6 },
+  { category:'Motivation', title:'The Day I Scored Zero', body:'Zero. Not one mark. I stared at the paper in disbelief. I had studied for weeks. On the bus home, I decided to either give up or start over. I chose to start over. I rewrote my entire approach — focusing on concepts, not memorization. A year later, I topped the subject. That zero taught me more than any perfect score ever could.', readingTime:4 },
+  { category:'Failure to Success', title:'I Was Called "Hopeless" by My Teacher', body:'In 10th grade, my math teacher told me in front of the whole class that I would never pass. I went home that day and wrote on my wall: "Prove them wrong." I failed that year. But I kept that note. I hired a tutor, studied during every break, and three years later I topped my school in the board exams. That teacher never apologized, but I didn\'t need one. My results spoke loud enough.', readingTime:5 },
+  { category:'Drop Year Journey', title:'Two Drop Years. One Dream.', body:'I took two drop years for JEE. The first year I fell short by 2000 ranks. The second year, I fell short again. Everyone told me to give up and settle for a local college. But something in me refused to quit. On the third attempt, I finally made it into an NIT. It took me three years, but I learned that persistence matters more than talent. Every late night, every doubt — it was worth it.', readingTime:6 },
+  { category:'Burnout Recovery', title:'I Forgot What Fun Felt Like', body:'I used to study 14 hours a day. I thought that was what it took to succeed. I stopped talking to friends, stopped playing cricket, stopped living. One day I woke up and couldn\'t remember the last time I laughed. That scared me more than any exam. I slowly reintroduced hobbies, started playing sports again, and realized balance is not laziness — it\'s survival. I scored better after I started resting more.', readingTime:5 },
+  { category:'Mental Health', title:'My Mother Noticed Before I Did', body:'I thought I was just tired from studying. But my mother saw I wasn\'t eating, wasn\'t sleeping, and had stopped talking. She sat me down one evening and said, "No exam is worth losing my child." That conversation saved me. I started seeing a counselor, and slowly, the fog lifted. To all parents: check on your kids. To all students: let your parents in. You don\'t have to have it all together.', readingTime:5 },
+  { category:'Parents & Expectations', title:'The Night I Told Them I Failed', body:'I had never failed anything in my life. When I got a D in organic chemistry, I hid the results for two weeks. The night I finally showed my parents, I was shaking. My father looked at the paper, then at me, and said, "I failed my first driving test too." We laughed for the first time in weeks. That moment taught me that parents are not looking for perfection — they just want us to keep trying.', readingTime:4 },
+  { category:'Motivation', title:'My Grandmother\'s Only Wish', body:'My grandmother never went to school. She works as a housekeeper in other people\'s homes. When I got into IIT, she held my offer letter with hands that were rough from years of scrubbing floors. She couldn\'t read it, but she smiled wider than anyone. She told me, "I worked so you could study." I study not just for myself, but for every sacrifice she made. Her dreams are in my textbooks.', readingTime:5 },
+  { category:'Motivation', title:'From Village Boy to University Topper', body:'My village had no internet, no coaching centers, and barely any electricity. I studied under a street lamp because we had no power at home. I walked 8 km every day to borrow books from a library in the next town. When I topped the university entrance exam, the local newspaper wrote about me. If there\'s one thing I want every student to know: your circumstances do not define your potential.', readingTime:6 },
+  { category:'Failure to Success', title:'I Failed My Dream College Interview', body:'I prepared for months for the interview at my dream college. I knew every possible question, practiced every answer. But when I sat in front of the panel, my mind went blank. I stuttered, stumbled, and was rejected. I cried for days. But that rejection pushed me to apply to more places, explore more options, and eventually I found a college that was a better fit. Looking back, that rejection was the best redirect of my life.', readingTime:5 },
+  { category:'Mental Health', title:'The Silence After My Best Friend Left', body:'My best friend and study partner passed away in an accident during our exam prep year. I couldn\'t study. Every book reminded me of them. I took a month off — no books, no classes, just silence and grief. People called me weak. But grief is not weakness. When I finally returned, I studied differently — not to compete, but to honour the friend who couldn\'t be here. I dedicated my rank to them.', readingTime:6 },
+  { category:'Drop Year Journey', title:'Everyone Moved On. I Stayed Behind.', body:'The hardest part of a drop year is the silence. Your friends are posting college stories, making new friends, and you\'re still solving the same problems in the same room. I deleted all social media for a year. I made a strict schedule and followed it like a monk. When I finally cleared the exam, I didn\'t post about it. I just called my mother. She cried. That was enough celebration for a lifetime.', readingTime:5 },
+  { category:'Career Change', title:'Chasing MBBS, Finding Music', body:'I cleared NEET on my second attempt. Everyone was proud. But two months into MBBS, I knew I had made a terrible mistake. The sight of blood made me nauseous, and the pressure was crushing. I quit during the first year. My family was devastated. I picked up a guitar I had bought years ago and started learning. Today, I teach music and perform at small venues. I earn less than a doctor, but I sleep peacefully every night.', readingTime:5 },
+  { category:'Parents & Expectations', title:'The 99% That Still Wasn\'t Enough', body:'I scored 99% in my boards. My father looked at the report card and said, "What about the missing 1%?" I laughed on the outside, but it stung. For years I tried to reach an invisible bar that kept rising. It took therapy to realize that I was living for someone else\'s approval. Today, I still aim high, but I\'ve learned to celebrate my own effort, not just the result. Perfection is a cage.', readingTime:5 },
+  { category:'Motivation', title:'The Teacher Who Believed in Me', body:'I was a below-average student. Teachers had given up on me. But one teacher, Ms. Sharma, saw something in me. She stayed after school to help me with physics, brought me extra books, and never let me feel stupid for asking questions. On results day, I scored 94% in physics. I ran to show her. She hugged me and whispered, "I knew you had it in you." Never underestimate what a little belief can do.', readingTime:4 },
+];
+
+onAuthStateChanged(authInstance, async (user) => {
+  if (user && !user.emailVerified) { window.location.href = "verify-email.html"; return; }
+  if (!user) { window.location.href = "login.html"; return; }
+  currentUser = user;
+
+  const name = user.displayName || user?.email?.split("@")[0] || "Guest";
+
+  // — unified topbar avatar & greeting (gmail pic) —
+  try{
+    const _greet = document.getElementById("greetingName");
+    const _topAv = document.getElementById("topbarAvatar");
+    const _first = (user.displayName || name).split(" ")[0];
+    if(_greet) _greet.textContent = _first;
+    if(_topAv){
+      if(user.photoURL){ _topAv.src = user.photoURL; _topAv.alt = name; }
+      else { _topAv.src = ""; _topAv.alt = name; }
+    }
+  }catch(e){}
+
+  document.getElementById("userName").textContent = name;
+  const avatar = document.getElementById("userAvatar");
+  if (user.photoURL) {
+    avatar.innerHTML = `<img src="${escAttr(user.photoURL)}" alt="${escAttr(name)}" />`;
+  } else {
+    avatar.textContent = name.charAt(0).toUpperCase();
+  }
+
+  const plan = await getUserPlan(user.uid, user);
+  document.getElementById("userPlan").textContent = plan === "pro" ? "✨ Aquila Pro" : "Free Plan";
+
+  const userRef = doc(db, "users", user.uid);
+  const userSnap = await getDoc(userRef);
+  if (!userSnap.exists()) {
+    await setDoc(userRef, {
+      uid: user.uid, displayName: user.displayName || "", email: user.email || "",
+      photoURL: user.photoURL || "", exam: "", createdAt: serverTimestamp(), plan: "free",
+    }).catch(() => {});
+  }
+
+  initAll(user.uid).catch(err => console.error('initAll failed:', err));
+});
+
+document.getElementById("signOutBtn").onclick = async () => {
+  await signOut(authInstance);
+  window.location.href = "login.html";
+};
+
+async function initAll(uid) {
+  try {
+    // Init dreams
+    const dreamsSnap = await getDocs(query(collection(db, "dreams"), orderBy("createdAt", "desc"), limit(200)));
+    allDreams = dreamsSnap.docs.map(d => ({ id: d.id, ...d.data() }));
+    initDreamsCanvas();
+    loadDreamStats();
+
+    // Init stories
+    const storiesSnap = await getDocs(query(collection(db, "stories"), orderBy("createdAt", "desc"), limit(100)));
+    if (storiesSnap.empty) {
+      for (const s of SAMPLE_STORIES) {
+        await addDoc(collection(db, "stories"), {
+          ...s,
+          createdAt: serverTimestamp(),
+        });
+      }
+      const snap2 = await getDocs(query(collection(db, "stories"), orderBy("createdAt", "desc"), limit(100)));
+      allStories = snap2.docs.map(d => ({ id: d.id, ...d.data() }));
+    } else {
+      allStories = storiesSnap.docs.map(d => ({ id: d.id, ...d.data() }));
+    }
+    renderStories('all');
+  } catch (err) {
+    console.error('initAll dreams/stories error:', err);
+    document.getElementById('storiesGrid') && (document.getElementById('storiesGrid').innerHTML = '<div class="empty-state"><div class="empty-state-text">Could not load stories. Refresh to try again.</div></div>');
+  }
+
+  try {
+    initTree(uid);
+  } catch (err) {
+    console.error('initAll tree error:', err);
+  }
+
+  try {
+    initStarfield();
+  } catch (err) {
+    console.error('initAll starfield error:', err);
+  }
+}
+
+// ═══════════ STARFIELD HERO ═══════════
+function initStarfield() {
+  const canvas = document.getElementById('starCanvas');
+  const ctx = canvas.getContext('2d');
+  let stars = [];
+  let w, h;
+
+  function resize() {
+    const rect = canvas.parentElement.getBoundingClientRect();
+    w = canvas.width = rect.width;
+    h = canvas.height = rect.height;
+    stars = [];
+    for (let i = 0; i < 180; i++) {
+      stars.push({
+        x: Math.random() * w, y: Math.random() * h,
+        r: Math.random() * 1.8 + 0.3,
+        alpha: Math.random() * 0.6 + 0.2,
+        speed: Math.random() * 0.008 + 0.003,
+        phase: Math.random() * Math.PI * 2,
+      });
+    }
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  function draw() {
+    ctx.clearRect(0, 0, w, h);
+    const t = Date.now();
+    for (const s of stars) {
+      const a = s.alpha * (0.5 + 0.5 * Math.sin(t * s.speed + s.phase));
+      ctx.beginPath();
+      ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(167,139,250,${a})`;
+      ctx.fill();
+    }
+    requestAnimationFrame(draw);
+  }
+  draw();
+}
+
+// ═══════════ 1. DREAMS ═══════════
+let dreamsCanvas = null;
+let dreamsCtx = null;
+let dreamStars = [];
+let dreamAnimFrame = null;
+
+function initDreamsCanvas() {
+  dreamsCanvas = document.getElementById('dreamsCanvas');
+  dreamsCtx = dreamsCanvas.getContext('2d');
+
+  resizeDreamsCanvas();
+  window.addEventListener('resize', resizeDreamsCanvas);
+
+  buildDreamStars();
+  animateDreams();
+  setupDreamClick();
+}
+
+function resizeDreamsCanvas() {
+  const container = document.getElementById('dreamsSky');
+  const rect = container.getBoundingClientRect();
+  dreamsCanvas.width = rect.width;
+  dreamsCanvas.height = rect.height;
+  if (dreamStars.length) buildDreamStars();
+}
+
+function buildDreamStars() {
+  const w = dreamsCanvas.width;
+  const h = dreamsCanvas.height;
+  dreamStars = [];
+
+  const count = Math.min(allDreams.length + 20, 120);
+  const displayDreams = allDreams.slice(0, count);
+
+  for (let i = 0; i < count; i++) {
+    const dream = displayDreams[i] || null;
+    dreamStars.push({
+      x: Math.random() * w * 0.9 + w * 0.05,
+      y: Math.random() * h * 0.9 + h * 0.05,
+      r: Math.random() * 2.5 + 1,
+      baseAlpha: Math.random() * 0.5 + 0.3,
+      alpha: 0.5,
+      speed: Math.random() * 0.005 + 0.002,
+      phase: Math.random() * Math.PI * 2,
+      driftX: (Math.random() - 0.5) * 0.3,
+      driftY: (Math.random() - 0.5) * 0.3,
+      baseX: Math.random() * w * 0.9 + w * 0.05,
+      baseY: Math.random() * h * 0.9 + h * 0.05,
+      dream: dream,
+      color: ['#a78bfa', '#f472b6', '#06d6cf', '#ffd166', '#00d4ff'][Math.floor(Math.random() * 5)],
+    });
+  }
+}
+
+function animateDreams() {
+  if (!dreamsCtx) return;
+  const w = dreamsCanvas.width;
+  const h = dreamsCanvas.height;
+  dreamsCtx.clearRect(0, 0, w, h);
+
+  const t = Date.now();
+
+  for (const s of dreamStars) {
+    s.x = s.baseX + Math.sin(t * 0.0005 + s.phase) * s.driftX * 20;
+    s.y = s.baseY + Math.cos(t * 0.0007 + s.phase) * s.driftY * 20;
+    s.alpha = s.baseAlpha * (0.6 + 0.4 * Math.sin(t * s.speed + s.phase));
+
+    dreamsCtx.beginPath();
+    dreamsCtx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+
+    const gradient = dreamsCtx.createRadialGradient(s.x, s.y, 0, s.x, s.y, s.r * 3);
+    gradient.addColorStop(0, s.color);
+    gradient.addColorStop(1, 'transparent');
+    dreamsCtx.fillStyle = `rgba(${hexToRgb(s.color)},${s.alpha * 0.3})`;
+    dreamsCtx.fill();
+
+    dreamsCtx.beginPath();
+    dreamsCtx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+    dreamsCtx.fillStyle = `rgba(255,255,255,${s.alpha * 0.8})`;
+    dreamsCtx.fill();
+
+    if (s.dream && s.dream.text) {
+      dreamsCtx.font = '8px sans-serif';
+      dreamsCtx.fillStyle = `rgba(255,255,255,${s.alpha * 0.2})`;
+      dreamsCtx.textAlign = 'center';
+      dreamsCtx.fillText('✦', s.x, s.y + 3);
+    }
+  }
+
+  dreamAnimFrame = requestAnimationFrame(animateDreams);
+}
+
+function setupDreamClick() {
+  const sky = document.getElementById('dreamsSky');
+  const tooltip = document.getElementById('dreamTooltip');
+
+  sky.addEventListener('click', (e) => {
+    const rect = dreamsCanvas.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+
+    let closest = null;
+    let minDist = 40;
+
+    for (const s of dreamStars) {
+      if (!s.dream || !s.dream.text) continue;
+      const dist = Math.hypot(s.x - x, s.y - y);
+      if (dist < minDist) {
+        minDist = dist;
+        closest = s;
+      }
+    }
+
+    if (closest && closest.dream) {
+      tooltip.innerHTML = `<div class="dream-quote">"${esc(closest.dream.text)}"</div>`;
+      tooltip.style.left = Math.min(x + 16, rect.width - 290) + 'px';
+      tooltip.style.top = Math.min(y + 16, rect.height - 80) + 'px';
+      tooltip.classList.add('show');
+      setTimeout(() => tooltip.classList.remove('show'), 4000);
+    } else {
+      tooltip.classList.remove('show');
+    }
+  });
+}
+
+document.getElementById('submitDreamBtn').addEventListener('click', async () => {
+  const input = document.getElementById('dreamInput');
+  const text = input.value.trim();
+  if (!text || text.length < 3) return;
+  if (!currentUser) return;
+
+  try {
+    await addDoc(collection(db, "dreams"), {
+      text, uid: currentUser.uid,
+      createdAt: serverTimestamp(),
+    });
+    input.value = '';
+    // Refresh
+    const snap = await getDocs(query(collection(db, "dreams"), orderBy("createdAt", "desc"), limit(200)));
+    allDreams = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    loadDreamStats();
+    buildDreamStars();
+  } catch (err) { console.error('submitDream error:', err); alert('Could not share dream. Try again.'); }
+});
+
+document.getElementById('dreamInput').addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') { e.preventDefault(); document.getElementById('submitDreamBtn').click(); }
+});
+
+async function loadDreamStats() {
+  document.getElementById('dreamsSharedCount').textContent = allDreams.length || 0;
+  const inspired = Math.floor(allDreams.length * 1.4);
+  document.getElementById('studentsInspired').textContent = inspired;
+  const achieved = Math.floor(allDreams.length * 0.12);
+  document.getElementById('dreamsAchieved').textContent = achieved;
+}
+
+function hexToRgb(hex) {
+  const c = hex.replace('#','');
+  if (c.length === 3) {
+    const r = parseInt(c[0],16)*17, g = parseInt(c[1],16)*17, b = parseInt(c[2],16)*17;
+    return `${r},${g},${b}`;
+  }
+  const r = parseInt(c.slice(0,2),16), g = parseInt(c.slice(2,4),16), b = parseInt(c.slice(4,6),16);
+  return `${r},${g},${b}`;
+}
+
+// ═══════════ 2. STORIES ═══════════
+function renderStories(category) {
+  const grid = document.getElementById('storiesGrid');
+  const filtered = category === 'all' ? allStories : allStories.filter(s => s.category === category);
+
+  if (filtered.length === 0) {
+    grid.innerHTML = '<div class="empty-state"><div class="empty-state-icon">📝</div><div class="empty-state-text">Be the first to share your story.</div></div>';
+    return;
+  }
+
+  grid.innerHTML = filtered.map(s => `
+    <div class="story-card" data-id="${esc(s.id)}">
+      <div class="story-card-category">${esc(s.category||'')}</div>
+      <div class="story-card-title">${esc(s.title||'Untitled')}</div>
+      <div class="story-card-excerpt">${esc((s.body||'').slice(0,180))}...</div>
+      <div class="story-card-meta">
+        <span>📖 ${s.readingTime||3} min read</span>
+      </div>
+      <div class="story-card-cta">Read full story →</div>
+    </div>
+  `).join('');
+
+  grid.querySelectorAll('.story-card').forEach(card => {
+    card.addEventListener('click', () => {
+      const id = card.dataset.id;
+      const story = allStories.find(s => s.id === id);
+      if (story) openStoryModal(story);
+    });
+  });
+}
+
+document.querySelectorAll('.category-pill').forEach(pill => {
+  pill.addEventListener('click', () => {
+    document.querySelectorAll('.category-pill').forEach(p => p.classList.remove('active'));
+    pill.classList.add('active');
+    renderStories(pill.dataset.cat);
+  });
+});
+
+function openStoryModal(story) {
+  const overlay = document.getElementById('storyModalOverlay');
+  const content = document.getElementById('storyModalContent');
+
+  content.innerHTML = `
+    <div class="story-card-category">${esc(story.category||'')}</div>
+    <h2>${esc(story.title||'Untitled')}</h2>
+    <div style="font-size:12px;color:var(--text-muted);margin-bottom:16px;">📖 ${story.readingTime||3} min read</div>
+    <div class="story-body">${esc(story.body||'')}</div>
+  `;
+
+  overlay.classList.add('open');
+  document.getElementById('storyModalClose').onclick = () => overlay.classList.remove('open');
+  overlay.addEventListener('click', (e) => { if (e.target === overlay) overlay.classList.remove('open'); });
+}
+
+// ═══════════ SHARE STORY MODAL ═══════════
+const shareStoryOverlay = document.getElementById('shareStoryOverlay');
+document.getElementById('shareStoryBtn').addEventListener('click', () => shareStoryOverlay.classList.add('open'));
+document.getElementById('shareStoryClose').addEventListener('click', () => shareStoryOverlay.classList.remove('open'));
+shareStoryOverlay.addEventListener('click', (e) => { if (e.target === shareStoryOverlay) shareStoryOverlay.classList.remove('open'); });
+
+document.getElementById('storyBodyInput').addEventListener('input', () => {
+  const len = document.getElementById('storyBodyInput').value.length;
+  document.getElementById('storyCharCount').textContent = `${len} / 5000`;
+});
+
+document.getElementById('submitStoryBtn').addEventListener('click', async () => {
+  const title = document.getElementById('storyTitleInput').value.trim();
+  const category = document.getElementById('storyCategoryInput').value;
+  const body = document.getElementById('storyBodyInput').value.trim();
+  if (!title || !category || !body) { alert('Please fill in title, category, and story body.'); return; }
+  if (!currentUser) return;
+  const readingTime = Math.max(1, Math.ceil(body.split(/\s+/).length / 200));
+  try {
+      await addDoc(collection(db, "stories"), {
+        title, category, body, readingTime,
+        createdAt: serverTimestamp(),
+      });
+    document.getElementById('storyTitleInput').value = '';
+    document.getElementById('storyCategoryInput').value = '';
+    document.getElementById('storyBodyInput').value = '';
+    document.getElementById('storyCharCount').textContent = '0 / 5000';
+    shareStoryOverlay.classList.remove('open');
+    const snap = await getDocs(query(collection(db, "stories"), orderBy("createdAt", "desc"), limit(100)));
+    allStories = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    renderStories(document.querySelector('.category-pill.active')?.dataset?.cat || 'all');
+  } catch (err) { console.error(err); alert('Failed to publish story. Try again.'); }
+});
+
+// ═══════════ 4. LEGACY TREE ═══════════
+let treeCanvas = null;
+let treeCtx = null;
+let treeData = { stage: 0, xp: 0, helped: 0, flowers: 0 };
+let treeAnimFrame = null;
+
+function initTree(uid) {
+  treeCanvas = document.getElementById('treeCanvas');
+  treeCtx = treeCanvas.getContext('2d');
+
+  resizeTreeCanvas();
+  window.addEventListener('resize', resizeTreeCanvas);
+
+  // Load user tree data
+  getDoc(doc(db, "legacyTrees", uid)).then(snap => {
+    if (snap.exists()) {
+      treeData = snap.data();
+    } else {
+      treeData = { stage: 0, xp: 0, helped: 0, flowers: 0, uid: uid };
+      setDoc(doc(db, "legacyTrees", uid), treeData, { merge: true }).catch(() => {});
+    }
+    updateTree();
+    drawTree();
+  }).catch(() => {
+    drawTree();
+  });
+
+  renderTreeActions();
+}
+
+function resizeTreeCanvas() {
+  const container = document.getElementById('treeCanvas').parentElement;
+  const rect = container.getBoundingClientRect();
+  treeCanvas.width = rect.width;
+  treeCanvas.height = 360;
+  drawTree();
+}
+
+function updateTree() {
+  const stage = treeData.stage || 0;
+  document.getElementById('treeStageLabel').textContent = STAGES[stage] || '🌱 Seed';
+  document.getElementById('treeTotalXp').textContent = treeData.xp || 0;
+  document.getElementById('treeHelpedCount').textContent = treeData.helped || 0;
+  document.getElementById('treeFlowersCount').textContent = treeData.flowers || 0;
+
+  document.querySelectorAll('.tree-stage-dot').forEach((dot, i) => {
+    dot.classList.toggle('active', i === stage);
+    dot.classList.toggle('reached', i < stage);
+  });
+}
+
+function drawTree() {
+  if (!treeCtx) return;
+  const w = treeCanvas.width;
+  const h = treeCanvas.height;
+  treeCtx.clearRect(0, 0, w, h);
+
+  const stage = Math.min(treeData.stage || 0, 4);
+  const progress = stage / 4;
+
+  // Ground
+  treeCtx.fillStyle = 'rgba(6,214,207,0.05)';
+  treeCtx.beginPath();
+  treeCtx.ellipse(w/2, h - 20, w * 0.3, 12, 0, 0, Math.PI * 2);
+  treeCtx.fill();
+
+  const cx = w / 2;
+  const groundY = h - 30;
+
+  // Trunk
+  const trunkH = 30 + progress * 60;
+  const trunkW = 4 + progress * 6;
+
+  treeCtx.fillStyle = '#3d2b1f';
+  treeCtx.fillRect(cx - trunkW/2, groundY - trunkH, trunkW, trunkH);
+
+  // Branches
+  if (stage >= 1) {
+    treeCtx.strokeStyle = '#3d2b1f';
+    treeCtx.lineWidth = 2;
+    treeCtx.beginPath();
+    treeCtx.moveTo(cx - trunkW/2, groundY - trunkH * 0.6);
+    treeCtx.lineTo(cx - 30 - progress * 20, groundY - trunkH * 0.7);
+    treeCtx.stroke();
+    treeCtx.beginPath();
+    treeCtx.moveTo(cx + trunkW/2, groundY - trunkH * 0.5);
+    treeCtx.lineTo(cx + 30 + progress * 20, groundY - trunkH * 0.6);
+    treeCtx.stroke();
+  }
+
+  // Leaves / canopy
+  const leafR = 20 + progress * 30;
+  const canopyY = groundY - trunkH - leafR * 0.3;
+
+  if (stage >= 1) {
+    const gradient = treeCtx.createRadialGradient(cx, canopyY, 0, cx, canopyY, leafR);
+    if (stage === 1) {
+      gradient.addColorStop(0, 'rgba(6,214,207,0.5)');
+      gradient.addColorStop(0.6, 'rgba(6,214,207,0.3)');
+      gradient.addColorStop(1, 'transparent');
+    } else if (stage === 2) {
+      gradient.addColorStop(0, 'rgba(6,214,207,0.6)');
+      gradient.addColorStop(0.5, 'rgba(76,175,80,0.4)');
+      gradient.addColorStop(1, 'transparent');
+    } else if (stage === 3) {
+      gradient.addColorStop(0, 'rgba(76,175,80,0.7)');
+      gradient.addColorStop(0.4, 'rgba(6,214,207,0.5)');
+      gradient.addColorStop(1, 'transparent');
+    } else {
+      gradient.addColorStop(0, 'rgba(244,114,182,0.4)');
+      gradient.addColorStop(0.3, 'rgba(76,175,80,0.6)');
+      gradient.addColorStop(0.6, 'rgba(6,214,207,0.4)');
+      gradient.addColorStop(1, 'transparent');
+    }
+
+    treeCtx.beginPath();
+    treeCtx.arc(cx, canopyY, leafR, 0, Math.PI * 2);
+    treeCtx.fillStyle = gradient;
+    treeCtx.fill();
+  }
+
+  // Flowers (blooming stage)
+  if (stage >= 4) {
+    const flowerCount = Math.min(treeData.flowers || 1, 8);
+    for (let i = 0; i < flowerCount; i++) {
+      const angle = (i / flowerCount) * Math.PI * 2 + Date.now() * 0.0003;
+      const dist = 10 + (i % 3) * 8;
+      const fx = cx + Math.cos(angle) * leafR * 0.7;
+      const fy = canopyY + Math.sin(angle) * leafR * 0.5;
+      treeCtx.beginPath();
+      treeCtx.arc(fx, fy, 4, 0, Math.PI * 2);
+      treeCtx.fillStyle = ['#f472b6','#ffd166','#ff6b6b','#a78bfa'][i % 4];
+      treeCtx.fill();
+    }
+  }
+
+  // Leaf particles
+  if (stage >= 2) {
+    for (let i = 0; i < 6; i++) {
+      const px = cx + Math.sin(Date.now() * 0.0005 + i * 2) * leafR * 0.8;
+      const py = canopyY + Math.cos(Date.now() * 0.0007 + i * 1.5) * leafR * 0.6;
+      treeCtx.beginPath();
+      treeCtx.arc(px, py, 1.5, 0, Math.PI * 2);
+      treeCtx.fillStyle = 'rgba(76,175,80,0.3)';
+      treeCtx.fill();
+    }
+  }
+
+  // Seed stage
+  if (stage === 0) {
+    treeCtx.fillStyle = 'rgba(139,90,43,0.6)';
+    treeCtx.beginPath();
+    treeCtx.ellipse(cx, groundY - 8, 6, 8, 0, 0, Math.PI * 2);
+    treeCtx.fill();
+    treeCtx.fillStyle = 'rgba(6,214,207,0.5)';
+    treeCtx.beginPath();
+    treeCtx.arc(cx, groundY - 12, 2, 0, Math.PI * 2);
+    treeCtx.fill();
+  }
+
+  // Birds for higher stages
+  if (stage >= 3) {
+    for (let i = 0; i < 2; i++) {
+      const bx = cx - 60 + i * 80 + Math.sin(Date.now() * 0.0003 + i) * 15;
+      const by = 30 + i * 20 + Math.cos(Date.now() * 0.0004 + i) * 8;
+      treeCtx.strokeStyle = `rgba(255,255,255,${0.15 + i * 0.05})`;
+      treeCtx.lineWidth = 1.5;
+      treeCtx.beginPath();
+      treeCtx.arc(bx, by, 5, Math.PI, 0);
+      treeCtx.stroke();
+      treeCtx.beginPath();
+      treeCtx.arc(bx + 8, by, 5, Math.PI, 0);
+      treeCtx.stroke();
+    }
+  }
+
+  treeAnimFrame = requestAnimationFrame(drawTree);
+}
+
+function renderTreeActions() {
+  const actions = [
+    { id: 'study', label: 'Complete study sessions', xp: 5 },
+    { id: 'help', label: 'Help another student', xp: 10 },
+    { id: 'reflect', label: 'Answer daily reflection', xp: 3 },
+    { id: 'encourage', label: 'Share encouraging message', xp: 4 },
+    { id: 'goal', label: 'Finish learning goals', xp: 8 },
+    { id: 'consistent', label: 'Stay consistent (daily login)', xp: 2 },
+  ];
+
+  const list = document.getElementById('treeActionList');
+  list.innerHTML = actions.map(a => `
+    <div class="tree-action-item">
+      <div class="tree-action-label">
+        <div class="tree-action-check" data-action="${esc(a.id)}">✓</div>
+        <span>${esc(a.label)}</span>
+      </div>
+      <span class="tree-action-xp">+${a.xp} XP</span>
+    </div>
+  `).join('');
+
+  list.querySelectorAll('.tree-action-check').forEach(check => {
+    check.addEventListener('click', async () => {
+      if (!currentUser || check.classList.contains('done')) return;
+      check.classList.add('done');
+      const action = actions.find(a => a.id === check.dataset.action);
+      if (!action) return;
+
+      treeData.xp = (treeData.xp || 0) + action.xp;
+      if (action.id === 'help') treeData.helped = (treeData.helped || 0) + 1;
+      if (action.id === 'help') treeData.flowers = (treeData.flowers || 0) + 1;
+
+      // Check stage progression
+      const newStage = Math.min(STAGES.length - 1, STAGES.length - 1 - XP_PER_STAGE.slice().reverse().findIndex(xp => (treeData.xp||0) >= xp));
+      treeData.stage = Math.max(treeData.stage || 0, newStage);
+
+      try {
+        await setDoc(doc(db, "legacyTrees", currentUser.uid), {
+          stage: treeData.stage, xp: treeData.xp,
+          helped: treeData.helped, flowers: treeData.flowers,
+          uid: currentUser.uid, updatedAt: serverTimestamp(),
+        }, { merge: true });
+      } catch {}
+
+      updateTree();
+    });
+  });
+}
+
+// ═══════════ UTILS ═══════════
+function fmtTime(ts) {
+  if (!ts) return '';
+  const d = ts.toDate ? ts.toDate() : new Date(ts);
+  const now = new Date();
+  const diff = Math.floor((now - d) / 1000);
+  if (diff < 60) return 'just now';
+  if (diff < 3600) return Math.floor(diff/60) + 'm ago';
+  if (diff < 86400) return Math.floor(diff/3600) + 'h ago';
+  return d.toLocaleDateString('en-IN', { day:'2-digit', month:'short' });
+}
+</script>
+
+<script type="module">import { inject } from 'https://esm.sh/@vercel/analytics'; inject();</script>
+<script type="module">import { injectSpeedInsights } from 'https://esm.sh/@vercel/speed-insights'; injectSpeedInsights();
+/* ── Scroll progress bar ── */
+(function(){
+  var bar = document.createElement('div');
+  bar.className = 'scroll-progress';
+  document.body.prepend(bar);
+  var ticking = false;
+  window.addEventListener('scroll', function(){
+    if(!ticking){ requestAnimationFrame(function(){
+      var h = document.documentElement.scrollHeight - window.innerHeight;
+      bar.style.width = h > 0 ? ((window.scrollY / h) * 100) + '%' : '0%';
+      ticking = false;
+    }); ticking = true; }
+  });
+}());
+
+/* ── Ripple effect ── */
+(function(){
+  var rm = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if(rm) return;
+  document.querySelectorAll('.btn-primary, .btn-secondary, .btn-ghost-nav, .signout-btn, .new-chat-btn, .upgrade-nav-btn, .send-btn').forEach(function(btn){
+    btn.addEventListener('click', function(e){
+      var rp = document.createElement('span');
+      var r = btn.getBoundingClientRect();
+      var s = Math.max(r.width, r.height);
+      rp.style.cssText = 'position:absolute;top:'+(e.clientY-r.top-s/2)+'px;left:'+(e.clientX-r.left-s/2)+'px;width:'+s+'px;height:'+s+'px;border-radius:50%;background:rgba(255,255,255,0.15);transform:scale(0);animation:rippleAnim .5s ease-out;pointer-events:none;z-index:0;';
+      btn.style.position = 'relative';
+      btn.style.overflow = 'hidden';
+      btn.appendChild(rp);
+      setTimeout(function(){ rp.remove(); }, 600);
+    });
+  });
+}());
+</script>
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"WebPage","name":"Beyond Marks - Aquila AI","description":"Student well-being, mental health resources, and stories from Indian exam aspirants.","url":"https://aquila-sand.vercel.app/beyond-marks.html","breadcrumb":{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://aquila-sand.vercel.app/"},{"@type":"ListItem","position":2,"name":"Beyond Marks","item":"https://aquila-sand.vercel.app/beyond-marks.html"}]}}
+</script>
+<script type="module" src="./js/avatar-sync.js"></script>
+</body>
+</html>
+
+

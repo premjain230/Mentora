@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="en">
+<script>document.documentElement.className=localStorage.getItem('aquila-theme')==='dark'?'':'light-mode'</script>
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
+<meta http-equiv="Content-Security-Policy" content="default-src 'self' https:; script-src 'self' 'unsafe-inline' 'unsafe-eval' blob: https://www.gstatic.com https://apis.google.com https://accounts.google.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://www.googletagmanager.com https://esm.sh; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: https:; font-src 'self' https://fonts.gstatic.com; connect-src 'self' blob: https://www.googleapis.com https://apis.google.com https://accounts.google.com https://esm.sh https://www.gstatic.com https://firestore.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://analytics.vercel.com; object-src 'none'; frame-src 'self' https://www.gstatic.com https://accounts.google.com https://mentora-c6dca.firebaseapp.com">
+<title>Get to know you — Aquila AI</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="/css/tokens.css"/>
+<link rel="stylesheet" href="/css/base.css"/>
+<style>
+  body{min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:28px 16px;transition:background 0.35s,color 0.35s;}
+  .wrap{width:100%;max-width:560px;}
+  .top{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;gap:16px;}
+  .logo{display:flex;align-items:center;gap:10px;font-weight:700;font-size:16px;}
+  .logo img{height:28px;}
+  .progress{flex:1;height:4px;background:rgba(255,255,255,0.08);border-radius:99px;overflow:hidden;margin:0 14px;}
+  .progress-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));transition:width .22s var(--ease-out);}
+  .stage{font-family:var(--font-mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--text-muted);white-space:nowrap;}
+  .card{background:var(--bg-card);border:1px solid var(--border);border-radius:20px;padding:28px;animation:fadeUp .22s var(--ease-out) both;will-change:transform,opacity;}
+  @keyframes fadeUp{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+  .q-title{font-size:20px;font-weight:700;letter-spacing:-.02em;margin-bottom:6px;}
+  .q-why{font-size:12.5px;color:var(--text-secondary);line-height:1.6;margin-bottom:18px;background:rgba(0,212,255,0.07);border:1px solid rgba(0,212,255,0.15);border-radius:10px;padding:10px 12px;}
+  .q-why strong{color:var(--accent);}
+  .chips{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:8px;}
+  .chip{padding:8px 14px;border-radius:999px;border:1px solid var(--border);background:var(--bg-input);color:var(--text-secondary);font-size:13px;cursor:pointer;transition:all .15s;}
+  .chip:hover{border-color:var(--border-hover);}
+  .chip.selected{background:rgba(0,212,255,0.14);border-color:rgba(0,212,255,0.4);color:var(--accent);}
+  .chip.multi.selected{background:rgba(167,139,250,0.14);border-color:rgba(167,139,250,0.4);color:var(--accent2);}
+  .field input,.field select{width:100%;background:var(--bg-input);border:1px solid var(--border);border-radius:10px;padding:12px 14px;color:var(--text-primary);font-family:var(--font-main);font-size:14px;outline:none;}
+  .field input:focus,.field select:focus{border-color:rgba(0,212,255,0.45);}
+  .range-row{display:flex;align-items:center;gap:14px;}
+  .range-val{font-family:var(--font-mono);font-size:22px;font-weight:700;color:var(--accent);min-width:42px;}
+  input[type=range]{flex:1;accent-color:var(--accent);}
+  .nav{display:flex;gap:10px;margin-top:22px;}
+  .btn{flex:1;padding:12px 16px;border-radius:12px;border:none;font-family:var(--font-main);font-size:14px;font-weight:600;cursor:pointer;transition:all .18s;display:flex;align-items:center;justify-content:center;gap:6px;}
+  .btn-ghost{background:transparent;border:1px solid var(--border);color:var(--text-secondary);}
+  .btn-ghost:hover{border-color:var(--border-hover);color:var(--text-primary);}
+  .btn-primary{background:var(--accent);color:#06121a;}
+  .btn-primary:hover{filter:brightness(1.07);transform:translateY(-1px);}
+  .btn-primary:disabled{opacity:.5;cursor:not-allowed;transform:none;}
+  .summary-grid{display:grid;gap:12px;margin:18px 0;}
+  .sum-card{background:var(--bg-input);border:1px solid var(--border);border-radius:12px;padding:12px 14px;}
+  .sum-label{font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--text-muted);font-family:var(--font-mono);margin-bottom:4px;}
+  .sum-val{font-size:13px;color:var(--text-primary);font-weight:500;}
+  .err{font-size:12px;color:var(--accent3);margin-top:8px;min-height:14px;}
+  .splash{position:fixed;inset:0;background:var(--bg-base);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;z-index:99;}
+  .dot{width:8px;height:8px;border-radius:50%;background:var(--accent);animation:bdot 1.1s ease-in-out infinite;}
+  @keyframes bdot{0%,80%,100%{transform:translateY(0);opacity:.4}40%{transform:translateY(-6px);opacity:1}}
+</style>
+</head>
+<body>
+<div id="splash" class="splash"><div style="display:flex;gap:6px;"><span class="dot"></span><span class="dot" style="animation-delay:120ms"></span><span class="dot" style="animation-delay:240ms"></span></div><div style="font-family:var(--font-mono);font-size:11px;letter-spacing:.08em;color:var(--text-muted);text-transform:uppercase;">Loading your profile</div></div>
+<div class="wrap" id="app" style="display:none;">
+  <div class="top">
+    <a href="home.html" class="logo"><img src="logo.svg" alt="Aquila"/>Aquila AI</a>
+    <div class="progress"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+    <div class="stage" id="stageLabel">Academic</div>
+  </div>
+  <div class="card" id="card"></div>
+  <div id="err" class="err" role="alert"></div>
+</div>
+<script type="module">
+import { auth, db } from "./firebase-config.js";
+import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { doc, getDoc, setDoc, serverTimestamp, collection, addDoc, getDocs } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { ONBOARDING_QUESTIONS, getNextOnboardingQuestion, getQuestionById, answersToProfilePatch } from "./js/learning/onboarding.js";
+import { emitLearningEvent } from "./js/learning/evidence.js";
+import { createGoal } from "./js/learning/contracts.js";
+import { migrateLegacyProfile } from "./js/learning/learner-model.js";
+
+const STAGE_MAP = { 0:"Academic", 1:"Goals & Priorities", 2:"Difficulties & Constraints", 3:"Preferences", 4:"Summary" };
+
+let uid=null;
+let answers={}; // flat map field->value
+let history=[]; // ordered question ids visited
+let currentId=null;
+let profileRaw=null;
+
+function whyText(q){
+  const map={
+    grade:"Helps Aquila pick the right level and curriculum.",
+    board:"So recommendations match your board's syllabus.",
+    track:"Determines school vs competitive focus.",
+    subjects:"Aquila tracks each subject separately.",
+    goals:"Prioritizes what matters most to you.",
+    prioritySubject:"Decides what to surface first.",
+    dailyHours:"Needed for realistic planning.",
+    difficultSubjects:"Stored as self-reported evidence — not mastery yet.",
+    learningStyle:"Only preferences, not a fixed trait.",
+  };
+  return map[q.id] || "This helps Aquila personalize your learning.";
+}
+
+function stageFor(q){
+  if(!q) return "Summary";
+  if(q.tier===0) return STAGE_MAP[0];
+  if(q.tier===1) return STAGE_MAP[1];
+  if(q.tier===2) return STAGE_MAP[2];
+  if(q.tier===3) return STAGE_MAP[3];
+  return STAGE_MAP[0];
+}
+
+function getMissingRequired(){
+  const missing=[];
+  if(!answers["academic.grade"]) missing.push("grade");
+  if(!answers["academic.board"]) missing.push("board");
+  if(!(answers.subjects?.length>0)) missing.push("subjects");
+  if(!(answers.goals?.length>0)) missing.push("goals");
+  if(!answers.prioritySubject) missing.push("prioritySubject");
+  if(!answers.dailyHours) missing.push("dailyHours");
+  // track is required but not in old check — include for completeness
+  if(!answers["academic.track"]) missing.push("track");
+  return missing;
+}
+function isRequiredComplete(){
+  return getMissingRequired().length===0;
+}
+
+async function load(){
+  const snap = await getDoc(doc(db,"users",uid,"learning","profile"));
+  profileRaw = snap.exists()? migrateLegacyProfile(snap.data()): migrateLegacyProfile({});
+  // reconstruct answers from profile
+  const a = profileRaw.academic || {};
+  if(a.grade) answers["academic.grade"]=""+a.grade;
+  if(a.board) answers["academic.board"]=a.board;
+  if(a.academicYear) answers["academic.academicYear"]=a.academicYear;
+  if(a.country) answers["academic.country"]=a.country;
+  if(a.track) answers["academic.track"]=a.track;
+  if(Array.isArray(profileRaw.subjects) && profileRaw.subjects.length) answers.subjects=[...profileRaw.subjects];
+  if(profileRaw.dailyHours) answers.dailyHours=profileRaw.dailyHours;
+  if(profileRaw.examDate) answers.examDate=profileRaw.examDate;
+  if(profileRaw.weakTopics) answers.weakTopics=[...profileRaw.weakTopics];
+  if(profileRaw.prioritySubject) answers.prioritySubject=profileRaw.prioritySubject;
+  if(profileRaw.competitiveExam) answers["goals.competitiveExam"]=profileRaw.competitiveExam;
+  if(profileRaw.preferences?.preferredStyle) answers["preferences.preferredStyle"]=profileRaw.preferences.preferredStyle;
+  if(profileRaw.preferences?.studyBehaviorTags?.length) answers["preferences.studyBehavior"]=profileRaw.preferences.studyBehaviorTags;
+  if(profileRaw.preferences?.weakTopicsPriority) answers["weakTopics.priority"]=profileRaw.preferences.weakTopicsPriority;
+  if(profileRaw.preferences?.confidentTopics) answers.confidentTopics=profileRaw.preferences.confidentTopics;
+  // goals: load subcollection
+  try{
+    const gSnap = await getDocs(collection(db,"users",uid,"goals"));
+    if(!gSnap.empty){
+      const titles = gSnap.docs.map(d=>d.data().title).filter(Boolean);
+      if(titles.length) answers.goals=[...titles];
+      const pri = gSnap.docs.find(d=>d.data().priority==="high");
+      if(pri) answers.prioritySubject=pri.data().subject || answers.prioritySubject;
+    }
+  }catch{}
+  // check if already complete
+  if(profileRaw.onboardingComplete){
+    renderSummary(true);
+    return;
+  }
+  // build history to current resume point
+  let cur=null; let nxt=getNextOnboardingQuestion(null,{});
+  while(nxt){
+    const fieldVal = answers[nxt.field] ?? answers[nxt.id];
+    const hasAnswer = fieldVal!=null && (Array.isArray(fieldVal)? fieldVal.length>0 : String(fieldVal).trim()!=="");
+    history.push(nxt.id);
+    if(!hasAnswer && nxt.required){
+      currentId=nxt.id;
+      break;
+    }
+    // if question answered, advance; if optional and unanswered but we still want to show, we advance only if was answered — optional skips are just not in answers, so we stop there to offer the question
+    if(!hasAnswer && !nxt.required){
+      currentId=nxt.id;
+      break;
+    }
+    cur=nxt.id;
+    nxt=getNextOnboardingQuestion(cur, answers);
+    if(!nxt){ currentId=null; break; }
+  }
+  if(!currentId && !isRequiredComplete()){
+    // still missing required but history exhausted — pick first missing
+    currentId = ONBOARDING_QUESTIONS.find(q=>q.required && !((answers[q.field]??answers[q.id]) && (Array.isArray(answers[q.field]??answers[q.id])? (answers[q.field]??answers[q.id]).length>0 : true)))?.id || ONBOARDING_QUESTIONS[0].id;
+  }
+  if(!currentId && isRequiredComplete()){
+    renderSummary(false);
+  } else {
+    renderQuestion(currentId);
+  }
+}
+
+function renderQuestion(id){
+  const q = getQuestionById(id);
+  if(!q){ renderSummary(false); return; }
+  const pct = Math.round((history.indexOf(id)+1)/ONBOARDING_QUESTIONS.length*100);
+  document.getElementById("progressFill").style.width = pct+"%";
+  document.getElementById("stageLabel").textContent = stageFor(q);
+  const card = document.getElementById("card");
+  const curVal = answers[q.field] ?? answers[q.id] ?? (q.input==="multi"?[]:"");
+  let inputHtml="";
+  if(q.input==="single"){
+    let opts = q.options || [];
+    if(q.optionsFrom){
+      const src = answers[q.optionsFrom] || answers.subjects || [];
+      opts = Array.isArray(src)? src: [];
+    }
+    inputHtml = `<div class="chips" id="chips">${opts.map(o=>`<button class="chip ${String(curVal)===String(o)?'selected':''}" data-v="${o.replace(/"/g,'&quot;')}">${o}</button>`).join("")}</div>`;
+    if(q.id==="board" && String(curVal).startsWith("State")) inputHtml+=`<div class="field" style="margin-top:10px;"><input id="freeIn" placeholder="Specify state board" value="${String(curVal).includes('(')? '': ''}"/></div>`;
+  } else if(q.input==="multi"){
+    let opts = q.options || [];
+    if(q.optionsFrom){
+      const src = answers[q.optionsFrom] || answers.subjects || [];
+      opts = Array.isArray(src)? src: [];
+    }
+    const sel = Array.isArray(curVal)?curVal:[];
+    inputHtml = `<div class="chips" id="chips">${opts.map(o=>`<button class="chip multi ${sel.includes(o)?'selected':''}" data-v="${o.replace(/"/g,'&quot;')}">${o}</button>`).join("")}</div><div class="field" style="margin-top:10px;"><input id="freeIn" placeholder="Add custom and press Enter"/></div>`;
+  } else if(q.input==="range"){
+    const v = Number(curVal)||4;
+    inputHtml = `<div class="range-row"><div class="range-val" id="rangeVal">${v}</div><input type="range" id="rangeIn" min="${q.min}" max="${q.max}" value="${v}"/><span style="font-size:12px;color:var(--text-muted)">hrs/day</span></div>`;
+  } else if(q.input==="free"){
+    inputHtml = `<div class="field"><input id="freeIn" placeholder="Type your answer" value="${String(curVal||'').replace(/"/g,'&quot;')}"/></div>`;
+  }
+  const canSkip = !q.required;
+  const isLast = !getNextOnboardingQuestion(id,{...answers, [q.field]: curVal});
+  card.innerHTML = `
+    <div class="q-title">${q.question}</div>
+    <div class="q-why"><strong>Why we ask:</strong> ${whyText(q)}</div>
+    ${inputHtml}
+    <div class="nav">
+      <button class="btn btn-ghost" id="backBtn" ${history.indexOf(id)===0?'disabled':''}>Back</button>
+      ${canSkip?'<button class="btn btn-ghost" id="skipBtn">Skip</button>':''}
+      <button class="btn btn-primary" id="nextBtn">${isLast?'Finish':'Continue'}</button>
+    </div>`;
+  wireQuestion(q);
+}
+
+function wireQuestion(q){
+  const chips = document.getElementById("chips");
+  const freeIn = document.getElementById("freeIn");
+  const rangeIn = document.getElementById("rangeIn");
+  const rangeVal = document.getElementById("rangeVal");
+  if(chips){
+    chips.querySelectorAll(".chip").forEach(btn=>{
+      btn.addEventListener("click",()=>{
+        if(q.input==="single"){
+          chips.querySelectorAll(".chip").forEach(b=>b.classList.remove("selected"));
+          btn.classList.add("selected");
+        } else {
+          btn.classList.toggle("selected");
+        }
+      });
+    });
+  }
+  if(freeIn && q.input==="multi"){
+    freeIn.addEventListener("keydown",e=>{
+      if(e.key==="Enter" && freeIn.value.trim()){
+        e.preventDefault();
+        const v = freeIn.value.trim().slice(0,60);
+        const exists = [...chips.querySelectorAll(".chip")].some(b=>b.dataset.v===v);
+        if(!exists){
+          const b=document.createElement("button");
+          b.className="chip multi selected"; b.dataset.v=v; b.textContent=v;
+          b.addEventListener("click",()=>b.classList.toggle("selected"));
+          chips.appendChild(b);
+        }
+        freeIn.value="";
+      }
+    });
+  }
+  if(rangeIn){
+    rangeIn.addEventListener("input",()=>rangeVal.textContent=rangeIn.value);
+  }
+  document.getElementById("backBtn").addEventListener("click",()=>goBack());
+  const skipBtn=document.getElementById("skipBtn");
+  if(skipBtn) skipBtn.addEventListener("click",()=>goNext(true));
+  document.getElementById("nextBtn").addEventListener("click",()=>goNext(false));
+}
+
+function collectValue(q){
+  const chips=document.getElementById("chips");
+  if(q.input==="single" && chips){
+    const sel=chips.querySelector(".chip.selected");
+    if(sel) return sel.dataset.v;
+    const free=document.getElementById("freeIn");
+    if(free && free.value.trim()) return free.value.trim().slice(0,80);
+    return null;
+  }
+  if(q.input==="multi" && chips){
+    const vals=[...chips.querySelectorAll(".chip.selected")].map(b=>b.dataset.v);
+    const free=document.getElementById("freeIn");
+    if(free && free.value.trim()) vals.push(free.value.trim().slice(0,60));
+    // dedup, cap
+    return [...new Set(vals)].slice(0,20);
+  }
+  if(q.input==="range"){
+    const r=document.getElementById("rangeIn");
+    return r? Number(r.value): null;
+  }
+  if(q.input==="free"){
+    const f=document.getElementById("freeIn");
+    return f? f.value.trim().slice(0,120) || null : null;
+  }
+  return null;
+}
+
+function goBack(){
+  const idx=history.indexOf(currentId);
+  if(idx<=0) return;
+  currentId=history[idx-1];
+  renderQuestion(currentId);
+}
+
+async function goNext(isSkip){
+  const q=getQuestionById(currentId);
+  const errEl=document.getElementById("err");
+  errEl.textContent="";
+  let val=null;
+  if(!isSkip){
+    val=collectValue(q);
+    if(q.required){
+      const empty = val==null || (Array.isArray(val)? val.length===0 : String(val).trim()==="");
+      if(empty){ errEl.textContent="Please answer to continue."; return; }
+    }
+    if(q.id==="grade" && val && !/^([6-9]|1[0-2]|UG[1-3]|Other)$/.test(String(val))){ errEl.textContent="Invalid grade."; return; }
+    if(q.id==="dailyHours" && (Number(val)<1 || Number(val)>18)){ errEl.textContent="Hours must be 1–18."; return; }
+  }
+  // persist if not skipped and has value — instant UI, save in background (was await → 1-2s per tap)
+  if(!isSkip && val!=null && !(Array.isArray(val)&&val.length===0)){
+    answers[q.field]=val;
+    if(q.id==="prioritySubject" && val) answers.subjects = answers.subjects || []; // ensure
+    // fire-and-forget, don't block navigation
+    persistAnswer(q, val).catch(e=>console.warn("persist failed", e));
+  }
+  // auto-set subjects for NEET/JEE if empty (Decision: NEET/JEE dedicated onboarding)
+  if(q.id==='competitiveExam' && val){
+    if(!answers.subjects || answers.subjects.length===0){
+      if(String(val).includes('NEET')) answers.subjects=['Physics','Chemistry','Biology'];
+      else if(String(val).includes('JEE')) answers.subjects=['Physics','Chemistry','Mathematics'];
+    }
+  }
+  // advance
+  const nextQ=getNextOnboardingQuestion(currentId, answers);
+  if(nextQ){
+    if(!history.includes(nextQ.id)) history.push(nextQ.id);
+    currentId=nextQ.id;
+    renderQuestion(currentId);
+  } else {
+    if(isRequiredComplete()){
+      await completeOnboarding();
+    } else {
+      const missing = getMissingRequired();
+      // jump back to first missing required instead of staying stuck on optional last question
+      let targetId=null;
+      if(missing.includes("grade")) targetId="grade";
+      else if(missing.includes("board")) targetId="board";
+      else if(missing.includes("track")) targetId="track";
+      else if(missing.includes("subjects")) targetId="subjects";
+      else if(missing.includes("goals")) targetId="goals";
+      else if(missing.includes("prioritySubject")) targetId="prioritySubject";
+      else if(missing.includes("dailyHours")) targetId="dailyHours";
+      if(targetId && targetId!==currentId){
+        errEl.textContent=`Missing required: ${missing.join(", ")} — taking you there.`;
+        if(!history.includes(targetId)) history.push(targetId);
+        currentId=targetId;
+        renderQuestion(currentId);
+      } else {
+        errEl.textContent=`Please complete required: ${missing.join(", ")}`;
+        // keep on current but highlight missing
+        renderQuestion(currentId);
+        document.getElementById("err").textContent=`Please complete required: ${missing.join(", ")}`;
+      }
+    }
+  }
+}
+
+async function persistAnswer(q,val){
+  try{
+    const patch = answersToProfilePatch({[q.field]:val});
+    // merge academic/subjects appropriately
+    const academicPatch = patch.academic && Object.keys(patch.academic).length? {academic: {...(profileRaw.academic||{}), ...patch.academic}} : {};
+    const toSave = {...academicPatch};
+    if(patch.subjects && patch.subjects.length) toSave.subjects=answers.subjects;
+    if(patch.dailyHours!=null) toSave.dailyHours=patch.dailyHours;
+    if(patch.weakTopics!=null) toSave.weakTopics=answers.weakTopics || patch.weakTopics;
+    if(patch.examDate!==undefined) toSave.examDate=answers.examDate||null;
+    if(patch.prioritySubject) toSave.prioritySubject=patch.prioritySubject;
+    if(patch.competitiveExam) toSave.competitiveExam=patch.competitiveExam;
+    if(patch.preferences) toSave.preferences={...(profileRaw.preferences||{}), ...patch.preferences};
+    toSave.updatedAt=serverTimestamp();
+    toSave.learningSchemaVersion=1;
+    // keep local profileRaw in sync for next patch merge
+    profileRaw = {...profileRaw, ...toSave, academic: toSave.academic || profileRaw.academic, preferences: toSave.preferences || profileRaw.preferences};
+    const ops=[];
+    ops.push(setDoc(doc(db,"users",uid,"learning","profile"), toSave, {merge:true}).catch(e=>console.warn("profile save failed",e)));
+    // goals: when goals question answered, create docs idempotently (parallel)
+    if(q.id==="goals" && Array.isArray(val)){
+      for(const title of val){
+        const goalId = "g_"+title.toLowerCase().replace(/[^a-z0-9]+/g,"_").slice(0,30);
+        const g = createGoal(uid,{goalId, title, type:"custom", priority:"high", status:"active"});
+        ops.push(setDoc(doc(db,"users",uid,"goals",goalId), {...g, createdAt: serverTimestamp(), updatedAt: serverTimestamp()}, {merge:true}).catch(e=>console.warn("goal save failed",e)));
+      }
+    }
+    // events: self-report vs observed — mark onboarding answers as self_report (parallel, no await chain)
+    ops.push(emitLearningEvent(db, uid, "onboarding_answered", { subject: answers.subjects?.[0]||null, payload:{ field: q.field, value: Array.isArray(val)? val.slice(0,5): String(val).slice(0,120), source:"self_report" } }).catch(()=>{}));
+    ops.push(emitLearningEvent(db, uid, "onboarding_question_answered", { payload:{ questionId: q.id, tier: q.tier } }).catch(()=>{}));
+    await Promise.all(ops);
+  }catch(e){ console.warn(e); }
+}
+
+async function completeOnboarding(){
+  try{
+    await setDoc(doc(db,"users",uid,"learning","profile"), {onboardingComplete:true, onboardingVersion:1, updatedAt: serverTimestamp()}, {merge:true});
+    await emitLearningEvent(db, uid, "onboarding_completed", { payload:{ subjects: answers.subjects?.length||0 } });
+  }catch{}
+  renderSummary(false);
+}
+
+function renderSummary(alreadyComplete){
+  document.getElementById("progressFill").style.width="100%";
+  document.getElementById("stageLabel").textContent="Your starting profile";
+  const card=document.getElementById("card");
+  const subjects = (answers.subjects||[]).join(", ") || "—";
+  const goals = (answers.goals||[]).join(", ") || "—";
+  const pri = answers.prioritySubject || answers["weakTopics.priority"] || "—";
+  const diff = (answers.weakTopics||[]).join(", ") || "—";
+  const hrs = answers.dailyHours? answers.dailyHours+" hrs/day":"—";
+  const exam = answers.examDate || "—";
+  const style = answers["preferences.preferredStyle"] || "—";
+  card.innerHTML=`
+    <div class="q-title">${alreadyComplete?'Welcome back':'You’re all set'}</div>
+    <div class="q-why">Aquila will use this as your starting point and keep learning from your actual work.</div>
+    <div class="summary-grid">
+      <div class="sum-card"><div class="sum-label">Primary priority</div><div class="sum-val">${pri}</div></div>
+      <div class="sum-card"><div class="sum-label">Subjects</div><div class="sum-val">${subjects}</div></div>
+      <div class="sum-card"><div class="sum-label">Goals</div><div class="sum-val">${goals}</div></div>
+      <div class="sum-card"><div class="sum-label">Self-reported challenges</div><div class="sum-val">${diff} <span style="color:var(--text-muted);font-weight:400;">(self-report, not mastery)</span></div></div>
+      <div class="sum-card"><div class="sum-label">Available time</div><div class="sum-val">${hrs}</div></div>
+      <div class="sum-card"><div class="sum-label">Next exam</div><div class="sum-val">${exam}</div></div>
+      <div class="sum-card"><div class="sum-label">Preferred interaction</div><div class="sum-val">${style}</div></div>
+    </div>
+    <div style="background:rgba(167,139,250,0.08);border:1px solid rgba(167,139,250,0.2);border-radius:12px;padding:12px 14px;margin-bottom:14px;">
+      <div style="font-size:13px;font-weight:600;">Aquila will initially prioritize ${pri} and start by checking your fundamentals.</div>
+      <div style="font-size:12px;color:var(--text-secondary);margin-top:4px;">Your mastery stays evidence-driven — difficulties above are self-report until confirmed by practice.</div>
+    </div>
+    <div class="nav">
+      <a class="btn btn-ghost" href="profile.html" style="text-decoration:none;">Edit profile</a>
+      <a class="btn btn-primary" href="home.html" style="text-decoration:none;">Start learning →</a>
+    </div>
+    <div style="margin-top:14px;text-align:center;">
+      <a href="quiz.html" style="font-size:13px;color:var(--accent2);">Want a quick check of your current level? Take a 5-min assessment →</a>
+      <div style="font-size:11px;color:var(--text-muted);margin-top:4px;">Optional — skipping still works, Aquila learns from real work.</div>
+    </div>`;
+}
+
+onAuthStateChanged(auth, async (user)=>{
+  if(!user){ location.href="login.html"; return; }
+  if(!user.emailVerified){ location.href="verify-email.html"; return; }
+  uid=user.uid;
+  try{ await emitLearningEvent(db, uid, "onboarding_started", {payload:{}}); }catch{}
+  await load();
+  document.getElementById("splash").style.display="none";
+  document.getElementById("app").style.display="block";
+});
+</script>
+</body>
+</html>
+
+
+

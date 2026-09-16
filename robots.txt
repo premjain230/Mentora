@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /
+Disallow: /home.html
+Disallow: /planner-onboarding.html
+Disallow: /analyze.html
+Disallow: /profile.html
+Disallow: /settings.html
+
+Sitemap: https://aquila-sand.vercel.app/sitemap.xml

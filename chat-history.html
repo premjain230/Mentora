@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<script>document.documentElement.className=localStorage.getItem('aquila-theme')==='dark'?'':'light-mode'</script>
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
+<title>Chat History — Aquila AI</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&family=Space+Mono:wght@400&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="/css/tokens.css"/><link rel="stylesheet" href="/css/shell.css"/>
+<style>
+  .wrap{max-width:720px;margin:0 auto;padding:24px 16px;}
+  .chat-card{padding:14px 16px;border:1px solid var(--border);border-radius:12px;margin:8px 0;background:var(--bg-card);cursor:pointer;display:flex;justify-content:space-between;align-items:center;}
+  .chat-card:hover{border-color:var(--border-hover);}
+  .muted{color:var(--text-muted);font-size:12px;font-family:var(--font-mono);}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a href="home.html" style="color:var(--text-secondary);text-decoration:none;">← Back to Chat</a>
+  <h1 style="font-size:22px;font-weight:700;margin:12px 0;">Chat History</h1>
+  <div id="list"><div style="color:var(--text-muted);">Loading…</div></div>
+</div>
+<script type="module">
+import { auth, db } from "./firebase-config.js";
+import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { collection, query, orderBy, getDocs } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+onAuthStateChanged(auth, async (user)=>{
+  if(!user){ location.href="login.html"; return; }
+  const snap = await getDocs(query(collection(db,"users",user.uid,"chats"), orderBy("updatedAt","desc")));
+  const list=document.getElementById("list");
+  if(snap.empty){ list.innerHTML='<div style="color:var(--text-muted);">No chats yet. Start a new chat from Home.</div>'; return; }
+  list.innerHTML="";
+  snap.forEach(d=>{
+    const data=d.data();
+    const title=data.title||"Untitled Chat";
+    const date=data.updatedAt?.toDate ? data.updatedAt.toDate().toLocaleDateString() : "";
+    const el=document.createElement("div");
+    el.className="chat-card";
+    el.innerHTML=`<div><div style="font-weight:600;">${title}</div><div class="muted">${date}</div></div><span style="color:var(--accent);">Open →</span>`;
+    el.onclick=()=> { sessionStorage.setItem("aquila_open_chat", d.id); location.href="home.html"; };
+    list.appendChild(el);
+  });
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,113 @@
+{
+  "functions": {
+    "api/**/*.js": {
+      "maxDuration": 30
+    }
+  },
+  "rewrites": [
+    {
+      "source": "/admin",
+      "destination": "/admin.html"
+    },
+    {
+      "source": "/blog/how-to-make-a-jee-study-plan",
+      "destination": "/blog/how-to-make-a-jee-study-plan.html"
+    },
+    {
+      "source": "/api/track",
+      "destination": "/api/growth?route=track"
+    },
+    {
+      "source": "/api/admin",
+      "destination": "/api/growth?route=admin"
+    },
+    {
+      "source": "/api/admin/(.*)",
+      "destination": "/api/growth?route=admin/$1"
+    },
+    {
+      "source": "/api/cron/growth",
+      "destination": "/api/growth?route=cron"
+    },
+    {
+      "source": "/api/recommendations",
+      "destination": "/api/learning-event?route=recommendations"
+    },
+    {
+      "source": "/api/arena",
+      "destination": "/api/arena"
+    }
+  ],
+  "crons": [
+    {
+      "path": "/api/cron/growth",
+      "schedule": "0 2 * * *"
+    }
+  ],
+  "headers": [
+    {
+      "source": "/sitemap.xml",
+      "headers": [
+        {
+          "key": "Content-Type",
+          "value": "application/xml; charset=utf-8"
+        },
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=3600, s-maxage=3600"
+        }
+      ]
+    },
+    {
+      "source": "/robots.txt",
+      "headers": [
+        {
+          "key": "Content-Type",
+          "value": "text/plain; charset=utf-8"
+        },
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=86400, s-maxage=86400"
+        }
+      ]
+    },
+    {
+      "source": "/admin",
+      "headers": [
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
+        {
+          "key": "X-Frame-Options",
+          "value": "SAMEORIGIN"
+        },
+        {
+          "key": "Referrer-Policy",
+          "value": "strict-origin-when-cross-origin"
+        },
+        {
+          "key": "Cache-Control",
+          "value": "no-store"
+        }
+      ]
+    },
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
+        {
+          "key": "X-Frame-Options",
+          "value": "SAMEORIGIN"
+        },
+        {
+          "key": "Referrer-Policy",
+          "value": "strict-origin-when-cross-origin"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,753 @@
+<!DOCTYPE html>
+<html lang="en">
+<script>document.documentElement.className=localStorage.getItem('aquila-theme')==='dark'?'':'light-mode'</script>
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<meta http-equiv="Content-Security-Policy" content="default-src 'self' https:; script-src 'self' 'unsafe-inline' 'unsafe-eval' blob: https://www.gstatic.com https://apis.google.com https://accounts.google.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://www.googletagmanager.com https://esm.sh; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: https:; font-src 'self' https://fonts.gstatic.com; connect-src 'self' blob: https://www.googleapis.com https://apis.google.com https://accounts.google.com https://esm.sh https://www.gstatic.com https://firestore.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://analytics.vercel.com; object-src 'none'; frame-src 'self' https://www.gstatic.com https://accounts.google.com https://mentora-c6dca.firebaseapp.com">
+<meta name="description" content="Arena — Conquer your syllabus. JEE, NEET, CBSE & Maharashtra Board as a progression game." />
+<title>Arena — Aquila AI</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%234f8cff'/><text x='16' y='22' text-anchor='middle' fill='white' font-size='18' font-weight='bold'>A</text></svg>">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=Inter:wght@400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="/css/tokens.css" />
+<link rel="stylesheet" href="/css/base.css" />
+<link rel="stylesheet" href="/css/shell.css" />
+<link rel="stylesheet" href="/css/arena.css" />
+<style>
+  body.auth-loading .main, body.auth-loading .sidebar, body.auth-loading .sidebar-overlay, body.auth-loading .ambient-orb{ visibility:hidden; opacity:0; }
+  #authSplash{ position:fixed; inset:0; z-index:100; background:var(--bg-base); display:none; align-items:center; justify-content:center; flex-direction:column; gap:16px; }
+  body.auth-loading #authSplash{ display:flex; }
+  #authSplash .dot{ width:8px; height:8px; border-radius:50%; background:var(--accent); animation:aquilaSplashDot 1.2s ease-in-out infinite; display:inline-block; }
+  @keyframes aquilaSplashDot{0%,80%,100%{transform:translateY(0);opacity:.4}40%{transform:translateY(-6px);opacity:1}}
+  .chat-area{ flex:1; overflow-y:auto; padding:0; display:flex; flex-direction:column; background: var(--bg-base); }
+</style>
+</head>
+<body class="auth-loading">
+<div id="authSplash" role="status" aria-label="Loading"><div style="display:flex;gap:5px;align-items:center;"><span class="dot"></span><span class="dot" style="animation-delay:150ms"></span><span class="dot" style="animation-delay:300ms"></span></div><div style="font-family:'Sora',sans-serif;font-size:12px;letter-spacing:1px;color:var(--text-muted);text-transform:uppercase;">Loading Arena</div></div>
+<div class="ambient-orb orb-1" aria-hidden="true"></div>
+<div class="ambient-orb orb-2" aria-hidden="true"></div>
+<div id="sidebarMount"></div>
+<script type="module">
+  import { mountSidebar } from "./js/components/sidebar.js";
+  mountSidebar({ activeHref: "arena.html" });
+</script>
+
+<main class="main">
+  <div class="topbar" style="background:var(--bg-base);border-bottom:1px solid var(--border-subtle);">
+    <div class="topbar-left">
+      <button class="menu-btn" id="menuBtn" aria-label="Open menu"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
+      <div style="font-family:var(--font-display);font-weight:800;letter-spacing:-0.02em;display:flex;align-items:center;gap:8px;"><span style="filter:drop-shadow(0 0 8px rgba(14,165,233,0.4))">⚔</span> Arena</div>
+      <div id="topbarGreeting" style="font-size:12px;color:var(--text-muted);margin-left:8px;">Conquer the syllabus</div>
+    </div>
+    <div style="display:flex;align-items:center;gap:8px;" class="topbar-right">
+      <img id="topbarAvatar" src="" alt="User" style="width:32px;height:32px;border-radius:50%;object-fit:cover;border:1px solid var(--border);" />
+    </div>
+  </div>
+
+  <div class="chat-area" id="arenaRoot">
+    <div class="arena-wrap">
+      <!-- Breadcrumb -->
+      <div id="breadcrumb" style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text-muted);margin-bottom:6px;flex-wrap:wrap;"></div>
+
+      <!-- Views -->
+      <section id="viewLanding">
+        <div class="arena-hero">
+          <h1><span class="emoji">⚔</span> ARENA</h1>
+          <p>Choose your battlefield</p>
+          <div class="arena-sub">The syllabus is the game. Defeat chapters. Conquer the subject. JEE · NEET · Maharashtra · CBSE</div>
+        </div>
+        <div class="battle-grid" id="battleGrid" role="list"></div>
+        <div id="continueRow" style="margin-top:16px;display:none;">
+          <div style="padding:12px 14px;border-radius:14px;border:1px solid var(--border);background:var(--bg-card);display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;">
+            <div><div style="font-size:12px;font-weight:700;">Continue where you left off</div><div id="continueLabel" style="font-size:12px;color:var(--text-muted);margin-top:2px;"></div></div>
+            <button class="resume-btn" id="continueBtn">Resume →</button>
+          </div>
+        </div>
+        <div id="landingError" class="error hidden" role="alert"></div>
+      </section>
+
+      <section id="viewClass" class="hidden">
+        <div class="select-head"><h2 id="classTitle">Choose Class</h2><button class="back-btn" onclick="window.arenaBack()">← Back</button></div>
+        <div class="pill-row" id="classRow" role="listbox" aria-label="Class"></div>
+      </section>
+
+      <section id="viewSubject" class="hidden">
+        <div class="select-head"><h2 id="subjectTitle">Choose Subject</h2><button class="back-btn" onclick="window.arenaBack()">← Back</button></div>
+        <div class="subject-grid" id="subjectGrid"></div>
+      </section>
+
+      <section id="viewMap" class="hidden">
+        <div class="map-header">
+          <div class="map-title"><h2 id="mapSubject">Physics</h2><p id="mapSubtitle"></p></div>
+          <div class="map-stats">
+            <span class="stat-chip"><span>Progress</span> <strong id="mapProgress">0%</strong></span>
+            <span class="stat-chip"><span>Defeated</span> <strong id="mapDefeated">0/0</strong></span>
+            <span class="stat-chip" id="masteryChip" style="display:none;"><span>Mastered</span> <strong id="mapMastered">0</strong></span>
+          </div>
+        </div>
+        <div class="progress-track" aria-hidden="true"><div class="progress-fill" id="mapProgressFill"></div></div>
+        <div class="map-toolbar">
+          <input class="search-input" id="mapSearch" placeholder="Search chapters…" aria-label="Search chapters" />
+          <button class="resume-btn" id="resumeBtn" style="display:none;">Resume Current →</button>
+          <button class="back-btn" onclick="window.arenaBack()">← Battlefield</button>
+        </div>
+        <div id="mapLoading" style="display:none;gap:10px;flex-direction:column;padding:12px;">
+          <div class="skeleton" style="height:72px"></div><div class="skeleton" style="height:72px"></div><div class="skeleton" style="height:72px"></div>
+        </div>
+        <div id="mapError" class="error hidden"></div>
+        <div id="mapEmpty" class="empty hidden">No curriculum available for this selection yet. Try another subject or class — your progress will still sync when content is added.</div>
+        <div class="map-stage" id="mapStage" aria-label="Subject progression map">
+          <div class="path-line" aria-hidden="true"></div>
+          <div class="path-progress" id="pathProgress" aria-hidden="true"></div>
+          <div class="map-path" id="mapPath"></div>
+        </div>
+      </section>
+
+      <div id="globalToast" style="position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#0f172a;color:#fff;padding:10px 14px;border-radius:999px;font-size:12px;font-weight:600;border:1px solid rgba(255,255,255,0.08);display:none;z-index:70;max-width:92vw;text-align:center;"></div>
+    </div>
+  </div>
+</main>
+
+<!-- Chapter modal -->
+<div class="arena-modal" id="chapterModal" aria-hidden="true">
+  <div class="overlay" data-close="chapterModal"></div>
+  <div class="sheet" role="dialog" aria-modal="true" aria-label="Chapter Battle">
+    <div class="sheet-head">
+      <div><h3 id="chTitle">Chapter</h3><p id="chSubtitle"></p></div>
+      <button class="close-btn" data-close="chapterModal" aria-label="Close">✕</button>
+    </div>
+    <div class="sheet-body">
+      <div class="kv">
+        <div><div class="k">State</div><div class="v" id="chState">—</div></div>
+        <div><div class="k">Difficulty</div><div class="v" id="chDiff">—</div></div>
+        <div><div class="k">Progress</div><div class="v" id="chProgress">—</div></div>
+        <div><div class="k">Mastery</div><div class="v" id="chMastery">—</div></div>
+      </div>
+      <div id="chTopics" style="font-size:12px;color:var(--text-secondary);line-height:1.6;margin:8px 0;"></div>
+      <div class="level-row" id="chLevels"></div>
+      <div id="chLockedMsg" class="error hidden"></div>
+      <button class="battle-btn" id="enterBattleBtn">⚔ ENTER BATTLE</button>
+      <button class="battle-btn secondary" id="replayBtn" style="display:none;margin-top:8px;">Replay Chapter</button>
+      <div id="chPrev" style="font-size:11px;color:var(--text-muted);margin-top:8px;"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Battle modal -->
+<div class="arena-modal" id="battleModal" aria-hidden="true">
+  <div class="overlay" data-close="battleModal"></div>
+  <div class="sheet" role="dialog" aria-modal="true" aria-label="Battle">
+    <div class="sheet-head"><div><h3 id="battleTitle">Battle</h3><p id="battleSubtitle">Understand → Practice → Challenge → Boss</p></div><button class="close-btn" data-close="battleModal" aria-label="Close">✕</button></div>
+    <div class="sheet-body">
+      <div class="q-meta"><span id="qCounter">Question 1 / 5</span><span id="qLevelLabel">Foundation</span></div>
+      <div class="q-progress"><div class="fill" id="qFill" style="width:0%"></div></div>
+      <div class="q-text" id="qText"></div>
+      <div class="options" id="qOptions"></div>
+      <div class="feedback hidden" id="qFeedback"></div>
+      <div style="display:flex;gap:8px;margin-top:14px;"><button class="battle-btn secondary" id="quitBattleBtn" style="flex:1">Quit</button><button class="battle-btn" id="nextQBtn" disabled style="flex:1">Next →</button></div>
+      <div id="battleError" class="error hidden" style="margin-top:10px;"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Victory modal -->
+<div class="arena-modal" id="victoryModal" aria-hidden="true">
+  <div class="overlay" data-close="victoryModal"></div>
+  <div class="sheet" role="dialog" aria-modal="true" aria-label="Victory" style="overflow:hidden">
+    <div class="confetti" id="confetti"></div>
+    <div class="victory">
+      <div class="burst">✓</div>
+      <h3 style="font-family:var(--font-display);font-weight:800;font-size:18px;">Chapter Defeated!</h3>
+      <p id="victoryText" style="font-size:12px;color:var(--text-secondary);margin-top:6px;"></p>
+      <div style="display:flex;gap:8px;margin-top:14px;"><button class="battle-btn secondary" id="victoryClose" style="flex:1">Continue</button><button class="battle-btn" id="victoryNext" style="flex:1">Next Chapter →</button></div>
+    </div>
+  </div>
+</div>
+
+<!-- Final Boss / Subject Complete -->
+<div class="arena-modal" id="bossModal" aria-hidden="true">
+  <div class="overlay" data-close="bossModal"></div>
+  <div class="sheet" role="dialog" aria-modal="true" aria-label="Final Boss">
+    <div class="sheet-head"><div><h3>🏆 FINAL BOSS</h3><p id="bossSubtitle">Comprehensive subject challenge</p></div><button class="close-btn" data-close="bossModal" aria-label="Close">✕</button></div>
+    <div class="sheet-body" id="bossBody"></div>
+  </div>
+</div>
+
+<script type="module">
+import { auth, db, firebaseReady } from "./firebase-config.js";
+import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { doc, getDoc, collection } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { getTracks, getSubjectsForTrack, getChapters, toSubjectKey } from "./js/learning/arena-curriculum.js";
+import { createDefaultProgress, computeProgress, canBattle, DEFEAT_SCORE, FINAL_BOSS_DEFEAT_SCORE } from "./js/learning/arena-progress.js";
+import { emitLearningEvent } from "./js/learning/evidence.js";
+
+let currentUser=null;
+let selectedTrack=null, selectedClass=null, selectedSubject=null, selectedSubjectKey=null;
+let chapters=[], progress=null, masteryMap={};
+let activeChapter=null;
+let viewStack=[]; // for back
+let progressUnsub=null;
+
+// — Auth gate —
+await firebaseReady;
+onAuthStateChanged(auth, async (user)=>{
+  if(!user){ location.href="login.html"; return; }
+  if(!user.emailVerified){ location.href="verify-email.html"; return; }
+  currentUser=user;
+  document.body.classList.remove("auth-loading");
+  // sync avatar
+  try{ const av=document.getElementById("topbarAvatar"); if(user.photoURL) av.src=user.photoURL; else av.style.display="none"; }catch{}
+  initLanding();
+  loadContinue();
+});
+setTimeout(()=> document.body.classList.remove("auth-loading"), 2500);
+
+// — Helpers —
+function showToast(msg, ms=2400){
+  const t=document.getElementById("globalToast"); t.textContent=msg; t.style.display="block";
+  clearTimeout(t._tm); t._tm=setTimeout(()=> t.style.display="none", ms);
+}
+function setView(id){
+  ["viewLanding","viewClass","viewSubject","viewMap"].forEach(v=> document.getElementById(v).classList.toggle("hidden", v!==id));
+}
+function pushView(id){ viewStack.push(id); }
+function breadcrumb(){
+  const bc=document.getElementById("breadcrumb");
+  const parts=[];
+  parts.push('<a href="#" onclick="window.arenaNav(\'landing\');return false;" style="color:var(--text-muted)">Arena</a>');
+  if(selectedTrack) parts.push(`<span style="color:var(--text-faint)">›</span> <span style="color:var(--text-secondary)">${selectedTrack.label}</span>`);
+  if(selectedClass) parts.push(`<span style="color:var(--text-faint)">›</span> <span style="color:var(--text-secondary)">Class ${selectedClass}</span>`);
+  if(selectedSubject) parts.push(`<span style="color:var(--text-faint)">›</span> <span style="color:var(--text-primary);font-weight:700">${selectedSubject}</span>`);
+  bc.innerHTML=parts.join(" ");
+}
+window.arenaNav=(v)=>{
+  if(v==="landing"){ selectedTrack=null; selectedClass=null; selectedSubject=null; selectedSubjectKey=null; viewStack=[]; setView("viewLanding"); breadcrumb(); }
+};
+window.arenaBack=()=>{
+  if(progressUnsub){ try{ progressUnsub(); }catch{} progressUnsub=null; }
+  if(document.getElementById("viewMap") && !document.getElementById("viewMap").classList.contains("hidden")){
+    // back to subject select
+    setView("viewSubject"); breadcrumb(); return;
+  }
+  if(!document.getElementById("viewSubject").classList.contains("hidden")){
+    if(selectedTrack && (selectedTrack.id==="maharashtra"||selectedTrack.id==="cbse")){ setView("viewClass"); }
+    else { window.arenaNav("landing"); }
+    breadcrumb(); return;
+  }
+  if(!document.getElementById("viewClass").classList.contains("hidden")){ window.arenaNav("landing"); return; }
+};
+
+function openModal(id){ document.getElementById(id).classList.add("open"); document.getElementById(id).setAttribute("aria-hidden","false"); }
+function closeModal(id){ document.getElementById(id).classList.remove("open"); document.getElementById(id).setAttribute("aria-hidden","true"); }
+document.querySelectorAll("[data-close]").forEach(el=> el.addEventListener("click", ()=> closeModal(el.dataset.close)));
+document.addEventListener("keydown", e=>{ if(e.key==="Escape") ["chapterModal","battleModal","victoryModal","bossModal"].forEach(closeModal); });
+
+// — Landing —
+function initLanding(){
+  setView("viewLanding"); breadcrumb();
+  const grid=document.getElementById("battleGrid"); grid.innerHTML="";
+  const tracks=getTracks();
+  for(const t of tracks){
+    const btn=document.createElement("button");
+    btn.className="battle-card"; btn.setAttribute("role","listitem"); btn.setAttribute("aria-label", t.label);
+    btn.innerHTML=`
+      <div class="bg-glow" style="background:${t.bg};opacity:0.16"></div>
+      <div class="head"><div class="icon" style="background:${t.bg}">${t.icon}</div><h3>${t.label}</h3></div>
+      <div class="meta">${t.subtitle}</div>
+      <div class="cta">Enter Battlefield</div>
+    `;
+    btn.addEventListener("click", ()=> selectTrack(t));
+    btn.addEventListener("keydown", e=>{ if(e.key==="Enter"||e.key===" ") { e.preventDefault(); selectTrack(t); }});
+    grid.appendChild(btn);
+  }
+}
+function selectTrack(t){
+  selectedTrack=t; selectedClass=null; selectedSubject=null;
+  breadcrumb();
+  if(t.id==="maharashtra" || t.id==="cbse"){
+    showClassSelect();
+  } else {
+    showSubjectSelect();
+  }
+}
+function showClassSelect(){
+  setView("viewClass"); pushView("viewClass");
+  document.getElementById("classTitle").textContent = `${selectedTrack.label} — Choose Class`;
+  const row=document.getElementById("classRow"); row.innerHTML="";
+  const classes=[9,10,11,12];
+  for(const c of classes){
+    const b=document.createElement("button"); b.className="class-pill"; b.textContent=`Class ${c}`; b.setAttribute("aria-pressed","false");
+    b.addEventListener("click", ()=>{
+      row.querySelectorAll(".class-pill").forEach(x=>{ x.classList.remove("active"); x.setAttribute("aria-pressed","false");});
+      b.classList.add("active"); b.setAttribute("aria-pressed","true");
+      selectedClass=c; setTimeout(()=> showSubjectSelect(), 160);
+    });
+    row.appendChild(b);
+  }
+  breadcrumb();
+}
+function showSubjectSelect(){
+  setView("viewSubject"); pushView("viewSubject");
+  const subs=getSubjectsForTrack(selectedTrack.id, selectedClass);
+  document.getElementById("subjectTitle").textContent = selectedClass ? `Class ${selectedClass} — Choose Subject` : `${selectedTrack.label} — Choose Subject`;
+  const grid=document.getElementById("subjectGrid"); grid.innerHTML="";
+  for(const s of subs){
+    const card=document.createElement("button"); card.className="subject-card";
+    const ch = getChapters(selectedTrack.id, s, selectedClass);
+    card.innerHTML=`<h4>${s}</h4><p>${ch.length} chapters · ${ch.length? ch[0].name+" → …" : "Curriculum"}</p>`;
+    card.addEventListener("click", ()=> enterSubject(s));
+    grid.appendChild(card);
+  }
+  breadcrumb();
+}
+
+async function enterSubject(subject){
+  selectedSubject=subject;
+  selectedSubjectKey=toSubjectKey(selectedTrack.id, subject, selectedClass);
+  breadcrumb();
+  setView("viewMap");
+  document.getElementById("mapSubject").textContent=subject;
+  document.getElementById("mapSubtitle").textContent=`${selectedTrack.label}${selectedClass?` · Class ${selectedClass}`:""} · ${selectedSubjectKey}`;
+  document.getElementById("mapLoading").style.display="flex";
+  document.getElementById("mapError").classList.add("hidden");
+  document.getElementById("mapEmpty").classList.add("hidden");
+  document.getElementById("mapPath").innerHTML="";
+  chapters=getChapters(selectedTrack.id, subject, selectedClass);
+  if(!chapters.length){
+    document.getElementById("mapLoading").style.display="none";
+    document.getElementById("mapEmpty").classList.remove("hidden");
+    return;
+  }
+  // Fetch mastery map for weak indicators
+  try{
+    masteryMap={};
+    // read mastery collection (server-authoritative, client read)
+    const { collection, getDocs, limit, query } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
+    // Instead of broad query, read per concept if many — but limit 50 is ok
+    try{
+      const snap=await getDocs(query(collection(db,"users",currentUser.uid,"mastery"), limit(80)));
+      snap.forEach(d=> masteryMap[d.id]=d.data());
+    }catch{}
+  }catch{}
+  // Init/Get progress via API (server authoritative)
+  try{
+    const payloadChapters = chapters.map(c=> ({ conceptId: c.conceptId, prerequisites: c.prerequisites }));
+    const token = await currentUser.getIdToken();
+    const res = await fetch("/api/arena", { method:"POST", headers:{ "Content-Type":"application/json", "Authorization":`Bearer ${token}` }, body: JSON.stringify({ subjectKey: selectedSubjectKey, action:"init", trackId: selectedTrack.id, subject, classNum: selectedClass, chapters: payloadChapters }) });
+    const j=await res.json();
+    if(!res.ok) throw new Error(j.error||`init failed ${res.status}`);
+    progress=j.progress;
+  }catch(e){
+    document.getElementById("mapLoading").style.display="none";
+    document.getElementById("mapError").textContent="Could not load progress: "+(e.message||e);
+    document.getElementById("mapError").classList.remove("hidden");
+    showToast("Offline — showing local map");
+    // fallback local progress
+    progress=createDefaultProgress({ subjectKey: selectedSubjectKey, trackId: selectedTrack.id, subject, classNum: selectedClass, chapters });
+    progress=computeProgress(progress, chapters);
+  }
+  document.getElementById("mapLoading").style.display="none";
+  renderMap();
+  // real-time sync
+  if(progressUnsub) { try{progressUnsub();}catch{} }
+  try{
+    const { doc, onSnapshot } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
+    const ref=doc(db,"users",currentUser.uid,"arenaProgress",selectedSubjectKey);
+    progressUnsub=onSnapshot(ref, snap=>{ if(snap.exists()){ progress=snap.data(); renderMap(); }});
+  }catch{}
+  // deep link support
+  history.replaceState(null,"", `arena.html?track=${selectedTrack.id}${selectedClass?`&class=${selectedClass}`:""}&subject=${encodeURIComponent(subject)}`);
+}
+
+// — Map render —
+function renderMap(){
+  if(!progress || !chapters.length) return;
+  const computed=computeProgress(progress, chapters);
+  progress=computed; // keep derived
+  document.getElementById("mapProgress").textContent=progress.progressPct+"%";
+  document.getElementById("mapDefeated").textContent=`${progress.defeated}/${progress.total}`;
+  const masteredCount=Object.values(progress.chapters).filter(v=> v.state==="mastered").length;
+  const mc=document.getElementById("masteryChip");
+  if(masteredCount>0){ mc.style.display="inline-flex"; document.getElementById("mapMastered").textContent=masteredCount; } else mc.style.display="none";
+  document.getElementById("mapProgressFill").style.width=progress.progressPct+"%";
+  const search=document.getElementById("mapSearch").value.trim().toLowerCase();
+  const filtered = search ? chapters.filter(c=> c.name.toLowerCase().includes(search) || c.topic.toLowerCase().includes(search)) : chapters;
+
+  const path=document.getElementById("mapPath"); path.innerHTML="";
+  // progress line height: based on defeated index
+  const defeatedIdx = (()=>{ let last=-1; chapters.forEach((c,i)=>{ const s=progress.chapters[c.conceptId]?.state; if(s==="defeated"||s==="mastered") last=i; }); return last; })();
+  const lineH = defeatedIdx>=0 ? ((defeatedIdx+1)/chapters.length*100) : 0;
+  document.getElementById("pathProgress").style.height = lineH+"%";
+  document.getElementById("pathProgress").style.display = defeatedIdx>=0 ? "block":"none";
+
+  // resume button
+  const resumeBtn=document.getElementById("resumeBtn");
+  if(progress.currentChapterId){
+    const curName=chapters.find(c=> c.conceptId===progress.currentChapterId)?.name || progress.currentChapterId;
+    resumeBtn.style.display="inline-flex"; resumeBtn.textContent=`Resume: ${curName} →`;
+    resumeBtn.onclick=()=> openChapter(progress.currentChapterId);
+  } else resumeBtn.style.display="none";
+
+  // Start chip
+  const startChip=document.createElement("div"); startChip.className="start-chip"; startChip.textContent="START"; startChip.style.marginBottom="4px"; path.appendChild(startChip);
+
+  filtered.forEach((ch, i)=>{
+    const entry=progress.chapters[ch.conceptId]||{state:"locked", bestScore:0, masteryScore:0};
+    const mastery=masteryMap[ch.conceptId];
+    const weak = mastery && mastery.masteryScore!=null && mastery.masteryScore<0.45 && (mastery.evidenceStrength||0)>=0.2;
+    const isCurrent = progress.currentChapterId===ch.conceptId;
+    const node=document.createElement("div"); node.className="node"; node.style.animationDelay=(i*40)+"ms";
+    const state=entry.state;
+    const iconClass = state==="locked"?"locked": state==="available"?"available": state==="in_progress"?"in_progress": state==="mastered"?"mastered":"defeated";
+    const iconGlyph = state==="locked"?"🔒": state==="available"?"⚔": state==="in_progress"?"🔥": state==="mastered"?"🏆": "✅";
+    const diffBadge = ch.difficultyLabel;
+    node.innerHTML=`
+      <div class="node-chip" ${isCurrent?'style="color:#38bdf8;border-color:rgba(14,165,233,0.35);background:rgba(14,165,233,0.08)"':''}>${isCurrent? "◉ Current":"Chapter "+(chapters.indexOf(ch)+1)}${weak?' · Weak':''}</div>
+      <button class="node-card ${isCurrent?"current":""} ${state}" data-id="${ch.conceptId}" aria-label="${ch.name}, ${state}">
+        <div class="node-icon ${iconClass}" aria-hidden="true">${iconGlyph}</div>
+        <div class="node-main"><h4>${ch.name}</h4><p>${ch.topic} · ${diffBadge}</p></div>
+        <div class="node-meta"><span class="diff-badge">${diffBadge}</span>${weak?'<span class="weak-dot" title="Weak area — needs review"></span>':''}${entry.bestScore? `<span style="font-size:10px;color:var(--text-muted);font-family:var(--font-mono)">${Math.round(entry.bestScore*100)}%</span>`:""}</div>
+      </button>
+    `;
+    const btn=node.querySelector("button");
+    btn.addEventListener("click", ()=> openChapter(ch.conceptId));
+    path.appendChild(node);
+    if(i < filtered.length-1){
+      const conn=document.createElement("div"); conn.className="connector "+( (progress.chapters[ch.conceptId]?.state==="defeated"||progress.chapters[ch.conceptId]?.state==="mastered") ? "active":""); path.appendChild(conn);
+    }
+  });
+
+  // Final Boss
+  const bossWrap=document.createElement("div"); bossWrap.className="node boss-node"; bossWrap.style.marginTop="12px";
+  const bossUnlocked=progress.finalBossUnlocked;
+  const bossDefeated=progress.finalBossDefeated;
+  bossWrap.innerHTML=`
+    <div class="node-chip" style="${bossUnlocked? 'color:#f59e0b;border-color:rgba(245,158,11,0.35);background:rgba(245,158,11,0.08)':''}">${bossDefeated?"🏆 Subject Complete": bossUnlocked? "🏆 Final Boss Unlocked":"🔒 Final Boss Locked"}</div>
+    <button class="boss-card ${bossUnlocked&&!bossDefeated?"unlocked": bossDefeated?"unlocked locked":"locked"}" id="bossCard" ${!bossUnlocked?"disabled":""} aria-label="Final Boss">
+      <div class="boss-icon">🏆</div>
+      <div style="flex:1;text-align:left"><div style="font-weight:800;font-size:14px;">${bossDefeated?"SUBJECT COMPLETE":"FINAL BOSS"}</div><div style="font-size:11px;color:var(--text-muted);margin-top:2px;">${bossDefeated? "You conquered "+selectedSubject+" — replay or revise weak areas" : bossUnlocked? "Comprehensive challenge — defeat to complete subject" : `Defeat all ${chapters.length} chapters to unlock`}</div></div>
+      <div style="font-size:12px;font-weight:800;color:${bossUnlocked? "#f59e0b":"var(--text-muted)"}">${bossDefeated? "100%":""}</div>
+    </button>
+  `;
+  path.appendChild(bossWrap);
+  const bossBtn=bossWrap.querySelector("#bossCard");
+  bossBtn.addEventListener("click", ()=>{
+    if(bossDefeated) openSubjectComplete();
+    else if(bossUnlocked) startFinalBoss();
+    else showToast("Defeat all chapters to unlock Final Boss");
+  });
+  // empty search
+  if(search && filtered.length===0){
+    const e=document.createElement("div"); e.className="empty"; e.textContent=`No chapters match “${search}”`; path.appendChild(e);
+  }
+}
+document.getElementById("mapSearch").addEventListener("input", renderMap);
+
+// — Continue where left off (landing) —
+async function loadContinue(){
+  try{
+    const u=currentUser; if(!u) return;
+    const token=await u.getIdToken();
+    // naive: try known keys from localStorage last arena
+    const last=localStorage.getItem("arena_last_subjectKey");
+    if(!last) return;
+    const r=await fetch(`/api/arena?subjectKey=${encodeURIComponent(last)}`, { headers:{ Authorization:`Bearer ${token}` }});
+    if(!r.ok) return;
+    const j=await r.json(); const p=j.progress; if(!p) return;
+    document.getElementById("continueRow").style.display="block";
+    document.getElementById("continueLabel").textContent=`${p.subject||last} · ${p.progressPct||0}% · ${p.defeated||0}/${p.total||0} defeated`;
+    document.getElementById("continueBtn").onclick=()=>{
+      const parts=last.split("_"); // heuristic
+      // restore minimal track/subject from progress
+      selectedTrack={ id: p.trackId||"jee", label: (p.trackId||"jee").toUpperCase() };
+      selectedSubject=p.subject|| (parts[parts.length-1]||"");
+      selectedSubjectKey=last;
+      selectedClass=p.classNum||null;
+      enterSubject(selectedSubject);
+    };
+  }catch{}
+}
+
+// — Chapter modal —
+function openChapter(conceptId){
+  activeChapter=chapters.find(c=> c.conceptId===conceptId);
+  if(!activeChapter) return;
+  const entry=progress.chapters[conceptId]||{state:"locked"};
+  const mastery=masteryMap[conceptId];
+  document.getElementById("chTitle").textContent=activeChapter.name;
+  document.getElementById("chSubtitle").textContent=`${activeChapter.topic} · ${activeChapter.description||""}`;
+  document.getElementById("chState").textContent=entry.state.replace("_"," ").toUpperCase();
+  document.getElementById("chState").style.color= entry.state==="defeated"?"#10b981": entry.state==="mastered"?"#f59e0b": entry.state==="available"?"#0ea5e9": entry.state==="in_progress"?"#f59e0b":"var(--text-muted)";
+  document.getElementById("chDiff").textContent=activeChapter.difficultyLabel + ` · ${(activeChapter.difficulty*100|0)}%`;
+  document.getElementById("chProgress").textContent= entry.attempts? `${entry.attempts} attempts · best ${Math.round((entry.bestScore||0)*100)}%` : "Not started";
+  document.getElementById("chMastery").textContent= mastery? `${(mastery.masteryScore*100|0)}% · ${mastery.masteryState||""} · evidence ${(mastery.evidenceStrength!=null?(mastery.evidenceStrength*100|0):0)}%` : "—";
+  document.getElementById("chTopics").innerHTML=`<strong>Concepts:</strong> ${activeChapter.name} — ${activeChapter.topic}<br><strong>Prerequisites:</strong> ${activeChapter.prerequisites.length? activeChapter.prerequisites.join(", "): "None (Start)"}<br><strong>Difficulty:</strong> ${activeChapter.difficultyLabel}`;
+  const levels=document.getElementById("chLevels"); levels.innerHTML="";
+  ["Foundation","Application","Challenge","Boss"].forEach((lvl,i)=>{
+    const pill=document.createElement("span"); pill.className="level-pill"+(i===0 && entry.level!=="boss" ? " active":"");
+    if(entry.level==="boss" && lvl==="Boss") pill.classList.add("active");
+    pill.textContent=lvl; levels.appendChild(pill);
+  });
+  const can=canBattle(activeChapter, progress, chapters);
+  const lockedMsg=document.getElementById("chLockedMsg");
+  const enterBtn=document.getElementById("enterBattleBtn");
+  const replay=document.getElementById("replayBtn");
+  if(!can.ok){
+    lockedMsg.textContent="🔒 "+can.reason; lockedMsg.classList.remove("hidden"); enterBtn.disabled=true;
+  } else {
+    lockedMsg.classList.add("hidden"); enterBtn.disabled=false;
+  }
+  if(entry.state==="defeated"||entry.state==="mastered"){ replay.style.display="block"; enterBtn.textContent="⚔ REPLAY BATTLE"; } else { replay.style.display="none"; enterBtn.textContent="⚔ ENTER BATTLE"; }
+  document.getElementById("chPrev").textContent= entry.defeatedAt? `Defeated ${new Date(entry.defeatedAt).toLocaleDateString()}` : "";
+  openModal("chapterModal");
+}
+document.getElementById("enterBattleBtn").addEventListener("click", ()=>{ closeModal("chapterModal"); startBattle(activeChapter, false); });
+document.getElementById("replayBtn").addEventListener("click", ()=>{ closeModal("chapterModal"); startBattle(activeChapter, true); });
+
+// — Battle engine (Understand → Practice → Challenge → Boss simplified as quiz) —
+let battleQs=[], battleIdx=0, battleScore=0, battleAnswers=[], battleConcept=null;
+
+const LOCAL_BANK = {
+  Physics: ["What is SI unit of velocity?","A body moving with constant velocity has zero:","Free fall acceleration is ~:","F=ma is Newton's:","Momentum is product of:"],
+  Chemistry: ["Nucleus contains:","Charge on electron is:","Ionic bonds form by:","Water has what bond?","Octet rule refers to:"],
+  Biology: ["Powerhouse of cell is:","Which synthesizes proteins?","Cell membrane mainly:","Basic unit of heredity is:","Humans have how many chromosomes?"],
+  Mathematics: ["Solve 2x+4=10","Value of (a+b)²","If x²=49, x=","sin(90°)=","tan(45°)="],
+  Science: ["Powerhouse of cell?","Nucleus contains?","SI unit velocity?","Momentum is?","Acid base?"]
+};
+function makeLocalQuestions(subject, topic, count=5){
+  // reuse quiz.html style but simple deterministic mock
+  const pool=[
+    {q:`${topic}: Which concept is core to ${subject}?`, options:["Option A","Option B","Option C","Option D"], answer:1, explanation:"Core concept review."},
+    {q:`In ${subject} — ${topic}, what is the key principle?`, options:["Principle X","Principle Y","Principle Z","Principle W"], answer:0, explanation:"Principle X governs this topic."},
+    {q:`Solve: fundamental problem in ${topic} (${subject})`, options:["42","24","18","36"], answer:2, explanation:"Apply the formula."},
+    {q:`Which statement about ${topic} is correct?`, options:["Statement A","Statement B","Statement C","Statement D"], answer:3, explanation:"Statement D is accurate."},
+    {q:`Advanced: ${topic} challenge — choose best answer`, options:["Alpha","Beta","Gamma","Delta"], answer:0, explanation:"Alpha is correct under given conditions."},
+    {q:`Application of ${topic} in real world:`, options:["Use A","Use B","Use C","Use D"], answer:1, explanation:"Use B is the classic application."},
+    {q:`Boss: comprehensive ${topic} — final check`, options:["Final A","Final B","Final C","Final D"], answer:2, explanation:"Final C synthesizes all ideas."},
+  ];
+  const out=[]; for(let i=0;i<count;i++) out.push(pool[i%pool.length]);
+  return out;
+}
+
+async function startBattle(chapter, isReplay=false){
+  battleConcept=chapter; battleIdx=0; battleScore=0; battleAnswers=[];
+  const total = isReplay? 5 : 5;
+  // Try AI generation, fallback local
+  try{
+    const token=await currentUser.getIdToken();
+    const r=await fetch("/api/groq-proxy", { method:"POST", headers:{ "Content-Type":"application/json", Authorization:`Bearer ${token}` }, body: JSON.stringify({ model:"openai/gpt-oss-120b", messages:[{role:"user", content:`Generate ${total} MCQs for ${chapter.subject} — ${chapter.name} (${chapter.topic}). Return JSON array [{"q":"","options":["A) ...","B) ...","C) ...","D) ..."],"answer":"B","explanation":"..."}]. Only JSON.` }], temperature:0.7, max_tokens:900 })});
+    if(r.ok){
+      const d=await r.json(); const txt=d.choices?.[0]?.message?.content||""; const parsed=JSON.parse(txt.replace(/```json|```/g,"").trim());
+      if(Array.isArray(parsed) && parsed.length){ battleQs=parsed.slice(0,total).map(x=> ({q:x.q||x.question, options:x.options, answer: (x.answer||"A").charAt(0), explanation:x.explanation||""})); }
+      else throw new Error("no AI qs");
+    } else throw new Error("groq not ok");
+  }catch{
+    battleQs=makeLocalQuestions(chapter.subject, chapter.name, total);
+  }
+  document.getElementById("battleTitle").textContent=`⚔ ${chapter.name}`;
+  document.getElementById("battleSubtitle").textContent=isReplay? "Replay — sharpen mastery":"Understand → Practice → Challenge → Boss";
+  openModal("battleModal");
+  renderQ();
+  // emit battle start
+  try{ await emitLearningEvent(db, currentUser.uid, "quiz_started", { conceptId: chapter.conceptId, subject: chapter.subject, topic: chapter.topic, source:"quiz", payload:{ arena:true, replay:isReplay } }); }catch{}
+}
+function renderQ(){
+  const q=battleQs[battleIdx]; if(!q) return;
+  document.getElementById("qCounter").textContent=`Question ${battleIdx+1} / ${battleQs.length}`;
+  const levels=["Foundation","Foundation","Application","Challenge","Boss"]; document.getElementById("qLevelLabel").textContent=levels[battleIdx]||"Battle";
+  document.getElementById("qFill").style.width=`${((battleIdx+1)/battleQs.length*100)}%`;
+  document.getElementById("qText").textContent=q.q;
+  const opts=document.getElementById("qOptions"); opts.innerHTML=""; document.getElementById("qFeedback").classList.add("hidden");
+  document.getElementById("nextQBtn").disabled=true; document.getElementById("nextQBtn").textContent= battleIdx===battleQs.length-1 ? "Finish" : "Next →";
+  let selected=null;
+  q.options.forEach((opt,i)=>{
+    const div=document.createElement("button"); div.className="option"; div.type="button";
+    const letter=String.fromCharCode(65+i);
+    const label=opt.replace(/^[A-D][\)\.]\s*/,"");
+    div.innerHTML=`<span class="key">${letter}</span><span>${label}</span>`;
+    div.addEventListener("click", ()=>{
+      if(selected!==null) return; // lock after first select until next
+      selected=i;
+      opts.querySelectorAll(".option").forEach(o=> o.classList.remove("selected"));
+      div.classList.add("selected");
+      // immediate feedback
+      const isCorrect = letter===q.answer;
+      div.classList.add(isCorrect? "correct":"wrong");
+      if(!isCorrect){
+        // highlight correct
+        const correctIdx = "ABCD".indexOf(q.answer);
+        const correctEl=opts.children[correctIdx]; if(correctEl) correctEl.classList.add("correct");
+      }
+      const fb=document.getElementById("qFeedback");
+      fb.classList.remove("hidden"); fb.className="feedback "+(isCorrect?"correct":"wrong");
+      fb.textContent= isCorrect? `✓ Correct! ${q.explanation||""}` : `✗ Incorrect. Correct: ${q.answer}. ${q.explanation||""}`;
+      battleAnswers.push(isCorrect);
+      if(isCorrect) battleScore++;
+      document.getElementById("nextQBtn").disabled=false;
+      // emit per-question event (server authoritative mastery will update)
+      try{
+        const payload={ correct:isCorrect, arena:true, questionIndex:battleIdx, totalQ: battleQs.length, hintCount:0 };
+        const type=isCorrect? "question_correct":"question_incorrect";
+        emitLearningEvent(db, currentUser.uid, type, { conceptId: battleConcept.conceptId, subject: battleConcept.subject, topic: battleConcept.topic, source:"quiz", questionId:`arena_${battleConcept.conceptId}_${battleIdx}`, payload, confidence:null }).catch(()=>{});
+        emitLearningEvent(db, currentUser.uid, "question_answered", { conceptId: battleConcept.conceptId, subject: battleConcept.subject, topic: battleConcept.topic, source:"quiz", questionId:`arena_${battleConcept.conceptId}_${battleIdx}`, payload:{ correct:isCorrect, arena:true }, confidence:null }).catch(()=>{});
+      }catch{}
+    });
+    opts.appendChild(div);
+  });
+}
+document.getElementById("nextQBtn").addEventListener("click", async ()=>{
+  if(battleIdx < battleQs.length-1){ battleIdx++; renderQ(); }
+  else { await finishBattle(); }
+});
+document.getElementById("quitBattleBtn").addEventListener("click", ()=>{
+  if(confirm("Quit battle? Progress for this battle will be lost.")){ closeModal("battleModal"); }
+});
+
+async function finishBattle(){
+  closeModal("battleModal");
+  const total=battleQs.length; const score= total? battleScore/total : 0;
+  const pct=Math.round(score*100);
+  const passed = score >= DEFEAT_SCORE;
+  // Heartbeat + defeat via API
+  try{
+    const token=await currentUser.getIdToken();
+    if(passed){
+      // fetch mastery after events (small delay) to include evidence
+      let masteryScore=null; try{ const snap=await getDoc(doc(db,"users",currentUser.uid,"mastery",battleConcept.conceptId)); if(snap.exists()) masteryScore=snap.data().masteryScore; }catch{}
+      const r=await fetch("/api/arena",{ method:"POST", headers:{ "Content-Type":"application/json", Authorization:`Bearer ${token}` }, body: JSON.stringify({ subjectKey: selectedSubjectKey, action:"defeat_chapter", conceptId: battleConcept.conceptId, score, masteryScore }) });
+      const j=await r.json(); if(!r.ok) throw new Error(j.error||"defeat failed");
+      progress=j.progress;
+      try{ localStorage.setItem("arena_last_subjectKey", selectedSubjectKey); }catch{}
+      burstVictory(pct, total, battleScore, masteryScore);
+    } else {
+      // still record attempt as in_progress
+      await fetch("/api/arena",{ method:"POST", headers:{ "Content-Type":"application/json", Authorization:`Bearer ${token}` }, body: JSON.stringify({ subjectKey: selectedSubjectKey, action:"level_complete", conceptId: battleConcept.conceptId, score, level:"challenge" }) });
+      showToast(`Keep fighting! ${pct}% — need 60% to defeat. Review and try again.`, 3200);
+      // refresh progress
+      const snap=await getDoc(doc(db,"users",currentUser.uid,"arenaProgress",selectedSubjectKey)); if(snap.exists()) progress=snap.data();
+      renderMap();
+    }
+  }catch(e){
+    showToast("Battle saved locally — sync will retry. "+(e.message||e));
+    // optimistic local
+    const { defeatChapter } = await import("./js/learning/arena-progress.js");
+    if(passed) { const { defeatChapter:dc } = await import("./js/learning/arena-progress.js"); progress=dc(progress, chapters, battleConcept.conceptId, { score }); }
+    renderMap();
+    if(passed) burstVictory(pct, total, battleScore, null);
+  }
+  try{ await emitLearningEvent(db, currentUser.uid, "quiz_completed", { conceptId: battleConcept.conceptId, subject: battleConcept.subject, topic: battleConcept.topic, source:"quiz", payload:{ correct:battleScore, totalQ: total, score, arena:true } }); }catch{}
+}
+
+function burstVictory(pct, total, correct, masteryScore){
+  document.getElementById("victoryText").textContent=`You scored ${pct}% (${correct}/${total})${masteryScore!=null?` · Mastery ${(masteryScore*100|0)}%`:""} — ${progress.finalBossUnlocked? "Final Boss unlocked!":"Next chapter unlocked!"}`;
+  const conf=document.getElementById("confetti"); conf.innerHTML="";
+  const colors=["#0ea5e9","#8b5cf6","#10b981","#f59e0b","#ec4899"];
+  for(let i=0;i<18;i++){ const el=document.createElement("i"); el.style.left=(Math.random()*100)+"%"; el.style.top="-6px"; el.style.setProperty("--c", colors[i%colors.length]); el.style.animationDelay=(Math.random()*0.25)+"s"; el.style.transform=`rotate(${Math.random()*360}deg)`; conf.appendChild(el); }
+  openModal("victoryModal");
+  try{ navigator.vibrate && navigator.vibrate(40); }catch{}
+}
+document.getElementById("victoryClose").addEventListener("click", ()=>{ closeModal("victoryModal"); renderMap(); const el=document.getElementById("mapStage"); el.scrollIntoView({behavior:"smooth", block:"center"}); });
+document.getElementById("victoryNext").addEventListener("click", ()=>{
+  closeModal("victoryModal"); renderMap();
+  if(progress.currentChapterId) openChapter(progress.currentChapterId);
+});
+
+// — Final Boss —
+let bossQs=[], bossIdx=0, bossScore=0;
+async function startFinalBoss(){
+  bossQs=[]; bossIdx=0; bossScore=0;
+  const total=8;
+  // Build boss questions covering multiple chapters — sample from chapters
+  try{
+    const token=await currentUser.getIdToken();
+    const topics=chapters.slice(0,4).map(c=> c.name).join(", ");
+    const r=await fetch("/api/groq-proxy",{ method:"POST", headers:{ "Content-Type":"application/json", Authorization:`Bearer ${token}` }, body: JSON.stringify({ model:"openai/gpt-oss-120b", messages:[{role:"user", content:`Generate ${total} MCQs covering ${selectedSubject} chapters: ${topics}. Mix difficulties. Return JSON array [{"q":"","options":["A) ...","B) ...","C) ...","D) ..."],"answer":"B","explanation":"..."}] Only JSON.`}], temperature:0.7, max_tokens:1200 })});
+    if(r.ok){ const d=await r.json(); const txt=d.choices?.[0]?.message?.content||""; const p=JSON.parse(txt.replace(/```json|```/g,"").trim()); if(Array.isArray(p)) bossQs=p.slice(0,total).map(x=> ({q:x.q||x.question, options:x.options, answer:(x.answer||"A").charAt(0), explanation:x.explanation||""})); }
+    if(!bossQs.length) throw new Error("no boss qs");
+  }catch{
+    bossQs=makeLocalQuestions(selectedSubject, "Final Boss", total);
+  }
+  const body=document.getElementById("bossBody");
+  body.innerHTML=`<div class="q-meta"><span id="bossCounter">Question 1 / ${total}</span><span>🏆 Final Boss</span></div><div class="q-progress"><div class="fill" id="bossFill" style="width:0%"></div></div><div class="q-text" id="bossQ"></div><div class="options" id="bossOpts"></div><div class="feedback hidden" id="bossFb"></div><div style="display:flex;gap:8px;margin-top:14px;"><button class="battle-btn secondary" id="bossQuit" style="flex:1">Quit</button><button class="battle-btn" id="bossNext" disabled style="flex:1">Next →</button></div>`;
+  openModal("bossModal");
+  renderBossQ();
+  document.getElementById("bossQuit").addEventListener("click", ()=> closeModal("bossModal"));
+  document.getElementById("bossNext").addEventListener("click", async ()=>{
+    if(bossIdx < bossQs.length-1){ bossIdx++; renderBossQ(); }
+    else {
+      const total=bossQs.length; const score=bossScore/total;
+      if(score >= FINAL_BOSS_DEFEAT_SCORE){
+        try{
+          const token=await currentUser.getIdToken();
+          const r=await fetch("/api/arena",{ method:"POST", headers:{ "Content-Type":"application/json", Authorization:`Bearer ${token}` }, body: JSON.stringify({ subjectKey: selectedSubjectKey, action:"final_boss_attempt", score }) });
+          const j=await r.json(); if(!r.ok) throw new Error(j.error);
+          progress=j.progress;
+        }catch(e){ showToast(e.message||"Boss defeat failed"); return; }
+        closeModal("bossModal"); openSubjectComplete();
+      } else {
+        showToast(`Final Boss needs 70% — you got ${Math.round(score*100)}%. Train more and return!`, 3000);
+        closeModal("bossModal");
+      }
+    }
+  });
+}
+function renderBossQ(){
+  const q=bossQs[bossIdx]; document.getElementById("bossCounter").textContent=`Question ${bossIdx+1} / ${bossQs.length}`;
+  document.getElementById("bossFill").style.width=`${((bossIdx+1)/bossQs.length*100)}%`;
+  document.getElementById("bossQ").textContent=q.q;
+  const opts=document.getElementById("bossOpts"); opts.innerHTML=""; document.getElementById("bossFb").classList.add("hidden"); document.getElementById("bossNext").disabled=true;
+  let picked=null;
+  q.options.forEach((opt,i)=>{
+    const letter=String.fromCharCode(65+i); const label=opt.replace(/^[A-D][\)\.]\s*/,"");
+    const btn=document.createElement("button"); btn.className="option"; btn.type="button";
+    btn.innerHTML=`<span class="key">${letter}</span><span>${label}</span>`;
+    btn.addEventListener("click", ()=>{
+      if(picked!==null) return; picked=i;
+      opts.querySelectorAll(".option").forEach(o=> o.classList.remove("selected"));
+      btn.classList.add("selected");
+      const ok=letter===q.answer; btn.classList.add(ok?"correct":"wrong");
+      if(!ok){ const ci="ABCD".indexOf(q.answer); const ce=opts.children[ci]; if(ce) ce.classList.add("correct"); }
+      const fb=document.getElementById("bossFb"); fb.classList.remove("hidden"); fb.className="feedback "+(ok?"correct":"wrong"); fb.textContent= ok? `✓ ${q.explanation||"Correct!"}` : `✗ Correct: ${q.answer}. ${q.explanation||""}`;
+      if(ok) bossScore++;
+      document.getElementById("bossNext").disabled=false;
+      document.getElementById("bossNext").textContent= bossIdx===bossQs.length-1? "Finish Boss" : "Next →";
+    });
+    opts.appendChild(btn);
+  });
+}
+
+function openSubjectComplete(){
+  const body=document.getElementById("bossBody");
+  const weakList = chapters.filter(c=>{
+    const m=masteryMap[c.conceptId]; return m && m.masteryScore<0.5;
+  }).slice(0,5);
+  body.innerHTML=`
+    <div style="text-align:center;padding:6px 0 10px;"><div style="font-size:36px;">🏆</div><h3 style="font-family:var(--font-display);font-weight:800;margin-top:6px;">SUBJECT COMPLETE</h3><p style="font-size:12px;color:var(--text-secondary);margin-top:4px;">You conquered ${selectedSubject} — ${progress.defeated}/${progress.total} chapters defeated</p></div>
+    <div class="kv"><div><div class="k">Completion</div><div class="v">${progress.progressPct}%</div></div><div><div class="k">Chapters Defeated</div><div class="v">${progress.defeated}/${progress.total}</div></div><div><div class="k">Mastered</div><div class="v">${Object.values(progress.chapters).filter(v=> v.state==="mastered").length}</div></div><div><div class="k">Final Boss</div><div class="v" style="color:#10b981">Defeated ✓</div></div></div>
+    ${weakList.length? `<div style="margin-top:12px;padding:10px;border-radius:12px;background:rgba(239,68,68,0.06);border:1px solid rgba(239,68,68,0.14)"><div style="font-size:11px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:#f87171">Weak Areas — Revise</div><ul style="margin:8px 0 0;padding-left:16px;font-size:12px;color:var(--text-secondary)">${weakList.map(c=> `<li>${c.name} — ${(masteryMap[c.conceptId].masteryScore*100|0)}%</li>`).join("")}</ul></div>` : `<div style="margin-top:10px;padding:10px;border-radius:12px;background:rgba(16,185,129,0.06);border:1px solid rgba(16,185,129,0.14);font-size:12px;color:#10b981">No weak areas detected — stellar mastery!</div>`}
+    <div style="display:flex;gap:8px;margin-top:14px;flex-wrap:wrap;"><button class="battle-btn secondary" style="flex:1" onclick="document.getElementById('bossModal').classList.remove('open'); renderMap();">Back to Map</button><button class="battle-btn" style="flex:1" onclick="location.href='analyze.html'">View Analysis →</button></div>
+    <div style="display:flex;gap:8px;margin-top:8px;"><button class="battle-btn secondary" style="flex:1" onclick="if(progress.currentChapterId) { document.getElementById('bossModal').classList.remove('open'); openChapter(progress.currentChapterId); }">Replay Weak Chapters</button></div>
+  `;
+  openModal("bossModal");
+  renderMap();
+}
+
+// — Deep links —
+(async()=>{
+  const params=new URLSearchParams(location.search);
+  const track=params.get("track"), cls=params.get("class"), subj=params.get("subject");
+  if(track && subj){
+    // wait for auth
+    let tries=0; const iv=setInterval(async()=>{
+      tries++; if(currentUser || tries>30){ clearInterval(iv); if(track && subj){
+        const t=getTracks().find(x=> x.id===track); if(t){ selectedTrack=t; selectedClass=cls? parseInt(cls,10):null; if(!isNaN(selectedClass)||!cls) enterSubject(decodeURIComponent(subj)); }
+      }}
+    }, 300);
+  }
+})();
+</script>
+<script type="module" src="./js/avatar-sync.js"></script>
+<script type="module">import { inject } from 'https://esm.sh/@vercel/analytics'; inject();</script>
+<script type="module">import { injectSpeedInsights } from 'https://esm.sh/@vercel/speed-insights'; injectSpeedInsights();</script>
+</body>
+</html>

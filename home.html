@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<script>document.documentElement.className=localStorage.getItem('aquila-theme')==='dark'?'':'light-mode'</script>
+<head>
+<meta charset="UTF-8" /> 
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<meta http-equiv="Content-Security-Policy" content="default-src 'self' https:; script-src 'self' 'unsafe-inline' 'unsafe-eval' blob: https://www.gstatic.com https://apis.google.com https://accounts.google.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://www.googletagmanager.com https://esm.sh; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: https:; font-src 'self' https://fonts.gstatic.com; connect-src 'self' blob: https://www.googleapis.com https://apis.google.com https://accounts.google.com https://esm.sh https://www.gstatic.com https://firestore.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://analytics.vercel.com; frame-src 'self' https://www.gstatic.com https://accounts.google.com https://mentora-c6dca.firebaseapp.com; object-src 'none';">
+<meta name="description" content="Aquila AI — your personalized AI study assistant for JEE, NEET & Board exams." />
+<meta property="og:title" content="Aquila AI Dashboard" />
+<meta property="og:description" content="Your personalized AI study assistant for JEE, NEET & Board exams." />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://aquila-sand.vercel.app/home.html" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="keywords" content="Aquila AI, AI study assistant, JEE preparation, NEET preparation, board exam help, AI tutor, study planner" />
+<link rel="canonical" href="https://aquila-sand.vercel.app/home.html" />
+<title>Dashboard — Aquila AI | AI Study Assistant for JEE, NEET & Board Exams</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%234f8cff'/><text x='16' y='22' text-anchor='middle' fill='white' font-size='18' font-weight='bold'>A</text></svg>">
+<meta name="referrer" content="no-referrer-when-downgrade">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=Inter:wght@400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="/css/tokens.css" />
+<link rel="stylesheet" href="/css/base.css" />
+<link rel="stylesheet" href="/css/shell.css" /><link rel="stylesheet" href="/css/graphs.css" />
+<style>
+  /* ===== Chat area — premium workspace ===== */
+  .chat-area { flex: 1; overflow-y: auto; padding: 32px 48px 24px; display: flex; flex-direction: column; gap: 24px; scroll-behavior: smooth; background: var(--bg-base); }
+  .chat-area::-webkit-scrollbar { width: 4px; } .chat-area::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 999px; }
+
+  .welcome {
+    display: flex; flex-direction: column; align-items: center; text-align: center;
+    padding: 32px 20px 16px; gap: 14px; max-width: 720px; margin: 0 auto; width: 100%;
+    animation: fadeUp 0.6s var(--ease-out) both;
+  }
+  .welcome-icon {
+    width: 56px; height: 56px;
+    background: var(--bg-card); border: 1px solid var(--border);
+    border-radius: var(--radius-xl);
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 4px;
+    box-shadow: var(--shadow-sm); position: relative; color: var(--text-primary);
+  }
+  .welcome-icon::before {
+    content: ''; position: absolute; inset: -1px; border-radius: var(--radius-xl);
+    background: linear-gradient(135deg, rgba(14,165,233,0.12), rgba(139,124,247,0.10));
+    z-index: -1; opacity: 0.8;
+  }
+  .welcome-icon svg { width: 26px; height: 26px; stroke-width: 1.7; }
+  .welcome h1 {
+    font-family: var(--font-display); font-size: 26px; font-weight: 700; letter-spacing: -0.04em; line-height: 1.2;
+    color: var(--text-primary);
+  }
+  .welcome p { font-size: 14px; color: var(--text-secondary); max-width: 460px; line-height: 1.6; font-weight: 400; }
+
+  .suggestion-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; width: 100%; max-width: 640px; margin-top: 8px; }
+  .suggestion-card {
+    background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-lg);
+    padding: 16px; cursor: pointer; text-align: left; transition: border-color var(--dur-fast) var(--ease-out), background var(--dur-fast) var(--ease-out), transform var(--dur-fast) var(--ease-out), box-shadow var(--dur-fast) var(--ease-out);
+  }
+  .suggestion-card:hover { background: var(--bg-card-hover); border-color: var(--border-strong); transform: translateY(-1px); box-shadow: var(--shadow-sm); }
+  .suggestion-card:active { transform: translateY(0); }
+  .sug-icon { width: 30px; height: 30px; border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: center; margin-bottom: 10px; background: var(--bg-elevated); border: 1px solid var(--border); color: var(--text-muted); }
+  .sug-icon svg { width: 15px; height: 15px; stroke-width: 1.7; }
+  .sug-title { font-size: 13px; font-weight: 600; color: var(--text-primary); margin-bottom: 3px; letter-spacing: -0.01em; }
+  .sug-desc { font-size: 12px; color: var(--text-muted); line-height: 1.5; }
+
+  /* ===== Input area — premium composer ===== */
+  .input-area { padding: 16px 32px 20px; border-top: 1px solid var(--border-subtle); background: linear-gradient(to top, var(--bg-base) 60%, transparent); }
+  .input-box {
+    max-width: 720px; margin: 0 auto;
+    background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-xl);
+    padding: 10px 12px 10px 16px; display: flex; align-items: flex-end; gap: 8px;
+    box-shadow: var(--shadow-sm); transition: border-color var(--dur-fast) var(--ease-out), box-shadow var(--dur-fast) var(--ease-out), background var(--dur-fast) var(--ease-out);
+  }
+  .input-box:focus-within { border-color: var(--border-active); background: var(--bg-card); box-shadow: var(--shadow-glow); }
+  .input-box textarea {
+    flex: 1; background: transparent; border: none; outline: none;
+    color: var(--text-primary); font-family: var(--font-main); font-size: 14px; font-weight: 450;
+    resize: none; line-height: 1.6; min-height: 24px; max-height: 140px; overflow-y: auto; padding: 6px 0;
+  }
+  .input-box textarea::placeholder { color: var(--text-faint); }
+  .input-actions { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
+  .send-btn {
+    width: 34px; height: 34px; border-radius: var(--radius-md);
+    display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0;
+    transition: all var(--dur-fast) var(--ease-out);
+    background: var(--text-primary); border: 1px solid var(--text-primary); color: var(--bg-base); box-shadow: none;
+  }
+  .send-btn:hover { background: #1e293b; transform: translateY(-1px); box-shadow: var(--shadow-sm); }
+  .light-mode .send-btn { background: #0f172a; color: #fff; }
+  .send-btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+  .send-btn svg { width: 15px; height: 15px; stroke-width: 2.2; }
+  .input-footer {
+    display: flex; justify-content: center; flex-wrap: wrap; gap: 8px 16px; margin-top: 10px;
+    font-size: 11px; color: var(--text-faint); max-width: 720px; margin-left: auto; margin-right: auto; text-align: center; font-weight: 450;
+  }
+  .input-footer span { display: flex; align-items: center; gap: 5px; }
+
+  /* ===== Messages — workspace, not bubbles ===== */
+  .message-row { display: flex; padding: 0 16px; max-width: 740px; margin: 0 auto; width: 100%; }
+  .message-row.user { justify-content: flex-end; }
+  .message-row.assistant { gap: 14px; align-items: flex-start; }
+  .user-bubble {
+    background: var(--bg-elevated); border: 1px solid var(--border);
+    border-radius: var(--radius-lg); border-bottom-right-radius: var(--radius-sm);
+    padding: 10px 14px; max-width: 68%;
+    font-size: 14px; line-height: 1.6; color: var(--text-primary); font-weight: 450;
+    word-break: break-word; white-space: pre-wrap; box-shadow: var(--shadow-xs);
+  }
+  .assistant-avatar {
+    width: 28px; height: 28px; flex-shrink: 0;
+    background: var(--bg-card); border: 1px solid var(--border);
+    border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center;
+    margin-top: 2px; color: var(--text-muted); font-size: 12px; font-weight: 700;
+  }
+  .ai-bubble { flex: 1; font-size: 14px; line-height: 1.7; color: var(--text-primary); word-break: break-word; min-width: 0; font-weight: 400; }
+  .ai-bubble h1 { font-family: var(--font-display); font-size: 18px; font-weight: 650; margin: 16px 0 8px; letter-spacing: -0.02em; }
+  .ai-bubble h2 { font-family: var(--font-display); font-size: 15px; font-weight: 600; margin: 14px 0 6px; color: var(--text-primary); padding-bottom: 6px; border-bottom: 1px solid var(--border-subtle); }
+  .ai-bubble h3 { font-size: 14px; font-weight: 600; margin: 12px 0 6px; }
+  .ai-bubble strong { font-weight: 600; color: var(--text-primary); }
+  .ai-bubble ul, .ai-bubble ol { padding-left: 18px; margin: 8px 0; }
+  .ai-bubble li { margin: 4px 0; color: var(--text-secondary); }
+  .ai-bubble li::marker { color: var(--text-muted); }
+  .ai-bubble code { background: var(--bg-elevated); border: 1px solid var(--border-subtle); border-radius: 6px; padding: 1px 6px; font-family: var(--font-mono); font-size: 12px; color: var(--text-primary); font-weight: 500; }
+  .ai-bubble pre { background: var(--bg-elevated); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 14px 16px; overflow-x: auto; margin: 12px 0; max-width: 100%; }
+  .ai-bubble pre code { background: none; border: none; padding: 0; color: var(--text-primary); font-size: 12.5px; }
+  .ai-bubble hr { border: none; border-top: 1px solid var(--border-subtle); margin: 16px 0; }
+  .ai-bubble p { margin: 8px 0; color: var(--text-primary); }
+  .ai-bubble a { color: var(--accent); font-weight: 500; border-bottom: 1px solid transparent; transition: border-color var(--dur-fast) ease; }
+  .ai-bubble a:hover { border-bottom-color: var(--accent); }
+
+  /* ===== AI action buttons — minimal ===== */
+  .ai-actions { display: flex; align-items: center; gap: 6px; margin-top: 14px; flex-wrap: wrap; }
+  .ai-action-btn {
+    display: flex; align-items: center; gap: 5px; padding: 6px 10px; font-size: 12px; font-weight: 450;
+    font-family: var(--font-main); border-radius: var(--radius-full); border: 1px solid var(--border);
+    background: var(--bg-card); color: var(--text-muted); cursor: pointer; transition: all var(--dur-fast) var(--ease-out); line-height: 1;
+  }
+  .ai-action-btn:hover { color: var(--text-primary); border-color: var(--border-strong); background: var(--bg-elevated); }
+  .ai-action-btn.active-good, .ai-action-btn.active-copy { color: var(--accent); border-color: rgba(14,165,233,0.25); background: var(--accent-soft); }
+  .ai-action-btn.active-bad { color: var(--accent3); border-color: rgba(248,113,113,0.25); background: rgba(248,113,113,0.08); }
+  .ai-action-divider { width: 1px; height: 14px; background: var(--border); flex-shrink: 0; margin: 0 2px; }
+
+  .chat-loading { display: flex; align-items: center; justify-content: center; gap: 8px; padding: 40px 20px; color: var(--text-muted); font-size: 13px; }
+
+  .cere-grid-3 { display:grid; grid-template-columns:1.1fr 1fr 1fr; gap:12px; }
+  .cere-grid { display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px; }
+  /* ===== Mobile — refined ===== */
+  @media (max-width: 880px) {
+    .chat-area { padding: 20px 16px 16px; gap: 20px; }
+    .input-area { padding: 12px 12px 14px; }
+    .suggestion-grid { grid-template-columns: 1fr; gap: 8px; }
+    .cere-grid-3, .cere-grid { grid-template-columns: 1fr; }
+    .topbar-center { display: none !important; }
+    .user-bubble { max-width: 84%; }
+    .welcome { padding: 20px 8px 14px; gap: 12px; }
+    .welcome h1 { font-size: 22px; }
+    .welcome p { font-size: 13px; }
+    .welcome-icon { width: 52px; height: 52px; border-radius: var(--radius-lg); }
+    .welcome-icon svg { width: 24px; height: 24px; }
+    .message-row { padding: 0 4px; max-width: 100%; }
+    .input-footer { flex-direction: column; gap: 4px; }
+  }
+</style>
+<style>
+  /* Auth gate: prevent the protected dashboard UI from flashing before the
+     Firebase session resolves. Everything stays hidden until home.js confirms
+     the user is authenticated (adds `auth-ready` to <body>). */
+  body.auth-loading .main,
+  body.auth-loading .sidebar,
+  body.auth-loading .sidebar-overlay,
+  body.auth-loading .ambient-orb { visibility: hidden; opacity: 0; }
+  #authSplash {
+    position: fixed; inset: 0; z-index: 100;
+    background: var(--bg-base, #0a0b0f);
+    display: none; align-items: center; justify-content: center;
+    flex-direction: column; gap: 16px;
+  }
+  body.auth-loading #authSplash { display: flex; }
+  #authSplash .dot {
+    width: 8px; height: 8px; border-radius: 50%; background: var(--accent, #00d4ff);
+    animation: aquilaSplashDot 1.2s ease-in-out infinite;
+    display: inline-block;
+  }
+  @keyframes aquilaSplashDot { 0%,80%,100%{transform:translateY(0);opacity:.4} 40%{transform:translateY(-6px);opacity:1} }
+</style>
+</head>
+<body class="auth-loading">
+
+<div id="authSplash" role="status" aria-label="Loading">
+  <div style="display:flex;gap:5px;align-items:center;"><span class="dot"></span><span class="dot" style="animation-delay:150ms"></span><span class="dot" style="animation-delay:300ms"></span></div>
+  <div style="font-family:'Sora',sans-serif;font-size:12px;letter-spacing:1px;color:var(--text-muted,#4a4d62);text-transform:uppercase;">Loading Aquila</div>
+</div>
+
+  <div class="ambient-orb orb-1" aria-hidden="true"></div>
+<div class="ambient-orb orb-2" aria-hidden="true"></div>
+
+<div id="sidebarMount"></div>
+<script type="module">
+  import { mountSidebar } from "./js/components/sidebar.js";
+  import { initSyllabusUpload } from "./js/syllabus.js";
+  import { auth, db } from "./firebase-config.js";
+  mountSidebar();
+  initSyllabusUpload({ auth, db });
+</script>
+
+<main class="main">
+  <div class="topbar" style="background:var(--bg-base);border-bottom:1px solid var(--border-subtle);">
+    <div class="topbar-left">
+      <button class="menu-btn" id="menuBtn" aria-label="Open menu">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      </button>
+      <div class="topbar-mobile-logo"><img src="logo.svg" alt="Aquila AI" class="logo-img"><span class="logo-text">Aquila AI</span></div>
+      <div style="display:none;" class="model-selector"><span class="model-dot"></span>Aquila AI</div>
+      <div id="topbarGreeting" style="font-size:14px;font-weight:500;color:var(--text-secondary);margin-left:8px;">Hi, <span id="greetingName">there</span></div>
+    </div>
+    <div style="flex:1;display:flex;justify-content:center;max-width:480px;margin:0 16px;" class="topbar-center">
+      <div style="position:relative;width:100%;max-width:360px;">
+        <input id="topbarSearch" placeholder="search" style="width:100%;height:36px;background:var(--bg-card);border:1px solid var(--border);border-radius:999px;padding:0 36px 0 14px;font-size:13px;color:var(--text-primary);outline:none;" />
+        <svg style="position:absolute;right:10px;top:50%;transform:translateY(-50%);width:16px;height:16px;color:var(--text-muted);" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.35-4.35"/></svg>
+      </div>
+    </div>
+    <div style="display:flex;align-items:center;gap:12px;" class="topbar-right">
+      <button style="width:36px;height:36px;border-radius:999px;background:var(--bg-card);border:1px solid var(--border);display:grid;place-items:center;color:var(--text-muted);position:relative;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 8a6 6 0 0 1 12 0c0 7-6 11-6 11s-6-4-6-11"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg><span style="position:absolute;top:6px;right:7px;width:7px;height:7px;background:var(--green);border-radius:50%;border:1px solid var(--bg-card);"></span></button>
+      <div style="display:flex;align-items:center;gap:8px;cursor:pointer;">
+        <img id="topbarAvatar" src="" data-pending-avatar="1" alt="User" style="width:32px;height:32px;border-radius:50%;object-fit:cover;border:1px solid var(--border);" />
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--text-muted);"><path d="m6 9 6 6 6-6"/></svg>
+      </div>
+    </div>
+  </div>
+  <div class="chat-area" id="chatArea"></div>
+  <div class="input-area">
+    <div class="input-box">
+      <textarea id="chatInput" rows="1" placeholder="Ask Aquila anything — verified with web search..." oninput="resizeInput(this)" onkeydown="handleKey(event)"></textarea>
+      <div class="input-actions">
+        <button class="send-btn" id="sendBtn" title="Send" onclick="sendMessage()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+        </button>
+      </div>
+    </div>
+    <div class="input-footer">
+      <span>🔍 Always web-verified</span>
+      <span>Encrypted in transit</span>
+      <span>Aquila double-checks facts before answering</span>
+    </div>
+  </div>
+</main>
+
+<!-- ===== Non-module helpers (must stay plain script for inline onXxx handlers) ===== -->
+<script>
+function resizeInput(input) {
+  input.style.height = 'auto';
+  input.style.height = input.scrollHeight + 'px';
+}
+function fillPrompt(text) {
+  const input = document.getElementById('chatInput');
+  input.value = text;
+  resizeInput(input);
+  input.focus();
+}
+function runPrompt(text) {
+  const input = document.getElementById('chatInput');
+  input.value = text;
+  resizeInput(input);
+  sendMessage();
+}
+function handleKey(e) {
+  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
+}
+
+/* ── Mobile sidebar — handled by js/components/sidebar.js mountSidebar() — DRY, no duplicate listeners.
+   This page used to duplicate sidebar open/close/toggle logic (caused null addEventListener after DRY). Now delegated. */
+
+/* ── Focus the chat input on load (desktop only; avoids mobile keyboard pop) ── */
+(function(){
+  if (window.matchMedia('(pointer: coarse)').matches) return;
+  window.addEventListener('load', function(){
+    var input = document.getElementById('chatInput');
+    if (input && !input.value) {
+      setTimeout(function(){ input.focus({ preventScroll: true }); }, 450);
+    }
+  });
+}());
+
+/* ── Scroll progress bar ── */
+(function(){
+  var bar = document.createElement('div');
+  bar.className = 'scroll-progress';
+  document.body.prepend(bar);
+  var ticking = false;
+  window.addEventListener('scroll', function(){
+    if(!ticking){ requestAnimationFrame(function(){
+      var h = document.documentElement.scrollHeight - window.innerHeight;
+      bar.style.width = h > 0 ? ((window.scrollY / h) * 100) + '%' : '0%';
+      ticking = false;
+    }); ticking = true; }
+  });
+}());
+
+/* ── Ripple effect on buttons ── */
+(function(){
+  var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if(reduceMotion) return;
+  document.querySelectorAll('.send-btn, .signout-btn, .new-chat-btn, .upgrade-nav-btn').forEach(function(btn){
+    btn.addEventListener('click', function(e){
+      var ripple = document.createElement('span');
+      var r = btn.getBoundingClientRect();
+      var size = Math.max(r.width, r.height);
+      ripple.style.cssText = 'position:absolute;top:'+(e.clientY-r.top-size/2)+'px;left:'+(e.clientX-r.left-size/2)+'px;width:'+size+'px;height:'+size+'px;border-radius:50%;background:rgba(255,255,255,0.15);transform:scale(0);animation:rippleAnim 0.5s ease-out;pointer-events:none;z-index:0;';
+      btn.style.position = 'relative';
+      btn.style.overflow = 'hidden';
+      btn.appendChild(ripple);
+      setTimeout(function(){ ripple.remove(); }, 600);
+    });
+  });
+}());
+</script>
+<style>
+  @keyframes rippleAnim{to{transform:scale(2);opacity:0;}}
+</style>
+
+
+
+<!-- ===== Module scripts ===== -->
+<script type="module" src="./home.js"></script>
+<script type="module" src="./chat.js"></script>
+
+<script type="module" src="./js/avatar-sync.js"></script>
+
+<!-- Vercel Web Analytics -->
+<script type="module">
+  import { inject } from 'https://esm.sh/@vercel/analytics';
+  inject();
+</script>
+<!-- Vercel Speed Insights -->
+<script type="module">
+  import { injectSpeedInsights } from 'https://esm.sh/@vercel/speed-insights';
+  injectSpeedInsights();
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebPage",
+  "name": "Aquila AI Dashboard",
+  "description": "Your personalized AI study assistant for JEE, NEET & Board exams.",
+  "url": "https://aquila-sand.vercel.app/home.html",
+  "breadcrumb": {
+    "@type": "BreadcrumbList",
+    "itemListElement": [{"@type":"ListItem","position":1,"name":"Home","item":"https://aquila-sand.vercel.app/"}]
+  }
+}
+</script>
+</body>
+</html>
+

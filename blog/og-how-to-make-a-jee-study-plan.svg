@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0b0d16"/>
+      <stop offset="0.55" stop-color="#12172b"/>
+      <stop offset="1" stop-color="#1a1030"/>
+    </linearGradient>
+    <linearGradient id="acc" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#4f8cff"/>
+      <stop offset="1" stop-color="#9b7bff"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  <circle cx="1080" cy="90" r="220" fill="#4f8cff" opacity="0.08"/>
+  <circle cx="120" cy="560" r="260" fill="#9b7bff" opacity="0.08"/>
+  <rect x="70" y="70" width="96" height="96" rx="24" fill="url(#acc)"/>
+  <text x="118" y="140" text-anchor="middle" font-family="Sora, Arial, sans-serif" font-weight="800" font-size="54" fill="#ffffff">A</text>
+  <text x="200" y="132" font-family="Sora, Arial, sans-serif" font-weight="700" font-size="34" fill="#ffffff">Aquila AI</text>
+  <text x="70" y="250" font-family="Sora, Arial, sans-serif" font-weight="800" font-size="66" fill="#f1f2f8">JEE Study Plan</text>
+  <text x="70" y="330" font-family="Sora, Arial, sans-serif" font-weight="600" font-size="40" fill="#9aa0b5">How to make one, with a timetable</text>
+  <rect x="70" y="430" width="520" height="6" rx="3" fill="url(#acc)"/>
+  <text x="70" y="515" font-family="Sora, Arial, sans-serif" font-weight="500" font-size="24" fill="#9aa0b5">A practical study guide for JEE &amp; NEET aspirants</text>
+  <text x="70" y="565" font-family="Sora, Arial, sans-serif" font-weight="500" font-size="22" fill="#5c6276">aquila-sand.vercel.app</text>
+</svg>
