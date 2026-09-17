@@ -62,10 +62,245 @@ function validate(body){
   return errors;
 }
 
+/* ── Arena — consolidated to stay within Vercel Hobby 12-function limit ──
+   /api/arena is rewritten to /api/learning-event?route=arena (vercel.json) so this
+   single function serves both learning events and arena. Keeps deployment on Hobby. */
+const ARENA_VALID_ACTIONS = new Set(["init","get","heartbeat","level_complete","defeat_chapter","final_boss_attempt"]);
+function isArenaSubjectKey(s){ return typeof s==="string" && s.length>=3 && s.length<=80 && /^[a-z0-9_]+$/.test(s); }
+async function handleArena(req, res){
+  // GET ?route=arena&subjectKey=xxx  -> fetch progress
+  if(req.method==="GET"){
+    if(!applyCors(req,res,["GET","OPTIONS"])) return;
+    if(!rateLimit(req,res,{name:"arena-get", limit:60})) return;
+    const url = (()=>{ try{ return new URL(req.url, `https://${req.headers.host||'localhost'}`); }catch{ return {searchParams:{get:()=>null}}; }})();
+    const subjectKey = url.searchParams.get("subjectKey") || req.query?.subjectKey;
+    if(!subjectKey || !isArenaSubjectKey(subjectKey)) return res.status(400).json({error:"subjectKey invalid 3..80 [a-z0-9_]"});
+    const tok = (req.headers.authorization||"").startsWith("Bearer ") ? req.headers.authorization.slice(7).trim() : "";
+    const dec = await verifyIdToken(tok);
+    if(!dec||!dec.uid) return res.status(401).json({error:"Not authenticated"});
+    try{
+      const db=firestore();
+      const snap=await db.doc(`users/${dec.uid}/arenaProgress/${subjectKey}`).get();
+      if(!snap.exists) return res.status(404).json({error:"No progress yet"});
+      return res.status(200).json({ progress: snap.data() });
+    }catch(e){ return sendError(req,res,e,"Could not fetch arena progress"); }
+  }
+  if(!applyCors(req,res,["POST","OPTIONS"])) return;
+  if(req.method!=="POST"){ res.setHeader("Allow","POST, GET"); return res.status(405).json({error:"Method not allowed"}); }
+  if(!rateLimit(req,res,{name:"arena-post", limit:90})) return;
+  const tok=(req.headers.authorization||"").startsWith("Bearer ") ? req.headers.authorization.slice(7).trim() : "";
+  const dec=await verifyIdToken(tok);
+  if(!dec||!dec.uid) return res.status(401).json({error:"Not authenticated"});
+  let body; try{ body=await readJsonBody(req);}catch(e){ return sendError(req,res,e,"Invalid JSON");}
+  const subjectKey = body.subjectKey ? String(body.subjectKey).trim() : null;
+  const action = body.action ? String(body.action).trim() : null;
+  if(!subjectKey || !isArenaSubjectKey(subjectKey)) return res.status(400).json({error:"subjectKey invalid"});
+  if(!action || !ARENA_VALID_ACTIONS.has(action)) return res.status(400).json({error:"invalid action (init,get,level_complete,defeat_chapter,final_boss_attempt)"});
+  const uid=dec.uid;
+  const db=firestore();
+  try{
+    const progressRef = db.doc(`users/${uid}/arenaProgress/${subjectKey}`);
+    if(action==="init" || action==="get"){
+      const chapters = Array.isArray(body.chapters) ? body.chapters.slice(0,120) : [];
+      const trackId = body.trackId ? String(body.trackId).slice(0,40) : null;
+      const subject = body.subject ? String(body.subject).slice(0,60) : null;
+      const classNum = body.classNum!=null ? Number(body.classNum) : null;
+      const chapterIds = [];
+      const prereqMap = {};
+      for(const ch of chapters){
+        const cid = ch && typeof ch.conceptId==="string" ? ch.conceptId.trim().slice(0,80) : null;
+        if(!cid || !/^[a-z][a-z0-9]*(\.[a-z0-9_]+)+$/.test(cid)) continue;
+        const prereqs = Array.isArray(ch.prerequisites) ? ch.prerequisites.filter(p=> typeof p==="string" && p.length<=80).slice(0,10) : [];
+        if(!chapterIds.includes(cid)){ chapterIds.push(cid); prereqMap[cid]=prereqs; }
+      }
+      const snap = await progressRef.get();
+      if(snap.exists){
+        if(chapterIds.length){
+          const data = snap.data();
+          const existingIds = new Set(data.chapterOrder || Object.keys(data.chapters||{}));
+          const missing = chapterIds.filter(id=> !existingIds.has(id));
+          if(missing.length && action==="init"){
+            await db.runTransaction(async tx=>{
+              const s = await tx.get(progressRef);
+              if(!s.exists) return;
+              const d=s.data();
+              const chaptersMap = {...(d.chapters||{})};
+              const order=[...(d.chapterOrder||[])];
+              for(const mid of missing){
+                const allDefeated = order.every(oid=> {
+                  const e=chaptersMap[oid]; return e && (e.state==="defeated"||e.state==="mastered");
+                });
+                chaptersMap[mid] = { state: allDefeated? "available":"locked", level:"foundation", bestScore:0, attempts:0, lastAttemptAt:null, defeatedAt:null, masteryScore:0 };
+                order.push(mid);
+              }
+              tx.update(progressRef, { chapters: chaptersMap, chapterOrder: order, total: order.length, updatedAt: require("firebase-admin").firestore.FieldValue.serverTimestamp() });
+            });
+            const fresh = await progressRef.get();
+            return res.status(200).json({ progress: fresh.data(), created:false });
+          }
+        }
+        return res.status(200).json({ progress: snap.data(), created:false });
+      }
+      if(!chapterIds.length) return res.status(400).json({error:"chapters required for init (array of {conceptId, prerequisites})"});
+      const chaptersMap = {};
+      chapterIds.forEach((cid, idx)=>{
+        chaptersMap[cid] = {
+          state: idx===0 ? "available":"locked",
+          level: "foundation",
+          bestScore:0, attempts:0, lastAttemptAt:null, defeatedAt:null, masteryScore:0,
+        };
+      });
+      const docData={
+        subjectKey, trackId: trackId||null, subject: subject||null, classNum: isNaN(classNum)? null: classNum,
+        chapters: chaptersMap,
+        chapterOrder: chapterIds,
+        prerequisites: prereqMap,
+        total: chapterIds.length,
+        defeated: 0,
+        progressPct: 0,
+        currentChapterId: chapterIds[0]||null,
+        finalBossUnlocked: false,
+        finalBossDefeated: false,
+        finalBossScore: 0,
+        createdAt: require("firebase-admin").firestore.FieldValue.serverTimestamp(),
+        updatedAt: require("firebase-admin").firestore.FieldValue.serverTimestamp(),
+        arenaVersion: 1,
+        uid,
+      };
+      await progressRef.set(docData);
+      const fresh = await progressRef.get();
+      return res.status(201).json({ progress: fresh.data(), created:true });
+    }
+    if(action==="level_complete" || action==="heartbeat"){
+      const conceptId = body.conceptId ? String(body.conceptId).trim().slice(0,80) : null;
+      const level = body.level ? String(body.level).trim().slice(0,20) : null;
+      const score = body.score!=null ? clamp01(body.score) : null;
+      const masteryScore = body.masteryScore!=null ? clamp01(body.masteryScore) : null;
+      if(!conceptId) return res.status(400).json({error:"conceptId required"});
+      if(score!=null && (score<0||score>1)) return res.status(400).json({error:"score 0..1"});
+      await db.runTransaction(async tx=>{
+        const snap = await tx.get(progressRef);
+        if(!snap.exists) throw Object.assign(new Error("No progress yet — call init first"),{statusCode:404});
+        const data=snap.data();
+        const chapters=data.chapters||{};
+        const entry=chapters[conceptId];
+        if(!entry) throw Object.assign(new Error("conceptId not in this subject"),{statusCode:400});
+        if(entry.state==="locked") throw Object.assign(new Error("Chapter locked — defeat prerequisites first"),{statusCode:403});
+        const prereqs = (data.prerequisites && data.prerequisites[conceptId]) || [];
+        for(const pre of prereqs){
+          const pe=chapters[pre];
+          if(pe && pe.state!=="defeated" && pe.state!=="mastered"){
+            throw Object.assign(new Error("Prerequisite not defeated: "+pre),{statusCode:403});
+          }
+        }
+        const updated = { ...entry };
+        updated.attempts = (Number(entry.attempts)||0)+1;
+        updated.lastAttemptAt = new Date().toISOString();
+        if(score!=null) updated.bestScore = Math.max(Number(entry.bestScore)||0, score);
+        if(masteryScore!=null) updated.masteryScore = masteryScore;
+        if(entry.state==="available") updated.state="in_progress";
+        if(level && ["foundation","application","challenge","boss"].includes(level)) updated.level=level;
+        chapters[conceptId]=updated;
+        let defeated=0; for(const id in chapters){ if(chapters[id].state==="defeated"||chapters[id].state==="mastered") defeated++; }
+        const total = (data.chapterOrder||Object.keys(chapters)).length;
+        const progressPct = total? Math.round(defeated/total*100):0;
+        const order=data.chapterOrder||Object.keys(chapters);
+        let current=null;
+        for(const cid of order){ const s=chapters[cid].state; if(s==="available"||s==="in_progress"){ current=cid; break; } }
+        if(!current && defeated===total) current=null;
+        else if(!current && order.length){ let lastIdx=-1; order.forEach((cid,i)=>{ if(chapters[cid].state==="defeated"||chapters[cid].state==="mastered") lastIdx=i; }); if(lastIdx>=0 && lastIdx+1<order.length) current=order[lastIdx+1]; else current=order[0]||null; }
+        tx.update(progressRef, { chapters, defeated, progressPct, currentChapterId: current, finalBossUnlocked: defeated===total && total>0, updatedAt: require("firebase-admin").firestore.FieldValue.serverTimestamp() });
+      });
+      const fresh=await progressRef.get();
+      return res.status(200).json({ progress: fresh.data() });
+    }
+    if(action==="defeat_chapter"){
+      const conceptId = body.conceptId ? String(body.conceptId).trim().slice(0,80) : null;
+      const score = body.score!=null ? clamp01(body.score) : 0;
+      const masteryScore = body.masteryScore!=null ? clamp01(body.masteryScore) : null;
+      if(!conceptId) return res.status(400).json({error:"conceptId required"});
+      const MIN_DEFEAT = 0.60;
+      if(score < MIN_DEFEAT && (masteryScore==null || masteryScore < 0.60)){
+        return res.status(400).json({error:`Score too low to defeat (need >= ${MIN_DEFEAT})`});
+      }
+      await db.runTransaction(async tx=>{
+        const snap=await tx.get(progressRef);
+        if(!snap.exists) throw Object.assign(new Error("No progress yet — call init first"),{statusCode:404});
+        const data=snap.data();
+        const chapters=data.chapters||{};
+        const entry=chapters[conceptId];
+        if(!entry) throw Object.assign(new Error("conceptId not in this subject"),{statusCode:400});
+        if(entry.state==="locked") throw Object.assign(new Error("Chapter locked"),{statusCode:403});
+        if(entry.state==="defeated"||entry.state==="mastered"){
+          return;
+        }
+        const prereqs = (data.prerequisites && data.prerequisites[conceptId]) || [];
+        for(const pre of prereqs){
+          const pe=chapters[pre]; if(pe && pe.state!=="defeated" && pe.state!=="mastered") throw Object.assign(new Error("Prerequisite not defeated: "+pre),{statusCode:403});
+        }
+        const order=data.chapterOrder||Object.keys(chapters);
+        const idx=order.indexOf(conceptId);
+        if(idx>0){
+          let earliestAvailable = null;
+          for(const cid of order){ const s=chapters[cid].state; if(s==="available"||s==="in_progress"){ earliestAvailable=cid; break; } }
+          if(earliestAvailable && earliestAvailable!==conceptId){
+            const earliestIdx=order.indexOf(earliestAvailable);
+            if(idx > earliestIdx){
+              throw Object.assign(new Error("Defeat chapters in order — current is "+earliestAvailable),{statusCode:403});
+            }
+          }
+        }
+        const updated={...entry, state: (masteryScore!=null && masteryScore>=0.85)? "mastered":"defeated", defeatedAt: new Date().toISOString(), bestScore: Math.max(Number(entry.bestScore)||0, score), attempts: (Number(entry.attempts)||0)+1, lastAttemptAt: new Date().toISOString() };
+        if(masteryScore!=null) updated.masteryScore=masteryScore;
+        chapters[conceptId]=updated;
+        if(idx>=0 && idx+1<order.length){
+          const nxtId=order[idx+1]; const nxt=chapters[nxtId];
+          if(nxt && nxt.state==="locked") nxt.state="available";
+        }
+        let defeated=0; for(const id in chapters){ if(chapters[id].state==="defeated"||chapters[id].state==="mastered") defeated++; }
+        const total=order.length; const progressPct=total?Math.round(defeated/total*100):0;
+        let current=null;
+        for(const cid of order){ const s=chapters[cid].state; if(s==="available"||s==="in_progress"){ current=cid; break; } }
+        if(!current && defeated===total) current=null;
+        const finalBossUnlocked = defeated===total && total>0;
+        tx.update(progressRef, { chapters, defeated, progressPct, currentChapterId: current, finalBossUnlocked, updatedAt: require("firebase-admin").firestore.FieldValue.serverTimestamp() });
+        const eventId = `${Date.now()}_${conceptId}`.slice(0,120);
+        const evRef = db.doc(`users/${uid}/arenaEvents/${eventId}`);
+        tx.set(evRef, { eventId, uid, subjectKey, conceptId, type:"chapter_defeated", score, masteryScore: masteryScore??null, createdAt: require("firebase-admin").firestore.FieldValue.serverTimestamp(), arenaVersion:1 });
+      });
+      const fresh=await progressRef.get();
+      return res.status(200).json({ progress: fresh.data() });
+    }
+    if(action==="final_boss_attempt"){
+      const score = body.score!=null ? clamp01(body.score) : 0;
+      if(score < 0.7) return res.status(400).json({error:"Final boss requires >= 0.70"});
+      await db.runTransaction(async tx=>{
+        const snap=await tx.get(progressRef);
+        if(!snap.exists) throw Object.assign(new Error("No progress yet"),{statusCode:404});
+        const data=snap.data();
+        if(!data.finalBossUnlocked) throw Object.assign(new Error("Final boss locked — defeat all chapters first"),{statusCode:403});
+        if(data.finalBossDefeated) return;
+        tx.update(progressRef, { finalBossDefeated: true, finalBossScore: score, updatedAt: require("firebase-admin").firestore.FieldValue.serverTimestamp() });
+        const eventId = `${Date.now()}_final_boss`.slice(0,120);
+        tx.set(db.doc(`users/${uid}/arenaEvents/${eventId}`), { eventId, uid, subjectKey, type:"final_boss_defeated", score, createdAt: require("firebase-admin").firestore.FieldValue.serverTimestamp(), arenaVersion:1 });
+      });
+      const fresh=await progressRef.get();
+      return res.status(200).json({ progress: fresh.data() });
+    }
+    return res.status(400).json({error:"Unknown action"});
+  }catch(e){
+    const code = e.statusCode||500;
+    if(code>=500) console.error("[arena] failed",e);
+    return res.status(code).json({error: e.message||"Arena error"});
+  }
+}
+
 module.exports = async function handler(req, res){
   // Support GET /api/learning-event?route=recommendations via rewrite /api/recommendations
+  // and GET /api/learning-event?route=arena via rewrite /api/arena (Hobby 12-function consolidation)
   const url = (()=>{ try{ return new URL(req.url, `https://${req.headers.host||'localhost'}`); }catch{ return { searchParams:{ get:()=>null }}; }})();
   const route = url.searchParams.get("route") || req.query?.route;
+  if(route==="arena") return handleArena(req,res);
   if(req.method==="GET" && route==="recommendations"){
     if(!applyCors(req, res, ["GET","OPTIONS"])) return;
     if(!rateLimit(req,res,{name:"recommendations", limit:30})) return;
