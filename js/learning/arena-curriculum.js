@@ -27,8 +27,19 @@ export const BOARD_CLASSES = Object.freeze({
 });
 
 // Map concept subject field -> Arena display subject
+// For Maharashtra 9 the subjects are distinct and must be preserved verbatim
 function normalizeSubject(conceptSubject, tags){
-  const s = String(conceptSubject||"").toLowerCase();
+  const raw = String(conceptSubject||"");
+  const s = raw.toLowerCase();
+  // Preserve Maharashtra 9 distinct subjects verbatim (case-sensitive display)
+  if(s.includes("science & technology - part 1") || s.includes("science & technology — part 1")) return "Science & Technology - Part 1";
+  if(s.includes("science & technology - part 2") || s.includes("science & technology — part 2")) return "Science & Technology - Part 2";
+  if(s.includes("mathematics - part 1") || s.includes("mathematics — part 1") || s==="mathematics - part 1" || s==="mathematics — part 1" || raw==="Mathematics - Part 1") return "Mathematics - Part 1";
+  if(s.includes("mathematics - part 2") || s.includes("mathematics — part 2") || raw==="Mathematics - Part 2") return "Mathematics - Part 2";
+  if(s==="history") return "History";
+  if(s==="political science") return "Political Science";
+  if(s==="geography") return "Geography";
+  // Fallback for legacy generic subjects
   if(s.includes("mathematics")||s.includes("math")) return "Mathematics";
   if(s.includes("physics") || (Array.isArray(tags)&&tags.includes("physics"))) return "Physics";
   if(s.includes("chemistry")|| tags?.includes("chemistry")) return "Chemistry";
@@ -39,7 +50,7 @@ function normalizeSubject(conceptSubject, tags){
     if(tags?.includes("biology")) return "Biology";
     return "Science";
   }
-  return conceptSubject || "General";
+  return raw || "General";
 }
 
 // Extract class from curriculumPath like "maharashtra.11..." or "cbse.12..."
@@ -103,9 +114,24 @@ function getBoardSubjects(board, classNum){
     }
   }
   if(set.size===0) return ["Mathematics","Science"];
+  // Maharashtra 9 order as per user syllabus: Science Part1, Part2, Maths Part1, Part2, History, Political Science, Geography
+  const mh9Order = ["Science & Technology - Part 1","Science & Technology - Part 2","Mathematics - Part 1","Mathematics - Part 2","History","Political Science","Geography"];
+  if(board==="maharashtra" && classNum===9){
+    // Return in curriculum order if available, otherwise fallback to discovered set sorted by mh9Order
+    const ordered = mh9Order.filter(s=> set.has(s));
+    // Append any extra discovered (future) at end
+    for(const s of set) if(!ordered.includes(s)) ordered.push(s);
+    if(ordered.length) return ordered;
+  }
   // Prefer order: Physics, Chemistry, Biology, Mathematics
-  const order = ["Physics","Chemistry","Biology","Mathematics","Science"];
-  return [...set].sort((a,b)=> order.indexOf(a)-order.indexOf(b));
+  const order = ["Physics","Chemistry","Biology","Mathematics","Science", ...mh9Order];
+  return [...set].sort((a,b)=> {
+    const ia = order.indexOf(a); const ib = order.indexOf(b);
+    if(ia===-1 && ib===-1) return a.localeCompare(b);
+    if(ia===-1) return 1;
+    if(ib===-1) return -1;
+    return ia-ib;
+  });
 }
 
 /**
