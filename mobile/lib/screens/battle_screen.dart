@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../services/arena_curriculum.dart';
 import '../services/arena_progress.dart';
 import '../services/arena_api.dart';
+import '../widgets/app_drawer.dart';
 
 class BattleScreen extends StatefulWidget {
   final String subjectKey; final Chapter chapter; final bool isBoss; final Function(double score) onComplete;
@@ -29,7 +30,8 @@ class _BattleScreenState extends State<BattleScreen> {
     final q=qs[idx];
     final total=qs.length;
     return Scaffold(
-      appBar: AppBar(title: Text(widget.isBoss? '🏆 FINAL BOSS':'⚔ ${widget.chapter.name}'), backgroundColor: Colors.transparent, elevation:0),
+      drawer: const AppDrawer(activeRoute: 'arena'),
+      appBar: AppBar(leading: Builder(builder: (ctx) => IconButton(icon: const Icon(Icons.menu_rounded), onPressed: () => Scaffold.of(ctx).openDrawer())), title: Text(widget.isBoss? '🏆 FINAL BOSS':'⚔ ${widget.chapter.name}'), backgroundColor: Colors.transparent, elevation:0),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children:[

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../services/arena_curriculum.dart';
+import '../widgets/app_drawer.dart';
 import 'subject_map_screen.dart';
 
 class SubjectSelectScreen extends StatelessWidget {
@@ -9,7 +10,10 @@ class SubjectSelectScreen extends StatelessWidget {
   Widget build(BuildContext context){
     final subjects=getSubjectsForTrack(track.id, classNum);
     return Scaffold(
-      appBar: AppBar(title: Text(classNum!=null? 'Class $classNum — Choose Subject':'${track.label} — Choose Subject'), backgroundColor: Colors.transparent, elevation:0),
+      drawer: const AppDrawer(activeRoute: 'arena'),
+      appBar: AppBar(
+        leading: Builder(builder: (ctx) => IconButton(icon: const Icon(Icons.menu_rounded), onPressed: () => Scaffold.of(ctx).openDrawer())),
+        title: Text(classNum!=null? 'Class $classNum — Choose Subject':'${track.label} — Choose Subject'), backgroundColor: Colors.transparent, elevation:0),
       body: GridView.builder(
         padding: const EdgeInsets.all(16),
         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount:2, crossAxisSpacing:12, mainAxisSpacing:12, childAspectRatio:1.35),

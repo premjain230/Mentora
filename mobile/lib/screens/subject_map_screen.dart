@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import '../services/arena_curriculum.dart';
 import '../services/arena_progress.dart';
 import '../services/arena_api.dart';
+import '../widgets/app_drawer.dart';
 import '../widgets/chapter_node.dart';
 import 'battle_screen.dart';
 
@@ -45,14 +46,15 @@ class _SubjectMapScreenState extends State<SubjectMapScreen> {
 
   @override
   Widget build(BuildContext context){
-    if(loading) return Scaffold(appBar: AppBar(title: Text(widget.subject)), body: const Center(child: CircularProgressIndicator()));
-    if(error!=null) return Scaffold(appBar: AppBar(title: Text(widget.subject)), body: Center(child: Padding(padding: const EdgeInsets.all(16), child: Text('Error: $error', style: const TextStyle(color: Colors.redAccent)))));
-    if(progress==null || chapters.isEmpty) return Scaffold(appBar: AppBar(title: Text(widget.subject)), body: const Center(child: Text('No curriculum available', style: TextStyle(color: Colors.white54))));
+    if(loading) return Scaffold(drawer: const AppDrawer(activeRoute: 'arena'), appBar: AppBar(leading: Builder(builder: (ctx) => IconButton(icon: const Icon(Icons.menu_rounded), onPressed: () => Scaffold.of(ctx).openDrawer())), title: Text(widget.subject), backgroundColor: Colors.transparent, elevation:0), body: const Center(child: CircularProgressIndicator()));
+    if(error!=null) return Scaffold(drawer: const AppDrawer(activeRoute: 'arena'), appBar: AppBar(leading: Builder(builder: (ctx) => IconButton(icon: const Icon(Icons.menu_rounded), onPressed: () => Scaffold.of(ctx).openDrawer())), title: Text(widget.subject), backgroundColor: Colors.transparent, elevation:0), body: Center(child: Padding(padding: const EdgeInsets.all(16), child: Text('Error: $error', style: const TextStyle(color: Colors.redAccent)))));
+    if(progress==null || chapters.isEmpty) return Scaffold(drawer: const AppDrawer(activeRoute: 'arena'), appBar: AppBar(leading: Builder(builder: (ctx) => IconButton(icon: const Icon(Icons.menu_rounded), onPressed: () => Scaffold.of(ctx).openDrawer())), title: Text(widget.subject), backgroundColor: Colors.transparent, elevation:0), body: const Center(child: Text('No curriculum available', style: TextStyle(color: Colors.white54))));
     final computed=computeProgress(progress!, chapters);
     progress=computed;
     final filtered = query.isEmpty? chapters : chapters.where((c)=> c.name.toLowerCase().contains(query.toLowerCase()) || c.topic.toLowerCase().contains(query.toLowerCase())).toList();
     return Scaffold(
-      appBar: AppBar(title: Text(widget.subject), backgroundColor: Colors.transparent, elevation:0),
+      drawer: const AppDrawer(activeRoute: 'arena'),
+      appBar: AppBar(leading: Builder(builder: (ctx) => IconButton(icon: const Icon(Icons.menu_rounded), onPressed: () => Scaffold.of(ctx).openDrawer())), title: Text(widget.subject), backgroundColor: Colors.transparent, elevation:0),
       body: Column(children:[
         Padding(padding: const EdgeInsets.fromLTRB(16,8,16,8), child: Row(children:[
           Chip(label: Text('${computed.progressPct}%'), backgroundColor: Colors.white10, labelStyle: const TextStyle(color: Colors.white, fontSize:11)),

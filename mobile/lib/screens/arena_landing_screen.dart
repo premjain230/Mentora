@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../services/arena_curriculum.dart';
+import '../widgets/app_drawer.dart';
 import 'class_select_screen.dart';
 import 'subject_select_screen.dart';
 
@@ -15,7 +16,17 @@ class ArenaLandingScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context){
     return Scaffold(
-      appBar: AppBar(title: const Row(children:[Text('⚔ '), Text('ARENA', style: TextStyle(fontWeight: FontWeight.w800, letterSpacing: -0.5))]), centerTitle:true, backgroundColor: Colors.transparent, elevation:0),
+      drawer: const AppDrawer(activeRoute: 'arena'),
+      appBar: AppBar(
+        leading: Builder(
+          builder: (ctx) => IconButton(
+            icon: const Icon(Icons.menu_rounded), // three lines
+            tooltip: 'Open navigation',
+            onPressed: () => Scaffold.of(ctx).openDrawer(),
+          ),
+        ),
+        title: const Row(mainAxisSize: MainAxisSize.min, children:[Text('⚔ '), Text('ARENA', style: TextStyle(fontWeight: FontWeight.w800, letterSpacing: -0.5))]),
+        centerTitle:true, backgroundColor: Colors.transparent, elevation:0),
       body: ListView(
         padding: const EdgeInsets.fromLTRB(16,8,16,24),
         children:[

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../services/arena_curriculum.dart';
+import '../widgets/app_drawer.dart';
 import 'subject_select_screen.dart';
 
 class ClassSelectScreen extends StatefulWidget {
@@ -12,7 +13,10 @@ class _ClassSelectScreenState extends State<ClassSelectScreen> {
   @override
   Widget build(BuildContext context){
     return Scaffold(
-      appBar: AppBar(title: Text('${widget.track.label} — Choose Class'), backgroundColor: Colors.transparent, elevation:0),
+      drawer: const AppDrawer(activeRoute: 'arena'),
+      appBar: AppBar(
+        leading: Builder(builder: (ctx) => IconButton(icon: const Icon(Icons.menu_rounded), onPressed: () => Scaffold.of(ctx).openDrawer())),
+        title: Text('${widget.track.label} — Choose Class'), backgroundColor: Colors.transparent, elevation:0),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Wrap(spacing:8, runSpacing:8, children:[
