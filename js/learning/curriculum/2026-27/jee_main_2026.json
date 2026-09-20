@@ -1,0 +1,15 @@
+{
+  "curriculum_id": "jee_main_2026",
+  "board_or_exam": "jee_main",
+  "curriculum_version": "2026.1",
+  "academic_year": "2026",
+  "official_source": "https://cdnbbsr.s3waas.gov.in/s3f8e59f4b2fe7c5705bf878bbd494ccdf/uploads/2025/10/202510311323551056.pdf",
+  "verified_at": "2026-01-15",
+  "status": "source_verified",
+  "note": "NTA JEE Main 2026 official PDF verified. Full Unit→Topic hierarchy pending extraction — do NOT use JEE Advanced topics. Store as examination curriculum (not school class).",
+  "subjects": [
+    {"subject_id": "jee_main_physics", "subject_name": "Physics", "official_source_pdf": "https://cdnbbsr.s3waas.gov.in/s3f8e59f4b2fe7c5705bf878bbd494ccdf/uploads/2025/10/202510311323551056.pdf", "units": []},
+    {"subject_id": "jee_main_chemistry", "subject_name": "Chemistry", "official_source_pdf": "https://cdnbbsr.s3waas.gov.in/s3f8e59f4b2fe7c5705bf878bbd494ccdf/uploads/2025/10/202510311323551056.pdf", "units": []},
+    {"subject_id": "jee_main_maths", "subject_name": "Mathematics", "official_source_pdf": "https://cdnbbsr.s3waas.gov.in/s3f8e59f4b2fe7c5705bf878bbd494ccdf/uploads/2025/10/202510311323551056.pdf", "units": []}
+  ]
+}

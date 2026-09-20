@@ -1,0 +1,15 @@
+{
+  "curriculum_id": "neet_ug_2026",
+  "board_or_exam": "neet_ug",
+  "curriculum_version": "2026.1",
+  "academic_year": "2026",
+  "official_source": "https://neet.nta.nic.in/documents/ | https://cdnbbsr.s3waas.gov.in/s37bc1ec1d9c3426357e69acd5bf320061/uploads/2026/01/20260102588210790.pdf (2025 syllabus, 2026 pending)",
+  "verified_at": "2026-01-15",
+  "status": "source_pending",
+  "note": "NEET UG 2026 official 'Syllabus for NEET (UG)-2026 Examination' not yet extracted — 2025 PDF is at noted URL, 2026 PDF pending direct verification on neet.nta.nic.in/documents/. Import stopped for this curriculum until verified — do not invent topics.",
+  "subjects": [
+    {"subject_id": "neet_ug_physics", "subject_name": "Physics", "units": []},
+    {"subject_id": "neet_ug_chemistry", "subject_name": "Chemistry", "units": []},
+    {"subject_id": "neet_ug_biology", "subject_name": "Biology", "units": []}
+  ]
+}

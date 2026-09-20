@@ -1,0 +1,17 @@
+{
+  "curriculum_id": "msb_2026_11",
+  "board_or_exam": "maharashtra",
+  "curriculum_version": "2026.1",
+  "academic_year": "2026-27",
+  "class_or_level": 11,
+  "official_source": "https://www.mahahsscboard.in/en/studentAndSyllabus/hscGeneral | https://books.ebalbharati.in/",
+  "verified_at": "2026-01-15",
+  "status": "pending_verification",
+  "note": "HSC 11 streams: Science (Physics/Chem/Bio/Maths), Commerce (Accountancy/Business/Economics), Arts (History/Geography/Political Science etc.). Chapters pending extraction.",
+  "streams": {
+    "science": ["Physics", "Chemistry", "Biology", "Mathematics"],
+    "commerce": ["Accountancy", "Business Studies", "Economics"],
+    "arts": ["History", "Geography", "Political Science"]
+  },
+  "subjects": []
+}

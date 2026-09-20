@@ -1,0 +1,17 @@
+{
+  "curriculum_id": "msb_2026_12",
+  "board_or_exam": "maharashtra",
+  "curriculum_version": "2026.1",
+  "academic_year": "2026-27",
+  "class_or_level": 12,
+  "official_source": "https://www.mahahsscboard.in/en/studentAndSyllabus/hscGeneral | https://books.ebalbharati.in/",
+  "verified_at": "2026-01-15",
+  "status": "pending_verification",
+  "note": "HSC 12 streams verified, chapters pending. Do not force all subjects onto one student.",
+  "streams": {
+    "science": ["Physics", "Chemistry", "Biology", "Mathematics"],
+    "commerce": ["Accountancy", "Business Studies", "Economics"],
+    "arts": ["History", "Geography", "Political Science"]
+  },
+  "subjects": []
+}

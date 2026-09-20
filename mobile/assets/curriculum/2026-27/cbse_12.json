@@ -1,0 +1,17 @@
+{
+  "curriculum_id": "cbse_2026_12",
+  "board_or_exam": "cbse",
+  "curriculum_version": "2026.1",
+  "academic_year": "2026-27",
+  "class_or_level": 12,
+  "official_source": "https://cbseacademic.nic.in/curriculum_2027.html",
+  "verified_at": "2026-01-15",
+  "status": "subjects_verified",
+  "note": "CBSE 2026-27 Class 12 — same electives as Class 11, units pending.",
+  "subjects": [
+    {"subject_id": "cbse_12_physics", "subject_name": "Physics", "official_source_pdf": "https://cbseacademic.nic.in/web_material/CurriculumMain27/SecPart2/Physics_SecP2_2026-27.pdf", "units": []},
+    {"subject_id": "cbse_12_chemistry", "subject_name": "Chemistry", "official_source_pdf": "https://cbseacademic.nic.in/web_material/CurriculumMain27/SecPart2/Chemistry_SecP2_2026-27.pdf", "units": []},
+    {"subject_id": "cbse_12_biology", "subject_name": "Biology", "official_source_pdf": "https://cbseacademic.nic.in/web_material/CurriculumMain27/SecPart2/Biology_SecP2_2026-27.pdf", "units": []},
+    {"subject_id": "cbse_12_maths", "subject_name": "Mathematics", "official_source_pdf": "https://cbseacademic.nic.in/web_material/CurriculumMain27/SecPart2/Maths_SecP2_2026-27.pdf", "units": []}
+  ]
+}
