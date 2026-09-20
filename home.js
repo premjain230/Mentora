@@ -37,11 +37,11 @@ firebaseReady.then(() => {
   }
   onAuthStateChanged(auth, async (user) => {
     if (!user) {
-      window.location.href = "login.html";
+      window.location.href = "/login";
       return;
     }
     if (!user.emailVerified) {
-      window.location.href = "verify-email.html";
+      window.location.href = "/verify-email";
       return;
     }
     currentUser = user;
@@ -58,14 +58,14 @@ firebaseReady.then(() => {
           // For fresh signups, redirect to onboarding.html
           const createdAt = snap.exists() ? snap.data().createdAt : null;
           const isFresh = !snap.exists() || (createdAt && (Date.now() - (createdAt.toDate ? createdAt.toDate().getTime() : Date.now()) < 5*60*1000));
-          if (isFresh) { window.location.href = "onboarding.html"; return; }
+          if (isFresh) { window.location.href = "/onboarding"; return; }
         }
       }
     } catch {}
     document.body.classList.remove("auth-loading");
     document.body.classList.add("auth-ready");
     // Mode: chat.html or ?mode=chat = normal chat, else big nav hub with cool graphs
-    const isChatMode = new URLSearchParams(window.location.search).get("mode") === "chat" || window.location.pathname.endsWith("chat.html");
+    const isChatMode = new URLSearchParams(window.location.search).get("mode") === "chat" || window.location.pathname.endsWith("chat") || window.location.pathname.endsWith("chat.html");
     const inputArea = document.querySelector(".input-area");
     const modelSel = document.querySelector(".model-selector");
     if (modelSel) modelSel.textContent = isChatMode ? "Aquila AI — Chat" : "Aquila AI — Today";
@@ -140,9 +140,9 @@ function populateUserCard(user) {
       if (e.key === "Enter") {
         const q = topSearch.value.trim();
         if (!q) return;
-        const isChat = window.location.pathname.endsWith("chat.html") || new URLSearchParams(window.location.search).get("mode")==="chat";
+        const isChat = window.location.pathname.endsWith("chat") || window.location.pathname.endsWith("chat.html") || new URLSearchParams(window.location.search).get("mode")==="chat";
         if (isChat) { const inp=document.getElementById("chatInput"); if(inp){ inp.value=q; inp.dispatchEvent(new Event("input")); import("./chat.js").then(m=>m.sendMessage()); } }
-        else { sessionStorage.setItem("aquila_pending_prompt", q); window.location.href = "chat.html"; }
+        else { sessionStorage.setItem("aquila_pending_prompt", q); window.location.href = "/chat"; }
       }
     });
   }
@@ -191,7 +191,7 @@ export async function loadRecentChats(uid) {
 
     const btn = document.createElement("a");
     btn.className = "nav-item";
-    btn.href = "chat-history.html";
+    btn.href = "/chat-history";
     btn.innerHTML = `<span class="nav-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></span> Chat History${hasChats ? ` <span style="margin-left:auto;font-size:11px;opacity:0.7;">View all →</span>` : ""}`;
     btn.title = hasChats ? "View all chats" : "No chats yet — start a new chat";
     section.appendChild(btn);
@@ -281,7 +281,7 @@ function wireSignOutBtn() {
 // ─── Sign out ─────────────────────────────────────────────────────────────────
 export async function signOut() {
   await fbSignOut(auth);
-  window.location.href = "login.html";
+  window.location.href = "/login";
 }
 
 async function loadRecommendations(uid){
@@ -309,10 +309,10 @@ async function loadRecommendations(uid){
       item.innerHTML = `<span style="font-size:13px;font-weight:600;">${r.subject} • ${r.topic}</span><span style="font-size:11px;color:var(--text-muted);">${r.action} — ${r.reason}</span>`;
       item.title = r.explanation || r.reason;
       item.addEventListener("click", ()=>{
-        if(r.action==="review") window.location.href="review.html";
-        else if(r.action==="diagnostic") window.location.href="analyze.html";
-        else if(r.action==="practice") window.location.href="quiz.html";
-        else window.location.href="study-session.html";
+        if(r.action==="review") window.location.href="/review";
+        else if(r.action==="diagnostic") window.location.href="/analyze";
+        else if(r.action==="practice") window.location.href="/quiz";
+        else window.location.href="/study-session";
         // analytics: recommendation_clicked (not mastery evidence)
         try{ fetch("/api/learning-event",{method:"POST", headers:{"Content-Type":"application/json","Authorization":`Bearer ${token}`}, body: JSON.stringify({type:"recommendation_clicked", source:"recommendation", payload:{conceptId:r.conceptId, action:r.action}})}).catch(()=>{});}catch{}
       });
