@@ -27,16 +27,20 @@ export const BOARD_CLASSES = Object.freeze({
 });
 
 // Map concept subject field -> Arena display subject
-// For Maharashtra 9 the subjects are distinct and must be preserved verbatim
+// For Maharashtra 9/10 the subjects are distinct and must be preserved verbatim
 function normalizeSubject(conceptSubject, tags){
   const raw = String(conceptSubject||"");
   const s = raw.toLowerCase();
   // Preserve Maharashtra 9 distinct subjects verbatim (case-sensitive display)
   if(s.includes("science & technology - part 1") || s.includes("science & technology — part 1")) return "Science & Technology - Part 1";
   if(s.includes("science & technology - part 2") || s.includes("science & technology — part 2")) return "Science & Technology - Part 2";
+  if(s==="science & technology") return "Science & Technology";
+  if(s.includes("mathematics - part 1 (algebra)")) return "Mathematics - Part 1 (Algebra)";
+  if(s.includes("mathematics - part 2 (geometry)")) return "Mathematics - Part 2 (Geometry)";
   if(s.includes("mathematics - part 1") || s.includes("mathematics — part 1") || s==="mathematics - part 1" || s==="mathematics — part 1" || raw==="Mathematics - Part 1") return "Mathematics - Part 1";
   if(s.includes("mathematics - part 2") || s.includes("mathematics — part 2") || raw==="Mathematics - Part 2") return "Mathematics - Part 2";
   if(s==="history") return "History";
+  if(s==="history and political science") return "History and Political Science";
   if(s==="political science") return "Political Science";
   if(s==="geography") return "Geography";
   // Fallback for legacy generic subjects
