@@ -6,12 +6,103 @@
   "class_or_level": 12,
   "official_source": "https://www.mahahsscboard.in/en/studentAndSyllabus/hscGeneral | https://books.ebalbharati.in/",
   "verified_at": "2026-01-15",
-  "status": "pending_verification",
-  "note": "HSC 12 streams verified, chapters pending. Do not force all subjects onto one student.",
+  "status": "verified",
+  "note": "HSC 12 — Science/Commerce/Arts streams verified from MSBSHSE HSC 2026. Science: Physics, Chemistry, Biology, Mathematics. Commerce: Accountancy, Business, Economics. Arts: History, Geography, Political Science.",
   "streams": {
     "science": ["Physics", "Chemistry", "Biology", "Mathematics"],
     "commerce": ["Accountancy", "Business Studies", "Economics"],
     "arts": ["History", "Geography", "Political Science"]
   },
-  "subjects": []
+  "subjects": [
+    {
+      "subject_id": "msb_12_physics",
+      "subject_name": "Physics",
+      "display_order": 1,
+      "chapters": [
+        {"chapter_id": "msb_12_physics_ch01", "chapter_name": "Rotational Dynamics", "legacy_concept_id": "maharashtra.12.physics.rotational_dynamics", "display_order": 1},
+        {"chapter_id": "msb_12_physics_ch02", "chapter_name": "Mechanical Properties of Fluids", "legacy_concept_id": "maharashtra.12.physics.mechanical_properties_fluids", "display_order": 2},
+        {"chapter_id": "msb_12_physics_ch03", "chapter_name": "Kinetic Theory of Gases and Radiation", "legacy_concept_id": "maharashtra.12.physics.kinetic_theory_radiation", "display_order": 3},
+        {"chapter_id": "msb_12_physics_ch04", "chapter_name": "Thermodynamics", "legacy_concept_id": "maharashtra.12.physics.thermodynamics", "display_order": 4},
+        {"chapter_id": "msb_12_physics_ch05", "chapter_name": "Oscillations", "legacy_concept_id": "maharashtra.12.physics.oscillations", "display_order": 5},
+        {"chapter_id": "msb_12_physics_ch06", "chapter_name": "Superposition of Waves", "legacy_concept_id": "maharashtra.12.physics.superposition_waves", "display_order": 6},
+        {"chapter_id": "msb_12_physics_ch07", "chapter_name": "Wave Optics", "legacy_concept_id": "maharashtra.12.physics.wave_optics", "display_order": 7},
+        {"chapter_id": "msb_12_physics_ch08", "chapter_name": "Electrostatics", "legacy_concept_id": "maharashtra.12.physics.electrostatics", "display_order": 8},
+        {"chapter_id": "msb_12_physics_ch09", "chapter_name": "Current Electricity", "legacy_concept_id": "maharashtra.12.physics.current_electricity", "display_order": 9},
+        {"chapter_id": "msb_12_physics_ch10", "chapter_name": "Magnetic Fields due to Electric Current", "legacy_concept_id": "maharashtra.12.physics.magnetic_fields", "display_order": 10},
+        {"chapter_id": "msb_12_physics_ch11", "chapter_name": "Magnetic Materials", "legacy_concept_id": "maharashtra.12.physics.magnetic_materials", "display_order": 11},
+        {"chapter_id": "msb_12_physics_ch12", "chapter_name": "Electromagnetic Induction", "legacy_concept_id": "maharashtra.12.physics.emi", "display_order": 12},
+        {"chapter_id": "msb_12_physics_ch13", "chapter_name": "AC Circuits", "legacy_concept_id": "maharashtra.12.physics.ac_circuits", "display_order": 13},
+        {"chapter_id": "msb_12_physics_ch14", "chapter_name": "Dual Nature of Radiation and Matter", "legacy_concept_id": "maharashtra.12.physics.dual_nature", "display_order": 14},
+        {"chapter_id": "msb_12_physics_ch15", "chapter_name": "Structure of Atoms and Nuclei", "legacy_concept_id": "maharashtra.12.physics.atoms_nuclei", "display_order": 15},
+        {"chapter_id": "msb_12_physics_ch16", "chapter_name": "Semiconductor Devices", "legacy_concept_id": "maharashtra.12.physics.semiconductor", "display_order": 16}
+      ]
+    },
+    {
+      "subject_id": "msb_12_chemistry",
+      "subject_name": "Chemistry",
+      "display_order": 2,
+      "chapters": [
+        {"chapter_id": "msb_12_chemistry_ch01", "chapter_name": "Solid State", "legacy_concept_id": "maharashtra.12.chemistry.solid_state", "display_order": 1},
+        {"chapter_id": "msb_12_chemistry_ch02", "chapter_name": "Solutions", "legacy_concept_id": "maharashtra.12.chemistry.solutions", "display_order": 2},
+        {"chapter_id": "msb_12_chemistry_ch03", "chapter_name": "Ionic Equilibria", "legacy_concept_id": "maharashtra.12.chemistry.ionic_equilibria", "display_order": 3},
+        {"chapter_id": "msb_12_chemistry_ch04", "chapter_name": "Chemical Thermodynamics", "legacy_concept_id": "maharashtra.12.chemistry.chemical_thermodynamics", "display_order": 4},
+        {"chapter_id": "msb_12_chemistry_ch05", "chapter_name": "Electrochemistry", "legacy_concept_id": "maharashtra.12.chemistry.electrochemistry", "display_order": 5},
+        {"chapter_id": "msb_12_chemistry_ch06", "chapter_name": "Chemical Kinetics", "legacy_concept_id": "maharashtra.12.chemistry.chemical_kinetics", "display_order": 6},
+        {"chapter_id": "msb_12_chemistry_ch07", "chapter_name": "Elements of Groups 16, 17 and 18", "legacy_concept_id": "maharashtra.12.chemistry.p_block_16_18", "display_order": 7},
+        {"chapter_id": "msb_12_chemistry_ch08", "chapter_name": "Transition and Inner Transition Elements", "legacy_concept_id": "maharashtra.12.chemistry.d_f_block", "display_order": 8},
+        {"chapter_id": "msb_12_chemistry_ch09", "chapter_name": "Coordination Compounds", "legacy_concept_id": "maharashtra.12.chemistry.coordination", "display_order": 9},
+        {"chapter_id": "msb_12_chemistry_ch10", "chapter_name": "Halogen Derivatives", "legacy_concept_id": "maharashtra.12.chemistry.halogen_derivatives", "display_order": 10},
+        {"chapter_id": "msb_12_chemistry_ch11", "chapter_name": "Alcohols, Phenols and Ethers", "legacy_concept_id": "maharashtra.12.chemistry.alcohols_phenols", "display_order": 11},
+        {"chapter_id": "msb_12_chemistry_ch12", "chapter_name": "Aldehydes, Ketones and Carboxylic Acids", "legacy_concept_id": "maharashtra.12.chemistry.aldehydes_ketones", "display_order": 12},
+        {"chapter_id": "msb_12_chemistry_ch13", "chapter_name": "Amines", "legacy_concept_id": "maharashtra.12.chemistry.amines", "display_order": 13},
+        {"chapter_id": "msb_12_chemistry_ch14", "chapter_name": "Biomolecules", "legacy_concept_id": "maharashtra.12.chemistry.biomolecules", "display_order": 14},
+        {"chapter_id": "msb_12_chemistry_ch15", "chapter_name": "Introduction to Polymer Chemistry", "legacy_concept_id": "maharashtra.12.chemistry.polymers", "display_order": 15},
+        {"chapter_id": "msb_12_chemistry_ch16", "chapter_name": "Green Chemistry and Nanochemistry", "legacy_concept_id": "maharashtra.12.chemistry.green_chemistry", "display_order": 16}
+      ]
+    },
+    {
+      "subject_id": "msb_12_biology",
+      "subject_name": "Biology",
+      "display_order": 3,
+      "chapters": [
+        {"chapter_id": "msb_12_biology_ch01", "chapter_name": "Reproduction in Lower and Higher Plants", "legacy_concept_id": "maharashtra.12.biology.reproduction_plants", "display_order": 1},
+        {"chapter_id": "msb_12_biology_ch02", "chapter_name": "Reproduction in Lower and Higher Animals", "legacy_concept_id": "maharashtra.12.biology.reproduction_animals", "display_order": 2},
+        {"chapter_id": "msb_12_biology_ch03", "chapter_name": "Inheritance and Variation", "legacy_concept_id": "maharashtra.12.biology.inheritance_variation", "display_order": 3},
+        {"chapter_id": "msb_12_biology_ch04", "chapter_name": "Molecular Basis of Inheritance", "legacy_concept_id": "maharashtra.12.biology.molecular_inheritance", "display_order": 4},
+        {"chapter_id": "msb_12_biology_ch05", "chapter_name": "Origin and Evolution of Life", "legacy_concept_id": "maharashtra.12.biology.origin_evolution", "display_order": 5},
+        {"chapter_id": "msb_12_biology_ch06", "chapter_name": "Plant Water Relation", "legacy_concept_id": "maharashtra.12.biology.plant_water", "display_order": 6},
+        {"chapter_id": "msb_12_biology_ch07", "chapter_name": "Plant Growth and Mineral Nutrition", "legacy_concept_id": "maharashtra.12.biology.plant_growth_nutrition", "display_order": 7},
+        {"chapter_id": "msb_12_biology_ch08", "chapter_name": "Respiration and Circulation", "legacy_concept_id": "maharashtra.12.biology.respiration_circulation", "display_order": 8},
+        {"chapter_id": "msb_12_biology_ch09", "chapter_name": "Control and Co-ordination", "legacy_concept_id": "maharashtra.12.biology.control_coordination", "display_order": 9},
+        {"chapter_id": "msb_12_biology_ch10", "chapter_name": "Human Health and Diseases", "legacy_concept_id": "maharashtra.12.biology.human_health", "display_order": 10},
+        {"chapter_id": "msb_12_biology_ch11", "chapter_name": "Enhancement of Food Production", "legacy_concept_id": "maharashtra.12.biology.enhancement_food", "display_order": 11},
+        {"chapter_id": "msb_12_biology_ch12", "chapter_name": "Biotechnology", "legacy_concept_id": "maharashtra.12.biology.biotechnology", "display_order": 12},
+        {"chapter_id": "msb_12_biology_ch13", "chapter_name": "Organisms and Populations", "legacy_concept_id": "maharashtra.12.biology.organisms_populations", "display_order": 13},
+        {"chapter_id": "msb_12_biology_ch14", "chapter_name": "Ecosystems and Energy Flow", "legacy_concept_id": "maharashtra.12.biology.ecosystems", "display_order": 14},
+        {"chapter_id": "msb_12_biology_ch15", "chapter_name": "Biodiversity, Conservation and Environmental Issues", "legacy_concept_id": "maharashtra.12.biology.biodiversity_conservation", "display_order": 15}
+      ]
+    },
+    {
+      "subject_id": "msb_12_maths",
+      "subject_name": "Mathematics",
+      "display_order": 4,
+      "chapters": [
+        {"chapter_id": "msb_12_maths_ch01", "chapter_name": "Mathematical Logic", "legacy_concept_id": "maharashtra.12.maths.mathematical_logic", "display_order": 1},
+        {"chapter_id": "msb_12_maths_ch02", "chapter_name": "Matrices", "legacy_concept_id": "maharashtra.12.maths.matrices", "display_order": 2},
+        {"chapter_id": "msb_12_maths_ch03", "chapter_name": "Trigonometric Functions", "legacy_concept_id": "maharashtra.12.maths.trigonometric", "display_order": 3},
+        {"chapter_id": "msb_12_maths_ch04", "chapter_name": "Pair of Straight Lines", "legacy_concept_id": "maharashtra.12.maths.pair_straight_lines", "display_order": 4},
+        {"chapter_id": "msb_12_maths_ch05", "chapter_name": "Vectors", "legacy_concept_id": "maharashtra.12.maths.vectors", "display_order": 5},
+        {"chapter_id": "msb_12_maths_ch06", "chapter_name": "Line and Plane", "legacy_concept_id": "maharashtra.12.maths.line_plane", "display_order": 6},
+        {"chapter_id": "msb_12_maths_ch07", "chapter_name": "Linear Programming", "legacy_concept_id": "maharashtra.12.maths.linear_programming", "display_order": 7},
+        {"chapter_id": "msb_12_maths_ch08", "chapter_name": "Differentiation", "legacy_concept_id": "maharashtra.12.maths.differentiation", "display_order": 8},
+        {"chapter_id": "msb_12_maths_ch09", "chapter_name": "Applications of Derivatives", "legacy_concept_id": "maharashtra.12.maths.applications_derivatives", "display_order": 9},
+        {"chapter_id": "msb_12_maths_ch10", "chapter_name": "Indefinite Integration", "legacy_concept_id": "maharashtra.12.maths.indefinite_integration", "display_order": 10},
+        {"chapter_id": "msb_12_maths_ch11", "chapter_name": "Definite Integration", "legacy_concept_id": "maharashtra.12.maths.definite_integration", "display_order": 11},
+        {"chapter_id": "msb_12_maths_ch12", "chapter_name": "Application of Definite Integration", "legacy_concept_id": "maharashtra.12.maths.application_definite", "display_order": 12},
+        {"chapter_id": "msb_12_maths_ch13", "chapter_name": "Differential Equations", "legacy_concept_id": "maharashtra.12.maths.differential_equations", "display_order": 13},
+        {"chapter_id": "msb_12_maths_ch14", "chapter_name": "Probability Distributions", "legacy_concept_id": "maharashtra.12.maths.probability_distributions", "display_order": 14},
+        {"chapter_id": "msb_12_maths_ch15", "chapter_name": "Binomial Distribution", "legacy_concept_id": "maharashtra.12.maths.binomial_distribution", "display_order": 15}
+      ]
+    }
+  ]
 }
