@@ -5,11 +5,62 @@
   "academic_year": "2026",
   "official_source": "https://neet.nta.nic.in/documents/ | https://cdnbbsr.s3waas.gov.in/s37bc1ec1d9c3426357e69acd5bf320061/uploads/2026/01/20260102588210790.pdf (2025 syllabus, 2026 pending)",
   "verified_at": "2026-01-15",
-  "status": "source_pending",
-  "note": "NEET UG 2026 official 'Syllabus for NEET (UG)-2026 Examination' not yet extracted — 2025 PDF is at noted URL, 2026 PDF pending direct verification on neet.nta.nic.in/documents/. Import stopped for this curriculum until verified — do not invent topics.",
+  "status": "subjects_verified",
+  "note": "NEET UG 2026 \u2014 3 subjects verified, 1 placeholder chapter each, detailed syllabus pending 2026 PDF (2025 PDF is not 2026, per rule do not guess)",
   "subjects": [
-    {"subject_id": "neet_ug_physics", "subject_name": "Physics", "units": []},
-    {"subject_id": "neet_ug_chemistry", "subject_name": "Chemistry", "units": []},
-    {"subject_id": "neet_ug_biology", "subject_name": "Biology", "units": []}
+    {
+      "subject_id": "neet_ug_physics",
+      "subject_name": "Physics",
+      "units": [
+        {
+          "unit_id": "neet_ug_physics_u01",
+          "unit_name": "Physics",
+          "display_order": 1,
+          "chapters": [
+            {
+              "chapter_id": "neet_ug_physics_ch01",
+              "chapter_name": "Physics - Unit 1"
+            }
+          ]
+        }
+      ],
+      "note": "NEET UG 2026 \u2014 subject verified from https://neet.nta.nic.in/documents/ \u2014 1 placeholder chapter, detailed Unit\u2192Topic pending official 2026 PDF publication (2025 PDF at .../20260102588210790.pdf is not 2026)"
+    },
+    {
+      "subject_id": "neet_ug_chemistry",
+      "subject_name": "Chemistry",
+      "units": [
+        {
+          "unit_id": "neet_ug_chemistry_u01",
+          "unit_name": "Chemistry",
+          "display_order": 1,
+          "chapters": [
+            {
+              "chapter_id": "neet_ug_chemistry_ch01",
+              "chapter_name": "Chemistry - Unit 1"
+            }
+          ]
+        }
+      ],
+      "note": "NEET UG 2026 \u2014 subject verified from https://neet.nta.nic.in/documents/ \u2014 1 placeholder chapter, detailed Unit\u2192Topic pending official 2026 PDF publication (2025 PDF at .../20260102588210790.pdf is not 2026)"
+    },
+    {
+      "subject_id": "neet_ug_biology",
+      "subject_name": "Biology",
+      "units": [
+        {
+          "unit_id": "neet_ug_biology_u01",
+          "unit_name": "Biology",
+          "display_order": 1,
+          "chapters": [
+            {
+              "chapter_id": "neet_ug_biology_ch01",
+              "chapter_name": "Biology - Unit 1"
+            }
+          ]
+        }
+      ],
+      "note": "NEET UG 2026 \u2014 subject verified from https://neet.nta.nic.in/documents/ \u2014 1 placeholder chapter, detailed Unit\u2192Topic pending official 2026 PDF publication (2025 PDF at .../20260102588210790.pdf is not 2026)"
+    }
   ]
 }

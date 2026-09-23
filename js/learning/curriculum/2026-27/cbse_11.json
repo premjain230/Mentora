@@ -13,7 +13,20 @@
       "subject_id": "cbse_11_physics",
       "subject_name": "Physics",
       "official_source_pdf": "https://cbseacademic.nic.in/web_material/CurriculumMain27/SecPart2/Physics_SecP2_2026-27.pdf",
-      "units": []
+      "units": [
+        {
+          "unit_id": "cbse_11_physics_u01",
+          "unit_name": "Physics",
+          "display_order": 1,
+          "chapters": [
+            {
+              "chapter_id": "cbse_11_physics_ch01",
+              "chapter_name": "Physics"
+            }
+          ]
+        }
+      ],
+      "note": "Subject verified from https://cbseacademic.nic.in/curriculum_2027.html \u2014 1 placeholder chapter, detailed Unit\u2192Topic pending PDF extraction (no guessing)"
     },
     {
       "subject_id": "cbse_11_chemistry",
@@ -125,91 +138,286 @@
       "subject_id": "cbse_11_biology",
       "subject_name": "Biology",
       "official_source_pdf": "https://cbseacademic.nic.in/web_material/CurriculumMain27/SecPart2/Biology_SecP2_2026-27.pdf",
-      "units": []
+      "units": [
+        {
+          "unit_id": "cbse_11_biology_u01",
+          "unit_name": "Biology",
+          "display_order": 1,
+          "chapters": [
+            {
+              "chapter_id": "cbse_11_biology_ch01",
+              "chapter_name": "Biology"
+            }
+          ]
+        }
+      ],
+      "note": "Subject verified from https://cbseacademic.nic.in/curriculum_2027.html \u2014 1 placeholder chapter, detailed Unit\u2192Topic pending PDF extraction (no guessing)"
     },
     {
       "subject_id": "cbse_11_maths",
       "subject_name": "Mathematics",
       "official_source_pdf": "https://cbseacademic.nic.in/web_material/CurriculumMain27/SecPart2/Maths_SecP2_2026-27.pdf",
-      "units": []
+      "units": [
+        {
+          "unit_id": "cbse_11_maths_u01",
+          "unit_name": "Mathematics",
+          "display_order": 1,
+          "chapters": [
+            {
+              "chapter_id": "cbse_11_maths_ch01",
+              "chapter_name": "Mathematics"
+            }
+          ]
+        }
+      ],
+      "note": "Subject verified from https://cbseacademic.nic.in/curriculum_2027.html \u2014 1 placeholder chapter, detailed Unit\u2192Topic pending PDF extraction (no guessing)"
     },
     {
       "subject_id": "cbse_11_applied_maths",
       "subject_name": "Applied Mathematics",
       "official_source_pdf": "https://cbseacademic.nic.in/web_material/CurriculumMain27/SecPart2/Applied_Mathematics_SecP2_2026-27.pdf",
-      "units": []
+      "units": [
+        {
+          "unit_id": "cbse_11_applied_maths_u01",
+          "unit_name": "Applied Mathematics",
+          "display_order": 1,
+          "chapters": [
+            {
+              "chapter_id": "cbse_11_applied_maths_ch01",
+              "chapter_name": "Applied Mathematics"
+            }
+          ]
+        }
+      ],
+      "note": "Subject verified from https://cbseacademic.nic.in/curriculum_2027.html \u2014 1 placeholder chapter, detailed Unit\u2192Topic pending PDF extraction (no guessing)"
     },
     {
       "subject_id": "cbse_11_english_core",
       "subject_name": "English Core",
       "official_source_pdf": "https://cbseacademic.nic.in/web_material/CurriculumMain27/SecPart2/English_core_SecP2_2026-27.pdf",
-      "units": []
+      "units": [
+        {
+          "unit_id": "cbse_11_english_core_u01",
+          "unit_name": "English Core",
+          "display_order": 1,
+          "chapters": [
+            {
+              "chapter_id": "cbse_11_english_core_ch01",
+              "chapter_name": "English Core"
+            }
+          ]
+        }
+      ],
+      "note": "Subject verified from https://cbseacademic.nic.in/curriculum_2027.html \u2014 1 placeholder chapter, detailed Unit\u2192Topic pending PDF extraction (no guessing)"
     },
     {
       "subject_id": "cbse_11_accountancy",
       "subject_name": "Accountancy",
       "official_source_pdf": "https://cbseacademic.nic.in/web_material/CurriculumMain27/SecPart2/Accountancy_SecP2_2026-27.pdf",
-      "units": []
+      "units": [
+        {
+          "unit_id": "cbse_11_accountancy_u01",
+          "unit_name": "Accountancy",
+          "display_order": 1,
+          "chapters": [
+            {
+              "chapter_id": "cbse_11_accountancy_ch01",
+              "chapter_name": "Accountancy"
+            }
+          ]
+        }
+      ],
+      "note": "Subject verified from https://cbseacademic.nic.in/curriculum_2027.html \u2014 1 placeholder chapter, detailed Unit\u2192Topic pending PDF extraction (no guessing)"
     },
     {
       "subject_id": "cbse_11_business_studies",
       "subject_name": "Business Studies",
       "official_source_pdf": "https://cbseacademic.nic.in/web_material/CurriculumMain27/SecPart2/BusinessStudies_SecP2_2026-27.pdf",
-      "units": []
+      "units": [
+        {
+          "unit_id": "cbse_11_business_studies_u01",
+          "unit_name": "Business Studies",
+          "display_order": 1,
+          "chapters": [
+            {
+              "chapter_id": "cbse_11_business_studies_ch01",
+              "chapter_name": "Business Studies"
+            }
+          ]
+        }
+      ],
+      "note": "Subject verified from https://cbseacademic.nic.in/curriculum_2027.html \u2014 1 placeholder chapter, detailed Unit\u2192Topic pending PDF extraction (no guessing)"
     },
     {
       "subject_id": "cbse_11_economics",
       "subject_name": "Economics",
       "official_source_pdf": "https://cbseacademic.nic.in/web_material/CurriculumMain27/SecPart2/Economics_SecP2_2026-27.pdf",
-      "units": []
+      "units": [
+        {
+          "unit_id": "cbse_11_economics_u01",
+          "unit_name": "Economics",
+          "display_order": 1,
+          "chapters": [
+            {
+              "chapter_id": "cbse_11_economics_ch01",
+              "chapter_name": "Economics"
+            }
+          ]
+        }
+      ],
+      "note": "Subject verified from https://cbseacademic.nic.in/curriculum_2027.html \u2014 1 placeholder chapter, detailed Unit\u2192Topic pending PDF extraction (no guessing)"
     },
     {
       "subject_id": "cbse_11_cs",
       "subject_name": "Computer Science",
       "official_source_pdf": "https://cbseacademic.nic.in/web_material/CurriculumMain27/SecPart2/Computer_Science_SecP2_2026-27.pdf",
-      "units": []
+      "units": [
+        {
+          "unit_id": "cbse_11_cs_u01",
+          "unit_name": "Computer Science",
+          "display_order": 1,
+          "chapters": [
+            {
+              "chapter_id": "cbse_11_cs_ch01",
+              "chapter_name": "Computer Science"
+            }
+          ]
+        }
+      ],
+      "note": "Subject verified from https://cbseacademic.nic.in/curriculum_2027.html \u2014 1 placeholder chapter, detailed Unit\u2192Topic pending PDF extraction (no guessing)"
     },
     {
       "subject_id": "cbse_11_ip",
       "subject_name": "Informatics Practices",
       "official_source_pdf": "https://cbseacademic.nic.in/web_material/CurriculumMain27/SecPart2/Informatics_Practices_SecP2_2026-27.pdf",
-      "units": []
+      "units": [
+        {
+          "unit_id": "cbse_11_ip_u01",
+          "unit_name": "Informatics Practices",
+          "display_order": 1,
+          "chapters": [
+            {
+              "chapter_id": "cbse_11_ip_ch01",
+              "chapter_name": "Informatics Practices"
+            }
+          ]
+        }
+      ],
+      "note": "Subject verified from https://cbseacademic.nic.in/curriculum_2027.html \u2014 1 placeholder chapter, detailed Unit\u2192Topic pending PDF extraction (no guessing)"
     },
     {
       "subject_id": "cbse_11_history",
       "subject_name": "History",
       "official_source_pdf": "https://cbseacademic.nic.in/web_material/CurriculumMain27/SecPart2/History_SecP2_2026-27.pdf",
-      "units": []
+      "units": [
+        {
+          "unit_id": "cbse_11_history_u01",
+          "unit_name": "History",
+          "display_order": 1,
+          "chapters": [
+            {
+              "chapter_id": "cbse_11_history_ch01",
+              "chapter_name": "History"
+            }
+          ]
+        }
+      ],
+      "note": "Subject verified from https://cbseacademic.nic.in/curriculum_2027.html \u2014 1 placeholder chapter, detailed Unit\u2192Topic pending PDF extraction (no guessing)"
     },
     {
       "subject_id": "cbse_11_geography",
       "subject_name": "Geography",
       "official_source_pdf": "https://cbseacademic.nic.in/web_material/CurriculumMain27/SecPart2/Geography_SecP2_2026-27.pdf",
-      "units": []
+      "units": [
+        {
+          "unit_id": "cbse_11_geography_u01",
+          "unit_name": "Geography",
+          "display_order": 1,
+          "chapters": [
+            {
+              "chapter_id": "cbse_11_geography_ch01",
+              "chapter_name": "Geography"
+            }
+          ]
+        }
+      ],
+      "note": "Subject verified from https://cbseacademic.nic.in/curriculum_2027.html \u2014 1 placeholder chapter, detailed Unit\u2192Topic pending PDF extraction (no guessing)"
     },
     {
       "subject_id": "cbse_11_polsci",
       "subject_name": "Political Science",
       "official_source_pdf": "https://cbseacademic.nic.in/web_material/CurriculumMain27/SecPart2/PoliticalScience_SecP2_2026-27.pdf",
-      "units": []
+      "units": [
+        {
+          "unit_id": "cbse_11_polsci_u01",
+          "unit_name": "Political Science",
+          "display_order": 1,
+          "chapters": [
+            {
+              "chapter_id": "cbse_11_polsci_ch01",
+              "chapter_name": "Political Science"
+            }
+          ]
+        }
+      ],
+      "note": "Subject verified from https://cbseacademic.nic.in/curriculum_2027.html \u2014 1 placeholder chapter, detailed Unit\u2192Topic pending PDF extraction (no guessing)"
     },
     {
       "subject_id": "cbse_11_psychology",
       "subject_name": "Psychology",
       "official_source_pdf": "https://cbseacademic.nic.in/web_material/CurriculumMain27/SecPart2/Psychology_SecP2_2026-27.pdf",
-      "units": []
+      "units": [
+        {
+          "unit_id": "cbse_11_psychology_u01",
+          "unit_name": "Psychology",
+          "display_order": 1,
+          "chapters": [
+            {
+              "chapter_id": "cbse_11_psychology_ch01",
+              "chapter_name": "Psychology"
+            }
+          ]
+        }
+      ],
+      "note": "Subject verified from https://cbseacademic.nic.in/curriculum_2027.html \u2014 1 placeholder chapter, detailed Unit\u2192Topic pending PDF extraction (no guessing)"
     },
     {
       "subject_id": "cbse_11_sociology",
       "subject_name": "Sociology",
       "official_source_pdf": "https://cbseacademic.nic.in/web_material/CurriculumMain27/SecPart2/Sociology_SecP2_2026-27.pdf",
-      "units": []
+      "units": [
+        {
+          "unit_id": "cbse_11_sociology_u01",
+          "unit_name": "Sociology",
+          "display_order": 1,
+          "chapters": [
+            {
+              "chapter_id": "cbse_11_sociology_ch01",
+              "chapter_name": "Sociology"
+            }
+          ]
+        }
+      ],
+      "note": "Subject verified from https://cbseacademic.nic.in/curriculum_2027.html \u2014 1 placeholder chapter, detailed Unit\u2192Topic pending PDF extraction (no guessing)"
     },
     {
       "subject_id": "cbse_11_pe",
       "subject_name": "Physical Education",
       "official_source_pdf": "https://cbseacademic.nic.in/web_material/CurriculumMain27/SecPart2/PhysicalEducation_SecP2_2026-27.pdf",
-      "units": []
+      "units": [
+        {
+          "unit_id": "cbse_11_pe_u01",
+          "unit_name": "Physical Education",
+          "display_order": 1,
+          "chapters": [
+            {
+              "chapter_id": "cbse_11_pe_ch01",
+              "chapter_name": "Physical Education"
+            }
+          ]
+        }
+      ],
+      "note": "Subject verified from https://cbseacademic.nic.in/curriculum_2027.html \u2014 1 placeholder chapter, detailed Unit\u2192Topic pending PDF extraction (no guessing)"
     }
   ]
 }
