@@ -4,7 +4,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-<meta http-equiv="Content-Security-Policy" content="default-src 'self' https:; script-src 'self' 'unsafe-inline' 'unsafe-eval' blob: https://www.gstatic.com https://apis.google.com https://accounts.google.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://www.googletagmanager.com https://esm.sh; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: https:; font-src 'self' https://fonts.gstatic.com; connect-src 'self' blob: https://www.googleapis.com https://apis.google.com https://accounts.google.com https://esm.sh https://www.gstatic.com https://firestore.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://analytics.vercel.com; object-src 'none'; frame-src 'self' https://www.gstatic.com https://accounts.google.com https://mentora-c6dca.firebaseapp.com">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self' https:; script-src 'self' 'unsafe-inline' blob: https://www.gstatic.com https://apis.google.com https://accounts.google.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://www.googletagmanager.com https://esm.sh; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: https:; font-src 'self' https://fonts.gstatic.com; connect-src 'self' blob: https://www.googleapis.com https://apis.google.com https://accounts.google.com https://esm.sh https://www.gstatic.com https://firestore.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://analytics.vercel.com; object-src 'none'; frame-src 'self' https://www.gstatic.com https://accounts.google.com https://mentora-c6dca.firebaseapp.com">
 <meta name="description" content="Analyze your study performance and track progress with Aquila AI's analytics dashboard." />
 <meta property="og:title" content="Study Analytics - Aquila AI" />
 <meta property="og:description" content="Analyze your study performance and track progress with Aquila AI's analytics dashboard." />
@@ -26,11 +26,11 @@ body { transition: background 0.35s ease, color 0.35s ease; }
 /* ─── Main Layout ─── */
 
 .take-quiz-btn {
-  display: flex; align-items: center; gap: 8px;
-  background: rgba(0,212,255,0.1); border: 1px solid rgba(0,212,255,0.25);
-  color: var(--accent); font-family: var(--font-main); font-size: 13px; font-weight: 500;
-  padding: 8px 14px; border-radius: 10px; cursor: pointer; transition: all 0.2s;
-  text-decoration: none; white-space: nowrap; flex-shrink: 0;
+ display: flex; align-items: center; gap: 8px;
+ background: rgba(0,212,255,0.1); border: 1px solid rgba(0,212,255,0.25);
+ color: var(--accent); font-family: var(--font-main); font-size: 13px; font-weight: 500;
+ padding: 8px 14px; border-radius: 10px; cursor: pointer; transition: all 0.2s;
+ text-decoration: none; white-space: nowrap; flex-shrink: 0;
 }
 .take-quiz-btn:hover { background: rgba(0,212,255,0.18); border-color: rgba(0,212,255,0.5); }
 
@@ -38,18 +38,18 @@ body { transition: background 0.35s ease, color 0.35s ease; }
 
 /* ─── States ─── */
 .state-screen {
-  display: flex; flex-direction: column; align-items: center; justify-content: center;
-  height: 100%; gap: 16px; text-align: center; padding: 40px;
+ display: flex; flex-direction: column; align-items: center; justify-content: center;
+ height: 100%; gap: 16px; text-align: center; padding: 40px;
 }
 .state-icon { font-size: 48px; margin-bottom: 8px; }
 .state-title { font-size: 20px; font-weight: 600; color: var(--text-primary); }
 .state-desc { font-size: 14px; color: var(--text-secondary); max-width: 380px; line-height: 1.7; }
 .state-cta {
-  margin-top: 6px; display: inline-flex; align-items: center; gap: 8px;
-  background: var(--accent); color: #06121a; border: none; border-radius: 10px;
-  padding: 10px 18px; font-family: var(--font-main); font-size: 13.5px; font-weight: 600;
-  cursor: pointer; text-decoration: none; transition: all 0.18s;
-  box-shadow: 0 6px 18px rgba(0,212,255,0.3);
+ margin-top: 6px; display: inline-flex; align-items: center; gap: 8px;
+ background: var(--accent); color: #06121a; border: none; border-radius: 10px;
+ padding: 10px 18px; font-family: var(--font-main); font-size: 13.5px; font-weight: 600;
+ cursor: pointer; text-decoration: none; transition: all 0.18s;
+ box-shadow: 0 6px 18px rgba(0,212,255,0.3);
 }
 .state-cta:hover { background: #33ddff; transform: translateY(-1px); }
 .spinner { width: 40px; height: 40px; border: 3px solid rgba(0,212,255,0.15); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.8s linear infinite; }
@@ -60,9 +60,9 @@ body { transition: background 0.35s ease, color 0.35s ease; }
 
 .stats-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 14px; }
 .stat-card {
-  background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-lg);
-  padding: 20px 20px 18px; display: flex; flex-direction: column; gap: 6px;
-  transition: border-color 0.2s, transform 0.18s; position: relative; overflow: hidden;
+ background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-lg);
+ padding: 20px 20px 18px; display: flex; flex-direction: column; gap: 6px;
+ transition: border-color 0.2s, transform 0.18s; position: relative; overflow: hidden;
 }
 .stat-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: var(--card-accent, var(--accent)); opacity: 0.7; }
 .stat-card:hover { border-color: var(--border-hover); transform: translateY(-2px); }
@@ -98,7 +98,7 @@ body { transition: background 0.35s ease, color 0.35s ease; }
 .pill-grid { display: flex; flex-wrap: wrap; gap: 8px; }
 .pill { font-size: 12px; padding: 5px 12px; border-radius: 20px; font-weight: 500; display: inline-flex; align-items: center; gap: 5px; }
 .pill.strong { background: rgba(0,212,255,0.1); color: var(--accent); border: 1px solid rgba(0,212,255,0.25); }
-.pill.weak   { background: rgba(255,107,107,0.12); color: var(--accent3); border: 1px solid rgba(255,107,107,0.25); }
+.pill.weak  { background: rgba(255,107,107,0.12); color: var(--accent3); border: 1px solid rgba(255,107,107,0.25); }
 .pill span.pct { font-family: var(--font-mono); font-size: 10px; opacity: 0.85; }
 
 /* ─── History Table ─── */
@@ -107,9 +107,9 @@ body { transition: background 0.35s ease, color 0.35s ease; }
 .history-table td { font-size: 13px; color: var(--text-secondary); padding: 11px 16px; border-top: 1px solid var(--border); vertical-align: middle; }
 .history-table tr:hover td { background: rgba(255,255,255,0.02); }
 .score-badge { display: inline-block; font-family: var(--font-mono); font-size: 12px; font-weight: 700; padding: 3px 9px; border-radius: 6px; }
-.score-badge.hi  { background: rgba(0,212,255,0.12); color: var(--accent); }
+.score-badge.hi { background: rgba(0,212,255,0.12); color: var(--accent); }
 .score-badge.mid { background: rgba(255,209,102,0.12); color: var(--accent4); }
-.score-badge.lo  { background: rgba(255,107,107,0.12); color: var(--accent3); }
+.score-badge.lo { background: rgba(255,107,107,0.12); color: var(--accent3); }
 
 /* ─── Achievements ─── */
 .ach-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 12px; }
@@ -118,7 +118,7 @@ body { transition: background 0.35s ease, color 0.35s ease; }
 .ach-card:hover { transform: translateY(-2px); border-color: var(--border-hover); }
 .ach-emoji { font-size: 30px; margin-bottom: 8px; display: block; }
 .ach-title { font-size: 12.5px; font-weight: 600; color: var(--text-primary); margin-bottom: 4px; }
-.ach-desc  { font-size: 11px; color: var(--text-muted); line-height: 1.5; }
+.ach-desc { font-size: 11px; color: var(--text-muted); line-height: 1.5; }
 .ach-card.locked .ach-emoji { filter: grayscale(1); opacity: 0.4; }
 .ach-card.locked .ach-title, .ach-card.locked .ach-desc { opacity: 0.4; }
 
@@ -136,18 +136,18 @@ body { transition: background 0.35s ease, color 0.35s ease; }
 
 /* ─── Mobile ─── */
 @media (max-width: 880px) {
-  .topbar { padding: 12px 14px; }
-  .content { padding: 20px 14px 32px; }
-  .wide-grid { grid-template-columns: 1fr; }
-  .stats-grid { grid-template-columns: repeat(2, 1fr); }
-  .ach-grid { grid-template-columns: repeat(2, 1fr); }
-  .history-table th:nth-child(2), .history-table td:nth-child(2),
-  .history-table th:nth-child(5), .history-table td:nth-child(5) { display: none; }
-  .donut-wrap { flex-direction: column; align-items: flex-start; gap: 16px; }
+ .topbar { padding: 12px 14px; }
+ .content { padding: 20px 14px 32px; }
+ .wide-grid { grid-template-columns: 1fr; }
+ .stats-grid { grid-template-columns: repeat(2, 1fr); }
+ .ach-grid { grid-template-columns: repeat(2, 1fr); }
+ .history-table th:nth-child(2), .history-table td:nth-child(2),
+ .history-table th:nth-child(5), .history-table td:nth-child(5) { display: none; }
+ .donut-wrap { flex-direction: column; align-items: flex-start; gap: 16px; }
 }
 @media (max-width: 480px) {
-  .stats-grid { grid-template-columns: 1fr; }
-  .take-quiz-btn span { display: none; }
+ .stats-grid { grid-template-columns: 1fr; }
+ .take-quiz-btn span { display: none; }
 }
 @keyframes rippleAnim{to{transform:scale(2);opacity:0;}}
 </style>
@@ -158,140 +158,140 @@ body { transition: background 0.35s ease, color 0.35s ease; }
 
 <div id="sidebarMount"></div>
 <script type="module">
-  import { mountSidebar } from "./js/components/sidebar.js";
-  import { initSyllabusUpload } from "./js/syllabus.js";
-  import { auth, db } from "./firebase-config.js";
-  mountSidebar();
-  initSyllabusUpload({ auth, db });
+ import { mountSidebar } from "./js/components/sidebar.js";
+ import { initSyllabusUpload } from "./js/syllabus.js";
+ import { auth, db } from "./firebase-config.js";
+ mountSidebar();
+ initSyllabusUpload({ auth, db });
 </script>
 
 
 
 <main class="main">
-  <div class="topbar" style="background:var(--bg-base);border-bottom:1px solid var(--border-subtle);">
-    <div class="topbar-left">
-      <button class="menu-btn" id="menuBtn" aria-label="Open menu">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
-      </button>
-      <div class="topbar-mobile-logo"><img src="logo.svg" alt="Aquila AI" class="logo-img"><span class="logo-text">Aquila AI</span></div>
-      <div style="display:none;" class="model-selector"><span class="model-dot"></span>Aquila AI</div>
-      <div id="topbarGreeting" style="font-size:14px;font-weight:500;color:var(--text-secondary);margin-left:8px;">Hi, <span id="greetingName">there</span></div>
+ <div class="topbar" style="background:var(--bg-base);border-bottom:1px solid var(--border-subtle);">
+  <div class="topbar-left">
+   <button class="menu-btn" id="menuBtn" aria-label="Open menu">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+   </button>
+   <div class="topbar-mobile-logo"><img src="logo.svg" alt="Aquila AI" class="logo-img"><span class="logo-text">Aquila AI</span></div>
+   <div style="display:none;" class="model-selector"><span class="model-dot"></span>Aquila AI</div>
+   <div id="topbarGreeting" style="font-size:14px;font-weight:500;color:var(--text-secondary);margin-left:8px;">Hi, <span id="greetingName">there</span></div>
+  </div>
+  <div style="flex:1;display:flex;justify-content:center;max-width:480px;margin:0 16px;" class="topbar-center">
+   <div style="position:relative;width:100%;max-width:360px;">
+    <input id="topbarSearch" placeholder="search" style="width:100%;height:36px;background:var(--bg-card);border:1px solid var(--border);border-radius:999px;padding:0 36px 0 14px;font-size:13px;color:var(--text-primary);outline:none;" />
+    <svg style="position:absolute;right:10px;top:50%;transform:translateY(-50%);width:16px;height:16px;color:var(--text-muted);" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.35-4.35"/></svg>
+   </div>
+  </div>
+  <div style="display:flex;align-items:center;gap:12px;" class="topbar-right">
+   <button style="width:36px;height:36px;border-radius:999px;background:var(--bg-card);border:1px solid var(--border);display:grid;place-items:center;color:var(--text-muted);position:relative;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 8a6 6 0 0 1 12 0c0 7-6 11-6 11s-6-4-6-11"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg><span style="position:absolute;top:6px;right:7px;width:7px;height:7px;background:var(--green);border-radius:50%;border:1px solid var(--bg-card);"></span></button>
+   <div style="display:flex;align-items:center;gap:8px;cursor:pointer;">
+    <img id="topbarAvatar" src="" data-pending-avatar="1" alt="User" style="width:32px;height:32px;border-radius:50%;object-fit:cover;border:1px solid var(--border);" />
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--text-muted);"><path d="m6 9 6 6 6-6"/></svg>
+   </div>
+  </div>
+ </div>
+
+ <div class="state-screen" id="stateLoading">
+  <div class="spinner"></div>
+  <div class="state-title">Crunching your quiz data…</div>
+  <div class="state-desc">Fetching attempts and computing statistics.</div>
+ </div>
+
+ <div class="state-screen" id="stateEmpty" style="display:none;">
+  <div class="state-icon">📭</div>
+  <div class="state-title">No quiz attempts yet</div>
+  <div class="state-desc">Take a quiz and your analytics will appear here automatically. Every attempt is tracked for detailed insights.</div>
+  <a class="state-cta" href="quiz.html">
+   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+   Take your first quiz
+  </a>
+ </div>
+
+ <div class="state-screen" id="stateError" style="display:none;">
+  <div class="state-icon">⚠️</div>
+  <div class="state-title">Couldn't load quiz data</div>
+  <div class="state-desc" id="errorMsg">An unexpected error occurred.</div>
+  <button class="state-cta" onclick="location.reload()" style="margin-top:12px;">Retry</button>
+ </div>
+
+ <div class="content" id="dashboard" style="display:none;">
+  <div class="section-label">Overview</div>
+  <div class="stats-grid" id="overviewGrid"></div>
+
+  <div class="section-label">💡 What This Means — Next Steps</div>
+  <div class="panel" id="insightsPanel" style="background: linear-gradient(135deg, rgba(0,212,255,0.06), rgba(167,139,250,0.05)); border-color: rgba(0,212,255,0.12);"></div>
+
+  <div class="section-label">Performance</div>
+  <div class="wide-grid">
+   <div class="panel">
+    <div class="panel-title"><span class="dot" style="--panel-dot:var(--accent)"></span>Overall Accuracy</div>
+    <div class="donut-wrap">
+     <div class="donut">
+      <svg viewBox="0 0 36 36">
+       <circle class="donut-bg" cx="18" cy="18" r="15.9" />
+       <circle class="donut-fg" cx="18" cy="18" r="15.9" id="donutFg" stroke-dasharray="100 100" stroke-dashoffset="100" />
+      </svg>
+      <div class="donut-label"><span id="donutPct">0%</span><small>accuracy</small></div>
+     </div>
+     <div class="donut-legend" id="donutLegend"></div>
     </div>
-    <div style="flex:1;display:flex;justify-content:center;max-width:480px;margin:0 16px;" class="topbar-center">
-      <div style="position:relative;width:100%;max-width:360px;">
-        <input id="topbarSearch" placeholder="search" style="width:100%;height:36px;background:var(--bg-card);border:1px solid var(--border);border-radius:999px;padding:0 36px 0 14px;font-size:13px;color:var(--text-primary);outline:none;" />
-        <svg style="position:absolute;right:10px;top:50%;transform:translateY(-50%);width:16px;height:16px;color:var(--text-muted);" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.35-4.35"/></svg>
-      </div>
+   </div>
+   <div class="panel">
+    <div class="panel-title"><span class="dot" style="--panel-dot:var(--accent2)"></span>Score Trend</div>
+    <div class="trend-canvas-wrap" id="trendWrap">
+     <div class="trend-empty" id="trendEmpty">Not enough data for a trend yet.</div>
+     <canvas id="trendCanvas" style="display:none;"></canvas>
     </div>
-    <div style="display:flex;align-items:center;gap:12px;" class="topbar-right">
-      <button style="width:36px;height:36px;border-radius:999px;background:var(--bg-card);border:1px solid var(--border);display:grid;place-items:center;color:var(--text-muted);position:relative;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 8a6 6 0 0 1 12 0c0 7-6 11-6 11s-6-4-6-11"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg><span style="position:absolute;top:6px;right:7px;width:7px;height:7px;background:var(--green);border-radius:50%;border:1px solid var(--bg-card);"></span></button>
-      <div style="display:flex;align-items:center;gap:8px;cursor:pointer;">
-        <img id="topbarAvatar" src="" data-pending-avatar="1" alt="User" style="width:32px;height:32px;border-radius:50%;object-fit:cover;border:1px solid var(--border);" />
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--text-muted);"><path d="m6 9 6 6 6-6"/></svg>
-      </div>
-    </div>
+   </div>
   </div>
 
-  <div class="state-screen" id="stateLoading">
-    <div class="spinner"></div>
-    <div class="state-title">Crunching your quiz data…</div>
-    <div class="state-desc">Fetching attempts and computing statistics.</div>
+  <div class="section-label">Subjects & Topics</div>
+  <div class="wide-grid">
+   <div class="panel">
+    <div class="panel-title"><span class="dot"></span>Subject Performance</div>
+    <div class="bar-list" id="subjectBars"></div>
+   </div>
+   <div class="panel">
+    <div class="panel-title"><span class="dot" style="--panel-dot:var(--accent3)"></span>Topic Accuracy</div>
+    <div class="bar-list" id="topicBars"></div>
+   </div>
   </div>
 
-  <div class="state-screen" id="stateEmpty" style="display:none;">
-    <div class="state-icon">📭</div>
-    <div class="state-title">No quiz attempts yet</div>
-    <div class="state-desc">Take a quiz and your analytics will appear here automatically. Every attempt is tracked for detailed insights.</div>
-    <a class="state-cta" href="quiz.html">
-      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
-      Take your first quiz
-    </a>
+  <div class="section-label">Strengths & Weaknesses</div>
+  <div class="wide-grid">
+   <div class="panel">
+    <div class="panel-title"><span class="dot" style="--panel-dot:var(--accent)"></span>Strong Topics</div>
+    <div class="pill-grid" id="strongPills"></div>
+   </div>
+   <div class="panel">
+    <div class="panel-title"><span class="dot" style="--panel-dot:var(--accent3)"></span>Weak Topics — Focus Here</div>
+    <div class="pill-grid" id="weakPills"></div>
+   </div>
   </div>
 
-  <div class="state-screen" id="stateError" style="display:none;">
-    <div class="state-icon">⚠️</div>
-    <div class="state-title">Couldn't load quiz data</div>
-    <div class="state-desc" id="errorMsg">An unexpected error occurred.</div>
-    <button class="state-cta" onclick="location.reload()" style="margin-top:12px;">Retry</button>
+  <div class="section-label">This Period</div>
+  <div class="stats-grid" id="periodGrid"></div>
+
+  <div class="section-label">Achievements</div>
+  <div class="ach-grid" id="achGrid"></div>
+
+  <div class="section-label">Recent Quiz History</div>
+  <div class="panel" style="padding:0; overflow:hidden; overflow-x:auto;">
+   <table class="history-table">
+    <thead>
+     <tr>
+      <th>Quiz / Topic</th>
+      <th>Subject</th>
+      <th>Score</th>
+      <th>Accuracy</th>
+      <th>Date</th>
+     </tr>
+    </thead>
+    <tbody id="historyBody"></tbody>
+   </table>
   </div>
-
-  <div class="content" id="dashboard" style="display:none;">
-    <div class="section-label">Overview</div>
-    <div class="stats-grid" id="overviewGrid"></div>
-
-    <div class="section-label">💡 What This Means — Next Steps</div>
-    <div class="panel" id="insightsPanel" style="background: linear-gradient(135deg, rgba(0,212,255,0.06), rgba(167,139,250,0.05)); border-color: rgba(0,212,255,0.12);"></div>
-
-    <div class="section-label">Performance</div>
-    <div class="wide-grid">
-      <div class="panel">
-        <div class="panel-title"><span class="dot" style="--panel-dot:var(--accent)"></span>Overall Accuracy</div>
-        <div class="donut-wrap">
-          <div class="donut">
-            <svg viewBox="0 0 36 36">
-              <circle class="donut-bg" cx="18" cy="18" r="15.9" />
-              <circle class="donut-fg" cx="18" cy="18" r="15.9" id="donutFg" stroke-dasharray="100 100" stroke-dashoffset="100" />
-            </svg>
-            <div class="donut-label"><span id="donutPct">0%</span><small>accuracy</small></div>
-          </div>
-          <div class="donut-legend" id="donutLegend"></div>
-        </div>
-      </div>
-      <div class="panel">
-        <div class="panel-title"><span class="dot" style="--panel-dot:var(--accent2)"></span>Score Trend</div>
-        <div class="trend-canvas-wrap" id="trendWrap">
-          <div class="trend-empty" id="trendEmpty">Not enough data for a trend yet.</div>
-          <canvas id="trendCanvas" style="display:none;"></canvas>
-        </div>
-      </div>
-    </div>
-
-    <div class="section-label">Subjects & Topics</div>
-    <div class="wide-grid">
-      <div class="panel">
-        <div class="panel-title"><span class="dot"></span>Subject Performance</div>
-        <div class="bar-list" id="subjectBars"></div>
-      </div>
-      <div class="panel">
-        <div class="panel-title"><span class="dot" style="--panel-dot:var(--accent3)"></span>Topic Accuracy</div>
-        <div class="bar-list" id="topicBars"></div>
-      </div>
-    </div>
-
-    <div class="section-label">Strengths & Weaknesses</div>
-    <div class="wide-grid">
-      <div class="panel">
-        <div class="panel-title"><span class="dot" style="--panel-dot:var(--accent)"></span>Strong Topics</div>
-        <div class="pill-grid" id="strongPills"></div>
-      </div>
-      <div class="panel">
-        <div class="panel-title"><span class="dot" style="--panel-dot:var(--accent3)"></span>Weak Topics — Focus Here</div>
-        <div class="pill-grid" id="weakPills"></div>
-      </div>
-    </div>
-
-    <div class="section-label">This Period</div>
-    <div class="stats-grid" id="periodGrid"></div>
-
-    <div class="section-label">Achievements</div>
-    <div class="ach-grid" id="achGrid"></div>
-
-    <div class="section-label">Recent Quiz History</div>
-    <div class="panel" style="padding:0; overflow:hidden; overflow-x:auto;">
-      <table class="history-table">
-        <thead>
-          <tr>
-            <th>Quiz / Topic</th>
-            <th>Subject</th>
-            <th>Score</th>
-            <th>Accuracy</th>
-            <th>Date</th>
-          </tr>
-        </thead>
-        <tbody id="historyBody"></tbody>
-      </table>
-    </div>
-  </div>
+ </div>
 </main>
 
 <!-- Sidebar handled by js/components/sidebar.js mountSidebar() — removed duplicate listeners that caused null errors -->
@@ -305,376 +305,376 @@ import { getUserPlan } from "./subscription.js";
 const authInstance = auth || getAuth();
 
 onAuthStateChanged(authInstance, async (user) => {
-  if (user && !user.emailVerified) { window.location.href = "verify-email.html"; return; }
-  if (!user) { window.location.href = "login.html"; return; }
+ if (user && !user.emailVerified) { window.location.href = "verify-email.html"; return; }
+ if (!user) { window.location.href = "login.html"; return; }
 
-  const name = user.displayName || user.email?.split("@")[0] || "Guest";
-  document.getElementById("userName").textContent = name;
-  const av = document.getElementById("userAvatar");
-  if (user.photoURL) {
-    av.innerHTML = `<img src="${esc(user.photoURL)}" alt="${esc(name)}" />`;
-  
+ const name = user.displayName || user.email?.split("@")[0] || "Guest";
+ document.getElementById("userName").textContent = name;
+ const av = document.getElementById("userAvatar");
+ if (user.photoURL) {
+  av.innerHTML = `<img src="${esc(user.photoURL)}" alt="${esc(name)}" />`;
+ 
 
-  // — unified topbar avatar & greeting (gmail pic) —
-  try{
-    const _greet = document.getElementById("greetingName");
-    const _topAv = document.getElementById("topbarAvatar");
-    const _first = (user.displayName || name).split(" ")[0];
-    if(_greet) _greet.textContent = _first;
-    if(_topAv){
-      if(user.photoURL){ _topAv.src = user.photoURL; _topAv.alt = name; }
-      else { _topAv.src = ""; _topAv.alt = name; }
-    }
-  }catch(e){}
+ // — unified topbar avatar & greeting (gmail pic) —
+ try{
+  const _greet = document.getElementById("greetingName");
+  const _topAv = document.getElementById("topbarAvatar");
+  const _first = (user.displayName || name).split(" ")[0];
+  if(_greet) _greet.textContent = _first;
+  if(_topAv){
+   if(user.photoURL){ _topAv.src = user.photoURL; _topAv.alt = name; }
+   else { _topAv.src = ""; _topAv.alt = name; }
+  }
+ }catch(e){}
 } else {
-    av.textContent = name.charAt(0).toUpperCase();
-  }
+  av.textContent = name.charAt(0).toUpperCase();
+ }
 
-  const plan = await getUserPlan(user.uid, user);
-  document.getElementById("userPlan").textContent = plan === "pro" ? "✨ Aquila Pro" : "Free Plan";
+ const plan = await getUserPlan(user.uid, user);
+ document.getElementById("userPlan").textContent = plan === "pro" ? "✨ Aquila Pro" : "Free Plan";
 
-  // Ensure user doc exists (fallback if sign-up write failed)
-  const userRef = doc(db, "users", user.uid);
-  const userSnap = await getDoc(userRef);
-  if (!userSnap.exists()) {
-    setDoc(userRef, {
-      uid: user.uid,
-      displayName: user.displayName || "",
-      email: user.email || "",
-      photoURL: user.photoURL || "",
-      exam: "",
-      createdAt: serverTimestamp(),
-      plan: "free",
-    }).catch(() => {});
-  }
+ // Ensure user doc exists (fallback if sign-up write failed)
+ const userRef = doc(db, "users", user.uid);
+ const userSnap = await getDoc(userRef);
+ if (!userSnap.exists()) {
+  setDoc(userRef, {
+   uid: user.uid,
+   displayName: user.displayName || "",
+   email: user.email || "",
+   photoURL: user.photoURL || "",
+   exam: "",
+   createdAt: serverTimestamp(),
+   plan: "free",
+  }).catch(() => {});
+ }
 
-  loadAnalytics(user.uid);
+ loadAnalytics(user.uid);
 });
 
 const _soBtn = document.getElementById("signOutBtn"); if(_soBtn) _soBtn.onclick = async () => {
-  await signOut(authInstance);
-  window.location.href = "login.html";
+ await signOut(authInstance);
+ window.location.href = "login.html";
 };
 
 async function loadAnalytics(uid) {
-  show("stateLoading");
-  const timeout = new Promise((_, reject) => setTimeout(() => reject(new Error("Loading timed out. Check your connection and try again.")), 10000));
-  try {
-    const q = query(collection(db, "users", uid, "quizAttempts"), orderBy("takenAt", "desc"), limit(500));
-    const snap = await Promise.race([getDocs(q), timeout]);
-    if (snap.empty) { show("stateEmpty"); return; }
-    const attempts = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-    const stats = computeStats(attempts);
-    renderDashboard(stats, attempts);
-    show("dashboard");
-  } catch (err) {
-    console.error("Analytics error:", err);
-    document.getElementById("errorMsg").textContent = err.message;
-    show("stateError");
-  }
+ show("stateLoading");
+ const timeout = new Promise((_, reject) => setTimeout(() => reject(new Error("Loading timed out. Check your connection and try again.")), 10000));
+ try {
+  const q = query(collection(db, "users", uid, "quizAttempts"), orderBy("takenAt", "desc"), limit(500));
+  const snap = await Promise.race([getDocs(q), timeout]);
+  if (snap.empty) { show("stateEmpty"); return; }
+  const attempts = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+  const stats = computeStats(attempts);
+  renderDashboard(stats, attempts);
+  show("dashboard");
+ } catch (err) {
+  console.error("Analytics error:", err);
+  document.getElementById("errorMsg").textContent = err.message;
+  show("stateError");
+ }
 }
 
 function computeStats(attempts) {
-  const total = attempts.length;
-  const pcts = attempts.map(a => safePct(a.correct, a.totalQ));
-  const avgScore   = avg(pcts);
-  const highScore  = Math.max(...pcts);
-  const lowScore   = Math.min(...pcts);
-  const totalQ     = sum(attempts, "totalQ");
-  const totalRight = sum(attempts, "correct");
-  const totalWrong = sum(attempts, "incorrect");
-  const accuracy   = safePct(totalRight, totalQ);
+ const total = attempts.length;
+ const pcts = attempts.map(a => safePct(a.correct, a.totalQ));
+ const avgScore  = avg(pcts);
+ const highScore = Math.max(...pcts);
+ const lowScore  = Math.min(...pcts);
+ const totalQ   = sum(attempts, "totalQ");
+ const totalRight = sum(attempts, "correct");
+ const totalWrong = sum(attempts, "incorrect");
+ const accuracy  = safePct(totalRight, totalQ);
 
-  const subjectMap = groupBy(attempts, "subject");
-  const subjectStats = Object.entries(subjectMap).map(([name, list]) => ({
-    name, attempts: list.length, correct: sum(list,"correct"), total: sum(list,"totalQ"),
-    pct: safePct(sum(list,"correct"), sum(list,"totalQ")),
-  })).sort((a,b) => b.pct - a.pct);
+ const subjectMap = groupBy(attempts, "subject");
+ const subjectStats = Object.entries(subjectMap).map(([name, list]) => ({
+  name, attempts: list.length, correct: sum(list,"correct"), total: sum(list,"totalQ"),
+  pct: safePct(sum(list,"correct"), sum(list,"totalQ")),
+ })).sort((a,b) => b.pct - a.pct);
 
-  const topicMap = groupBy(attempts, "topic");
-  const topicStats = Object.entries(topicMap).map(([name, list]) => ({
-    name, attempts: list.length, correct: sum(list,"correct"), total: sum(list,"totalQ"),
-    pct: safePct(sum(list,"correct"), sum(list,"totalQ")),
-  })).sort((a,b) => b.pct - a.pct);
+ const topicMap = groupBy(attempts, "topic");
+ const topicStats = Object.entries(topicMap).map(([name, list]) => ({
+  name, attempts: list.length, correct: sum(list,"correct"), total: sum(list,"totalQ"),
+  pct: safePct(sum(list,"correct"), sum(list,"totalQ")),
+ })).sort((a,b) => b.pct - a.pct);
 
-  const strongTopics = topicStats.filter(t => t.pct >= 75);
-  const weakTopics   = topicStats.filter(t => t.pct <  50).reverse();
-  const trendData    = [...attempts].slice(0,20).reverse().map(a => ({ pct: safePct(a.correct,a.totalQ), label: fmt(a.takenAt) }));
+ const strongTopics = topicStats.filter(t => t.pct >= 75);
+ const weakTopics  = topicStats.filter(t => t.pct < 50).reverse();
+ const trendData  = [...attempts].slice(0,20).reverse().map(a => ({ pct: safePct(a.correct,a.totalQ), label: fmt(a.takenAt) }));
 
-  const now   = new Date();
-  const week  = new Date(now); week.setDate(now.getDate()-7);
-  const month = new Date(now); month.setMonth(now.getMonth()-1);
-  const thisWeek  = attempts.filter(a => toDate(a.takenAt) >= week);
-  const thisMonth = attempts.filter(a => toDate(a.takenAt) >= month);
+ const now  = new Date();
+ const week = new Date(now); week.setDate(now.getDate()-7);
+ const month = new Date(now); month.setMonth(now.getMonth()-1);
+ const thisWeek = attempts.filter(a => toDate(a.takenAt) >= week);
+ const thisMonth = attempts.filter(a => toDate(a.takenAt) >= month);
 
-  const recent5 = pcts.slice(0,5);
-  const prev5   = pcts.slice(5,10);
-  const delta   = prev5.length ? avg(recent5) - avg(prev5) : null;
+ const recent5 = pcts.slice(0,5);
+ const prev5  = pcts.slice(5,10);
+ const delta  = prev5.length ? avg(recent5) - avg(prev5) : null;
 
-  return {
-    total, avgScore, highScore, lowScore, totalQ, totalRight, totalWrong, accuracy,
-    bestSubject: subjectStats[0]?.name || "—",
-    weakestSubject: subjectStats.at(-1)?.name || "—",
-    subjectStats, topicStats, strongTopics, weakTopics, trendData,
-    weekly:  { count: thisWeek.length,  avg: avg(thisWeek.map(a  => safePct(a.correct,a.totalQ))) },
-    monthly: { count: thisMonth.length, avg: avg(thisMonth.map(a => safePct(a.correct,a.totalQ))) },
-    delta, recent: attempts.slice(0,15),
-  };
+ return {
+  total, avgScore, highScore, lowScore, totalQ, totalRight, totalWrong, accuracy,
+  bestSubject: subjectStats[0]?.name || "—",
+  weakestSubject: subjectStats.at(-1)?.name || "—",
+  subjectStats, topicStats, strongTopics, weakTopics, trendData,
+  weekly: { count: thisWeek.length, avg: avg(thisWeek.map(a => safePct(a.correct,a.totalQ))) },
+  monthly: { count: thisMonth.length, avg: avg(thisMonth.map(a => safePct(a.correct,a.totalQ))) },
+  delta, recent: attempts.slice(0,15),
+ };
 }
 
 function buildInsights(s) {
-  // P2-15: translate numbers into why/what to do — avoid conclusions from tiny data
-  if (s.total < 3) {
-    return `<div style="display:flex;gap:12px;align-items:flex-start;">
-      <span style="font-size:22px;">🔍</span>
-      <div>
-        <div style="font-weight:600;margin-bottom:4px;">Not enough data yet — keep going!</div>
-        <div style="font-size:13px;color:var(--text-secondary);line-height:1.6;">You’ve taken <b>${s.total}</b> quiz${s.total===1?'':'zes'}. Take 2–3 more across one subject to get reliable insights. Pick your weakest topic from “Needs Work” below and do a focused 15-min practice, then review.</div>
-        <a href="quiz.html" style="display:inline-block;margin-top:10px;font-size:12px;color:var(--accent);text-decoration:none;border:1px solid var(--border);padding:6px 10px;border-radius:999px;">Practice now →</a>
-      </div>
-    </div>`;
-  }
-  const weak = s.weakTopics.slice(0,2).map(t=>t.name).join(", ") || "your weakest topics";
-  const strong = s.strongTopics.slice(0,2).map(t=>t.name).join(", ") || "your strong topics";
-  const gap = s.subjectStats.length >= 2 ? Math.round(s.subjectStats[0].pct - s.subjectStats.at(-1).pct) : 0;
-  let headline = "";
-  let why = "";
-  let action = "";
-  if (s.avgScore < 50) {
-    headline = `Building fundamentals — focus before mixing`;
-    why = `Average <b>${s.avgScore.toFixed(1)}%</b> suggests basics need work. Most mistakes on <b>${esc(weak)}</b>.`;
-    action = `Do 2 short practices (10 Q) only on <b>${esc(weak)}</b> — no mixing yet. Review explanations, then retry.`;
-  } else if (s.delta !== null && s.delta < -5) {
-    headline = `Recent dip — likely mixing concepts`;
-    why = `Last 5 avg <b>${(s.avgScore - s.delta).toFixed(1)}%</b> → now <b>${s.avgScore.toFixed(1)}%</b>. When weak topics (${esc(weak)}) mix with strong (${esc(strong)}), errors spike.`;
-    action = `Practice mixed questions only on <b>${esc(weak)}</b> for 20 min, then take one mixed quiz. Avoid new topics until stable.`;
-  } else if (s.delta !== null && s.delta > 5) {
-    headline = `Improving — solidify the gains`;
-    why = `Up <b>+${s.delta.toFixed(1)}%</b> vs previous 5. You’re applying better on <b>${esc(strong)}</b>.`;
-    action = `Lock it in: review <b>${esc(weak)}</b> tomorrow (spaced retrieval), then try a harder mixed set.`;
-  } else if (gap > 30) {
-    headline = `Uneven across subjects — balance needed`;
-    why = `<b>${esc(s.bestSubject)}</b> at <b>${s.subjectStats[0].pct}%</b> vs <b>${esc(s.weakestSubject)}</b> at <b>${s.subjectStats.at(-1).pct}%</b> (${gap}pt gap).`;
-    action = `Shift next 2 sessions to <b>${esc(s.weakestSubject)}</b> — 30 min on <b>${esc(weak)}</b> each, then one mixed quiz.`;
-  } else if (s.weakTopics.length) {
-    headline = `You’ve got basics — now target the gaps`;
-    why = `Overall <b>${s.avgScore.toFixed(1)}%</b> is solid, but <b>${esc(weak)}</b> drags down. Strong in <b>${esc(strong)}</b>.`;
-    action = `Next: 15-min focused drill on <b>${esc(weak)}</b> (see “Weak Topics” below), then a 5-Q mixed check.`;
-  } else {
-    headline = `Steady — ready for harder mix`;
-    why = `No weak topics yet at <b>${s.avgScore.toFixed(1)}%</b>. You’re handling single-topic well.`;
-    action = `Try interleaved practice: mix ${esc(s.bestSubject)} + ${esc(s.weakestSubject)} or increase difficulty.`;
-  }
+ // P2-15: translate numbers into why/what to do — avoid conclusions from tiny data
+ if (s.total < 3) {
   return `<div style="display:flex;gap:12px;align-items:flex-start;">
-    <span style="font-size:22px;">🎯</span>
-    <div>
-      <div style="font-weight:600;margin-bottom:4px;">${headline}</div>
-      <div style="font-size:13px;color:var(--text-secondary);line-height:1.7;">${why}</div>
-      <div style="margin-top:10px;padding:10px 12px;background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:10px;font-size:13px;line-height:1.6;"><b>What to do next:</b> ${action}</div>
-      <div style="margin-top:8px;font-size:11px;color:var(--text-muted);">Based on <b>${s.total}</b> attempts • ${s.delta===null?'trend needs 10 attempts':`trend ${s.delta>0?'▲':'▼'} ${Math.abs(s.delta).toFixed(1)}%`} • Low evidence topics are flagged, not over-interpreted.</div>
-    </div>
+   <span style="font-size:22px;">🔍</span>
+   <div>
+    <div style="font-weight:600;margin-bottom:4px;">Not enough data yet — keep going!</div>
+    <div style="font-size:13px;color:var(--text-secondary);line-height:1.6;">You’ve taken <b>${s.total}</b> quiz${s.total===1?'':'zes'}. Take 2–3 more across one subject to get reliable insights. Pick your weakest topic from “Needs Work” below and do a focused 15-min practice, then review.</div>
+    <a href="quiz.html" style="display:inline-block;margin-top:10px;font-size:12px;color:var(--accent);text-decoration:none;border:1px solid var(--border);padding:6px 10px;border-radius:999px;">Practice now →</a>
+   </div>
   </div>`;
+ }
+ const weak = s.weakTopics.slice(0,2).map(t=>t.name).join(", ") || "your weakest topics";
+ const strong = s.strongTopics.slice(0,2).map(t=>t.name).join(", ") || "your strong topics";
+ const gap = s.subjectStats.length >= 2 ? Math.round(s.subjectStats[0].pct - s.subjectStats.at(-1).pct) : 0;
+ let headline = "";
+ let why = "";
+ let action = "";
+ if (s.avgScore < 50) {
+  headline = `Building fundamentals — focus before mixing`;
+  why = `Average <b>${s.avgScore.toFixed(1)}%</b> suggests basics need work. Most mistakes on <b>${esc(weak)}</b>.`;
+  action = `Do 2 short practices (10 Q) only on <b>${esc(weak)}</b> — no mixing yet. Review explanations, then retry.`;
+ } else if (s.delta !== null && s.delta < -5) {
+  headline = `Recent dip — likely mixing concepts`;
+  why = `Last 5 avg <b>${(s.avgScore - s.delta).toFixed(1)}%</b> → now <b>${s.avgScore.toFixed(1)}%</b>. When weak topics (${esc(weak)}) mix with strong (${esc(strong)}), errors spike.`;
+  action = `Practice mixed questions only on <b>${esc(weak)}</b> for 20 min, then take one mixed quiz. Avoid new topics until stable.`;
+ } else if (s.delta !== null && s.delta > 5) {
+  headline = `Improving — solidify the gains`;
+  why = `Up <b>+${s.delta.toFixed(1)}%</b> vs previous 5. You’re applying better on <b>${esc(strong)}</b>.`;
+  action = `Lock it in: review <b>${esc(weak)}</b> tomorrow (spaced retrieval), then try a harder mixed set.`;
+ } else if (gap > 30) {
+  headline = `Uneven across subjects — balance needed`;
+  why = `<b>${esc(s.bestSubject)}</b> at <b>${s.subjectStats[0].pct}%</b> vs <b>${esc(s.weakestSubject)}</b> at <b>${s.subjectStats.at(-1).pct}%</b> (${gap}pt gap).`;
+  action = `Shift next 2 sessions to <b>${esc(s.weakestSubject)}</b> — 30 min on <b>${esc(weak)}</b> each, then one mixed quiz.`;
+ } else if (s.weakTopics.length) {
+  headline = `You’ve got basics — now target the gaps`;
+  why = `Overall <b>${s.avgScore.toFixed(1)}%</b> is solid, but <b>${esc(weak)}</b> drags down. Strong in <b>${esc(strong)}</b>.`;
+  action = `Next: 15-min focused drill on <b>${esc(weak)}</b> (see “Weak Topics” below), then a 5-Q mixed check.`;
+ } else {
+  headline = `Steady — ready for harder mix`;
+  why = `No weak topics yet at <b>${s.avgScore.toFixed(1)}%</b>. You’re handling single-topic well.`;
+  action = `Try interleaved practice: mix ${esc(s.bestSubject)} + ${esc(s.weakestSubject)} or increase difficulty.`;
+ }
+ return `<div style="display:flex;gap:12px;align-items:flex-start;">
+  <span style="font-size:22px;">🎯</span>
+  <div>
+   <div style="font-weight:600;margin-bottom:4px;">${headline}</div>
+   <div style="font-size:13px;color:var(--text-secondary);line-height:1.7;">${why}</div>
+   <div style="margin-top:10px;padding:10px 12px;background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:10px;font-size:13px;line-height:1.6;"><b>What to do next:</b> ${action}</div>
+   <div style="margin-top:8px;font-size:11px;color:var(--text-muted);">Based on <b>${s.total}</b> attempts • ${s.delta===null?'trend needs 10 attempts':`trend ${s.delta>0?'▲':'▼'} ${Math.abs(s.delta).toFixed(1)}%`} • Low evidence topics are flagged, not over-interpreted.</div>
+  </div>
+ </div>`;
 }
 
 function renderDashboard(s) {
-  const deltaStr = s.delta === null ? null : (s.delta >= 0 ? `▲ +${s.delta.toFixed(1)}%` : `▼ ${s.delta.toFixed(1)}%`);
-  const deltaClass = s.delta === null ? "neutral" : (s.delta >= 0 ? "up" : "down");
+ const deltaStr = s.delta === null ? null : (s.delta >= 0 ? `▲ +${s.delta.toFixed(1)}%` : `▼ ${s.delta.toFixed(1)}%`);
+ const deltaClass = s.delta === null ? "neutral" : (s.delta >= 0 ? "up" : "down");
 
-  const insightsEl = document.getElementById("insightsPanel");
-  if (insightsEl) insightsEl.innerHTML = buildInsights(s);
+ const insightsEl = document.getElementById("insightsPanel");
+ if (insightsEl) insightsEl.innerHTML = buildInsights(s);
 
-  document.getElementById("overviewGrid").innerHTML = [
-    { icon:"📝", value:s.total,                    label:"Quizzes Taken",     color:"var(--accent)",  delta:deltaStr, dClass:deltaClass },
-    { icon:"📈", value:s.avgScore.toFixed(1)+"%",  label:"Average Score",     color:"var(--accent2)", delta:deltaStr, dClass:deltaClass },
-    { icon:"🏆", value:s.highScore+"%",            label:"Highest Score",     color:"var(--accent4)" },
-    { icon:"📉", value:s.lowScore+"%",             label:"Lowest Score",      color:"var(--accent3)" },
-    { icon:"✅", value:s.totalRight,               label:"Correct Answers",   color:"var(--accent)" },
-    { icon:"❌", value:s.totalWrong,               label:"Incorrect Answers", color:"var(--accent3)" },
-    { icon:"⭐", value:s.bestSubject,              label:"Best Subject",      color:"var(--accent4)" },
-    { icon:"⚡", value:s.weakestSubject,           label:"Needs Work",        color:"var(--accent3)" },
-  ].map(c => statCard(c)).join("");
+ document.getElementById("overviewGrid").innerHTML = [
+  { icon:"📝", value:s.total,          label:"Quizzes Taken",   color:"var(--accent)", delta:deltaStr, dClass:deltaClass },
+  { icon:"📈", value:s.avgScore.toFixed(1)+"%", label:"Average Score",   color:"var(--accent2)", delta:deltaStr, dClass:deltaClass },
+  { icon:"🏆", value:s.highScore+"%",      label:"Highest Score",   color:"var(--accent4)" },
+  { icon:"📉", value:s.lowScore+"%",       label:"Lowest Score",   color:"var(--accent3)" },
+  { icon:"✅", value:s.totalRight,        label:"Correct Answers",  color:"var(--accent)" },
+  { icon:"❌", value:s.totalWrong,        label:"Incorrect Answers", color:"var(--accent3)" },
+  { icon:"⭐", value:s.bestSubject,       label:"Best Subject",   color:"var(--accent4)" },
+  { icon:"⚡", value:s.weakestSubject,      label:"Needs Work",    color:"var(--accent3)" },
+ ].map(c => statCard(c)).join("");
 
-  const circ  = 2 * Math.PI * 15.9;
-  const offset = circ - (s.accuracy / 100) * circ;
-  const fg = document.getElementById("donutFg");
-  fg.setAttribute("stroke-dasharray", `${circ} ${circ}`);
-  fg.setAttribute("stroke-dashoffset", circ);
-  requestAnimationFrame(() => { fg.style.transition = "stroke-dashoffset 1s ease"; fg.setAttribute("stroke-dashoffset", offset); });
-  document.getElementById("donutPct").textContent = s.accuracy + "%";
-  document.getElementById("donutLegend").innerHTML = `
-    <div class="legend-item"><span class="legend-dot" style="background:var(--accent)"></span>Correct — ${s.totalRight}</div>
-    <div class="legend-item"><span class="legend-dot" style="background:var(--accent3)"></span>Incorrect — ${s.totalWrong}</div>
-    <div class="legend-item"><span class="legend-dot" style="background:var(--text-muted)"></span>Total Qs — ${s.totalQ}</div>`;
+ const circ = 2 * Math.PI * 15.9;
+ const offset = circ - (s.accuracy / 100) * circ;
+ const fg = document.getElementById("donutFg");
+ fg.setAttribute("stroke-dasharray", `${circ} ${circ}`);
+ fg.setAttribute("stroke-dashoffset", circ);
+ requestAnimationFrame(() => { fg.style.transition = "stroke-dashoffset 1s ease"; fg.setAttribute("stroke-dashoffset", offset); });
+ document.getElementById("donutPct").textContent = s.accuracy + "%";
+ document.getElementById("donutLegend").innerHTML = `
+  <div class="legend-item"><span class="legend-dot" style="background:var(--accent)"></span>Correct — ${s.totalRight}</div>
+  <div class="legend-item"><span class="legend-dot" style="background:var(--accent3)"></span>Incorrect — ${s.totalWrong}</div>
+  <div class="legend-item"><span class="legend-dot" style="background:var(--text-muted)"></span>Total Qs — ${s.totalQ}</div>`;
 
-  if (s.trendData.length >= 3) {
-    document.getElementById("trendEmpty").style.display = "none";
-    const canvas = document.getElementById("trendCanvas");
-    canvas.style.display = "block";
-    drawSparkline(canvas, s.trendData.map(d => d.pct));
-  }
+ if (s.trendData.length >= 3) {
+  document.getElementById("trendEmpty").style.display = "none";
+  const canvas = document.getElementById("trendCanvas");
+  canvas.style.display = "block";
+  drawSparkline(canvas, s.trendData.map(d => d.pct));
+ }
 
-  document.getElementById("subjectBars").innerHTML = s.subjectStats.slice(0,8).map(sub => barItem(sub.name, sub.pct, pickColor(sub.pct))).join("");
-  document.getElementById("topicBars").innerHTML   = s.topicStats.slice(0,8).map(t   => barItem(t.name,   t.pct, pickColor(t.pct))).join("");
+ document.getElementById("subjectBars").innerHTML = s.subjectStats.slice(0,8).map(sub => barItem(sub.name, sub.pct, pickColor(sub.pct))).join("");
+ document.getElementById("topicBars").innerHTML  = s.topicStats.slice(0,8).map(t  => barItem(t.name,  t.pct, pickColor(t.pct))).join("");
 
-  const strongEl = document.getElementById("strongPills");
-  const weakEl   = document.getElementById("weakPills");
-  strongEl.innerHTML = s.strongTopics.length
-    ? s.strongTopics.slice(0,12).map(t => `<span class="pill strong">✓ ${esc(t.name)} <span class="pct">${t.pct}%</span></span>`).join("")
-    : `<span style="color:var(--text-muted);font-size:13px;">No strong topics yet — keep practising!</span>`;
-  weakEl.innerHTML = s.weakTopics.length
-    ? s.weakTopics.slice(0,12).map(t => `<span class="pill weak">⚠ ${esc(t.name)} <span class="pct">${t.pct}%</span></span>`).join("")
-    : `<span style="color:var(--text-muted);font-size:13px;">No weak topics — great work! 🎉</span>`;
+ const strongEl = document.getElementById("strongPills");
+ const weakEl  = document.getElementById("weakPills");
+ strongEl.innerHTML = s.strongTopics.length
+  ? s.strongTopics.slice(0,12).map(t => `<span class="pill strong">✓ ${esc(t.name)} <span class="pct">${t.pct}%</span></span>`).join("")
+  : `<span style="color:var(--text-muted);font-size:13px;">No strong topics yet — keep practising!</span>`;
+ weakEl.innerHTML = s.weakTopics.length
+  ? s.weakTopics.slice(0,12).map(t => `<span class="pill weak">⚠ ${esc(t.name)} <span class="pct">${t.pct}%</span></span>`).join("")
+  : `<span style="color:var(--text-muted);font-size:13px;">No weak topics — great work! 🎉</span>`;
 
-  document.getElementById("periodGrid").innerHTML = [
-    { icon:"📅", value:s.weekly.count,              label:"Quizzes This Week",  color:"var(--accent)" },
-    { icon:"📊", value:s.weekly.avg.toFixed(1)+"%", label:"Weekly Avg Score",   color:"var(--accent2)" },
-    { icon:"🗓️", value:s.monthly.count,             label:"Quizzes This Month", color:"var(--accent)" },
-    { icon:"📊", value:s.monthly.avg.toFixed(1)+"%",label:"Monthly Avg Score",  color:"var(--accent2)" },
-  ].map(c => statCard(c)).join("");
+ document.getElementById("periodGrid").innerHTML = [
+  { icon:"📅", value:s.weekly.count,       label:"Quizzes This Week", color:"var(--accent)" },
+  { icon:"📊", value:s.weekly.avg.toFixed(1)+"%", label:"Weekly Avg Score",  color:"var(--accent2)" },
+  { icon:"🗓️", value:s.monthly.count,       label:"Quizzes This Month", color:"var(--accent)" },
+  { icon:"📊", value:s.monthly.avg.toFixed(1)+"%",label:"Monthly Avg Score", color:"var(--accent2)" },
+ ].map(c => statCard(c)).join("");
 
-  document.getElementById("achGrid").innerHTML = buildAchievements(s).map(a => `
-    <div class="ach-card ${a.earned ? "earned" : "locked"}">
-      <span class="ach-emoji">${a.emoji}</span>
-      <div class="ach-title">${esc(a.title)}</div>
-      <div class="ach-desc">${esc(a.desc)}</div>
-    </div>`).join("");
+ document.getElementById("achGrid").innerHTML = buildAchievements(s).map(a => `
+  <div class="ach-card ${a.earned ? "earned" : "locked"}">
+   <span class="ach-emoji">${a.emoji}</span>
+   <div class="ach-title">${esc(a.title)}</div>
+   <div class="ach-desc">${esc(a.desc)}</div>
+  </div>`).join("");
 
-  document.getElementById("historyBody").innerHTML = s.recent.map(a => {
-    const pct = safePct(a.correct, a.totalQ);
-    const cls = pct >= 75 ? "hi" : pct >= 50 ? "mid" : "lo";
-    return `<tr>
-      <td>${esc(a.title || a.topic || "—")}</td>
-      <td>${esc(a.subject || "—")}</td>
-      <td><span class="score-badge ${cls}">${a.correct}/${a.totalQ}</span></td>
-      <td><span class="score-badge ${cls}">${pct}%</span></td>
-      <td style="font-family:var(--font-mono);font-size:11px;color:var(--text-muted)">${fmt(a.takenAt)}</td>
-    </tr>`;
-  }).join("");
+ document.getElementById("historyBody").innerHTML = s.recent.map(a => {
+  const pct = safePct(a.correct, a.totalQ);
+  const cls = pct >= 75 ? "hi" : pct >= 50 ? "mid" : "lo";
+  return `<tr>
+   <td>${esc(a.title || a.topic || "—")}</td>
+   <td>${esc(a.subject || "—")}</td>
+   <td><span class="score-badge ${cls}">${a.correct}/${a.totalQ}</span></td>
+   <td><span class="score-badge ${cls}">${pct}%</span></td>
+   <td style="font-family:var(--font-mono);font-size:11px;color:var(--text-muted)">${fmt(a.takenAt)}</td>
+  </tr>`;
+ }).join("");
 }
 
 function buildAchievements(s) {
-  return [
-    { emoji:"🚀", title:"First Launch",   desc:"Took your first quiz",               earned: s.total >= 1 },
-    { emoji:"🔟", title:"10 Quizzes",     desc:"Completed 10 quiz attempts",         earned: s.total >= 10 },
-    { emoji:"💯", title:"Perfect Score",  desc:"Scored 100% on a quiz",             earned: s.highScore === 100 },
-    { emoji:"🔥", title:"On Fire",        desc:"Averaged ≥80% across all quizzes",  earned: s.avgScore >= 80 },
-    { emoji:"🌟", title:"Star Performer", desc:"Have ≥3 strong topics",             earned: s.strongTopics.length >= 3 },
-    { emoji:"📚", title:"Subject Master", desc:"Attempted ≥3 different subjects",   earned: s.subjectStats.length >= 3 },
-    { emoji:"🗓️", title:"Weekly Warrior", desc:"Took 5+ quizzes in a week",         earned: s.weekly.count >= 5 },
-    { emoji:"📈", title:"Upward Trend",   desc:"Recent scores improving",           earned: s.delta !== null && s.delta > 5 },
-  ];
+ return [
+  { emoji:"🚀", title:"First Launch",  desc:"Took your first quiz",        earned: s.total >= 1 },
+  { emoji:"🔟", title:"10 Quizzes",   desc:"Completed 10 quiz attempts",     earned: s.total >= 10 },
+  { emoji:"💯", title:"Perfect Score", desc:"Scored 100% on a quiz",       earned: s.highScore === 100 },
+  { emoji:"🔥", title:"On Fire",    desc:"Averaged ≥80% across all quizzes", earned: s.avgScore >= 80 },
+  { emoji:"🌟", title:"Star Performer", desc:"Have ≥3 strong topics",       earned: s.strongTopics.length >= 3 },
+  { emoji:"📚", title:"Subject Master", desc:"Attempted ≥3 different subjects",  earned: s.subjectStats.length >= 3 },
+  { emoji:"🗓️", title:"Weekly Warrior", desc:"Took 5+ quizzes in a week",     earned: s.weekly.count >= 5 },
+  { emoji:"📈", title:"Upward Trend",  desc:"Recent scores improving",      earned: s.delta !== null && s.delta > 5 },
+ ];
 }
 
 function drawSparkline(canvas, values) {
-  const dpr = window.devicePixelRatio || 1;
-  const W = canvas.parentElement.clientWidth, H = 130;
-  canvas.width = W * dpr; canvas.height = H * dpr;
-  const ctx = canvas.getContext("2d");
-  ctx.scale(dpr, dpr);
-  const pad = { top:12, right:16, bottom:28, left:36 };
-  const chartW = W - pad.left - pad.right, chartH = H - pad.top - pad.bottom;
-  const n = values.length;
-  const minV = Math.max(0, Math.min(...values)-10), maxV = Math.min(100, Math.max(...values)+10);
-  const xScale = i => pad.left + (i/(n-1))*chartW;
-  const yScale = v => pad.top + chartH - ((v-minV)/(maxV-minV))*chartH;
+ const dpr = window.devicePixelRatio || 1;
+ const W = canvas.parentElement.clientWidth, H = 130;
+ canvas.width = W * dpr; canvas.height = H * dpr;
+ const ctx = canvas.getContext("2d");
+ ctx.scale(dpr, dpr);
+ const pad = { top:12, right:16, bottom:28, left:36 };
+ const chartW = W - pad.left - pad.right, chartH = H - pad.top - pad.bottom;
+ const n = values.length;
+ const minV = Math.max(0, Math.min(...values)-10), maxV = Math.min(100, Math.max(...values)+10);
+ const xScale = i => pad.left + (i/(n-1))*chartW;
+ const yScale = v => pad.top + chartH - ((v-minV)/(maxV-minV))*chartH;
 
-  ctx.strokeStyle = "rgba(255,255,255,0.05)"; ctx.lineWidth = 1;
-  [0,25,50,75,100].forEach(pct => {
-    const y = yScale(pct);
-    if (y >= pad.top && y <= pad.top+chartH) {
-      ctx.beginPath(); ctx.moveTo(pad.left,y); ctx.lineTo(pad.left+chartW,y); ctx.stroke();
-      ctx.fillStyle = "rgba(255,255,255,0.2)"; ctx.font = "10px 'Space Mono', monospace";
-      ctx.fillText(pct+"%", 0, y+4);
-    }
-  });
+ ctx.strokeStyle = "rgba(255,255,255,0.05)"; ctx.lineWidth = 1;
+ [0,25,50,75,100].forEach(pct => {
+  const y = yScale(pct);
+  if (y >= pad.top && y <= pad.top+chartH) {
+   ctx.beginPath(); ctx.moveTo(pad.left,y); ctx.lineTo(pad.left+chartW,y); ctx.stroke();
+   ctx.fillStyle = "rgba(255,255,255,0.2)"; ctx.font = "10px 'Space Mono', monospace";
+   ctx.fillText(pct+"%", 0, y+4);
+  }
+ });
 
-  const grad = ctx.createLinearGradient(0,pad.top,0,pad.top+chartH);
-  grad.addColorStop(0,"rgba(0,212,255,0.2)"); grad.addColorStop(1,"rgba(0,212,255,0)");
-  ctx.beginPath();
-  values.forEach((v,i) => { const x=xScale(i),y=yScale(v); i===0?ctx.moveTo(x,y):ctx.lineTo(x,y); });
-  ctx.lineTo(xScale(n-1),pad.top+chartH); ctx.lineTo(xScale(0),pad.top+chartH);
-  ctx.closePath(); ctx.fillStyle = grad; ctx.fill();
+ const grad = ctx.createLinearGradient(0,pad.top,0,pad.top+chartH);
+ grad.addColorStop(0,"rgba(0,212,255,0.2)"); grad.addColorStop(1,"rgba(0,212,255,0)");
+ ctx.beginPath();
+ values.forEach((v,i) => { const x=xScale(i),y=yScale(v); i===0?ctx.moveTo(x,y):ctx.lineTo(x,y); });
+ ctx.lineTo(xScale(n-1),pad.top+chartH); ctx.lineTo(xScale(0),pad.top+chartH);
+ ctx.closePath(); ctx.fillStyle = grad; ctx.fill();
 
-  ctx.beginPath(); ctx.strokeStyle = "#00d4ff"; ctx.lineWidth = 2; ctx.lineJoin="round"; ctx.lineCap="round";
-  values.forEach((v,i) => { const x=xScale(i),y=yScale(v); i===0?ctx.moveTo(x,y):ctx.lineTo(x,y); });
-  ctx.stroke();
+ ctx.beginPath(); ctx.strokeStyle = "#00d4ff"; ctx.lineWidth = 2; ctx.lineJoin="round"; ctx.lineCap="round";
+ values.forEach((v,i) => { const x=xScale(i),y=yScale(v); i===0?ctx.moveTo(x,y):ctx.lineTo(x,y); });
+ ctx.stroke();
 
-  values.forEach((v,i) => {
-    const x=xScale(i),y=yScale(v);
-    ctx.beginPath(); ctx.arc(x,y,3,0,Math.PI*2);
-    ctx.fillStyle="#00d4ff"; ctx.fill();
-    ctx.strokeStyle="#0a0b0f"; ctx.lineWidth=1.5; ctx.stroke();
-  });
+ values.forEach((v,i) => {
+  const x=xScale(i),y=yScale(v);
+  ctx.beginPath(); ctx.arc(x,y,3,0,Math.PI*2);
+  ctx.fillStyle="#00d4ff"; ctx.fill();
+  ctx.strokeStyle="#0a0b0f"; ctx.lineWidth=1.5; ctx.stroke();
+ });
 }
 
 function statCard({ icon, value, label, color, delta, dClass }) {
-  return `<div class="stat-card" style="--card-accent:${color||"var(--accent)"}">
-    <div class="stat-icon">${icon}</div>
-    <div class="stat-value">${esc(String(value))}</div>
-    <div class="stat-label">${esc(label)}</div>
-    ${delta ? `<div class="stat-delta ${dClass||"neutral"}">${esc(delta)}</div>` : ""}
-  </div>`;
+ return `<div class="stat-card" style="--card-accent:${color||"var(--accent)"}">
+  <div class="stat-icon">${icon}</div>
+  <div class="stat-value">${esc(String(value))}</div>
+  <div class="stat-label">${esc(label)}</div>
+  ${delta ? `<div class="stat-delta ${dClass||"neutral"}">${esc(delta)}</div>` : ""}
+ </div>`;
 }
 
 function barItem(name, pct, color) {
-  return `<div class="bar-item">
-    <div class="bar-meta"><span class="bar-name">${esc(name)}</span><span class="bar-pct">${pct}%</span></div>
-    <div class="bar-track"><div class="bar-fill" style="width:${pct}%;--bar-color:${color}"></div></div>
-  </div>`;
+ return `<div class="bar-item">
+  <div class="bar-meta"><span class="bar-name">${esc(name)}</span><span class="bar-pct">${pct}%</span></div>
+  <div class="bar-track"><div class="bar-fill" style="width:${pct}%;--bar-color:${color}"></div></div>
+ </div>`;
 }
 
 function show(id) {
-  ["stateLoading","stateEmpty","stateError","dashboard"]
-    .forEach(s => { const el=document.getElementById(s); if(el) el.style.display = s===id ? (id==="dashboard"?"block":"flex") : "none"; });
+ ["stateLoading","stateEmpty","stateError","dashboard"]
+  .forEach(s => { const el=document.getElementById(s); if(el) el.style.display = s===id ? (id==="dashboard"?"block":"flex") : "none"; });
 }
 
 function groupBy(arr, key) { return arr.reduce((acc,item) => { const k=item[key]||"Unknown"; (acc[k]=acc[k]||[]).push(item); return acc; }, {}); }
-function sum(arr, field)   { return arr.reduce((s,x) => s+(Number(x[field])||0), 0); }
-function avg(arr)          { return arr.length ? Math.round((arr.reduce((s,v)=>s+v,0)/arr.length)*10)/10 : 0; }
-function safePct(c,t)      { return t ? Math.round((c/t)*100) : 0; }
-function pickColor(pct)    { return pct>=75?"var(--accent)":pct>=50?"var(--accent4)":"var(--accent3)"; }
-function fmt(ts)           { if(!ts) return "—"; const d=ts.toDate?ts.toDate():new Date(ts); return d.toLocaleDateString("en-IN",{day:"2-digit",month:"short",year:"2-digit"}); }
-function toDate(ts)        { if(!ts) return new Date(0); return ts.toDate?ts.toDate():new Date(ts); }
-function esc(str)          { return String(str??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])); }
+function sum(arr, field)  { return arr.reduce((s,x) => s+(Number(x[field])||0), 0); }
+function avg(arr)     { return arr.length ? Math.round((arr.reduce((s,v)=>s+v,0)/arr.length)*10)/10 : 0; }
+function safePct(c,t)   { return t ? Math.round((c/t)*100) : 0; }
+function pickColor(pct)  { return pct>=75?"var(--accent)":pct>=50?"var(--accent4)":"var(--accent3)"; }
+function fmt(ts)      { if(!ts) return "—"; const d=ts.toDate?ts.toDate():new Date(ts); return d.toLocaleDateString("en-IN",{day:"2-digit",month:"short",year:"2-digit"}); }
+function toDate(ts)    { if(!ts) return new Date(0); return ts.toDate?ts.toDate():new Date(ts); }
+function esc(str)     { return String(str??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])); }
 </script>
 
 <script type="module">
-  import { inject } from 'https://esm.sh/@vercel/analytics'; inject();
+ import { inject } from 'https://esm.sh/@vercel/analytics'; inject();
 </script>
 <script type="module">
-  import { injectSpeedInsights } from 'https://esm.sh/@vercel/speed-insights'; injectSpeedInsights();
+ import { injectSpeedInsights } from 'https://esm.sh/@vercel/speed-insights'; injectSpeedInsights();
 
 /* ── Scroll progress bar ── */
 (function(){
-  var bar = document.createElement('div');
-  bar.className = 'scroll-progress';
-  document.body.prepend(bar);
-  var ticking = false;
-  window.addEventListener('scroll', function(){
-    if(!ticking){ requestAnimationFrame(function(){
-      var h = document.documentElement.scrollHeight - window.innerHeight;
-      bar.style.width = h > 0 ? ((window.scrollY / h) * 100) + '%' : '0%';
-      ticking = false;
-    }); ticking = true; }
-  });
+ var bar = document.createElement('div');
+ bar.className = 'scroll-progress';
+ document.body.prepend(bar);
+ var ticking = false;
+ window.addEventListener('scroll', function(){
+  if(!ticking){ requestAnimationFrame(function(){
+   var h = document.documentElement.scrollHeight - window.innerHeight;
+   bar.style.width = h > 0 ? ((window.scrollY / h) * 100) + '%' : '0%';
+   ticking = false;
+  }); ticking = true; }
+ });
 }());
 
 /* ── Ripple effect ── */
 (function(){
-  var rm = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  if(rm) return;
-  document.querySelectorAll('.btn-primary, .btn-secondary, .btn-ghost-nav, .signout-btn, .new-chat-btn, .upgrade-nav-btn, .send-btn').forEach(function(btn){
-    btn.addEventListener('click', function(e){
-      var rp = document.createElement('span');
-      var r = btn.getBoundingClientRect();
-      var s = Math.max(r.width, r.height);
-      rp.style.cssText = 'position:absolute;top:'+(e.clientY-r.top-s/2)+'px;left:'+(e.clientX-r.left-s/2)+'px;width:'+s+'px;height:'+s+'px;border-radius:50%;background:rgba(255,255,255,0.15);transform:scale(0);animation:rippleAnim .5s ease-out;pointer-events:none;z-index:0;';
-      btn.style.position = 'relative';
-      btn.style.overflow = 'hidden';
-      btn.appendChild(rp);
-      setTimeout(function(){ rp.remove(); }, 600);
-    });
+ var rm = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+ if(rm) return;
+ document.querySelectorAll('.btn-primary, .btn-secondary, .btn-ghost-nav, .signout-btn, .new-chat-btn, .upgrade-nav-btn, .send-btn').forEach(function(btn){
+  btn.addEventListener('click', function(e){
+   var rp = document.createElement('span');
+   var r = btn.getBoundingClientRect();
+   var s = Math.max(r.width, r.height);
+   rp.style.cssText = 'position:absolute;top:'+(e.clientY-r.top-s/2)+'px;left:'+(e.clientX-r.left-s/2)+'px;width:'+s+'px;height:'+s+'px;border-radius:50%;background:rgba(255,255,255,0.15);transform:scale(0);animation:rippleAnim .5s ease-out;pointer-events:none;z-index:0;';
+   btn.style.position = 'relative';
+   btn.style.overflow = 'hidden';
+   btn.appendChild(rp);
+   setTimeout(function(){ rp.remove(); }, 600);
   });
+ });
 }());
 </script>
 <script type="application/ld+json">

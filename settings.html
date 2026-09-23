@@ -4,7 +4,7 @@
 <head> 
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-<meta http-equiv="Content-Security-Policy" content="default-src 'self' https:; script-src 'self' 'unsafe-inline' 'unsafe-eval' blob: https://www.gstatic.com https://apis.google.com https://accounts.google.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://www.googletagmanager.com https://esm.sh; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: https:; font-src 'self' https://fonts.gstatic.com; connect-src 'self' blob: https://www.googleapis.com https://apis.google.com https://accounts.google.com https://esm.sh https://www.gstatic.com https://firestore.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://analytics.vercel.com; object-src 'none'; frame-src 'self' https://www.gstatic.com https://accounts.google.com https://mentora-c6dca.firebaseapp.com">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self' https:; script-src 'self' 'unsafe-inline' blob: https://www.gstatic.com https://apis.google.com https://accounts.google.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://www.googletagmanager.com https://esm.sh; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: https:; font-src 'self' https://fonts.gstatic.com; connect-src 'self' blob: https://www.googleapis.com https://apis.google.com https://accounts.google.com https://esm.sh https://www.gstatic.com https://firestore.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://analytics.vercel.com; object-src 'none'; frame-src 'self' https://www.gstatic.com https://accounts.google.com https://mentora-c6dca.firebaseapp.com">
 <meta name="description" content="Manage your Aquila AI app settings, theme, and preferences." />
 <meta property="og:title" content="Settings - Aquila AI" />
 <meta property="og:description" content="Manage your Aquila AI app settings, theme, and preferences." />
@@ -22,137 +22,137 @@
 <link rel="stylesheet" href="/css/shell.css" />
 <style>
 
-  .content-area { flex: 1; overflow-y: auto; padding: 36px 60px 40px; }
-  .content-area::-webkit-scrollbar { width: 4px; }
-  .content-area::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+ .content-area { flex: 1; overflow-y: auto; padding: 36px 60px 40px; }
+ .content-area::-webkit-scrollbar { width: 4px; }
+ .content-area::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
 
-  .settings-grid { max-width: 720px; margin: 0 auto; display: flex; flex-direction: column; gap: 24px; }
+ .settings-grid { max-width: 720px; margin: 0 auto; display: flex; flex-direction: column; gap: 24px; }
 
-  .page-header { margin-bottom: 6px; }
-  .page-header h1 { font-size: 26px; font-weight: 800; letter-spacing: -0.4px; color: var(--text-primary); }
-  .page-header p { font-size: 14px; color: var(--text-secondary); margin-top: 5px; font-weight: 300; }
+ .page-header { margin-bottom: 6px; }
+ .page-header h1 { font-size: 26px; font-weight: 800; letter-spacing: -0.4px; color: var(--text-primary); }
+ .page-header p { font-size: 14px; color: var(--text-secondary); margin-top: 5px; font-weight: 300; }
 
-  .settings-card {
-    background: var(--bg-card); border: 1px solid var(--border);
-    border-radius: 18px; overflow: hidden; transition: border-color 0.2s;
-  }
-  .settings-card:hover { border-color: rgba(0,212,255,0.15); }
+ .settings-card {
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: 18px; overflow: hidden; transition: border-color 0.2s;
+ }
+ .settings-card:hover { border-color: rgba(0,212,255,0.15); }
 
-  .card-header {
-    padding: 20px 24px 16px; border-bottom: 1px solid var(--border);
-    display: flex; align-items: center; gap: 12px;
-  }
-  .card-header-icon { width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 17px; flex-shrink: 0; }
-  .card-header-icon.cyan { background: rgba(0,212,255,0.12); }
-  .card-header-icon.purple { background: rgba(167,139,250,0.12); }
-  .card-header-icon.red { background: rgba(255,107,107,0.12); }
-  .card-header-text h2 { font-size: 15px; font-weight: 600; color: var(--text-primary); }
-  .card-header-text p { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+ .card-header {
+  padding: 20px 24px 16px; border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; gap: 12px;
+ }
+ .card-header-icon { width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 17px; flex-shrink: 0; }
+ .card-header-icon.cyan { background: rgba(0,212,255,0.12); }
+ .card-header-icon.purple { background: rgba(167,139,250,0.12); }
+ .card-header-icon.red { background: rgba(255,107,107,0.12); }
+ .card-header-text h2 { font-size: 15px; font-weight: 600; color: var(--text-primary); }
+ .card-header-text p { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
 
-  .card-body { padding: 20px 24px; }
+ .card-body { padding: 20px 24px; }
 
-  .info-row {
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 12px 16px; background: rgba(255,255,255,0.03);
-    border: 1px solid var(--border); border-radius: 10px; margin-bottom: 10px;
-  }
-  .info-row:last-child { margin-bottom: 0; }
-  .info-label { font-size: 12px; color: var(--text-muted); margin-bottom: 3px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.8px; }
-  .info-value { font-size: 13.5px; color: var(--text-primary); font-weight: 500; word-break: break-all; }
-  .info-badge {
-    font-size: 11px; font-weight: 600; padding: 3px 9px; border-radius: 20px;
-    background: rgba(0,212,255,0.1); color: var(--accent); border: 1px solid rgba(0,212,255,0.2);
-    white-space: nowrap; flex-shrink: 0; margin-left: 10px;
-  }
+ .info-row {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 12px 16px; background: rgba(255,255,255,0.03);
+  border: 1px solid var(--border); border-radius: 10px; margin-bottom: 10px;
+ }
+ .info-row:last-child { margin-bottom: 0; }
+ .info-label { font-size: 12px; color: var(--text-muted); margin-bottom: 3px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.8px; }
+ .info-value { font-size: 13.5px; color: var(--text-primary); font-weight: 500; word-break: break-all; }
+ .info-badge {
+  font-size: 11px; font-weight: 600; padding: 3px 9px; border-radius: 20px;
+  background: rgba(0,212,255,0.1); color: var(--accent); border: 1px solid rgba(0,212,255,0.2);
+  white-space: nowrap; flex-shrink: 0; margin-left: 10px;
+ }
 
-  .form-group { margin-bottom: 16px; }
-  .form-group:last-child { margin-bottom: 0; }
-  .form-label { font-size: 12px; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 7px; display: block; }
-  .form-input, .form-textarea {
-    width: 100%; background: var(--bg-input); border: 1px solid var(--border);
-    border-radius: 10px; padding: 11px 14px; color: var(--text-primary);
-    font-family: var(--font-main); font-size: 14px; outline: none;
-    transition: border-color 0.2s, box-shadow 0.2s;
-  }
-  .form-input:focus, .form-textarea:focus {
-    border-color: rgba(0,212,255,0.4);
-    box-shadow: 0 0 0 3px rgba(0,212,255,0.08);
-  }
-  .form-input::placeholder, .form-textarea::placeholder { color: var(--text-muted); }
-  .form-textarea { resize: vertical; min-height: 110px; line-height: 1.6; }
-  .form-input[disabled] { opacity: 0.55; cursor: not-allowed; }
+ .form-group { margin-bottom: 16px; }
+ .form-group:last-child { margin-bottom: 0; }
+ .form-label { font-size: 12px; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 7px; display: block; }
+ .form-input, .form-textarea {
+  width: 100%; background: var(--bg-input); border: 1px solid var(--border);
+  border-radius: 10px; padding: 11px 14px; color: var(--text-primary);
+  font-family: var(--font-main); font-size: 14px; outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+ }
+ .form-input:focus, .form-textarea:focus {
+  border-color: rgba(0,212,255,0.4);
+  box-shadow: 0 0 0 3px rgba(0,212,255,0.08);
+ }
+ .form-input::placeholder, .form-textarea::placeholder { color: var(--text-muted); }
+ .form-textarea { resize: vertical; min-height: 110px; line-height: 1.6; }
+ .form-input[disabled] { opacity: 0.55; cursor: not-allowed; }
 
-  .form-meta { display: flex; justify-content: space-between; align-items: center; margin-top: 5px; }
-  .char-count { font-size: 11px; color: var(--text-muted); font-family: var(--font-mono); }
+ .form-meta { display: flex; justify-content: space-between; align-items: center; margin-top: 5px; }
+ .char-count { font-size: 11px; color: var(--text-muted); font-family: var(--font-mono); }
 
-  .btn {
-    display: inline-flex; align-items: center; justify-content: center; gap: 7px;
-    padding: 10px 20px; border-radius: 10px; font-family: var(--font-main);
-    font-size: 13px; font-weight: 500; cursor: pointer; border: none;
-    transition: all 0.2s; white-space: nowrap;
-  }
-  .btn-primary {
-    background: var(--accent); color: #06121a;
-    box-shadow: 0 4px 14px rgba(0,212,255,0.3);
-  }
-  .btn-primary:hover { background: #33ddff; transform: translateY(-1px); box-shadow: 0 6px 18px rgba(0,212,255,0.4); }
-  .btn-primary:disabled { opacity: 0.55; cursor: not-allowed; transform: none; box-shadow: none; }
+ .btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 7px;
+  padding: 10px 20px; border-radius: 10px; font-family: var(--font-main);
+  font-size: 13px; font-weight: 500; cursor: pointer; border: none;
+  transition: all 0.2s; white-space: nowrap;
+ }
+ .btn-primary {
+  background: var(--accent); color: #06121a;
+  box-shadow: 0 4px 14px rgba(0,212,255,0.3);
+ }
+ .btn-primary:hover { background: #33ddff; transform: translateY(-1px); box-shadow: 0 6px 18px rgba(0,212,255,0.4); }
+ .btn-primary:disabled { opacity: 0.55; cursor: not-allowed; transform: none; box-shadow: none; }
 
-  .btn-danger { background: rgba(255,107,107,0.1); color: var(--accent3); border: 1px solid rgba(255,107,107,0.25); }
-  .btn-danger:hover { background: rgba(255,107,107,0.2); }
+ .btn-danger { background: rgba(255,107,107,0.1); color: var(--accent3); border: 1px solid rgba(255,107,107,0.25); }
+ .btn-danger:hover { background: rgba(255,107,107,0.2); }
 
-  .btn-ghost { background: rgba(255,255,255,0.05); color: var(--text-secondary); border: 1px solid var(--border); }
-  .btn-ghost:hover { background: rgba(255,255,255,0.09); color: var(--text-primary); }
+ .btn-ghost { background: rgba(255,255,255,0.05); color: var(--text-secondary); border: 1px solid var(--border); }
+ .btn-ghost:hover { background: rgba(255,255,255,0.09); color: var(--text-primary); }
 
-  .btn-row { display: flex; gap: 10px; flex-wrap: wrap; }
+ .btn-row { display: flex; gap: 10px; flex-wrap: wrap; }
 
-  .danger-zone {
-    border: 1px solid rgba(255,107,107,0.18); border-radius: 10px;
-    padding: 14px 16px; display: flex; align-items: center; justify-content: space-between; gap: 14px; flex-wrap: wrap;
-  }
-  .danger-zone-text h4 { font-size: 13px; font-weight: 600; color: var(--accent3); }
-  .danger-zone-text p { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+ .danger-zone {
+  border: 1px solid rgba(255,107,107,0.18); border-radius: 10px;
+  padding: 14px 16px; display: flex; align-items: center; justify-content: space-between; gap: 14px; flex-wrap: wrap;
+ }
+ .danger-zone-text h4 { font-size: 13px; font-weight: 600; color: var(--accent3); }
+ .danger-zone-text p { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
 
-  .toast-container { position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%); z-index: 999; display: flex; flex-direction: column; gap: 10px; align-items: center; pointer-events: none; }
-  .toast {
-    background: var(--bg-card); border: 1px solid var(--border);
-    border-radius: 12px; padding: 12px 20px;
-    font-size: 13.5px; font-weight: 500; color: var(--text-primary);
-    display: flex; align-items: center; gap: 9px;
-    box-shadow: 0 8px 28px rgba(0,0,0,0.4);
-    animation: toastIn 0.3s cubic-bezier(0.16,1,0.3,1) both;
-    pointer-events: auto;
-  }
-  .toast.success { border-color: rgba(0,212,255,0.3); }
-  .toast.error { border-color: rgba(255,107,107,0.3); }
-  .toast-icon { font-size: 16px; }
-  @keyframes toastIn { from { opacity:0; transform: translateY(12px); } to { opacity:1; transform: translateY(0); } }
+ .toast-container { position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%); z-index: 999; display: flex; flex-direction: column; gap: 10px; align-items: center; pointer-events: none; }
+ .toast {
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: 12px; padding: 12px 20px;
+  font-size: 13.5px; font-weight: 500; color: var(--text-primary);
+  display: flex; align-items: center; gap: 9px;
+  box-shadow: 0 8px 28px rgba(0,0,0,0.4);
+  animation: toastIn 0.3s cubic-bezier(0.16,1,0.3,1) both;
+  pointer-events: auto;
+ }
+ .toast.success { border-color: rgba(0,212,255,0.3); }
+ .toast.error { border-color: rgba(255,107,107,0.3); }
+ .toast-icon { font-size: 16px; }
+ @keyframes toastIn { from { opacity:0; transform: translateY(12px); } to { opacity:1; transform: translateY(0); } }
 
-  .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); z-index: 200; align-items: center; justify-content: center; padding: 20px; }
-  .modal-overlay.open { display: flex; }
-  .modal { background: var(--bg-card); border: 1px solid rgba(255,107,107,0.2); border-radius: 20px; padding: 28px 28px 24px; max-width: 400px; width: 100%; animation: modalIn 0.28s cubic-bezier(0.16,1,0.3,1) both; box-shadow: 0 20px 60px rgba(0,0,0,0.5); }
-  @keyframes modalIn { from { opacity:0; transform:scale(0.94) translateY(8px); } to { opacity:1; transform:none; } }
-  .modal-icon { font-size: 36px; margin-bottom: 14px; display: block; text-align: center; }
-  .modal h3 { font-size: 18px; font-weight: 700; color: var(--text-primary); text-align: center; margin-bottom: 8px; }
-  .modal p { font-size: 13.5px; color: var(--text-secondary); text-align: center; line-height: 1.6; margin-bottom: 22px; }
-  .modal-actions { display: flex; gap: 10px; }
-  .modal-actions .btn { flex: 1; justify-content: center; }
+ .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); z-index: 200; align-items: center; justify-content: center; padding: 20px; }
+ .modal-overlay.open { display: flex; }
+ .modal { background: var(--bg-card); border: 1px solid rgba(255,107,107,0.2); border-radius: 20px; padding: 28px 28px 24px; max-width: 400px; width: 100%; animation: modalIn 0.28s cubic-bezier(0.16,1,0.3,1) both; box-shadow: 0 20px 60px rgba(0,0,0,0.5); }
+ @keyframes modalIn { from { opacity:0; transform:scale(0.94) translateY(8px); } to { opacity:1; transform:none; } }
+ .modal-icon { font-size: 36px; margin-bottom: 14px; display: block; text-align: center; }
+ .modal h3 { font-size: 18px; font-weight: 700; color: var(--text-primary); text-align: center; margin-bottom: 8px; }
+ .modal p { font-size: 13.5px; color: var(--text-secondary); text-align: center; line-height: 1.6; margin-bottom: 22px; }
+ .modal-actions { display: flex; gap: 10px; }
+ .modal-actions .btn { flex: 1; justify-content: center; }
 
-  .spinner { width: 16px; height: 16px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.25); border-top-color: #06121a; animation: spin 0.7s linear infinite; flex-shrink: 0; }
-  @keyframes spin { to { transform: rotate(360deg); } }
+ .spinner { width: 16px; height: 16px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.25); border-top-color: #06121a; animation: spin 0.7s linear infinite; flex-shrink: 0; }
+ @keyframes spin { to { transform: rotate(360deg); } }
 
-  .nav-section::-webkit-scrollbar { width: 4px; }
-  .nav-section::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+ .nav-section::-webkit-scrollbar { width: 4px; }
+ .nav-section::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
 
-  @media (max-width: 880px) {
-    .content-area { padding: 22px 14px 32px; }
-  }
-  @media (max-width: 520px) {
-    .btn-row { flex-direction: column; }
-    .modal-actions { flex-direction: column-reverse; }
-    .danger-zone { flex-direction: column; align-items: flex-start; }
-    .topbar-mobile-logo span.full { display: none; }
-  }
+ @media (max-width: 880px) {
+  .content-area { padding: 22px 14px 32px; }
+ }
+ @media (max-width: 520px) {
+  .btn-row { flex-direction: column; }
+  .modal-actions { flex-direction: column-reverse; }
+  .danger-zone { flex-direction: column; align-items: flex-start; }
+  .topbar-mobile-logo span.full { display: none; }
+ }
 @keyframes rippleAnim{to{transform:scale(2);opacity:0;}}
 </style>
 </head>
@@ -163,131 +163,131 @@
 <div class="toast-container" id="toastContainer"></div>
 
 <div class="modal-overlay" id="logoutModal">
-  <div class="modal">
-    <span class="modal-icon">🔐</span>
-    <h3>Sign out of Aquila AI?</h3>
-    <p>You'll need to sign in again to access your chats, study planner, and analysis tools.</p>
-    <div class="modal-actions">
-      <button class="btn btn-ghost" id="cancelLogout">Cancel</button>
-      <button class="btn btn-danger" id="confirmLogout">Sign out</button>
-    </div>
+ <div class="modal">
+  <span class="modal-icon">🔐</span>
+  <h3>Sign out of Aquila AI?</h3>
+  <p>You'll need to sign in again to access your chats, study planner, and analysis tools.</p>
+  <div class="modal-actions">
+   <button class="btn btn-ghost" id="cancelLogout">Cancel</button>
+   <button class="btn btn-danger" id="confirmLogout">Sign out</button>
   </div>
+ </div>
 </div>
 
 <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
 <aside class="sidebar" id="sidebar">
-  <div class="logo-area">
-    <a href="index.html" class="logo">
-      <img src="logo.svg" alt="Aquila AI" class="logo-img">
-      <span class="logo-text">Aquila AI</span>
-    </a>
-    <button class="sidebar-close" id="sidebarClose" aria-label="Close menu">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-    </button>
-  </div>
-  <button class="new-chat-btn" id="newChatBtn">
-    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-    New Chat
+ <div class="logo-area">
+  <a href="index.html" class="logo">
+   <img src="logo.svg" alt="Aquila AI" class="logo-img">
+   <span class="logo-text">Aquila AI</span>
+  </a>
+  <button class="sidebar-close" id="sidebarClose" aria-label="Close menu">
+   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
   </button>
-  <nav class="nav-section" id="navSection">
-    <div class="nav-label">Main</div>
-    <a href="home.html" class="nav-item">
-      <span class="nav-icon"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg></span>
-      Home
-      <span class="nav-badge" style="background:rgba(0,212,255,0.15);color:var(--accent)" id="reviewBadge"></span>
+ </div>
+ <button class="new-chat-btn" id="newChatBtn">
+  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+  New Chat
+ </button>
+ <nav class="nav-section" id="navSection">
+  <div class="nav-label">Main</div>
+  <a href="home.html" class="nav-item">
+   <span class="nav-icon"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg></span>
+   Home
+   <span class="nav-badge" style="background:rgba(0,212,255,0.15);color:var(--accent)" id="reviewBadge"></span>
+  </a>
+  <a href="chat.html" class="nav-item">
+   <span class="nav-icon"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg></span>
+   Chat
+  </a>
+  <a href="analyze.html" class="nav-item">
+   <span class="nav-icon"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.35-4.35"/><path d="M11 8v6M8 11h6"/></svg></span>
+   Analyze
+  </a>
+  <a href="study-session.html" class="nav-item">
+   <span class="nav-icon"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/></svg></span>
+   Study Session
+   <span class="nav-badge green">New</span>
+  </a>
+  <a href="planner.html" class="nav-item">
+   <span class="nav-icon"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M3 10h18M8 2v4M16 2v4"/></svg></span>
+   Study Planner
+  </a>
+  <div class="nav-label">Community</div>
+  <div class="nav-group">
+   <div class="nav-group-toggle nav-item" onclick="toggleNavGroup(this)">
+    <span class="nav-icon"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></span>
+    Community
+    <span class="nav-group-chevron">▼</span>
+   </div>
+   <div class="nav-group-children open">
+    <a href="beyond-marks.html" class="nav-item nav-group-item">
+     Beyond Marks
+     <span class="nav-badge purple">New</span>
     </a>
-    <a href="chat.html" class="nav-item">
-      <span class="nav-icon"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg></span>
-      Chat
+    <a href="student-invoice.html" class="nav-item nav-group-item">
+     Community Board
     </a>
-    <a href="analyze.html" class="nav-item">
-      <span class="nav-icon"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.35-4.35"/><path d="M11 8v6M8 11h6"/></svg></span>
-      Analyze
-    </a>
-    <a href="study-session.html" class="nav-item">
-      <span class="nav-icon"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/></svg></span>
-      Study Session
-      <span class="nav-badge green">New</span>
-    </a>
-    <a href="planner.html" class="nav-item">
-      <span class="nav-icon"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M3 10h18M8 2v4M16 2v4"/></svg></span>
-      Study Planner
-    </a>
-    <div class="nav-label">Community</div>
-    <div class="nav-group">
-      <div class="nav-group-toggle nav-item" onclick="toggleNavGroup(this)">
-        <span class="nav-icon"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></span>
-        Community
-        <span class="nav-group-chevron">▼</span>
-      </div>
-      <div class="nav-group-children open">
-        <a href="beyond-marks.html" class="nav-item nav-group-item">
-          Beyond Marks
-          <span class="nav-badge purple">New</span>
-        </a>
-        <a href="student-invoice.html" class="nav-item nav-group-item">
-          Community Board
-        </a>
-      </div>
-    </div>
+   </div>
+  </div>
 
-    <div class="nav-label">Account</div>
-    <a href="referral.html" class="nav-item">
-      <span class="nav-icon" style="color:var(--green)">
-        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-      </span>
-      Refer & Earn
-    </a>
-    <a href="subscription.html" class="upgrade-nav-btn">
-      <span class="nav-icon" style="color:var(--accent2)">
-        <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-      </span>
-      Subscription
-    </a>
-    <a href="profile.html" class="nav-item">
-      <span class="nav-icon"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span>
-      Profile
-    </a>
-    <a href="settings.html" class="nav-item active">
-      <span class="nav-icon"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.6 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.6a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></span>
-      Settings
-    </a>
-  </nav>
-  <!-- Compact real syllabus + AIConsole — low height -->
-  <div style="padding:8px 10px 0;">
-    <div id="syllabusCard" style="background:linear-gradient(135deg, #0f172a 0%, #1e293b 100%);border:1px solid var(--border);border-radius:10px;padding:10px 12px;display:flex;align-items:center;gap:10px;min-height:52px;">
-      <div style="width:32px;height:32px;border-radius:8px;background:rgba(16,185,129,0.14);display:grid;place-items:center;flex-shrink:0;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="1.7"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
-      <div style="flex:1;min-width:0;">
-        <div style="font-size:11px;font-weight:600;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" id="syllabusLabel">Upload syllabus</div>
-        <div style="font-size:10px;color:rgba(255,255,255,0.55);" id="syllabusSub">JPG, PNG, PDF — personalises plan</div>
-      </div>
-      <input type="file" id="syllabusFile" accept=".jpg,.jpeg,.png,.pdf" hidden />
-      <button id="syllabusUploadBtn" style="background:#10b981;color:#fff;border:none;border-radius:999px;padding:6px 12px;font-size:11px;font-weight:600;cursor:pointer;flex-shrink:0;">Upload</button>
-    </div>
-    <div id="syllabusProgress" style="display:none;margin-top:6px;font-size:10px;color:var(--text-muted);"></div>
+  <div class="nav-label">Account</div>
+  <a href="referral.html" class="nav-item">
+   <span class="nav-icon" style="color:var(--green)">
+    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+   </span>
+   Refer & Earn
+  </a>
+  <a href="subscription.html" class="upgrade-nav-btn">
+   <span class="nav-icon" style="color:var(--accent2)">
+    <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+   </span>
+   Subscription
+  </a>
+  <a href="profile.html" class="nav-item">
+   <span class="nav-icon"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span>
+   Profile
+  </a>
+  <a href="settings.html" class="nav-item active">
+   <span class="nav-icon"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.6 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.6a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></span>
+   Settings
+  </a>
+ </nav>
+ <!-- Compact real syllabus + AIConsole — low height -->
+ <div style="padding:8px 10px 0;">
+  <div id="syllabusCard" style="background:linear-gradient(135deg, #0f172a 0%, #1e293b 100%);border:1px solid var(--border);border-radius:10px;padding:10px 12px;display:flex;align-items:center;gap:10px;min-height:52px;">
+   <div style="width:32px;height:32px;border-radius:8px;background:rgba(16,185,129,0.14);display:grid;place-items:center;flex-shrink:0;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="1.7"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
+   <div style="flex:1;min-width:0;">
+    <div style="font-size:11px;font-weight:600;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" id="syllabusLabel">Upload syllabus</div>
+    <div style="font-size:10px;color:rgba(255,255,255,0.55);" id="syllabusSub">JPG, PNG, PDF — personalises plan</div>
+   </div>
+   <input type="file" id="syllabusFile" accept=".jpg,.jpeg,.png,.pdf" hidden />
+   <button id="syllabusUploadBtn" style="background:#10b981;color:#fff;border:none;border-radius:999px;padding:6px 12px;font-size:11px;font-weight:600;cursor:pointer;flex-shrink:0;">Upload</button>
   </div>
-  <div style="padding:8px 10px;">
-    <div style="background:linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);border:1px solid var(--border);border-radius:10px;padding:10px 12px;display:flex;align-items:center;gap:10px;min-height:52px;position:relative;overflow:hidden;">
-      <div style="position:absolute;inset:0;background:radial-gradient(200px 80px at 85% 100%, rgba(37,99,235,0.18), transparent 60%);pointer-events:none;"></div>
-      <div style="width:32px;height:32px;border-radius:8px;background:rgba(37,99,235,0.15);display:grid;place-items:center;flex-shrink:0;position:relative;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#60a5fa" stroke-width="1.7"><path d="M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8z"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="M4.93 4.93l1.41 1.41"/><path d="M17.66 17.66l1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="M6.34 17.66l-1.41 1.41"/><path d="M19.07 4.93l-1.41 1.41"/></svg></div>
-      <div style="flex:1;min-width:0;position:relative;">
-        <div style="font-size:11px;font-weight:700;color:#fff;">AIConsole</div>
-        <div style="font-size:10px;color:rgba(255,255,255,0.55);">Study assistant</div>
-      </div>
-      <button onclick="window.location.href='chat.html'" style="background:#2563eb;color:#fff;border:none;border-radius:999px;padding:6px 12px;font-size:11px;font-weight:600;cursor:pointer;flex-shrink:0;position:relative;">Ask</button>
-    </div>
+  <div id="syllabusProgress" style="display:none;margin-top:6px;font-size:10px;color:var(--text-muted);"></div>
+ </div>
+ <div style="padding:8px 10px;">
+  <div style="background:linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);border:1px solid var(--border);border-radius:10px;padding:10px 12px;display:flex;align-items:center;gap:10px;min-height:52px;position:relative;overflow:hidden;">
+   <div style="position:absolute;inset:0;background:radial-gradient(200px 80px at 85% 100%, rgba(37,99,235,0.18), transparent 60%);pointer-events:none;"></div>
+   <div style="width:32px;height:32px;border-radius:8px;background:rgba(37,99,235,0.15);display:grid;place-items:center;flex-shrink:0;position:relative;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#60a5fa" stroke-width="1.7"><path d="M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8z"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="M4.93 4.93l1.41 1.41"/><path d="M17.66 17.66l1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="M6.34 17.66l-1.41 1.41"/><path d="M19.07 4.93l-1.41 1.41"/></svg></div>
+   <div style="flex:1;min-width:0;position:relative;">
+    <div style="font-size:11px;font-weight:700;color:#fff;">AIConsole</div>
+    <div style="font-size:10px;color:rgba(255,255,255,0.55);">Study assistant</div>
+   </div>
+   <button onclick="window.location.href='chat.html'" style="background:#2563eb;color:#fff;border:none;border-radius:999px;padding:6px 12px;font-size:11px;font-weight:600;cursor:pointer;flex-shrink:0;position:relative;">Ask</button>
   </div>
-  <div class="sidebar-bottom">
-    <button class="signout-btn" id="signOutBtn">Sign out</button>
-    <div class="user-card">
-      <div class="avatar" id="userAvatar">G</div>
-      <div class="user-info">
-        <div class="user-name" id="userName">Guest</div>
-        <div class="user-plan" id="userPlan">Free Plan</div>
-      </div>
-    </div>
+ </div>
+ <div class="sidebar-bottom">
+  <button class="signout-btn" id="signOutBtn">Sign out</button>
+  <div class="user-card">
+   <div class="avatar" id="userAvatar">G</div>
+   <div class="user-info">
+    <div class="user-name" id="userName">Guest</div>
+    <div class="user-plan" id="userPlan">Free Plan</div>
+   </div>
   </div>
+ </div>
 </aside>
 
 <!-- Real syllabus upload — stores metadata in Firestore, no fake showpiece -->
@@ -302,223 +302,223 @@ const label = document.getElementById("syllabusLabel");
 const sub = document.getElementById("syllabusSub");
 function toast(msg){ const t=document.createElement("div"); t.textContent=msg; t.style.cssText="position:fixed;bottom:16px;left:50%;transform:translateX(-50%);background:#0f172a;color:#fff;border:1px solid var(--border);padding:8px 14px;border-radius:999px;font-size:12px;z-index:9999;"; document.body.appendChild(t); setTimeout(()=>t.remove(),2500); }
 if(btn && input){
-  btn.addEventListener("click", ()=> input.click());
-  // also clicking card triggers upload (except button)
-  document.getElementById("syllabusCard")?.addEventListener("click", (e)=>{ if(e.target===btn||e.target===input) return; input.click(); });
-  input.addEventListener("change", async ()=>{
-    const f = input.files?.[0];
-    if(!f) return;
-    const allowed = ["application/pdf","image/jpeg","image/png","image/jpg"];
-    if(!allowed.includes(f.type) && !f.name.match(/\.(pdf|jpe?g|png)$/i)){ toast("Only JPG, PNG, PDF"); input.value=""; return; }
-    if(f.size>8*1024*1024){ toast("Max 8MB"); input.value=""; return; }
-    const user = auth?.currentUser;
-    if(!user){ toast("Please sign in to upload your syllabus"); return; }
-    try { await user.getIdToken(true); } catch(e) { console.warn("Token refresh failed", e); }
-    if(prog){ prog.style.display="block"; prog.textContent = `Uploading ${f.name}…`; }
-    btn.disabled=true; btn.textContent="…";
-    try{
-      // Light parse: read first 4k as text snippet for personalisation (client-side)
-      let snippet = "";
-      try{
-        if(f.type==="application/pdf"){
-          snippet = `[PDF ${f.name} ${Math.round(f.size/1024)}KB] — will personalise after server parse`;
-        } else {
-          snippet = await new Promise(res=>{
-            const r=new FileReader(); r.onload=()=>res(String(r.result).slice(0,3000)); r.onerror=()=>res(""); r.readAsText(f.slice(0,8192));
-          });
-          if(!snippet) snippet = `[Image ${f.name}]`;
-        }
-      }catch{ snippet=""; }
-      const id = Date.now().toString(36)+Math.random().toString(36).slice(2,6);
-      const ref = doc(collection(db, "users", user.uid, "syllabus"), id);
-      await setDoc(ref, { fileName:f.name, fileType:f.type||"unknown", fileSize:f.size, snippet: snippet.slice(0,4000), uploadedAt: serverTimestamp(), status:"ready" });
-      // Mirror to learning profile for personalisation
-      try{
-        const profRef = doc(db, "users", user.uid, "learning", "profile");
-        const { getDoc } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
-        const s = await getDoc(profRef);
-        const cur = s.exists()? s.data(): {};
-        await setDoc(profRef, { syllabus:{ fileName:f.name, uploadedAt: new Date().toISOString(), status:"ready" }, onboardingComplete: cur.onboardingComplete ?? false, updatedAt: serverTimestamp() }, { merge:true });
-      }catch{}
-      try{ await emitLearningEvent(db, user.uid, "syllabus_uploaded", { source:"syllabus", subject:"syllabus", topic:f.name, payload:{ fileName:f.name, fileType:f.type, fileSize:f.size } }); }catch{}
-      if(label) label.textContent = f.name.slice(0,28);
-      if(sub) sub.textContent = "Personalised ✓";
-      if(prog) prog.textContent = "Saved — personalising your plan";
-      toast("Syllabus saved — personalising ✓");
-      // Refresh hub subtitle if on home
-      setTimeout(()=>{ prog.style.display="none"; }, 2500);
-    }catch(e){
-      console.error("Syllabus upload error:", e);
-      let msg = e.message || "Unknown error";
-      if(msg.includes("Missing or insufficient permissions") || msg.includes("permission")){
-        msg = "We couldn't upload your syllabus. Please check your connection and try signing in again.";
-        try { await auth.currentUser?.getIdToken(true); } catch {}
-      } else if(msg.includes("network") || msg.includes("offline")){
-        msg = "No internet connection. Please check your connection and try again.";
-      }
-      if(prog) prog.textContent = msg;
-      toast(msg);
-    } finally { btn.disabled=false; btn.textContent="Upload"; input.value=""; }
-  });
-  // Show existing syllabus name on load
-  auth?.onAuthStateChanged?.(async (u)=>{
-    if(!u) return;
-    try{
-      const snap= await getDocs(collection(db, "users", u.uid, "syllabus"));
-      if(!snap.empty){
-        const d=snap.docs.sort((a,b)=> (b.data().uploadedAt?.toMillis?.()||0)-(a.data().uploadedAt?.toMillis?.()||0))[0]?.data();
-        if(d?.fileName && label){ label.textContent=d.fileName.slice(0,28); if(sub) sub.textContent="Personalising • tap to update"; }
-      }
-    }catch{}
-  });
+ btn.addEventListener("click", ()=> input.click());
+ // also clicking card triggers upload (except button)
+ document.getElementById("syllabusCard")?.addEventListener("click", (e)=>{ if(e.target===btn||e.target===input) return; input.click(); });
+ input.addEventListener("change", async ()=>{
+  const f = input.files?.[0];
+  if(!f) return;
+  const allowed = ["application/pdf","image/jpeg","image/png","image/jpg"];
+  if(!allowed.includes(f.type) && !f.name.match(/\.(pdf|jpe?g|png)$/i)){ toast("Only JPG, PNG, PDF"); input.value=""; return; }
+  if(f.size>8*1024*1024){ toast("Max 8MB"); input.value=""; return; }
+  const user = auth?.currentUser;
+  if(!user){ toast("Please sign in to upload your syllabus"); return; }
+  try { await user.getIdToken(true); } catch(e) { console.warn("Token refresh failed", e); }
+  if(prog){ prog.style.display="block"; prog.textContent = `Uploading ${f.name}…`; }
+  btn.disabled=true; btn.textContent="…";
+  try{
+   // Light parse: read first 4k as text snippet for personalisation (client-side)
+   let snippet = "";
+   try{
+    if(f.type==="application/pdf"){
+     snippet = `[PDF ${f.name} ${Math.round(f.size/1024)}KB] — will personalise after server parse`;
+    } else {
+     snippet = await new Promise(res=>{
+      const r=new FileReader(); r.onload=()=>res(String(r.result).slice(0,3000)); r.onerror=()=>res(""); r.readAsText(f.slice(0,8192));
+     });
+     if(!snippet) snippet = `[Image ${f.name}]`;
+    }
+   }catch{ snippet=""; }
+   const id = Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+   const ref = doc(collection(db, "users", user.uid, "syllabus"), id);
+   await setDoc(ref, { fileName:f.name, fileType:f.type||"unknown", fileSize:f.size, snippet: snippet.slice(0,4000), uploadedAt: serverTimestamp(), status:"ready" });
+   // Mirror to learning profile for personalisation
+   try{
+    const profRef = doc(db, "users", user.uid, "learning", "profile");
+    const { getDoc } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
+    const s = await getDoc(profRef);
+    const cur = s.exists()? s.data(): {};
+    await setDoc(profRef, { syllabus:{ fileName:f.name, uploadedAt: new Date().toISOString(), status:"ready" }, onboardingComplete: cur.onboardingComplete ?? false, updatedAt: serverTimestamp() }, { merge:true });
+   }catch{}
+   try{ await emitLearningEvent(db, user.uid, "syllabus_uploaded", { source:"syllabus", subject:"syllabus", topic:f.name, payload:{ fileName:f.name, fileType:f.type, fileSize:f.size } }); }catch{}
+   if(label) label.textContent = f.name.slice(0,28);
+   if(sub) sub.textContent = "Personalised ✓";
+   if(prog) prog.textContent = "Saved — personalising your plan";
+   toast("Syllabus saved — personalising ✓");
+   // Refresh hub subtitle if on home
+   setTimeout(()=>{ prog.style.display="none"; }, 2500);
+  }catch(e){
+   console.error("Syllabus upload error:", e);
+   let msg = e.message || "Unknown error";
+   if(msg.includes("Missing or insufficient permissions") || msg.includes("permission")){
+    msg = "We couldn't upload your syllabus. Please check your connection and try signing in again.";
+    try { await auth.currentUser?.getIdToken(true); } catch {}
+   } else if(msg.includes("network") || msg.includes("offline")){
+    msg = "No internet connection. Please check your connection and try again.";
+   }
+   if(prog) prog.textContent = msg;
+   toast(msg);
+  } finally { btn.disabled=false; btn.textContent="Upload"; input.value=""; }
+ });
+ // Show existing syllabus name on load
+ auth?.onAuthStateChanged?.(async (u)=>{
+  if(!u) return;
+  try{
+   const snap= await getDocs(collection(db, "users", u.uid, "syllabus"));
+   if(!snap.empty){
+    const d=snap.docs.sort((a,b)=> (b.data().uploadedAt?.toMillis?.()||0)-(a.data().uploadedAt?.toMillis?.()||0))[0]?.data();
+    if(d?.fileName && label){ label.textContent=d.fileName.slice(0,28); if(sub) sub.textContent="Personalising • tap to update"; }
+   }
+  }catch{}
+ });
 }
 </script>
 
 <main class="main">
-  <div class="topbar" style="background:var(--bg-base);border-bottom:1px solid var(--border-subtle);">
-    <div class="topbar-left">
-      <button class="menu-btn" id="menuBtn" aria-label="Open menu">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+ <div class="topbar" style="background:var(--bg-base);border-bottom:1px solid var(--border-subtle);">
+  <div class="topbar-left">
+   <button class="menu-btn" id="menuBtn" aria-label="Open menu">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+   </button>
+   <div class="topbar-mobile-logo"><img src="logo.svg" alt="Aquila AI" class="logo-img"><span class="logo-text">Aquila AI</span></div>
+   <div style="display:none;" class="model-selector"><span class="model-dot"></span>Aquila AI</div>
+   <div id="topbarGreeting" style="font-size:14px;font-weight:500;color:var(--text-secondary);margin-left:8px;">Hi, <span id="greetingName">there</span></div>
+  </div>
+  <div style="flex:1;display:flex;justify-content:center;max-width:480px;margin:0 16px;" class="topbar-center">
+   <div style="position:relative;width:100%;max-width:360px;">
+    <input id="topbarSearch" placeholder="search" style="width:100%;height:36px;background:var(--bg-card);border:1px solid var(--border);border-radius:999px;padding:0 36px 0 14px;font-size:13px;color:var(--text-primary);outline:none;" />
+    <svg style="position:absolute;right:10px;top:50%;transform:translateY(-50%);width:16px;height:16px;color:var(--text-muted);" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.35-4.35"/></svg>
+   </div>
+  </div>
+  <div style="display:flex;align-items:center;gap:12px;" class="topbar-right">
+   <button style="width:36px;height:36px;border-radius:999px;background:var(--bg-card);border:1px solid var(--border);display:grid;place-items:center;color:var(--text-muted);position:relative;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 8a6 6 0 0 1 12 0c0 7-6 11-6 11s-6-4-6-11"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg><span style="position:absolute;top:6px;right:7px;width:7px;height:7px;background:var(--green);border-radius:50%;border:1px solid var(--bg-card);"></span></button>
+   <div style="display:flex;align-items:center;gap:8px;cursor:pointer;">
+    <img id="topbarAvatar" src="" data-pending-avatar="1" alt="User" style="width:32px;height:32px;border-radius:50%;object-fit:cover;border:1px solid var(--border);" />
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--text-muted);"><path d="m6 9 6 6 6-6"/></svg>
+   </div>
+  </div>
+ </div>
+
+ <div class="content-area">
+  <div class="settings-grid">
+   <div class="page-header">
+    <h1>Settings</h1>
+    <p>Manage your account, get help, and personalise your Aquila AI experience.</p>
+   </div>
+
+   <div class="settings-card">
+    <div class="card-header">
+     <div class="card-header-icon cyan">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d4ff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+     </div>
+     <div class="card-header-text">
+      <h2>Account</h2>
+      <p>Your profile and sign-in details</p>
+     </div>
+    </div>
+    <div class="card-body">
+     <div class="info-row">
+      <div><div class="info-label">Name</div><div class="info-value" id="displayName">—</div></div>
+     </div>
+     <div class="info-row">
+      <div><div class="info-label">Email address</div><div class="info-value" id="displayEmail">—</div></div>
+      <span class="info-badge">Verified</span>
+     </div>
+     <div class="info-row">
+      <div><div class="info-label">Plan</div><div class="info-value" id="displayPlan">Free Plan</div></div>
+      <span class="info-badge" id="planBadge">Active</span>
+     </div>
+    </div>
+   </div>
+
+   <div class="settings-card">
+    <div class="card-header">
+     <div class="card-header-icon cyan">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d4ff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+     </div>
+     <div class="card-header-text">
+      <h2>AI Memory</h2>
+      <p>Facts &amp; preferences Aquila remembers for you</p>
+     </div>
+    </div>
+    <div class="card-body">
+     <p style="font-size:13.5px;color:var(--text-secondary);margin-bottom:16px;line-height:1.6;">
+      Aquila recalls these in every chat — on this website and on the mobile app.
+     </p>
+     <div class="form-group" style="display:flex;gap:10px;align-items:flex-start;">
+      <input class="form-input" type="text" id="memoryInput" placeholder="e.g. I'm preparing for JEE 2027 and find integration hardest" maxlength="2000" />
+      <button class="btn btn-primary" id="addMemoryBtn" style="white-space:nowrap;">
+       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+       Add
       </button>
-      <div class="topbar-mobile-logo"><img src="logo.svg" alt="Aquila AI" class="logo-img"><span class="logo-text">Aquila AI</span></div>
-      <div style="display:none;" class="model-selector"><span class="model-dot"></span>Aquila AI</div>
-      <div id="topbarGreeting" style="font-size:14px;font-weight:500;color:var(--text-secondary);margin-left:8px;">Hi, <span id="greetingName">there</span></div>
+     </div>
+     <div id="memoryList" style="margin-top:14px;display:flex;flex-direction:column;gap:8px;"></div>
     </div>
-    <div style="flex:1;display:flex;justify-content:center;max-width:480px;margin:0 16px;" class="topbar-center">
-      <div style="position:relative;width:100%;max-width:360px;">
-        <input id="topbarSearch" placeholder="search" style="width:100%;height:36px;background:var(--bg-card);border:1px solid var(--border);border-radius:999px;padding:0 36px 0 14px;font-size:13px;color:var(--text-primary);outline:none;" />
-        <svg style="position:absolute;right:10px;top:50%;transform:translateY(-50%);width:16px;height:16px;color:var(--text-muted);" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.35-4.35"/></svg>
+   </div>
+
+   <div class="settings-card">
+    <div class="card-header">
+     <div class="card-header-icon red">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ff6b6b" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+     </div>
+     <div class="card-header-text">
+      <h2>Sign out</h2>
+      <p>End your current session</p>
+     </div>
+    </div>
+    <div class="card-body">
+     <p style="font-size:13.5px;color:var(--text-secondary);margin-bottom:18px;line-height:1.6;">
+      Signing out will end this session on this device. Your chats and study data are saved and will be available when you sign back in.
+     </p>
+     <div class="btn-row">
+      <button class="btn btn-danger" id="logoutBtn">
+       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+       Sign out of Aquila AI
+      </button>
+     </div>
+     <div class="danger-zone" style="margin-top:20px;">
+      <div class="danger-zone-text">
+       <h4>Delete account</h4>
+       <p>Permanently remove your account and all associated data.</p>
       </div>
+      <button class="btn btn-ghost" disabled title="Coming soon" style="opacity:0.45;cursor:not-allowed;">Delete account</button>
+     </div>
     </div>
-    <div style="display:flex;align-items:center;gap:12px;" class="topbar-right">
-      <button style="width:36px;height:36px;border-radius:999px;background:var(--bg-card);border:1px solid var(--border);display:grid;place-items:center;color:var(--text-muted);position:relative;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 8a6 6 0 0 1 12 0c0 7-6 11-6 11s-6-4-6-11"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg><span style="position:absolute;top:6px;right:7px;width:7px;height:7px;background:var(--green);border-radius:50%;border:1px solid var(--bg-card);"></span></button>
-      <div style="display:flex;align-items:center;gap:8px;cursor:pointer;">
-        <img id="topbarAvatar" src="" data-pending-avatar="1" alt="User" style="width:32px;height:32px;border-radius:50%;object-fit:cover;border:1px solid var(--border);" />
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--text-muted);"><path d="m6 9 6 6 6-6"/></svg>
-      </div>
+   </div>
+
+   <div class="settings-card">
+    <div class="card-header">
+     <div class="card-header-icon purple">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#a78bfa" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+     </div>
+     <div class="card-header-text">
+      <h2>Help &amp; Support</h2>
+      <p>Send us a message and we'll get back to you</p>
+     </div>
     </div>
+    <div class="card-body">
+     <div class="form-group">
+      <label class="form-label" for="supportFrom">From</label>
+      <input class="form-input" type="email" id="supportFrom" disabled placeholder="Loading..." />
+     </div>
+     <div class="form-group">
+      <label class="form-label" for="supportSubject">Subject</label>
+      <input class="form-input" type="text" id="supportSubject" placeholder="e.g. Issue with study planner" maxlength="100" oninput="updateCharCount(this,'subjectCount',100)" />
+      <div class="form-meta"><span></span><span class="char-count" id="subjectCount">0 / 100</span></div>
+     </div>
+     <div class="form-group">
+      <label class="form-label" for="supportMessage">Message</label>
+      <textarea class="form-textarea" id="supportMessage" placeholder="Describe your issue or question in detail..." maxlength="1000" oninput="updateCharCount(this,'messageCount',1000)"></textarea>
+      <div class="form-meta"><span></span><span class="char-count" id="messageCount">0 / 1000</span></div>
+     </div>
+     <button class="btn btn-primary" id="sendSupportBtn" onclick="sendSupport()">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+      Send message
+     </button>
+    </div>
+   </div>
   </div>
-
-  <div class="content-area">
-    <div class="settings-grid">
-      <div class="page-header">
-        <h1>Settings</h1>
-        <p>Manage your account, get help, and personalise your Aquila AI experience.</p>
-      </div>
-
-      <div class="settings-card">
-        <div class="card-header">
-          <div class="card-header-icon cyan">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d4ff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-          </div>
-          <div class="card-header-text">
-            <h2>Account</h2>
-            <p>Your profile and sign-in details</p>
-          </div>
-        </div>
-        <div class="card-body">
-          <div class="info-row">
-            <div><div class="info-label">Name</div><div class="info-value" id="displayName">—</div></div>
-          </div>
-          <div class="info-row">
-            <div><div class="info-label">Email address</div><div class="info-value" id="displayEmail">—</div></div>
-            <span class="info-badge">Verified</span>
-          </div>
-          <div class="info-row">
-            <div><div class="info-label">Plan</div><div class="info-value" id="displayPlan">Free Plan</div></div>
-            <span class="info-badge" id="planBadge">Active</span>
-          </div>
-        </div>
-      </div>
-
-      <div class="settings-card">
-        <div class="card-header">
-          <div class="card-header-icon cyan">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d4ff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
-          </div>
-          <div class="card-header-text">
-            <h2>AI Memory</h2>
-            <p>Facts &amp; preferences Aquila remembers for you</p>
-          </div>
-        </div>
-        <div class="card-body">
-          <p style="font-size:13.5px;color:var(--text-secondary);margin-bottom:16px;line-height:1.6;">
-            Aquila recalls these in every chat — on this website and on the mobile app.
-          </p>
-          <div class="form-group" style="display:flex;gap:10px;align-items:flex-start;">
-            <input class="form-input" type="text" id="memoryInput" placeholder="e.g. I'm preparing for JEE 2027 and find integration hardest" maxlength="2000" />
-            <button class="btn btn-primary" id="addMemoryBtn" style="white-space:nowrap;">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-              Add
-            </button>
-          </div>
-          <div id="memoryList" style="margin-top:14px;display:flex;flex-direction:column;gap:8px;"></div>
-        </div>
-      </div>
-
-      <div class="settings-card">
-        <div class="card-header">
-          <div class="card-header-icon red">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ff6b6b" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
-          </div>
-          <div class="card-header-text">
-            <h2>Sign out</h2>
-            <p>End your current session</p>
-          </div>
-        </div>
-        <div class="card-body">
-          <p style="font-size:13.5px;color:var(--text-secondary);margin-bottom:18px;line-height:1.6;">
-            Signing out will end this session on this device. Your chats and study data are saved and will be available when you sign back in.
-          </p>
-          <div class="btn-row">
-            <button class="btn btn-danger" id="logoutBtn">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
-              Sign out of Aquila AI
-            </button>
-          </div>
-          <div class="danger-zone" style="margin-top:20px;">
-            <div class="danger-zone-text">
-              <h4>Delete account</h4>
-              <p>Permanently remove your account and all associated data.</p>
-            </div>
-            <button class="btn btn-ghost" disabled title="Coming soon" style="opacity:0.45;cursor:not-allowed;">Delete account</button>
-          </div>
-        </div>
-      </div>
-
-      <div class="settings-card">
-        <div class="card-header">
-          <div class="card-header-icon purple">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#a78bfa" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
-          </div>
-          <div class="card-header-text">
-            <h2>Help &amp; Support</h2>
-            <p>Send us a message and we'll get back to you</p>
-          </div>
-        </div>
-        <div class="card-body">
-          <div class="form-group">
-            <label class="form-label" for="supportFrom">From</label>
-            <input class="form-input" type="email" id="supportFrom" disabled placeholder="Loading..." />
-          </div>
-          <div class="form-group">
-            <label class="form-label" for="supportSubject">Subject</label>
-            <input class="form-input" type="text" id="supportSubject" placeholder="e.g. Issue with study planner" maxlength="100" oninput="updateCharCount(this,'subjectCount',100)" />
-            <div class="form-meta"><span></span><span class="char-count" id="subjectCount">0 / 100</span></div>
-          </div>
-          <div class="form-group">
-            <label class="form-label" for="supportMessage">Message</label>
-            <textarea class="form-textarea" id="supportMessage" placeholder="Describe your issue or question in detail..." maxlength="1000" oninput="updateCharCount(this,'messageCount',1000)"></textarea>
-            <div class="form-meta"><span></span><span class="char-count" id="messageCount">0 / 1000</span></div>
-          </div>
-          <button class="btn btn-primary" id="sendSupportBtn" onclick="sendSupport()">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
-            Send message
-          </button>
-        </div>
-      </div>
-    </div>
-  </div>
+ </div>
 </main>
 
 <script>
@@ -533,31 +533,31 @@ menuBtn.addEventListener('click', openSidebar);
 closeBtn.addEventListener('click', closeSidebar);
 overlay.addEventListener('click', closeSidebar);
 document.querySelectorAll('.nav-item:not(.nav-group-toggle)').forEach((link) => {
-  link.addEventListener('click', () => { if (window.innerWidth <= 880) closeSidebar(); });
+ link.addEventListener('click', () => { if (window.innerWidth <= 880) closeSidebar(); });
 });
 function toggleNavGroup(el) {
-  el.classList.toggle('open');
-  const children = el.nextElementSibling;
-  if (children) children.classList.toggle('open');
+ el.classList.toggle('open');
+ const children = el.nextElementSibling;
+ if (children) children.classList.toggle('open');
 }
 
 function updateCharCount(el, counterId, max) {
-  document.getElementById(counterId).textContent = `${el.value.length} / ${max}`;
+ document.getElementById(counterId).textContent = `${el.value.length} / ${max}`;
 }
 
 function showToast(message, type = 'success') {
-  const icon = type === 'success' ? '✅' : '❌';
-  const toast = document.createElement('div');
-  toast.className = `toast ${type}`;
-  toast.innerHTML = `<span class="toast-icon">${icon}</span>${message}`;
-  const container = document.getElementById('toastContainer');
-  container.appendChild(toast);
-  setTimeout(() => {
-    toast.style.opacity = '0';
-    toast.style.transform = 'translateY(10px)';
-    toast.style.transition = 'opacity 0.3s, transform 0.3s';
-    setTimeout(() => toast.remove(), 300);
-  }, 4000);
+ const icon = type === 'success' ? '✅' : '❌';
+ const toast = document.createElement('div');
+ toast.className = `toast ${type}`;
+ toast.innerHTML = `<span class="toast-icon">${icon}</span>${message}`;
+ const container = document.getElementById('toastContainer');
+ container.appendChild(toast);
+ setTimeout(() => {
+  toast.style.opacity = '0';
+  toast.style.transform = 'translateY(10px)';
+  toast.style.transition = 'opacity 0.3s, transform 0.3s';
+  setTimeout(() => toast.remove(), 300);
+ }, 4000);
 }
 
 const logoutModal = document.getElementById('logoutModal');
@@ -579,162 +579,162 @@ const authInstance = auth || getAuth();
 let currentUser = null;
 
 onAuthStateChanged(authInstance, async (user) => {
-  if (!user) { window.location.href = "login.html"; return; }
-  if (user && !user.emailVerified) { window.location.href = "verify-email.html"; return; }
-  currentUser = user;
-  const name = user.displayName || user.email?.split("@")[0] || "Guest";
+ if (!user) { window.location.href = "login.html"; return; }
+ if (user && !user.emailVerified) { window.location.href = "verify-email.html"; return; }
+ currentUser = user;
+ const name = user.displayName || user.email?.split("@")[0] || "Guest";
 
-  // — unified topbar avatar & greeting (gmail pic) —
-  try{
-    const _greet = document.getElementById("greetingName");
-    const _topAv = document.getElementById("topbarAvatar");
-    const _first = (user.displayName || name).split(" ")[0];
-    if(_greet) _greet.textContent = _first;
-    if(_topAv){
-      if(user.photoURL){ _topAv.src = user.photoURL; _topAv.alt = name; }
-      else { _topAv.src = ""; _topAv.alt = name; }
-    }
-  }catch(e){}
-
-  document.getElementById("userName").textContent = name;
-  document.getElementById("displayName").textContent = user.displayName || name;
-  document.getElementById("displayEmail").textContent = user.email || "—";
-  document.getElementById("supportFrom").value = user.email || "";
-  const avatar = document.getElementById("userAvatar");
-  if (user.photoURL) {
-    avatar.innerHTML = `<img src="${escAttr(user.photoURL)}" alt="${escAttr(name)}" />`;
-  } else {
-    avatar.textContent = name.charAt(0).toUpperCase();
+ // — unified topbar avatar & greeting (gmail pic) —
+ try{
+  const _greet = document.getElementById("greetingName");
+  const _topAv = document.getElementById("topbarAvatar");
+  const _first = (user.displayName || name).split(" ")[0];
+  if(_greet) _greet.textContent = _first;
+  if(_topAv){
+   if(user.photoURL){ _topAv.src = user.photoURL; _topAv.alt = name; }
+   else { _topAv.src = ""; _topAv.alt = name; }
   }
+ }catch(e){}
 
-  const plan = await getUserPlan(user.uid, user);
-  const planLabel = plan === "pro" ? "✨ Aquila Pro" : "Free Plan";
-  document.getElementById("userPlan").textContent = planLabel;
-  const dispPlan = document.getElementById("displayPlan");
-  if (dispPlan) dispPlan.textContent = planLabel;
+ document.getElementById("userName").textContent = name;
+ document.getElementById("displayName").textContent = user.displayName || name;
+ document.getElementById("displayEmail").textContent = user.email || "—";
+ document.getElementById("supportFrom").value = user.email || "";
+ const avatar = document.getElementById("userAvatar");
+ if (user.photoURL) {
+  avatar.innerHTML = `<img src="${escAttr(user.photoURL)}" alt="${escAttr(name)}" />`;
+ } else {
+  avatar.textContent = name.charAt(0).toUpperCase();
+ }
 
-  // Ensure user doc exists (fallback if sign-up write failed)
-  const userRef = doc(db, "users", user.uid);
-  const userSnap = await getDoc(userRef);
-  if (!userSnap.exists()) {
-    setDoc(userRef, {
-      uid: user.uid,
-      displayName: user.displayName || "",
-      email: user.email || "",
-      photoURL: user.photoURL || "",
-      exam: "",
-      createdAt: serverTimestamp(),
-      plan: "free",
-    }).catch(() => {});
-  }
-  renderMemoryList();
+ const plan = await getUserPlan(user.uid, user);
+ const planLabel = plan === "pro" ? "✨ Aquila Pro" : "Free Plan";
+ document.getElementById("userPlan").textContent = planLabel;
+ const dispPlan = document.getElementById("displayPlan");
+ if (dispPlan) dispPlan.textContent = planLabel;
+
+ // Ensure user doc exists (fallback if sign-up write failed)
+ const userRef = doc(db, "users", user.uid);
+ const userSnap = await getDoc(userRef);
+ if (!userSnap.exists()) {
+  setDoc(userRef, {
+   uid: user.uid,
+   displayName: user.displayName || "",
+   email: user.email || "",
+   photoURL: user.photoURL || "",
+   exam: "",
+   createdAt: serverTimestamp(),
+   plan: "free",
+  }).catch(() => {});
+ }
+ renderMemoryList();
 });
 
 async function renderMemoryList() {
-  const list = document.getElementById("memoryList");
-  if (!currentUser || !list) return;
-  const items = await loadMemory(currentUser.uid);
-  if (!items.length) {
-    list.innerHTML = `<div style="font-size:13px;color:var(--text-muted);line-height:1.6;">No memories yet. Tap "Remember" under any Aquila answer in Chat, or add one above.</div>`;
-    return;
-  }
-  list.innerHTML = items.map((m) => `
-    <div style="display:flex;align-items:flex-start;gap:10px;background:var(--bg-card);border:1px solid var(--border);border-radius:10px;padding:10px 12px;">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--accent,#00d4ff)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-top:2px;flex-shrink:0;"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
-      <div style="flex:1;min-width:0;font-size:13.5px;line-height:1.5;color:var(--text-primary,#f0f0f8);word-break:break-word;">${escapeHtml(m.text)}</div>
-      <button data-mem-id="${escapeHtml(m.id)}" style="flex-shrink:0;background:transparent;border:1px solid var(--border);color:var(--text-muted);border-radius:8px;padding:4px 10px;font-size:12px;font-family:'Sora',sans-serif;cursor:pointer;">Forget</button>
-    </div>`).join("");
-  list.querySelectorAll("[data-mem-id]").forEach((btn) => {
-    btn.addEventListener("click", async () => {
-      if (!currentUser) return;
-      await removeMemory(currentUser.uid, btn.dataset.memId);
-      renderMemoryList();
-    });
+ const list = document.getElementById("memoryList");
+ if (!currentUser || !list) return;
+ const items = await loadMemory(currentUser.uid);
+ if (!items.length) {
+  list.innerHTML = `<div style="font-size:13px;color:var(--text-muted);line-height:1.6;">No memories yet. Tap "Remember" under any Aquila answer in Chat, or add one above.</div>`;
+  return;
+ }
+ list.innerHTML = items.map((m) => `
+  <div style="display:flex;align-items:flex-start;gap:10px;background:var(--bg-card);border:1px solid var(--border);border-radius:10px;padding:10px 12px;">
+   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--accent,#00d4ff)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-top:2px;flex-shrink:0;"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+   <div style="flex:1;min-width:0;font-size:13.5px;line-height:1.5;color:var(--text-primary,#f0f0f8);word-break:break-word;">${escapeHtml(m.text)}</div>
+   <button data-mem-id="${escapeHtml(m.id)}" style="flex-shrink:0;background:transparent;border:1px solid var(--border);color:var(--text-muted);border-radius:8px;padding:4px 10px;font-size:12px;font-family:'Sora',sans-serif;cursor:pointer;">Forget</button>
+  </div>`).join("");
+ list.querySelectorAll("[data-mem-id]").forEach((btn) => {
+  btn.addEventListener("click", async () => {
+   if (!currentUser) return;
+   await removeMemory(currentUser.uid, btn.dataset.memId);
+   renderMemoryList();
   });
+ });
 }
 
 document.getElementById("addMemoryBtn").addEventListener("click", async () => {
-  const inp = document.getElementById("memoryInput");
-  if (!currentUser || !inp) return;
-  const value = inp.value.trim();
-  if (!value) { showToast("Type something to remember first.", "error"); return; }
-  await addMemory(currentUser.uid, value);
-  inp.value = "";
-  await renderMemoryList();
-  showToast("Saved to memory.", "success");
+ const inp = document.getElementById("memoryInput");
+ if (!currentUser || !inp) return;
+ const value = inp.value.trim();
+ if (!value) { showToast("Type something to remember first.", "error"); return; }
+ await addMemory(currentUser.uid, value);
+ inp.value = "";
+ await renderMemoryList();
+ showToast("Saved to memory.", "success");
 });
 
 document.getElementById("confirmLogout").addEventListener("click", async () => {
-  try { await signOut(authInstance); window.location.href = "login.html"; }
-  catch (err) { showToast("Sign out failed. Please try again.", "error"); }
+ try { await signOut(authInstance); window.location.href = "login.html"; }
+ catch (err) { showToast("Sign out failed. Please try again.", "error"); }
 });
 
 window.sendSupport = async function sendSupport() {
-  const subject = document.getElementById("supportSubject").value.trim();
-  const message = document.getElementById("supportMessage").value.trim();
-  const btn = document.getElementById("sendSupportBtn");
-  if (!subject) { showToast("Please enter a subject.", "error"); return; }
-  if (!message) { showToast("Please enter a message.", "error"); return; }
-  if (!currentUser) { showToast("You must be signed in to send a message.", "error"); return; }
-  btn.disabled = true;
-  btn.innerHTML = `<span class="spinner"></span> Sending…`;
-  try {
-    await addDoc(collection(db, "support_requests"), {
-      uid: currentUser.uid, email: currentUser.email || "",
-      displayName: currentUser.displayName || "", subject, message,
-      createdAt: serverTimestamp(), status: "open",
-    });
-    document.getElementById("supportSubject").value = "";
-    document.getElementById("supportMessage").value = "";
-    document.getElementById("subjectCount").textContent = "0 / 100";
-    document.getElementById("messageCount").textContent = "0 / 1000";
-    showToast("Your message has been sent successfully!", "success");
-  } catch (err) {
-    console.error("Support send error:", err);
-    showToast("Failed to send message. Please try again.", "error");
-  } finally {
-    btn.disabled = false;
-    btn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg> Send message`;
-  }
+ const subject = document.getElementById("supportSubject").value.trim();
+ const message = document.getElementById("supportMessage").value.trim();
+ const btn = document.getElementById("sendSupportBtn");
+ if (!subject) { showToast("Please enter a subject.", "error"); return; }
+ if (!message) { showToast("Please enter a message.", "error"); return; }
+ if (!currentUser) { showToast("You must be signed in to send a message.", "error"); return; }
+ btn.disabled = true;
+ btn.innerHTML = `<span class="spinner"></span> Sending…`;
+ try {
+  await addDoc(collection(db, "support_requests"), {
+   uid: currentUser.uid, email: currentUser.email || "",
+   displayName: currentUser.displayName || "", subject, message,
+   createdAt: serverTimestamp(), status: "open",
+  });
+  document.getElementById("supportSubject").value = "";
+  document.getElementById("supportMessage").value = "";
+  document.getElementById("subjectCount").textContent = "0 / 100";
+  document.getElementById("messageCount").textContent = "0 / 1000";
+  showToast("Your message has been sent successfully!", "success");
+ } catch (err) {
+  console.error("Support send error:", err);
+  showToast("Failed to send message. Please try again.", "error");
+ } finally {
+  btn.disabled = false;
+  btn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg> Send message`;
+ }
 };
 
 function escAttr(v) {
-  return String(v).replace(/[&<>"'`]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;','`':'&#96;'}[c]));
+ return String(v).replace(/[&<>"'`]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;','`':'&#96;'}[c]));
 }
 </script>
 <script type="module">import { inject } from 'https://esm.sh/@vercel/analytics'; inject();</script>
 <script type="module">import { injectSpeedInsights } from 'https://esm.sh/@vercel/speed-insights'; injectSpeedInsights();
 /* ── Scroll progress bar ── */
 (function(){
-  var bar = document.createElement('div');
-  bar.className = 'scroll-progress';
-  document.body.prepend(bar);
-  var ticking = false;
-  window.addEventListener('scroll', function(){
-    if(!ticking){ requestAnimationFrame(function(){
-      var h = document.documentElement.scrollHeight - window.innerHeight;
-      bar.style.width = h > 0 ? ((window.scrollY / h) * 100) + '%' : '0%';
-      ticking = false;
-    }); ticking = true; }
-  });
+ var bar = document.createElement('div');
+ bar.className = 'scroll-progress';
+ document.body.prepend(bar);
+ var ticking = false;
+ window.addEventListener('scroll', function(){
+  if(!ticking){ requestAnimationFrame(function(){
+   var h = document.documentElement.scrollHeight - window.innerHeight;
+   bar.style.width = h > 0 ? ((window.scrollY / h) * 100) + '%' : '0%';
+   ticking = false;
+  }); ticking = true; }
+ });
 }());
 
 /* ── Ripple effect ── */
 (function(){
-  var rm = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  if(rm) return;
-  document.querySelectorAll('.btn-primary, .btn-secondary, .btn-ghost-nav, .signout-btn, .new-chat-btn, .upgrade-nav-btn, .send-btn').forEach(function(btn){
-    btn.addEventListener('click', function(e){
-      var rp = document.createElement('span');
-      var r = btn.getBoundingClientRect();
-      var s = Math.max(r.width, r.height);
-      rp.style.cssText = 'position:absolute;top:'+(e.clientY-r.top-s/2)+'px;left:'+(e.clientX-r.left-s/2)+'px;width:'+s+'px;height:'+s+'px;border-radius:50%;background:rgba(255,255,255,0.15);transform:scale(0);animation:rippleAnim .5s ease-out;pointer-events:none;z-index:0;';
-      btn.style.position = 'relative';
-      btn.style.overflow = 'hidden';
-      btn.appendChild(rp);
-      setTimeout(function(){ rp.remove(); }, 600);
-    });
+ var rm = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+ if(rm) return;
+ document.querySelectorAll('.btn-primary, .btn-secondary, .btn-ghost-nav, .signout-btn, .new-chat-btn, .upgrade-nav-btn, .send-btn').forEach(function(btn){
+  btn.addEventListener('click', function(e){
+   var rp = document.createElement('span');
+   var r = btn.getBoundingClientRect();
+   var s = Math.max(r.width, r.height);
+   rp.style.cssText = 'position:absolute;top:'+(e.clientY-r.top-s/2)+'px;left:'+(e.clientX-r.left-s/2)+'px;width:'+s+'px;height:'+s+'px;border-radius:50%;background:rgba(255,255,255,0.15);transform:scale(0);animation:rippleAnim .5s ease-out;pointer-events:none;z-index:0;';
+   btn.style.position = 'relative';
+   btn.style.overflow = 'hidden';
+   btn.appendChild(rp);
+   setTimeout(function(){ rp.remove(); }, 600);
   });
+ });
 }());
 </script>
 <script type="application/ld+json">

@@ -4,7 +4,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-<meta http-equiv="Content-Security-Policy" content="default-src 'self' https:; script-src 'self' 'unsafe-inline' 'unsafe-eval' blob: https://www.gstatic.com https://apis.google.com https://accounts.google.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://www.googletagmanager.com https://esm.sh; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: https:; font-src 'self' https://fonts.gstatic.com; connect-src 'self' blob: https://www.googleapis.com https://apis.google.com https://accounts.google.com https://esm.sh https://www.gstatic.com https://firestore.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://analytics.vercel.com; object-src 'none'; frame-src 'self' https://www.gstatic.com https://accounts.google.com https://mentora-c6dca.firebaseapp.com">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self' https:; script-src 'self' 'unsafe-inline' blob: https://www.gstatic.com https://apis.google.com https://accounts.google.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://www.googletagmanager.com https://esm.sh; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: https:; font-src 'self' https://fonts.gstatic.com; connect-src 'self' blob: https://www.googleapis.com https://apis.google.com https://accounts.google.com https://esm.sh https://www.gstatic.com https://firestore.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://analytics.vercel.com; object-src 'none'; frame-src 'self' https://www.gstatic.com https://accounts.google.com https://mentora-c6dca.firebaseapp.com">
 <meta name="description" content="Plan your JEE, NEET & Board exam preparation with Aquila AI's intelligent study planner." />
 <meta property="og:title" content="Study Planner - Aquila AI" />
 <meta property="og:description" content="Plan your JEE, NEET & Board exam preparation with Aquila AI's intelligent study planner." />
@@ -87,14 +87,14 @@ body { transition: background 0.35s ease, color 0.35s ease; }
 .task-meta { display: flex; align-items: center; gap: 8px; margin-top: 4px; flex-wrap: wrap; }
 .task-dur { font-size: 11px; color: var(--text-muted); font-family: var(--font-mono); }
 .task-type { font-size: 10px; padding: 2px 7px; border-radius: 20px; font-weight: 600; }
-.task-type.learn    { background: rgba(0,212,255,0.12); color: var(--accent); }
-.task-type.revise   { background: rgba(167,139,250,0.1); color: var(--accent2); }
+.task-type.learn  { background: rgba(0,212,255,0.12); color: var(--accent); }
+.task-type.revise  { background: rgba(167,139,250,0.1); color: var(--accent2); }
 .task-type.practice { background: rgba(245,158,11,0.12); color: var(--accent4); }
-.task-type.test     { background: rgba(255,107,107,0.12); color: var(--accent3); }
+.task-type.test   { background: rgba(255,107,107,0.12); color: var(--accent3); }
 .task-priority { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
-.task-priority.high   { background: var(--accent3); }
+.task-priority.high  { background: var(--accent3); }
 .task-priority.medium { background: var(--accent4); }
-.task-priority.low    { background: var(--text-muted); }
+.task-priority.low  { background: var(--text-muted); }
 .task-actions { display: flex; gap: 6px; flex-shrink: 0; }
 .task-btn { padding: 5px 10px; font-size: 11px; font-family: var(--font-main); border-radius: 6px; cursor: pointer; transition: all 0.15s; border: 1px solid var(--border); background: transparent; color: var(--text-muted); }
 .task-btn:hover { color: var(--text-primary); border-color: rgba(255,255,255,0.15); }
@@ -132,11 +132,11 @@ body { transition: background 0.35s ease, color 0.35s ease; }
 .week-session { background: rgba(0,212,255,0.08); border-radius: 6px; padding: 6px 8px; margin-bottom: 5px; font-size: 11px; }
 .week-session .ws-subject { font-weight: 600; color: var(--accent); font-size: 10px; text-transform: uppercase; }
 .week-session .ws-topic { color: var(--text-secondary); margin-top: 2px; line-height: 1.3; }
-.week-session.revise   { background: rgba(167,139,250,0.08); }
+.week-session.revise  { background: rgba(167,139,250,0.08); }
 .week-session.revise .ws-subject { color: var(--accent2); }
 .week-session.practice { background: rgba(245,158,11,0.08); }
 .week-session.practice .ws-subject { color: var(--accent4); }
-.week-session.test     { background: rgba(255,107,107,0.08); }
+.week-session.test   { background: rgba(255,107,107,0.08); }
 .week-session.test .ws-subject { color: var(--accent3); }
 
 .empty-state { text-align: center; padding: 60px 20px; }
@@ -150,25 +150,25 @@ body { transition: background 0.35s ease, color 0.35s ease; }
 .toast { position: fixed; bottom: 28px; right: 28px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 12px 18px; font-size: 13px; z-index: 999; transform: translateY(20px); opacity: 0; transition: all 0.3s; pointer-events: none; max-width: 320px; }
 .toast.show { transform: translateY(0); opacity: 1; }
 .toast.success { border-color: rgba(0,212,255,0.35); color: var(--accent); }
-.toast.error   { border-color: rgba(255,107,107,0.4); color: var(--accent3); }
+.toast.error  { border-color: rgba(255,107,107,0.4); color: var(--accent3); }
 
 .day-celebration { position: fixed; inset: 0; z-index: 1000; pointer-events: none; display: flex; align-items: center; justify-content: center; }
 .celeb-pop {
-  font-size: 64px; opacity: 0; transform: scale(0.4);
-  animation: celebPop 2.6s cubic-bezier(0.16,1,0.3,1) forwards;
-  filter: drop-shadow(0 8px 30px rgba(0,212,255,0.35));
+ font-size: 64px; opacity: 0; transform: scale(0.4);
+ animation: celebPop 2.6s cubic-bezier(0.16,1,0.3,1) forwards;
+ filter: drop-shadow(0 8px 30px rgba(0,212,255,0.35));
 }
 .day-celebration.out .celeb-pop { animation: celebOut 0.4s ease forwards; }
 @keyframes celebPop {
-  0%   { opacity: 0; transform: scale(0.4) translateY(20px); }
-  12%  { opacity: 1; transform: scale(1.25) translateY(0); }
-  22%  { transform: scale(1); }
-  82%  { opacity: 1; transform: scale(1); }
-  100% { opacity: 0; transform: scale(1.15) translateY(-10px); }
+ 0%  { opacity: 0; transform: scale(0.4) translateY(20px); }
+ 12% { opacity: 1; transform: scale(1.25) translateY(0); }
+ 22% { transform: scale(1); }
+ 82% { opacity: 1; transform: scale(1); }
+ 100% { opacity: 0; transform: scale(1.15) translateY(-10px); }
 }
 @keyframes celebOut { to { opacity: 0; transform: scale(1.3); } }
 @media (prefers-reduced-motion: reduce) {
-  .celeb-pop { animation: none; opacity: 1; }
+ .celeb-pop { animation: none; opacity: 1; }
 }
 
 .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); z-index: 200; display: flex; align-items: center; justify-content: center; padding: 20px; opacity: 0; pointer-events: none; transition: opacity 0.2s; }
@@ -183,18 +183,18 @@ body { transition: background 0.35s ease, color 0.35s ease; }
 .delete-stat { display: inline-flex; align-items: center; gap: 6px; background: rgba(255,107,107,0.08); border: 1px solid rgba(255,107,107,0.15); border-radius: 6px; padding: 3px 10px; font-size: 12px; font-family: var(--font-mono); color: var(--accent3); margin-top: 8px; }
 
 @media (max-width: 880px) {
-  .topbar { padding: 12px 14px; }
-  .tab-bar { padding: 10px 14px 0; }
-  .content { padding: 16px 14px 28px; }
-  .two-col { grid-template-columns: 1fr; }
-  .stats-row { grid-template-columns: repeat(2,1fr); }
-  .week-grid { grid-template-columns: repeat(2,1fr); }
-  .model-selector { display: none; }
+ .topbar { padding: 12px 14px; }
+ .tab-bar { padding: 10px 14px 0; }
+ .content { padding: 16px 14px 28px; }
+ .two-col { grid-template-columns: 1fr; }
+ .stats-row { grid-template-columns: repeat(2,1fr); }
+ .week-grid { grid-template-columns: repeat(2,1fr); }
+ .model-selector { display: none; }
 }
 @media (max-width: 520px) {
-  .stats-row { grid-template-columns: repeat(2,1fr); }
-  .stat-val { font-size: 22px; }
-  .topbar-right .btn-sm:not(.btn-accent) { display: none; }
+ .stats-row { grid-template-columns: repeat(2,1fr); }
+ .stat-val { font-size: 22px; }
+ .topbar-right .btn-sm:not(.btn-accent) { display: none; }
 }
 @keyframes rippleAnim{to{transform:scale(2);opacity:0;}}
 </style>
@@ -205,79 +205,79 @@ body { transition: background 0.35s ease, color 0.35s ease; }
 
 <div id="sidebarMount"></div>
 <script type="module">
-  import { mountSidebar } from "./js/components/sidebar.js";
-  import { initSyllabusUpload } from "./js/syllabus.js";
-  import { auth, db } from "./firebase-config.js";
-  mountSidebar();
-  initSyllabusUpload({ auth, db });
+ import { mountSidebar } from "./js/components/sidebar.js";
+ import { initSyllabusUpload } from "./js/syllabus.js";
+ import { auth, db } from "./firebase-config.js";
+ mountSidebar();
+ initSyllabusUpload({ auth, db });
 </script>
 
 
 
 <div class="main">
-  <div class="topbar" style="background:var(--bg-base);border-bottom:1px solid var(--border-subtle);">
-    <div class="topbar-left">
-      <button class="menu-btn" id="menuBtn" aria-label="Open menu">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
-      </button>
-      <div class="topbar-mobile-logo"><img src="logo.svg" alt="Aquila AI" class="logo-img"><span class="logo-text">Aquila AI</span></div>
-      <div style="display:none;" class="model-selector"><span class="model-dot"></span>Aquila AI</div>
-      <div id="topbarGreeting" style="font-size:14px;font-weight:500;color:var(--text-secondary);margin-left:8px;">Hi, <span id="greetingName">there</span></div>
-    </div>
-    <div style="flex:1;display:flex;justify-content:center;max-width:480px;margin:0 16px;" class="topbar-center">
-      <div style="position:relative;width:100%;max-width:360px;">
-        <input id="topbarSearch" placeholder="search" style="width:100%;height:36px;background:var(--bg-card);border:1px solid var(--border);border-radius:999px;padding:0 36px 0 14px;font-size:13px;color:var(--text-primary);outline:none;" />
-        <svg style="position:absolute;right:10px;top:50%;transform:translateY(-50%);width:16px;height:16px;color:var(--text-muted);" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.35-4.35"/></svg>
-      </div>
-    </div>
-    <div style="display:flex;align-items:center;gap:12px;" class="topbar-right">
-      <button style="width:36px;height:36px;border-radius:999px;background:var(--bg-card);border:1px solid var(--border);display:grid;place-items:center;color:var(--text-muted);position:relative;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 8a6 6 0 0 1 12 0c0 7-6 11-6 11s-6-4-6-11"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg><span style="position:absolute;top:6px;right:7px;width:7px;height:7px;background:var(--green);border-radius:50%;border:1px solid var(--bg-card);"></span></button>
-      <div style="display:flex;align-items:center;gap:8px;cursor:pointer;">
-        <img id="topbarAvatar" src="" data-pending-avatar="1" alt="User" style="width:32px;height:32px;border-radius:50%;object-fit:cover;border:1px solid var(--border);" />
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--text-muted);"><path d="m6 9 6 6 6-6"/></svg>
-      </div>
-    </div>
+ <div class="topbar" style="background:var(--bg-base);border-bottom:1px solid var(--border-subtle);">
+  <div class="topbar-left">
+   <button class="menu-btn" id="menuBtn" aria-label="Open menu">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+   </button>
+   <div class="topbar-mobile-logo"><img src="logo.svg" alt="Aquila AI" class="logo-img"><span class="logo-text">Aquila AI</span></div>
+   <div style="display:none;" class="model-selector"><span class="model-dot"></span>Aquila AI</div>
+   <div id="topbarGreeting" style="font-size:14px;font-weight:500;color:var(--text-secondary);margin-left:8px;">Hi, <span id="greetingName">there</span></div>
   </div>
-
-  <div class="tab-bar">
-    <div class="tab active" data-tab="today" onclick="switchTabAndHighlight('today')">Today</div>
-    <div class="tab" data-tab="weekly" onclick="switchTabAndHighlight('weekly')">Weekly</div>
-    <div class="tab" data-tab="progress" onclick="switchTabAndHighlight('progress')">Progress</div>
-    <div class="tab" data-tab="milestones" onclick="switchTabAndHighlight('milestones')">Milestones</div>
+  <div style="flex:1;display:flex;justify-content:center;max-width:480px;margin:0 16px;" class="topbar-center">
+   <div style="position:relative;width:100%;max-width:360px;">
+    <input id="topbarSearch" placeholder="search" style="width:100%;height:36px;background:var(--bg-card);border:1px solid var(--border);border-radius:999px;padding:0 36px 0 14px;font-size:13px;color:var(--text-primary);outline:none;" />
+    <svg style="position:absolute;right:10px;top:50%;transform:translateY(-50%);width:16px;height:16px;color:var(--text-muted);" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.35-4.35"/></svg>
+   </div>
   </div>
+  <div style="display:flex;align-items:center;gap:12px;" class="topbar-right">
+   <button style="width:36px;height:36px;border-radius:999px;background:var(--bg-card);border:1px solid var(--border);display:grid;place-items:center;color:var(--text-muted);position:relative;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 8a6 6 0 0 1 12 0c0 7-6 11-6 11s-6-4-6-11"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg><span style="position:absolute;top:6px;right:7px;width:7px;height:7px;background:var(--green);border-radius:50%;border:1px solid var(--bg-card);"></span></button>
+   <div style="display:flex;align-items:center;gap:8px;cursor:pointer;">
+    <img id="topbarAvatar" src="" data-pending-avatar="1" alt="User" style="width:32px;height:32px;border-radius:50%;object-fit:cover;border:1px solid var(--border);" />
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--text-muted);"><path d="m6 9 6 6 6-6"/></svg>
+   </div>
+  </div>
+ </div>
 
-  <div class="content" id="mainContent"></div>
+ <div class="tab-bar">
+  <div class="tab active" data-tab="today" onclick="switchTabAndHighlight('today')">Today</div>
+  <div class="tab" data-tab="weekly" onclick="switchTabAndHighlight('weekly')">Weekly</div>
+  <div class="tab" data-tab="progress" onclick="switchTabAndHighlight('progress')">Progress</div>
+  <div class="tab" data-tab="milestones" onclick="switchTabAndHighlight('milestones')">Milestones</div>
+ </div>
+
+ <div class="content" id="mainContent"></div>
 </div>
 
 <!-- Replan Modal -->
 <div class="modal-overlay" id="replanModal">
-  <div class="modal">
-    <div class="modal-title">🔄 Smart Replan</div>
-    <div class="modal-sub" id="replanModalSub">You have missed tasks. Aquila AI will generate a catch-up schedule that prioritises what you missed without overloading your remaining days.</div>
-    <div class="modal-actions">
-      <button class="btn-sm btn-outline" onclick="closeReplanModal()">Cancel</button>
-      <button class="btn-sm btn-accent" id="confirmReplanBtn" onclick="executeReplan()">Generate Catch-up Plan</button>
-    </div>
+ <div class="modal">
+  <div class="modal-title">🔄 Smart Replan</div>
+  <div class="modal-sub" id="replanModalSub">You have missed tasks. Aquila AI will generate a catch-up schedule that prioritises what you missed without overloading your remaining days.</div>
+  <div class="modal-actions">
+   <button class="btn-sm btn-outline" onclick="closeReplanModal()">Cancel</button>
+   <button class="btn-sm btn-accent" id="confirmReplanBtn" onclick="executeReplan()">Generate Catch-up Plan</button>
   </div>
+ </div>
 </div>
 
 <!-- Delete Plan Modal -->
 <div class="modal-overlay" id="deletePlanModal">
-  <div class="modal modal-danger">
-    <div class="modal-title">🗑️ Delete Study Plan</div>
-    <div class="modal-sub">This will permanently remove your active plan and all its data from Aquila AI.</div>
-    <div class="delete-warning">
-      <strong>⚠️ This action cannot be undone.</strong>
-      All scheduled sessions, weekly schedule, and milestone data will be permanently erased.
-      Your study streak and total hours logged will be preserved.
-      <br>
-      <span class="delete-stat" id="deleteTaskCount">0 tasks</span> will be deleted.
-    </div>
-    <div class="modal-actions">
-      <button class="btn-sm btn-outline" onclick="closeDeleteModal()">Cancel</button>
-      <button class="btn-danger" id="confirmDeleteBtn" onclick="executeDeletePlan()">Yes, Delete Plan</button>
-    </div>
+ <div class="modal modal-danger">
+  <div class="modal-title">🗑️ Delete Study Plan</div>
+  <div class="modal-sub">This will permanently remove your active plan and all its data from Aquila AI.</div>
+  <div class="delete-warning">
+   <strong>⚠️ This action cannot be undone.</strong>
+   All scheduled sessions, weekly schedule, and milestone data will be permanently erased.
+   Your study streak and total hours logged will be preserved.
+   <br>
+   <span class="delete-stat" id="deleteTaskCount">0 tasks</span> will be deleted.
   </div>
+  <div class="modal-actions">
+   <button class="btn-sm btn-outline" onclick="closeDeleteModal()">Cancel</button>
+   <button class="btn-danger" id="confirmDeleteBtn" onclick="executeDeletePlan()">Yes, Delete Plan</button>
+  </div>
+ </div>
 </div>
 
 <div class="toast" id="toast"></div>
@@ -288,8 +288,8 @@ body { transition: background 0.35s ease, color 0.35s ease; }
 import { auth } from "./firebase-config.js";
 import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 import {
-  getActivePlan, getTasksByPlan, getProgress,
-  updateTaskStatus, updateStreak, getExamProfile, logEvent
+ getActivePlan, getTasksByPlan, getProgress,
+ updateTaskStatus, updateStreak, getExamProfile, logEvent
 } from "./planner-db.js";
 import { doc, getDoc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 import { db } from "./firebase-config.js";
@@ -299,102 +299,102 @@ let appState = { user: null, profile: null, plan: null, tasks: [], progress: nul
 let _getProgress = getProgress;
 
 onAuthStateChanged(auth, async (user) => {
-  if (user && !user.emailVerified) { window.location.href = "verify-email.html"; return; }
-  if (!user) { window.location.href = "login.html"; return; }
-  appState.user = user;
+ if (user && !user.emailVerified) { window.location.href = "verify-email.html"; return; }
+ if (!user) { window.location.href = "login.html"; return; }
+ appState.user = user;
 
-  const name = user.displayName || user.email?.split("@")[0] || "Student";
-  const first = (user.displayName || name).split(" ")[0];
-  // Sidebar (home nav) uses #userName / #userAvatar — support both ids
-  const nameEl = document.getElementById("userName") || document.getElementById("sidebarName");
-  const avEl = document.getElementById("userAvatar") || document.getElementById("sidebarAvatar");
-  const greetEl = document.getElementById("greetingName");
-  const topAv = document.getElementById("topbarAvatar");
-  if (nameEl) nameEl.textContent = name;
-  if (greetEl) greetEl.textContent = first;
-  if (avEl) {
-    if (user.photoURL) {
-      avEl.textContent = "";
-      const img = document.createElement("img");
-      img.src = user.photoURL; img.alt = name;
-      img.style.cssText = "width:100%;height:100%;border-radius:50%;object-fit:cover;";
-      img.onerror = () => { img.remove(); avEl.textContent = name.charAt(0).toUpperCase(); };
-      avEl.appendChild(img);
-    } else {
-      avEl.textContent = name.charAt(0).toUpperCase();
-    }
+ const name = user.displayName || user.email?.split("@")[0] || "Student";
+ const first = (user.displayName || name).split(" ")[0];
+ // Sidebar (home nav) uses #userName / #userAvatar — support both ids
+ const nameEl = document.getElementById("userName") || document.getElementById("sidebarName");
+ const avEl = document.getElementById("userAvatar") || document.getElementById("sidebarAvatar");
+ const greetEl = document.getElementById("greetingName");
+ const topAv = document.getElementById("topbarAvatar");
+ if (nameEl) nameEl.textContent = name;
+ if (greetEl) greetEl.textContent = first;
+ if (avEl) {
+  if (user.photoURL) {
+   avEl.textContent = "";
+   const img = document.createElement("img");
+   img.src = user.photoURL; img.alt = name;
+   img.style.cssText = "width:100%;height:100%;border-radius:50%;object-fit:cover;";
+   img.onerror = () => { img.remove(); avEl.textContent = name.charAt(0).toUpperCase(); };
+   avEl.appendChild(img);
+  } else {
+   avEl.textContent = name.charAt(0).toUpperCase();
   }
-  if (topAv) {
-    if (user.photoURL) topAv.src = user.photoURL;
-    topAv.alt = name;
-    topAv.style.display = "";
-  }
+ }
+ if (topAv) {
+  if (user.photoURL) topAv.src = user.photoURL;
+  topAv.alt = name;
+  topAv.style.display = "";
+ }
 
-  const plan = await getUserPlan(user.uid, user);
-  const planEl = document.getElementById("userPlan");
-  if (planEl) planEl.textContent = plan === "pro" ? "✨ Aquila Pro" : "Free Plan";
+ const plan = await getUserPlan(user.uid, user);
+ const planEl = document.getElementById("userPlan");
+ if (planEl) planEl.textContent = plan === "pro" ? "✨ Aquila Pro" : "Free Plan";
 
-  // Ensure user doc exists (fallback if sign-up write failed)
-  const userRef = doc(db, "users", user.uid);
-  const userSnap = await getDoc(userRef);
-  if (!userSnap.exists()) {
-    await setDoc(userRef, {
-      uid: user.uid,
-      displayName: user.displayName || "",
-      email: user.email || "",
-      photoURL: user.photoURL || "",
-      exam: "",
-      createdAt: serverTimestamp(),
-      plan: "free",
-    }).catch(() => {});
-  }
+ // Ensure user doc exists (fallback if sign-up write failed)
+ const userRef = doc(db, "users", user.uid);
+ const userSnap = await getDoc(userRef);
+ if (!userSnap.exists()) {
+  await setDoc(userRef, {
+   uid: user.uid,
+   displayName: user.displayName || "",
+   email: user.email || "",
+   photoURL: user.photoURL || "",
+   exam: "",
+   createdAt: serverTimestamp(),
+   plan: "free",
+  }).catch(() => {});
+ }
 
-  await loadPlannerData();
+ await loadPlannerData();
 });
 
 document.getElementById("signOutBtn")?.addEventListener("click", async () => {
-  await signOut(auth);
-  window.location.href = "login.html";
+ await signOut(auth);
+ window.location.href = "login.html";
 });
 
 async function loadPlannerData() {
-  showSkeleton();
-  try {
-    const [profile, plan, progress] = await Promise.all([getExamProfile(), getActivePlan(), getProgress()]);
-    appState.profile = profile; appState.plan = plan; appState.progress = progress;
+ showSkeleton();
+ try {
+  const [profile, plan, progress] = await Promise.all([getExamProfile(), getActivePlan(), getProgress()]);
+  appState.profile = profile; appState.plan = plan; appState.progress = progress;
 
-    if (!plan) { renderNoPlan(); return; }
+  if (!plan) { renderNoPlan(); return; }
 
-    const tasks = await getTasksByPlan(plan.planId);
-    appState.tasks = tasks;
+  const tasks = await getTasksByPlan(plan.planId);
+  appState.tasks = tasks;
 
-    const _rb = document.getElementById("replanBtn"); if (_rb && countMissedTasks(tasks) > 0) _rb.style.display = "flex";
-    const _db = document.getElementById("deletePlanBtn"); if (_db) _db.style.display = "flex";
+  const _rb = document.getElementById("replanBtn"); if (_rb && countMissedTasks(tasks) > 0) _rb.style.display = "flex";
+  const _db = document.getElementById("deletePlanBtn"); if (_db) _db.style.display = "flex";
 
-    renderTab(appState.currentTab);
-  } catch (err) {
-    console.error(err);
-    document.getElementById("mainContent").innerHTML = `<div class="empty-state"><div class="empty-icon">⚠️</div><div class="empty-title">Could not load your plan</div><div class="empty-sub">${escText(err.message)}</div></div>`;
-  }
+  renderTab(appState.currentTab);
+ } catch (err) {
+  console.error(err);
+  document.getElementById("mainContent").innerHTML = `<div class="empty-state"><div class="empty-icon">⚠️</div><div class="empty-title">Could not load your plan</div><div class="empty-sub">${escText(err.message)}</div></div>`;
+ }
 }
 
 window.switchTabAndHighlight = function(tab) {
-  appState.currentTab = tab;
-  document.querySelectorAll(".tab").forEach(t => t.classList.toggle("active", t.dataset.tab === tab));
-  const sidebarMap = { today:"nav-today", weekly:"nav-weekly", milestones:"nav-milestones", progress:"nav-progress" };
-  ["nav-today","nav-weekly","nav-milestones","nav-progress"].forEach(id => { const el=document.getElementById(id); if(el) el.classList.remove("active"); });
-  if (sidebarMap[tab]) { const el=document.getElementById(sidebarMap[tab]); if(el) el.classList.add("active"); }
-  renderTab(tab);
-  if (window.innerWidth <= 880) window.closeSidebar?.();
+ appState.currentTab = tab;
+ document.querySelectorAll(".tab").forEach(t => t.classList.toggle("active", t.dataset.tab === tab));
+ const sidebarMap = { today:"nav-today", weekly:"nav-weekly", milestones:"nav-milestones", progress:"nav-progress" };
+ ["nav-today","nav-weekly","nav-milestones","nav-progress"].forEach(id => { const el=document.getElementById(id); if(el) el.classList.remove("active"); });
+ if (sidebarMap[tab]) { const el=document.getElementById(sidebarMap[tab]); if(el) el.classList.add("active"); }
+ renderTab(tab);
+ if (window.innerWidth <= 880) window.closeSidebar?.();
 };
 window.switchTab = window.switchTabAndHighlight;
 
 function renderTab(tab) {
-  if (!appState.plan) { renderNoPlan(); return; }
-  if (tab === "today") renderToday();
-  else if (tab === "weekly") renderWeekly();
-  else if (tab === "progress") renderProgress();
-  else if (tab === "milestones") renderMilestones();
+ if (!appState.plan) { renderNoPlan(); return; }
+ if (tab === "today") renderToday();
+ else if (tab === "weekly") renderWeekly();
+ else if (tab === "progress") renderProgress();
+ else if (tab === "milestones") renderMilestones();
 }
 
 function escText(str) { const d=document.createElement("div"); d.textContent=String(str||""); return d.innerHTML; }
@@ -406,373 +406,373 @@ function getCompletionRate(tasks) { return tasks.length ? Math.round(tasks.filte
 function getTotalHours(progress) { return ((progress?.totalMinutesStudied||0)/60).toFixed(1); }
 
 function showSkeleton() {
-  document.getElementById("mainContent").innerHTML = `
-    <div class="stats-row">
-      ${Array(4).fill('<div class="stat-card"><div class="skeleton" style="height:16px;width:60%;margin-bottom:12px"></div><div class="skeleton" style="height:36px;width:50%"></div></div>').join("")}
-    </div>
-    <div class="skeleton" style="height:100px;border-radius:16px;margin-bottom:24px"></div>
-    <div style="display:flex;flex-direction:column;gap:10px">
-      ${Array(4).fill('<div class="skeleton" style="height:68px;border-radius:14px"></div>').join("")}
-    </div>`;
+ document.getElementById("mainContent").innerHTML = `
+  <div class="stats-row">
+   ${Array(4).fill('<div class="stat-card"><div class="skeleton" style="height:16px;width:60%;margin-bottom:12px"></div><div class="skeleton" style="height:36px;width:50%"></div></div>').join("")}
+  </div>
+  <div class="skeleton" style="height:100px;border-radius:16px;margin-bottom:24px"></div>
+  <div style="display:flex;flex-direction:column;gap:10px">
+   ${Array(4).fill('<div class="skeleton" style="height:68px;border-radius:14px"></div>').join("")}
+  </div>`;
 }
 
 function renderNoPlan() {
-  document.getElementById("mainContent").innerHTML = `
-    <div class="empty-state">
-      <div class="empty-icon">📋</div>
-      <div class="empty-title">No study plan yet</div>
-      <div class="empty-sub">Let Aquila AI build a personalised daily schedule based on your exam, subjects, and available time.</div>
-      <button class="btn-sm btn-accent" onclick="window.location.href='/planner-onboarding.html'" style="padding:11px 24px;font-size:14px">✨ Create My Plan</button>
-    </div>`;
+ document.getElementById("mainContent").innerHTML = `
+  <div class="empty-state">
+   <div class="empty-icon">📋</div>
+   <div class="empty-title">No study plan yet</div>
+   <div class="empty-sub">Let Aquila AI build a personalised daily schedule based on your exam, subjects, and available time.</div>
+   <button class="btn-sm btn-accent" onclick="window.location.href='/planner-onboarding.html'" style="padding:11px 24px;font-size:14px">✨ Create My Plan</button>
+  </div>`;
 }
 
 function renderToday() {
-  const { plan, tasks, progress, profile } = appState;
-  const todayTasks = getTodaysTasks(tasks);
-  const missedCount = countMissedTasks(tasks);
-  const completionRate = getCompletionRate(tasks);
-  const daysLeft = profile?.examDate ? daysUntil(profile.examDate) : plan?.daysUntilExam||0;
-  const totalDays = (profile?.examDate&&profile?.startDate) ? Math.ceil((new Date(profile.examDate)-new Date(profile.startDate))/86400000) : daysLeft;
-  const elapsedPct = totalDays>0 ? Math.min(100,Math.round(((totalDays-daysLeft)/totalDays)*100)) : 0;
+ const { plan, tasks, progress, profile } = appState;
+ const todayTasks = getTodaysTasks(tasks);
+ const missedCount = countMissedTasks(tasks);
+ const completionRate = getCompletionRate(tasks);
+ const daysLeft = profile?.examDate ? daysUntil(profile.examDate) : plan?.daysUntilExam||0;
+ const totalDays = (profile?.examDate&&profile?.startDate) ? Math.ceil((new Date(profile.examDate)-new Date(profile.startDate))/86400000) : daysLeft;
+ const elapsedPct = totalDays>0 ? Math.min(100,Math.round(((totalDays-daysLeft)/totalDays)*100)) : 0;
 
-  const wrap = document.createElement("div");
+ const wrap = document.createElement("div");
 
-  const statsEl = document.createElement("div");
-  statsEl.className = "stats-row";
-  statsEl.innerHTML = `
-    <div class="stat-card accent-cyan"><div class="stat-label">Completion</div><div class="stat-val">${completionRate}%</div><div class="stat-sub">${tasks.filter(t=>t.status==="completed").length} of ${tasks.length} tasks</div></div>
-    <div class="stat-card accent-purple"><div class="stat-label">Study Streak</div><div class="stat-val">${progress?.currentStreak||0}<span style="font-size:16px">🔥</span></div><div class="stat-sub">days in a row</div></div>
-    <div class="stat-card accent-amber"><div class="stat-label">Total Hours</div><div class="stat-val">${getTotalHours(progress)}</div><div class="stat-sub">hrs studied so far</div></div>
-    <div class="stat-card accent-red"><div class="stat-label">Days Left</div><div class="stat-val">${daysLeft}</div><div class="stat-sub">until ${escText(profile?.examType||"exam")}</div></div>`;
-  wrap.appendChild(statsEl);
+ const statsEl = document.createElement("div");
+ statsEl.className = "stats-row";
+ statsEl.innerHTML = `
+  <div class="stat-card accent-cyan"><div class="stat-label">Completion</div><div class="stat-val">${completionRate}%</div><div class="stat-sub">${tasks.filter(t=>t.status==="completed").length} of ${tasks.length} tasks</div></div>
+  <div class="stat-card accent-purple"><div class="stat-label">Study Streak</div><div class="stat-val">${progress?.currentStreak||0}<span style="font-size:16px">🔥</span></div><div class="stat-sub">days in a row</div></div>
+  <div class="stat-card accent-amber"><div class="stat-label">Total Hours</div><div class="stat-val">${getTotalHours(progress)}</div><div class="stat-sub">hrs studied so far</div></div>
+  <div class="stat-card accent-red"><div class="stat-label">Days Left</div><div class="stat-val">${daysLeft}</div><div class="stat-sub">until ${escText(profile?.examType||"exam")}</div></div>`;
+ wrap.appendChild(statsEl);
 
-  const banner = document.createElement("div");
-  banner.className = "countdown-banner";
-  banner.innerHTML = `
-    <div class="countdown-days">${daysLeft}</div>
-    <div class="countdown-info">
-      <div class="countdown-title">Days until ${escText(profile?.examType||"your exam")}</div>
-      <div class="countdown-sub">${escText(plan?.summary||"Keep going — consistency beats intensity.")}</div>
-    </div>
-    <div class="countdown-progress">
-      <div class="cprog-label"><span>Plan progress</span><span>${elapsedPct}%</span></div>
-      <div class="cprog-bar"><div class="cprog-fill" style="width:${elapsedPct}%"></div></div>
-      <div class="cprog-label" style="margin-top:6px"><span>Today done</span><span>${todayTasks.filter(t=>t.status==="completed").length}/${todayTasks.length} tasks</span></div>
-      <div class="cprog-bar"><div class="cprog-fill" style="width:${todayTasks.length?Math.round(todayTasks.filter(t=>t.status==="completed").length/todayTasks.length*100):0}%"></div></div>
-    </div>`;
-  wrap.appendChild(banner);
+ const banner = document.createElement("div");
+ banner.className = "countdown-banner";
+ banner.innerHTML = `
+  <div class="countdown-days">${daysLeft}</div>
+  <div class="countdown-info">
+   <div class="countdown-title">Days until ${escText(profile?.examType||"your exam")}</div>
+   <div class="countdown-sub">${escText(plan?.summary||"Keep going — consistency beats intensity.")}</div>
+  </div>
+  <div class="countdown-progress">
+   <div class="cprog-label"><span>Plan progress</span><span>${elapsedPct}%</span></div>
+   <div class="cprog-bar"><div class="cprog-fill" style="width:${elapsedPct}%"></div></div>
+   <div class="cprog-label" style="margin-top:6px"><span>Today done</span><span>${todayTasks.filter(t=>t.status==="completed").length}/${todayTasks.length} tasks</span></div>
+   <div class="cprog-bar"><div class="cprog-fill" style="width:${todayTasks.length?Math.round(todayTasks.filter(t=>t.status==="completed").length/todayTasks.length*100):0}%"></div></div>
+  </div>`;
+ wrap.appendChild(banner);
 
-  if (missedCount > 0) {
-    const alert = document.createElement("div");
-    alert.className = "missed-alert";
-    alert.innerHTML = `
-      <span class="missed-alert-icon">⚠️</span>
-      <div class="missed-alert-body">
-        <div class="missed-alert-title">${missedCount} task${missedCount>1?"s":""} missed</div>
-        <div class="missed-alert-sub">Aquila AI can rebuild your schedule around what was missed.</div>
-      </div>`;
-    const replanBtn = document.createElement("button");
-    replanBtn.className = "btn-replan"; replanBtn.textContent = "🔄 Replan";
-    replanBtn.addEventListener("click", openReplanModal);
-    alert.appendChild(replanBtn);
-    wrap.appendChild(alert);
-  }
+ if (missedCount > 0) {
+  const alert = document.createElement("div");
+  alert.className = "missed-alert";
+  alert.innerHTML = `
+   <span class="missed-alert-icon">⚠️</span>
+   <div class="missed-alert-body">
+    <div class="missed-alert-title">${missedCount} task${missedCount>1?"s":""} missed</div>
+    <div class="missed-alert-sub">Aquila AI can rebuild your schedule around what was missed.</div>
+   </div>`;
+  const replanBtn = document.createElement("button");
+  replanBtn.className = "btn-replan"; replanBtn.textContent = "🔄 Replan";
+  replanBtn.addEventListener("click", openReplanModal);
+  alert.appendChild(replanBtn);
+  wrap.appendChild(alert);
+ }
 
-  const twoCol = document.createElement("div");
-  twoCol.className = "two-col";
+ const twoCol = document.createElement("div");
+ twoCol.className = "two-col";
 
-  const left = document.createElement("div");
-  const taskHeader = document.createElement("div");
-  taskHeader.className = "section-title";
-  taskHeader.innerHTML = "<span>Today's Sessions</span>";
-  left.appendChild(taskHeader);
+ const left = document.createElement("div");
+ const taskHeader = document.createElement("div");
+ taskHeader.className = "section-title";
+ taskHeader.innerHTML = "<span>Today's Sessions</span>";
+ left.appendChild(taskHeader);
 
-  if (todayTasks.length === 0) {
-    const emptyMsg = document.createElement("div");
-    emptyMsg.style.cssText = "text-align:center;padding:40px 20px;color:var(--text-muted);font-size:14px";
-    emptyMsg.textContent = "No sessions scheduled for today. Check the weekly tab or create a new plan.";
-    left.appendChild(emptyMsg);
-  } else {
-    const taskList = document.createElement("div");
-    taskList.className = "task-list";
-    for (const task of todayTasks) taskList.appendChild(buildTaskCard(task));
-    left.appendChild(taskList);
-  }
-  twoCol.appendChild(left);
+ if (todayTasks.length === 0) {
+  const emptyMsg = document.createElement("div");
+  emptyMsg.style.cssText = "text-align:center;padding:40px 20px;color:var(--text-muted);font-size:14px";
+  emptyMsg.textContent = "No sessions scheduled for today. Check the weekly tab or create a new plan.";
+  left.appendChild(emptyMsg);
+ } else {
+  const taskList = document.createElement("div");
+  taskList.className = "task-list";
+  for (const task of todayTasks) taskList.appendChild(buildTaskCard(task));
+  left.appendChild(taskList);
+ }
+ twoCol.appendChild(left);
 
-  const right = document.createElement("div");
-  right.innerHTML = '<div class="section-title">Subject Progress</div>';
-  const subjectPanel = document.createElement("div");
-  subjectPanel.className = "subject-panel";
-  const subjectRow = document.createElement("div");
-  subjectRow.className = "subject-row";
+ const right = document.createElement("div");
+ right.innerHTML = '<div class="section-title">Subject Progress</div>';
+ const subjectPanel = document.createElement("div");
+ subjectPanel.className = "subject-panel";
+ const subjectRow = document.createElement("div");
+ subjectRow.className = "subject-row";
 
-  const allocation = plan?.subjectAllocation||{};
-  const subjectHours = progress?.subjectHours||{};
-  const subjects = Object.keys(allocation).length>0 ? Object.keys(allocation) : (appState.profile?.subjects||[]);
+ const allocation = plan?.subjectAllocation||{};
+ const subjectHours = progress?.subjectHours||{};
+ const subjects = Object.keys(allocation).length>0 ? Object.keys(allocation) : (appState.profile?.subjects||[]);
 
-  subjects.forEach((subj,idx) => {
-    const studiedHrs = subjectHours[subj]||0;
-    const targetHrs  = allocation[subj]?.weeklyHours ? allocation[subj].weeklyHours*4 : 20;
-    const pct        = Math.min(100, Math.round((studiedHrs/targetHrs)*100));
-    const item       = document.createElement("div"); item.className = "subj-item";
-    item.innerHTML   = `<div class="subj-head"><span class="subj-name">${escText(subj)}</span><span class="subj-pct">${pct}%</span></div><div class="subj-bar"><div class="subj-fill" style="width:${pct}%;background:${subjectColor(idx)}"></div></div>`;
-    subjectRow.appendChild(item);
-  });
+ subjects.forEach((subj,idx) => {
+  const studiedHrs = subjectHours[subj]||0;
+  const targetHrs = allocation[subj]?.weeklyHours ? allocation[subj].weeklyHours*4 : 20;
+  const pct    = Math.min(100, Math.round((studiedHrs/targetHrs)*100));
+  const item    = document.createElement("div"); item.className = "subj-item";
+  item.innerHTML  = `<div class="subj-head"><span class="subj-name">${escText(subj)}</span><span class="subj-pct">${pct}%</span></div><div class="subj-bar"><div class="subj-fill" style="width:${pct}%;background:${subjectColor(idx)}"></div></div>`;
+  subjectRow.appendChild(item);
+ });
 
-  subjectPanel.appendChild(subjectRow);
-  right.appendChild(subjectPanel);
-  twoCol.appendChild(right);
-  wrap.appendChild(twoCol);
+ subjectPanel.appendChild(subjectRow);
+ right.appendChild(subjectPanel);
+ twoCol.appendChild(right);
+ wrap.appendChild(twoCol);
 
-  const content = document.getElementById("mainContent");
-  content.innerHTML = "";
-  content.appendChild(wrap);
+ const content = document.getElementById("mainContent");
+ content.innerHTML = "";
+ content.appendChild(wrap);
 }
 
 function buildTaskCard(task) {
-  const card = document.createElement("div");
-  card.className = "task-card" + (task.status==="completed"?" completed":"");
-  card.id = `task-${task.taskId}`;
+ const card = document.createElement("div");
+ card.className = "task-card" + (task.status==="completed"?" completed":"");
+ card.id = `task-${task.taskId}`;
 
-  const check = document.createElement("div");
-  check.className = "task-check" + (task.status==="completed"?" done":"");
-  check.setAttribute("role","checkbox");
-  check.setAttribute("aria-checked", task.status==="completed");
-  check.addEventListener("click", () => handleTaskComplete(task.taskId));
+ const check = document.createElement("div");
+ check.className = "task-check" + (task.status==="completed"?" done":"");
+ check.setAttribute("role","checkbox");
+ check.setAttribute("aria-checked", task.status==="completed");
+ check.addEventListener("click", () => handleTaskComplete(task.taskId));
 
-  const body = document.createElement("div");
-  body.className = "task-body";
-  const subj = document.createElement("div");
-  subj.className = "task-subject";
-  const subjectIdx = appState.profile?.subjects?.indexOf(task.subject)??0;
-  subj.style.color = subjectColor(subjectIdx>=0?subjectIdx:0);
-  subj.textContent = task.subject;
-  const topic = document.createElement("div");
-  topic.className = "task-topic"; topic.textContent = task.topic;
-  const meta = document.createElement("div");
-  meta.className = "task-meta";
-  meta.innerHTML = `<span class="task-dur">${task.durationMinutes}min</span><span class="task-type ${task.type||"learn"}">${task.type||"learn"}</span><div class="task-priority ${task.priority||"medium"}" title="${task.priority||"medium"} priority"></div>`;
-  body.appendChild(subj); body.appendChild(topic); body.appendChild(meta);
+ const body = document.createElement("div");
+ body.className = "task-body";
+ const subj = document.createElement("div");
+ subj.className = "task-subject";
+ const subjectIdx = appState.profile?.subjects?.indexOf(task.subject)??0;
+ subj.style.color = subjectColor(subjectIdx>=0?subjectIdx:0);
+ subj.textContent = task.subject;
+ const topic = document.createElement("div");
+ topic.className = "task-topic"; topic.textContent = task.topic;
+ const meta = document.createElement("div");
+ meta.className = "task-meta";
+ meta.innerHTML = `<span class="task-dur">${task.durationMinutes}min</span><span class="task-type ${task.type||"learn"}">${task.type||"learn"}</span><div class="task-priority ${task.priority||"medium"}" title="${task.priority||"medium"} priority"></div>`;
+ body.appendChild(subj); body.appendChild(topic); body.appendChild(meta);
 
-  const actions = document.createElement("div");
-  actions.className = "task-actions";
-  if (task.status!=="completed" && task.status!=="skipped") {
-    const skipBtn = document.createElement("button");
-    skipBtn.className = "task-btn skip"; skipBtn.textContent = "Skip";
-    skipBtn.addEventListener("click", () => handleTaskSkip(task.taskId));
-    actions.appendChild(skipBtn);
-  }
+ const actions = document.createElement("div");
+ actions.className = "task-actions";
+ if (task.status!=="completed" && task.status!=="skipped") {
+  const skipBtn = document.createElement("button");
+  skipBtn.className = "task-btn skip"; skipBtn.textContent = "Skip";
+  skipBtn.addEventListener("click", () => handleTaskSkip(task.taskId));
+  actions.appendChild(skipBtn);
+ }
 
-  card.appendChild(check); card.appendChild(body); card.appendChild(actions);
-  return card;
+ card.appendChild(check); card.appendChild(body); card.appendChild(actions);
+ return card;
 }
 
 async function handleTaskComplete(taskId) {
-  const task = appState.tasks.find(t=>t.taskId===taskId);
-  if (!task||task.status==="completed") return;
-  try {
-    await updateTaskStatus(taskId,"completed"); task.status="completed";
-    const newStreak = await updateStreak(); await logEvent("task_completed",{subject:task.subject});
-    const card = document.getElementById(`task-${taskId}`);
-    if (card) { card.classList.add("completed"); const checkEl=card.querySelector(".task-check"); if(checkEl) checkEl.classList.add("done"); }
-    appState.progress = await _getProgress();
+ const task = appState.tasks.find(t=>t.taskId===taskId);
+ if (!task||task.status==="completed") return;
+ try {
+  await updateTaskStatus(taskId,"completed"); task.status="completed";
+  const newStreak = await updateStreak(); await logEvent("task_completed",{subject:task.subject});
+  const card = document.getElementById(`task-${taskId}`);
+  if (card) { card.classList.add("completed"); const checkEl=card.querySelector(".task-check"); if(checkEl) checkEl.classList.add("done"); }
+  appState.progress = await _getProgress();
 
-    if (newStreak>1) showToast(`✅ Task completed! ${newStreak}-day streak 🔥`,"success");
-    else showToast("✅ Task completed! Day 1 of a new streak","success");
+  if (newStreak>1) showToast(`✅ Task completed! ${newStreak}-day streak 🔥`,"success");
+  else showToast("✅ Task completed! Day 1 of a new streak","success");
 
-    const todayDone = getTodaysTasks(appState.tasks).filter(t=>t.status==="completed").length;
-    const todayTotal = getTodaysTasks(appState.tasks).length;
-    if (todayTotal>0 && todayDone===todayTotal) {
-      celebrateDayComplete();
-    }
-  } catch(err) { showToast("Could not update task.","error"); console.error(err); }
+  const todayDone = getTodaysTasks(appState.tasks).filter(t=>t.status==="completed").length;
+  const todayTotal = getTodaysTasks(appState.tasks).length;
+  if (todayTotal>0 && todayDone===todayTotal) {
+   celebrateDayComplete();
+  }
+ } catch(err) { showToast("Could not update task.","error"); console.error(err); }
 }
 
 function celebrateDayComplete() {
-  const r = document.createElement("div");
-  r.className = "day-celebration";
-  r.innerHTML = `<div class="celeb-pop">🎉</div>`;
-  document.body.appendChild(r);
-  showToast("🎉 All of today's tasks done — you crushed it!","success");
-  setTimeout(()=>{ r.classList.add("out"); }, 2600);
-  setTimeout(()=>{ r.remove(); }, 3000);
+ const r = document.createElement("div");
+ r.className = "day-celebration";
+ r.innerHTML = `<div class="celeb-pop">🎉</div>`;
+ document.body.appendChild(r);
+ showToast("🎉 All of today's tasks done — you crushed it!","success");
+ setTimeout(()=>{ r.classList.add("out"); }, 2600);
+ setTimeout(()=>{ r.remove(); }, 3000);
 }
 
 async function handleTaskSkip(taskId) {
-  const task = appState.tasks.find(t=>t.taskId===taskId);
-  if (!task) return;
-  try {
-    await updateTaskStatus(taskId,"skipped"); task.status="skipped";
-    await logEvent("task_skipped",{subject:task.subject});
-    const card = document.getElementById(`task-${taskId}`);
-    if (card) card.style.opacity="0.4";
-    showToast("Task skipped.","");
-  } catch(err) { showToast("Could not skip task.","error"); console.error(err); }
+ const task = appState.tasks.find(t=>t.taskId===taskId);
+ if (!task) return;
+ try {
+  await updateTaskStatus(taskId,"skipped"); task.status="skipped";
+  await logEvent("task_skipped",{subject:task.subject});
+  const card = document.getElementById(`task-${taskId}`);
+  if (card) card.style.opacity="0.4";
+  showToast("Task skipped.","");
+ } catch(err) { showToast("Could not skip task.","error"); console.error(err); }
 }
 
 function renderWeekly() {
-  const weeklyPlan = appState.plan?.weeklyPlan||[];
-  const content = document.getElementById("mainContent");
-  content.innerHTML = "";
+ const weeklyPlan = appState.plan?.weeklyPlan||[];
+ const content = document.getElementById("mainContent");
+ content.innerHTML = "";
 
-  if (weeklyPlan.length===0) {
-    content.innerHTML = '<div class="empty-state"><div class="empty-icon">📅</div><div class="empty-title">No weekly plan data</div></div>';
-    return;
+ if (weeklyPlan.length===0) {
+  content.innerHTML = '<div class="empty-state"><div class="empty-icon">📅</div><div class="empty-title">No weekly plan data</div></div>';
+  return;
+ }
+
+ const today = new Date().toLocaleDateString("en-US",{weekday:"long"});
+
+ for (const week of weeklyPlan) {
+  const section = document.createElement("div");
+  section.style.marginBottom="28px";
+  const header = document.createElement("div");
+  header.className="section-title";
+  header.innerHTML=`<span>Week ${week.week} — ${week.theme||""}</span>`;
+  section.appendChild(header);
+  const grid = document.createElement("div");
+  grid.className="week-grid";
+
+  for (const day of week.days||[]) {
+   const col = document.createElement("div");
+   col.className = "week-day"+(day.day===today?" today":"");
+   const dayLabel=document.createElement("div");
+   dayLabel.className="week-day-label";
+   dayLabel.textContent=(day.day||"").slice(0,3).toUpperCase();
+   col.appendChild(dayLabel);
+
+   for (const session of day.sessions||[]) {
+    const s=document.createElement("div");
+    s.className=`week-session ${session.type||"learn"}`;
+    s.innerHTML=`<div class="ws-subject">${escText(session.subject)}</div><div class="ws-topic">${escText(session.topic)} (${session.durationMinutes}m)</div>`;
+    col.appendChild(s);
+   }
+   grid.appendChild(col);
   }
-
-  const today = new Date().toLocaleDateString("en-US",{weekday:"long"});
-
-  for (const week of weeklyPlan) {
-    const section = document.createElement("div");
-    section.style.marginBottom="28px";
-    const header = document.createElement("div");
-    header.className="section-title";
-    header.innerHTML=`<span>Week ${week.week} — ${week.theme||""}</span>`;
-    section.appendChild(header);
-    const grid = document.createElement("div");
-    grid.className="week-grid";
-
-    for (const day of week.days||[]) {
-      const col = document.createElement("div");
-      col.className = "week-day"+(day.day===today?" today":"");
-      const dayLabel=document.createElement("div");
-      dayLabel.className="week-day-label";
-      dayLabel.textContent=(day.day||"").slice(0,3).toUpperCase();
-      col.appendChild(dayLabel);
-
-      for (const session of day.sessions||[]) {
-        const s=document.createElement("div");
-        s.className=`week-session ${session.type||"learn"}`;
-        s.innerHTML=`<div class="ws-subject">${escText(session.subject)}</div><div class="ws-topic">${escText(session.topic)} (${session.durationMinutes}m)</div>`;
-        col.appendChild(s);
-      }
-      grid.appendChild(col);
-    }
-    section.appendChild(grid);
-    content.appendChild(section);
-  }
+  section.appendChild(grid);
+  content.appendChild(section);
+ }
 }
 
 function renderProgress() {
-  const { tasks, progress } = appState;
-  const content = document.getElementById("mainContent");
-  content.innerHTML="";
-  const wrap=document.createElement("div");
+ const { tasks, progress } = appState;
+ const content = document.getElementById("mainContent");
+ content.innerHTML="";
+ const wrap=document.createElement("div");
 
-  const completed=tasks.filter(t=>t.status==="completed").length;
-  const skipped=tasks.filter(t=>t.status==="skipped").length;
-  const pending=tasks.filter(t=>t.status==="pending").length;
+ const completed=tasks.filter(t=>t.status==="completed").length;
+ const skipped=tasks.filter(t=>t.status==="skipped").length;
+ const pending=tasks.filter(t=>t.status==="pending").length;
 
-  const statsEl=document.createElement("div");
-  statsEl.className="stats-row";
-  statsEl.innerHTML=`
-    <div class="stat-card accent-cyan"><div class="stat-label">Completed</div><div class="stat-val">${completed}</div><div class="stat-sub">tasks done</div></div>
-    <div class="stat-card accent-amber"><div class="stat-label">Hours Studied</div><div class="stat-val">${getTotalHours(progress)}</div><div class="stat-sub">total hrs</div></div>
-    <div class="stat-card accent-purple"><div class="stat-label">Streak</div><div class="stat-val">${progress?.currentStreak||0}🔥</div><div class="stat-sub">best: ${progress?.longestStreak||0} days</div></div>
-    <div class="stat-card"><div class="stat-label">Skipped</div><div class="stat-val" style="color:var(--text-secondary)">${skipped}</div><div class="stat-sub">${pending} pending</div></div>`;
-  wrap.appendChild(statsEl);
+ const statsEl=document.createElement("div");
+ statsEl.className="stats-row";
+ statsEl.innerHTML=`
+  <div class="stat-card accent-cyan"><div class="stat-label">Completed</div><div class="stat-val">${completed}</div><div class="stat-sub">tasks done</div></div>
+  <div class="stat-card accent-amber"><div class="stat-label">Hours Studied</div><div class="stat-val">${getTotalHours(progress)}</div><div class="stat-sub">total hrs</div></div>
+  <div class="stat-card accent-purple"><div class="stat-label">Streak</div><div class="stat-val">${progress?.currentStreak||0}🔥</div><div class="stat-sub">best: ${progress?.longestStreak||0} days</div></div>
+  <div class="stat-card"><div class="stat-label">Skipped</div><div class="stat-val" style="color:var(--text-secondary)">${skipped}</div><div class="stat-sub">${pending} pending</div></div>`;
+ wrap.appendChild(statsEl);
 
-  const subjectHours=progress?.subjectHours||{};
-  if (Object.keys(subjectHours).length>0) {
-    const header=document.createElement("div");
-    header.className="section-title"; header.textContent="Hours by Subject"; wrap.appendChild(header);
-    const panel=document.createElement("div"); panel.className="subject-panel";
-    const row=document.createElement("div"); row.className="subject-row";
-    const maxHrs=Math.max(...Object.values(subjectHours));
+ const subjectHours=progress?.subjectHours||{};
+ if (Object.keys(subjectHours).length>0) {
+  const header=document.createElement("div");
+  header.className="section-title"; header.textContent="Hours by Subject"; wrap.appendChild(header);
+  const panel=document.createElement("div"); panel.className="subject-panel";
+  const row=document.createElement("div"); row.className="subject-row";
+  const maxHrs=Math.max(...Object.values(subjectHours));
 
-    Object.entries(subjectHours).forEach(([subj,hrs],idx) => {
-      const pct=maxHrs>0?Math.round((hrs/maxHrs)*100):0;
-      const item=document.createElement("div"); item.className="subj-item";
-      item.innerHTML=`<div class="subj-head"><span class="subj-name">${escText(subj)}</span><span class="subj-pct">${hrs.toFixed(1)}h</span></div><div class="subj-bar"><div class="subj-fill" style="width:${pct}%;background:${subjectColor(idx)}"></div></div>`;
-      row.appendChild(item);
-    });
-    panel.appendChild(row); wrap.appendChild(panel);
-  }
-  content.appendChild(wrap);
+  Object.entries(subjectHours).forEach(([subj,hrs],idx) => {
+   const pct=maxHrs>0?Math.round((hrs/maxHrs)*100):0;
+   const item=document.createElement("div"); item.className="subj-item";
+   item.innerHTML=`<div class="subj-head"><span class="subj-name">${escText(subj)}</span><span class="subj-pct">${hrs.toFixed(1)}h</span></div><div class="subj-bar"><div class="subj-fill" style="width:${pct}%;background:${subjectColor(idx)}"></div></div>`;
+   row.appendChild(item);
+  });
+  panel.appendChild(row); wrap.appendChild(panel);
+ }
+ content.appendChild(wrap);
 }
 
 function renderMilestones() {
-  const milestones=appState.plan?.milestones||[];
-  const content=document.getElementById("mainContent"); content.innerHTML="";
+ const milestones=appState.plan?.milestones||[];
+ const content=document.getElementById("mainContent"); content.innerHTML="";
 
-  if (milestones.length===0) {
-    content.innerHTML='<div class="empty-state"><div class="empty-icon">🏆</div><div class="empty-title">No milestones yet</div></div>';
-    return;
-  }
+ if (milestones.length===0) {
+  content.innerHTML='<div class="empty-state"><div class="empty-icon">🏆</div><div class="empty-title">No milestones yet</div></div>';
+  return;
+ }
 
-  const header=document.createElement("div");
-  header.className="section-title"; header.textContent="Plan Milestones"; content.appendChild(header);
-  const list=document.createElement("div"); list.className="milestone-list";
+ const header=document.createElement("div");
+ header.className="section-title"; header.textContent="Plan Milestones"; content.appendChild(header);
+ const list=document.createElement("div"); list.className="milestone-list";
 
-  for (const m of milestones) {
-    const item=document.createElement("div"); item.className="milestone-item";
-    const weekLabel=document.createElement("div"); weekLabel.className="milestone-week"; weekLabel.textContent=`Week ${m.week}`;
-    const body=document.createElement("div");
-    body.innerHTML=`<div class="milestone-goal">${escText(m.goal)}</div><div class="milestone-checks">${(m.checkpoints||[]).map(cp=>`<div class="milestone-check">${escText(cp)}</div>`).join("")}</div>`;
-    item.appendChild(weekLabel); item.appendChild(body); list.appendChild(item);
-  }
-  content.appendChild(list);
+ for (const m of milestones) {
+  const item=document.createElement("div"); item.className="milestone-item";
+  const weekLabel=document.createElement("div"); weekLabel.className="milestone-week"; weekLabel.textContent=`Week ${m.week}`;
+  const body=document.createElement("div");
+  body.innerHTML=`<div class="milestone-goal">${escText(m.goal)}</div><div class="milestone-checks">${(m.checkpoints||[]).map(cp=>`<div class="milestone-check">${escText(cp)}</div>`).join("")}</div>`;
+  item.appendChild(weekLabel); item.appendChild(body); list.appendChild(item);
+ }
+ content.appendChild(list);
 }
 
 window.openReplanModal = function() {
-  const missed=countMissedTasks(appState.tasks);
-  document.getElementById("replanModalSub").textContent=`You have ${missed} missed task${missed!==1?"s":""}. Aquila AI will generate a 3-day catch-up schedule without overloading your remaining study time.`;
-  document.getElementById("replanModal").classList.add("show");
+ const missed=countMissedTasks(appState.tasks);
+ document.getElementById("replanModalSub").textContent=`You have ${missed} missed task${missed!==1?"s":""}. Aquila AI will generate a 3-day catch-up schedule without overloading your remaining study time.`;
+ document.getElementById("replanModal").classList.add("show");
 };
 window.closeReplanModal = function() { document.getElementById("replanModal").classList.remove("show"); };
 
 window.executeReplan = async function() {
-  const btn=document.getElementById("confirmReplanBtn");
-  btn.disabled=true; btn.textContent="Generating…";
-  const { profile, tasks } = appState;
-  const today=new Date().toISOString().split("T")[0];
-  const missedTasks=tasks.filter(t=>t.status==="pending"&&t.scheduledDate&&t.scheduledDate<today).slice(0,50);
-  try {
-    const user=auth.currentUser;
-    const idToken=await user.getIdToken();
-    const res=await fetch("/api/replan",{method:"POST",headers:{"Content-Type":"application/json","Authorization":`Bearer ${idToken}`},credentials:"same-origin",body:JSON.stringify({missedTasks:missedTasks.map(t=>({subject:t.subject,topic:t.topic,durationMinutes:t.durationMinutes})),dailyHours:profile?.dailyHours||6,examDate:profile?.examDate||"",examType:profile?.examType||""})});
-    if (!res.ok) { const err=await res.json().catch(()=>({})); throw new Error(err.error||"Replan failed."); }
-    closeReplanModal();
-    await logEvent("replan_generated",{missedCount:missedTasks.length});
-    showToast("✅ Catch-up plan generated! Check your weekly view.","success");
-    await loadPlannerData();
-  } catch(err) {
-    showToast(err.message||"Could not generate catch-up plan.","error"); console.error(err);
-  } finally {
-    btn.disabled=false; btn.textContent="Generate Catch-up Plan";
-  }
+ const btn=document.getElementById("confirmReplanBtn");
+ btn.disabled=true; btn.textContent="Generating…";
+ const { profile, tasks } = appState;
+ const today=new Date().toISOString().split("T")[0];
+ const missedTasks=tasks.filter(t=>t.status==="pending"&&t.scheduledDate&&t.scheduledDate<today).slice(0,50);
+ try {
+  const user=auth.currentUser;
+  const idToken=await user.getIdToken();
+  const res=await fetch("/api/replan",{method:"POST",headers:{"Content-Type":"application/json","Authorization":`Bearer ${idToken}`},credentials:"same-origin",body:JSON.stringify({missedTasks:missedTasks.map(t=>({subject:t.subject,topic:t.topic,durationMinutes:t.durationMinutes})),dailyHours:profile?.dailyHours||6,examDate:profile?.examDate||"",examType:profile?.examType||""})});
+  if (!res.ok) { const err=await res.json().catch(()=>({})); throw new Error(err.error||"Replan failed."); }
+  closeReplanModal();
+  await logEvent("replan_generated",{missedCount:missedTasks.length});
+  showToast("✅ Catch-up plan generated! Check your weekly view.","success");
+  await loadPlannerData();
+ } catch(err) {
+  showToast(err.message||"Could not generate catch-up plan.","error"); console.error(err);
+ } finally {
+  btn.disabled=false; btn.textContent="Generate Catch-up Plan";
+ }
 };
 
 window.openDeleteModal = function() {
-  const count=appState.tasks.length;
-  document.getElementById("deleteTaskCount").textContent=`${count} task${count!==1?"s":""}`;
-  document.getElementById("deletePlanModal").classList.add("show");
+ const count=appState.tasks.length;
+ document.getElementById("deleteTaskCount").textContent=`${count} task${count!==1?"s":""}`;
+ document.getElementById("deletePlanModal").classList.add("show");
 };
 window.closeDeleteModal = function() { document.getElementById("deletePlanModal").classList.remove("show"); };
 
 window.executeDeletePlan = async function() {
-  const btn=document.getElementById("confirmDeleteBtn");
-  btn.disabled=true; btn.textContent="Deleting…";
-  try {
-    const { deletePlan }=await import("./planner-db.js");
-    await deletePlan(appState.plan.planId);
-    await logEvent("plan_deleted",{planId:appState.plan.planId});
-    const _db2 = document.getElementById("deletePlanBtn"); if (_db2) _db2.style.display="none";
-    const _rb2 = document.getElementById("replanBtn"); if (_rb2) _rb2.style.display="none";
-    closeDeleteModal();
-    showToast("🗑️ Plan deleted successfully.","");
-    setTimeout(()=>{window.location.href="/planner-onboarding.html";},1400);
-  } catch(err) {
-    showToast(err.message||"Could not delete plan.","error"); console.error(err);
-    btn.disabled=false; btn.textContent="Yes, Delete Plan";
-  }
+ const btn=document.getElementById("confirmDeleteBtn");
+ btn.disabled=true; btn.textContent="Deleting…";
+ try {
+  const { deletePlan }=await import("./planner-db.js");
+  await deletePlan(appState.plan.planId);
+  await logEvent("plan_deleted",{planId:appState.plan.planId});
+  const _db2 = document.getElementById("deletePlanBtn"); if (_db2) _db2.style.display="none";
+  const _rb2 = document.getElementById("replanBtn"); if (_rb2) _rb2.style.display="none";
+  closeDeleteModal();
+  showToast("🗑️ Plan deleted successfully.","");
+  setTimeout(()=>{window.location.href="/planner-onboarding.html";},1400);
+ } catch(err) {
+  showToast(err.message||"Could not delete plan.","error"); console.error(err);
+  btn.disabled=false; btn.textContent="Yes, Delete Plan";
+ }
 };
 
 function showToast(msg,type="") {
-  const t=document.getElementById("toast");
-  t.textContent=msg; t.className=`toast show${type?" "+type:""}`;
-  setTimeout(()=>{t.className="toast";},3200);
+ const t=document.getElementById("toast");
+ t.textContent=msg; t.className=`toast show${type?" "+type:""}`;
+ setTimeout(()=>{t.className="toast";},3200);
 }
 </script>
 
@@ -780,35 +780,35 @@ function showToast(msg,type="") {
 <script type="module">import { injectSpeedInsights } from 'https://esm.sh/@vercel/speed-insights'; injectSpeedInsights();
 /* ── Scroll progress bar ── */
 (function(){
-  var bar = document.createElement('div');
-  bar.className = 'scroll-progress';
-  document.body.prepend(bar);
-  var ticking = false;
-  window.addEventListener('scroll', function(){
-    if(!ticking){ requestAnimationFrame(function(){
-      var h = document.documentElement.scrollHeight - window.innerHeight;
-      bar.style.width = h > 0 ? ((window.scrollY / h) * 100) + '%' : '0%';
-      ticking = false;
-    }); ticking = true; }
-  });
+ var bar = document.createElement('div');
+ bar.className = 'scroll-progress';
+ document.body.prepend(bar);
+ var ticking = false;
+ window.addEventListener('scroll', function(){
+  if(!ticking){ requestAnimationFrame(function(){
+   var h = document.documentElement.scrollHeight - window.innerHeight;
+   bar.style.width = h > 0 ? ((window.scrollY / h) * 100) + '%' : '0%';
+   ticking = false;
+  }); ticking = true; }
+ });
 }());
 
 /* ── Ripple effect ── */
 (function(){
-  var rm = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  if(rm) return;
-  document.querySelectorAll('.btn-primary, .btn-secondary, .btn-ghost-nav, .signout-btn, .new-chat-btn, .upgrade-nav-btn, .send-btn').forEach(function(btn){
-    btn.addEventListener('click', function(e){
-      var rp = document.createElement('span');
-      var r = btn.getBoundingClientRect();
-      var s = Math.max(r.width, r.height);
-      rp.style.cssText = 'position:absolute;top:'+(e.clientY-r.top-s/2)+'px;left:'+(e.clientX-r.left-s/2)+'px;width:'+s+'px;height:'+s+'px;border-radius:50%;background:rgba(255,255,255,0.15);transform:scale(0);animation:rippleAnim .5s ease-out;pointer-events:none;z-index:0;';
-      btn.style.position = 'relative';
-      btn.style.overflow = 'hidden';
-      btn.appendChild(rp);
-      setTimeout(function(){ rp.remove(); }, 600);
-    });
+ var rm = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+ if(rm) return;
+ document.querySelectorAll('.btn-primary, .btn-secondary, .btn-ghost-nav, .signout-btn, .new-chat-btn, .upgrade-nav-btn, .send-btn').forEach(function(btn){
+  btn.addEventListener('click', function(e){
+   var rp = document.createElement('span');
+   var r = btn.getBoundingClientRect();
+   var s = Math.max(r.width, r.height);
+   rp.style.cssText = 'position:absolute;top:'+(e.clientY-r.top-s/2)+'px;left:'+(e.clientX-r.left-s/2)+'px;width:'+s+'px;height:'+s+'px;border-radius:50%;background:rgba(255,255,255,0.15);transform:scale(0);animation:rippleAnim .5s ease-out;pointer-events:none;z-index:0;';
+   btn.style.position = 'relative';
+   btn.style.overflow = 'hidden';
+   btn.appendChild(rp);
+   setTimeout(function(){ rp.remove(); }, 600);
   });
+ });
 }());
 </script>
 <script type="application/ld+json">

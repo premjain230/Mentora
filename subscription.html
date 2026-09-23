@@ -4,7 +4,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-<meta http-equiv="Content-Security-Policy" content="default-src 'self' https:; script-src 'self' 'unsafe-inline' 'unsafe-eval' blob: https://www.gstatic.com https://apis.google.com https://accounts.google.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://www.googletagmanager.com https://esm.sh; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: https:; font-src 'self' https://fonts.gstatic.com; connect-src 'self' blob: https://www.googleapis.com https://apis.google.com https://accounts.google.com https://esm.sh https://www.gstatic.com https://firestore.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://analytics.vercel.com; object-src 'none'; frame-src 'self' https://www.gstatic.com https://accounts.google.com https://mentora-c6dca.firebaseapp.com">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self' https:; script-src 'self' 'unsafe-inline' blob: https://www.gstatic.com https://apis.google.com https://accounts.google.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://www.googletagmanager.com https://esm.sh; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: https:; font-src 'self' https://fonts.gstatic.com; connect-src 'self' blob: https://www.googleapis.com https://apis.google.com https://accounts.google.com https://esm.sh https://www.gstatic.com https://firestore.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://analytics.vercel.com; object-src 'none'; frame-src 'self' https://www.gstatic.com https://accounts.google.com https://mentora-c6dca.firebaseapp.com">
 <meta name="description" content="Upgrade your Aquila AI subscription for Pro features — unlimited quizzes, advanced analytics & priority support." />
 <meta property="og:title" content="Subscription - Aquila AI" />
 <meta property="og:description" content="Upgrade your Aquila AI subscription for Pro features." />
@@ -22,184 +22,184 @@
 <link rel="stylesheet" href="/css/shell.css" />
 <style>
 
-  /* ===== Main ===== */
-  .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; background: var(--bg-base); position: relative; z-index: 1; min-width: 0; }
-  .topbar { display: flex; align-items: center; justify-content: space-between; padding: 14px 28px; border-bottom: 1px solid var(--border); gap: 12px; backdrop-filter: blur(6px); }
-  .topbar-left { display: flex; align-items: center; gap: 12px; min-width: 0; }
-  .menu-btn { display: none; width: 38px; height: 38px; border-radius: 10px; border: 1px solid var(--border); background: var(--bg-card); color: var(--text-secondary); align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; transition: all 0.18s; }
-  .menu-btn:hover { color: var(--text-primary); border-color: var(--border-hover); }
-  .topbar-mobile-logo { display: none; align-items: center; gap: 8px; font-size: 15px; font-weight: 700; color: var(--text-primary); }
-  .topbar-mobile-logo .logo-icon { width: 28px; height: 28px; border-radius: 8px; }
-  .topbar-mobile-logo span { color: var(--accent); }
-  .page-title { font-size: 15px; font-weight: 600; color: var(--text-primary); }
+ /* ===== Main ===== */
+ .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; background: var(--bg-base); position: relative; z-index: 1; min-width: 0; }
+ .topbar { display: flex; align-items: center; justify-content: space-between; padding: 14px 28px; border-bottom: 1px solid var(--border); gap: 12px; backdrop-filter: blur(6px); }
+ .topbar-left { display: flex; align-items: center; gap: 12px; min-width: 0; }
+ .menu-btn { display: none; width: 38px; height: 38px; border-radius: 10px; border: 1px solid var(--border); background: var(--bg-card); color: var(--text-secondary); align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; transition: all 0.18s; }
+ .menu-btn:hover { color: var(--text-primary); border-color: var(--border-hover); }
+ .topbar-mobile-logo { display: none; align-items: center; gap: 8px; font-size: 15px; font-weight: 700; color: var(--text-primary); }
+ .topbar-mobile-logo .logo-icon { width: 28px; height: 28px; border-radius: 8px; }
+ .topbar-mobile-logo span { color: var(--accent); }
+ .page-title { font-size: 15px; font-weight: 600; color: var(--text-primary); }
 
-  /* ===== Content ===== */
-  .content { flex: 1; overflow-y: auto; padding: 40px 60px; }
-  .content::-webkit-scrollbar { width: 4px; }
-  .content::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+ /* ===== Content ===== */
+ .content { flex: 1; overflow-y: auto; padding: 40px 60px; }
+ .content::-webkit-scrollbar { width: 4px; }
+ .content::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
 
-  .page-header { margin-bottom: 36px; animation: fadeUp 0.45s cubic-bezier(0.16,1,0.3,1) both; }
-  @keyframes fadeUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
-  .page-header h1 { font-size: 28px; font-weight: 800; letter-spacing: -0.5px; margin-bottom: 6px; }
-  .page-header h1 span { background: linear-gradient(135deg, var(--accent), var(--accent2)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
-  .page-header p { font-size: 14px; color: var(--text-secondary); }
+ .page-header { margin-bottom: 36px; animation: fadeUp 0.45s cubic-bezier(0.16,1,0.3,1) both; }
+ @keyframes fadeUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+ .page-header h1 { font-size: 28px; font-weight: 800; letter-spacing: -0.5px; margin-bottom: 6px; }
+ .page-header h1 span { background: linear-gradient(135deg, var(--accent), var(--accent2)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+ .page-header p { font-size: 14px; color: var(--text-secondary); }
 
-  /* ===== Usage section ===== */
-  .section-label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 1.4px; color: var(--text-muted); margin-bottom: 14px; }
-  .usage-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 40px; animation: fadeUp 0.45s 0.08s cubic-bezier(0.16,1,0.3,1) both; }
-  .usage-card {
-    background: var(--bg-card); border: 1px solid var(--border);
-    border-radius: 16px; padding: 20px 20px 18px;
-    transition: border-color 0.2s;
-  }
-  .usage-card:hover { border-color: rgba(0,212,255,0.18); }
-  .usage-card-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
-  .usage-icon { width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; background: rgba(0,212,255,0.08); border: 1px solid rgba(0,212,255,0.16); color: var(--accent); }
-  .usage-icon.violet { background: rgba(167,139,250,0.1); border-color: rgba(167,139,250,0.2); color: var(--accent2); }
-  .usage-icon.coral { background: rgba(255,107,107,0.08); border-color: rgba(255,107,107,0.18); color: var(--accent3); }
-  .usage-icon svg { width: 17px; height: 17px; }
-  .usage-fraction { font-family: var(--font-mono); font-size: 13px; color: var(--text-muted); }
-  .usage-fraction .used { color: var(--accent); font-weight: 700; }
-  .usage-label { font-size: 13px; font-weight: 500; color: var(--text-primary); margin-bottom: 10px; }
-  .usage-bar { height: 6px; background: rgba(255,255,255,0.05); border-radius: 10px; overflow: hidden; margin-bottom: 8px; }
-  .usage-bar-fill { height: 100%; border-radius: 10px; background: linear-gradient(90deg, var(--accent), var(--accent2)); transition: width 0.6s cubic-bezier(0.16,1,0.3,1); }
-  .usage-bar-fill.full { background: linear-gradient(90deg, var(--accent3), #ff8f8f); }
-  .usage-bar-fill.violet { background: linear-gradient(90deg, var(--accent2), #c4b5fd); }
-  .usage-status { font-size: 11.5px; color: var(--text-muted); }
-  .usage-status.ok { color: #34d399; }
-  .usage-status.warn { color: #fbbf24; }
-  .usage-status.full { color: var(--accent3); }
+ /* ===== Usage section ===== */
+ .section-label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 1.4px; color: var(--text-muted); margin-bottom: 14px; }
+ .usage-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 40px; animation: fadeUp 0.45s 0.08s cubic-bezier(0.16,1,0.3,1) both; }
+ .usage-card {
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: 16px; padding: 20px 20px 18px;
+  transition: border-color 0.2s;
+ }
+ .usage-card:hover { border-color: rgba(0,212,255,0.18); }
+ .usage-card-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+ .usage-icon { width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; background: rgba(0,212,255,0.08); border: 1px solid rgba(0,212,255,0.16); color: var(--accent); }
+ .usage-icon.violet { background: rgba(167,139,250,0.1); border-color: rgba(167,139,250,0.2); color: var(--accent2); }
+ .usage-icon.coral { background: rgba(255,107,107,0.08); border-color: rgba(255,107,107,0.18); color: var(--accent3); }
+ .usage-icon svg { width: 17px; height: 17px; }
+ .usage-fraction { font-family: var(--font-mono); font-size: 13px; color: var(--text-muted); }
+ .usage-fraction .used { color: var(--accent); font-weight: 700; }
+ .usage-label { font-size: 13px; font-weight: 500; color: var(--text-primary); margin-bottom: 10px; }
+ .usage-bar { height: 6px; background: rgba(255,255,255,0.05); border-radius: 10px; overflow: hidden; margin-bottom: 8px; }
+ .usage-bar-fill { height: 100%; border-radius: 10px; background: linear-gradient(90deg, var(--accent), var(--accent2)); transition: width 0.6s cubic-bezier(0.16,1,0.3,1); }
+ .usage-bar-fill.full { background: linear-gradient(90deg, var(--accent3), #ff8f8f); }
+ .usage-bar-fill.violet { background: linear-gradient(90deg, var(--accent2), #c4b5fd); }
+ .usage-status { font-size: 11.5px; color: var(--text-muted); }
+ .usage-status.ok { color: #34d399; }
+ .usage-status.warn { color: #fbbf24; }
+ .usage-status.full { color: var(--accent3); }
 
-  /* Unlimited badge */
-  .unlimited-pill { display: inline-flex; align-items: center; gap: 4px; background: rgba(52,211,153,0.1); border: 1px solid rgba(52,211,153,0.25); color: #34d399; font-size: 11px; font-weight: 600; padding: 3px 9px; border-radius: 20px; font-family: var(--font-mono); }
+ /* Unlimited badge */
+ .unlimited-pill { display: inline-flex; align-items: center; gap: 4px; background: rgba(52,211,153,0.1); border: 1px solid rgba(52,211,153,0.25); color: #34d399; font-size: 11px; font-weight: 600; padding: 3px 9px; border-radius: 20px; font-family: var(--font-mono); }
 
-  /* ===== Plans ===== */
-  .plans-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-bottom: 40px; animation: fadeUp 0.45s 0.16s cubic-bezier(0.16,1,0.3,1) both; }
-  .plan-card {
-    background: var(--bg-card); border: 1px solid var(--border);
-    border-radius: 20px; padding: 28px 24px;
-    position: relative; transition: all 0.2s;
-  }
-  .plan-card:hover { border-color: rgba(255,255,255,0.12); }
-  .plan-card.pro {
-    background: linear-gradient(160deg, #13111f 0%, #0f1117 100%);
-    border-color: rgba(167,139,250,0.28);
-    box-shadow: 0 0 40px rgba(167,139,250,0.07);
-  }
-  .plan-card.pro:hover { border-color: rgba(167,139,250,0.45); }
-  .plan-card.current-free { border-color: rgba(0,212,255,0.28); }
+ /* ===== Plans ===== */
+ .plans-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-bottom: 40px; animation: fadeUp 0.45s 0.16s cubic-bezier(0.16,1,0.3,1) both; }
+ .plan-card {
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: 20px; padding: 28px 24px;
+  position: relative; transition: all 0.2s;
+ }
+ .plan-card:hover { border-color: rgba(255,255,255,0.12); }
+ .plan-card.pro {
+  background: linear-gradient(160deg, #13111f 0%, #0f1117 100%);
+  border-color: rgba(167,139,250,0.28);
+  box-shadow: 0 0 40px rgba(167,139,250,0.07);
+ }
+ .plan-card.pro:hover { border-color: rgba(167,139,250,0.45); }
+ .plan-card.current-free { border-color: rgba(0,212,255,0.28); }
 
-  .plan-ribbon {
-    position: absolute; top: -1px; right: 22px;
-    background: linear-gradient(135deg, var(--accent2), #7c3aed);
-    color: white; font-size: 10.5px; font-weight: 700;
-    padding: 4px 12px; border-radius: 0 0 10px 10px;
-    letter-spacing: 0.5px;
-  }
+ .plan-ribbon {
+  position: absolute; top: -1px; right: 22px;
+  background: linear-gradient(135deg, var(--accent2), #7c3aed);
+  color: white; font-size: 10.5px; font-weight: 700;
+  padding: 4px 12px; border-radius: 0 0 10px 10px;
+  letter-spacing: 0.5px;
+ }
 
-  .plan-header { margin-bottom: 20px; }
-  .plan-name { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 1.4px; color: var(--text-muted); margin-bottom: 6px; }
-  .plan-title { font-size: 22px; font-weight: 800; color: var(--text-primary); letter-spacing: -0.4px; margin-bottom: 6px; }
-  .plan-title.pro-gradient { background: linear-gradient(135deg, var(--accent2), #c4b5fd); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
-  .plan-price { font-size: 13px; color: var(--text-muted); }
-  .plan-price strong { font-size: 28px; color: var(--text-primary); font-weight: 800; font-family: var(--font-mono); letter-spacing: -1px; }
-  .plan-price .per { color: var(--text-muted); font-size: 12px; }
+ .plan-header { margin-bottom: 20px; }
+ .plan-name { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 1.4px; color: var(--text-muted); margin-bottom: 6px; }
+ .plan-title { font-size: 22px; font-weight: 800; color: var(--text-primary); letter-spacing: -0.4px; margin-bottom: 6px; }
+ .plan-title.pro-gradient { background: linear-gradient(135deg, var(--accent2), #c4b5fd); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+ .plan-price { font-size: 13px; color: var(--text-muted); }
+ .plan-price strong { font-size: 28px; color: var(--text-primary); font-weight: 800; font-family: var(--font-mono); letter-spacing: -1px; }
+ .plan-price .per { color: var(--text-muted); font-size: 12px; }
 
-  .plan-divider { height: 1px; background: var(--border); margin: 20px 0; }
+ .plan-divider { height: 1px; background: var(--border); margin: 20px 0; }
 
-  .plan-features { list-style: none; padding: 0; margin: 0 0 24px; display: flex; flex-direction: column; gap: 11px; }
-  .plan-feature { display: flex; align-items: flex-start; gap: 10px; font-size: 13.5px; color: var(--text-secondary); }
-  .plan-feature .check { width: 20px; height: 20px; border-radius: 6px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; margin-top: 1px; }
-  .plan-feature .check.cyan { background: rgba(0,212,255,0.1); border: 1px solid rgba(0,212,255,0.2); color: var(--accent); }
-  .plan-feature .check.violet { background: rgba(167,139,250,0.1); border: 1px solid rgba(167,139,250,0.22); color: var(--accent2); }
-  .plan-feature .check svg { width: 11px; height: 11px; }
-  .plan-feature .feat-text strong { color: var(--text-primary); display: block; font-weight: 500; }
-  .plan-feature .feat-text span { font-size: 12px; color: var(--text-muted); }
+ .plan-features { list-style: none; padding: 0; margin: 0 0 24px; display: flex; flex-direction: column; gap: 11px; }
+ .plan-feature { display: flex; align-items: flex-start; gap: 10px; font-size: 13.5px; color: var(--text-secondary); }
+ .plan-feature .check { width: 20px; height: 20px; border-radius: 6px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; margin-top: 1px; }
+ .plan-feature .check.cyan { background: rgba(0,212,255,0.1); border: 1px solid rgba(0,212,255,0.2); color: var(--accent); }
+ .plan-feature .check.violet { background: rgba(167,139,250,0.1); border: 1px solid rgba(167,139,250,0.22); color: var(--accent2); }
+ .plan-feature .check svg { width: 11px; height: 11px; }
+ .plan-feature .feat-text strong { color: var(--text-primary); display: block; font-weight: 500; }
+ .plan-feature .feat-text span { font-size: 12px; color: var(--text-muted); }
 
-  .plan-btn {
-    width: 100%; padding: 12px 16px; border-radius: 12px;
-    font-family: var(--font-main); font-size: 13.5px; font-weight: 600;
-    cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 7px;
-    border: none; text-align: center;
-  }
-  .plan-btn.current { background: rgba(0,212,255,0.08); border: 1px solid rgba(0,212,255,0.2); color: var(--accent); cursor: default; }
-  .plan-btn.request { background: linear-gradient(135deg, rgba(167,139,250,0.18), rgba(109,40,217,0.18)); border: 1px solid rgba(167,139,250,0.35); color: var(--accent2); }
-  .plan-btn.request:hover { background: linear-gradient(135deg, rgba(167,139,250,0.28), rgba(109,40,217,0.28)); transform: translateY(-1px); box-shadow: 0 8px 24px rgba(167,139,250,0.18); }
-  .plan-btn.requested { background: rgba(52,211,153,0.08); border: 1px solid rgba(52,211,153,0.25); color: #34d399; cursor: default; }
+ .plan-btn {
+  width: 100%; padding: 12px 16px; border-radius: 12px;
+  font-family: var(--font-main); font-size: 13.5px; font-weight: 600;
+  cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 7px;
+  border: none; text-align: center;
+ }
+ .plan-btn.current { background: rgba(0,212,255,0.08); border: 1px solid rgba(0,212,255,0.2); color: var(--accent); cursor: default; }
+ .plan-btn.request { background: linear-gradient(135deg, rgba(167,139,250,0.18), rgba(109,40,217,0.18)); border: 1px solid rgba(167,139,250,0.35); color: var(--accent2); }
+ .plan-btn.request:hover { background: linear-gradient(135deg, rgba(167,139,250,0.28), rgba(109,40,217,0.28)); transform: translateY(-1px); box-shadow: 0 8px 24px rgba(167,139,250,0.18); }
+ .plan-btn.requested { background: rgba(52,211,153,0.08); border: 1px solid rgba(52,211,153,0.25); color: #34d399; cursor: default; }
 
-  /* ===== Contact options (shown after request click) ===== */
-  .contact-options {
-    margin-top: 14px; border-radius: 14px;
-    background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06);
-    padding: 16px; display: none; flex-direction: column; gap: 10px;
-    animation: fadeUp 0.3s cubic-bezier(0.16,1,0.3,1) both;
-  }
-  .contact-options.show { display: flex; }
-  .contact-label { font-size: 12px; color: var(--text-muted); margin-bottom: 2px; }
-  .contact-link {
-    display: flex; align-items: center; gap: 10px;
-    padding: 11px 14px; border-radius: 10px;
-    border: 1px solid rgba(255,255,255,0.07); background: var(--bg-card);
-    color: var(--text-secondary); font-size: 13px; text-decoration: none;
-    transition: all 0.18s;
-  }
-  .contact-link:hover { border-color: rgba(0,212,255,0.28); color: var(--text-primary); background: rgba(0,212,255,0.04); }
-  .contact-link svg { width: 16px; height: 16px; flex-shrink: 0; }
-  .contact-link .cl-label { flex: 1; font-weight: 500; }
-  .contact-link .cl-sub { font-size: 11.5px; color: var(--text-muted); }
-  .contact-divider { height: 1px; background: rgba(255,255,255,0.05); margin: 2px 0; }
+ /* ===== Contact options (shown after request click) ===== */
+ .contact-options {
+  margin-top: 14px; border-radius: 14px;
+  background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06);
+  padding: 16px; display: none; flex-direction: column; gap: 10px;
+  animation: fadeUp 0.3s cubic-bezier(0.16,1,0.3,1) both;
+ }
+ .contact-options.show { display: flex; }
+ .contact-label { font-size: 12px; color: var(--text-muted); margin-bottom: 2px; }
+ .contact-link {
+  display: flex; align-items: center; gap: 10px;
+  padding: 11px 14px; border-radius: 10px;
+  border: 1px solid rgba(255,255,255,0.07); background: var(--bg-card);
+  color: var(--text-secondary); font-size: 13px; text-decoration: none;
+  transition: all 0.18s;
+ }
+ .contact-link:hover { border-color: rgba(0,212,255,0.28); color: var(--text-primary); background: rgba(0,212,255,0.04); }
+ .contact-link svg { width: 16px; height: 16px; flex-shrink: 0; }
+ .contact-link .cl-label { flex: 1; font-weight: 500; }
+ .contact-link .cl-sub { font-size: 11.5px; color: var(--text-muted); }
+ .contact-divider { height: 1px; background: rgba(255,255,255,0.05); margin: 2px 0; }
 
-  /* Custom form */
-  .contact-form { display: flex; flex-direction: column; gap: 8px; padding-top: 4px; }
-  .contact-form input, .contact-form textarea {
-    background: var(--bg-input); border: 1px solid var(--border);
-    border-radius: 10px; padding: 11px 14px;
-    color: var(--text-primary); font-family: var(--font-main); font-size: 13px;
-    outline: none; resize: none; transition: border-color 0.2s;
-  }
-  .contact-form input::placeholder, .contact-form textarea::placeholder { color: var(--text-muted); }
-  .contact-form input:focus, .contact-form textarea:focus { border-color: rgba(0,212,255,0.35); }
-  .contact-form-btn {
-    padding: 11px; border-radius: 10px;
-    background: rgba(0,212,255,0.1); border: 1px solid rgba(0,212,255,0.25);
-    color: var(--accent); font-family: var(--font-main); font-size: 13px; font-weight: 600;
-    cursor: pointer; transition: all 0.18s;
-  }
-  .contact-form-btn:hover { background: rgba(0,212,255,0.18); }
+ /* Custom form */
+ .contact-form { display: flex; flex-direction: column; gap: 8px; padding-top: 4px; }
+ .contact-form input, .contact-form textarea {
+  background: var(--bg-input); border: 1px solid var(--border);
+  border-radius: 10px; padding: 11px 14px;
+  color: var(--text-primary); font-family: var(--font-main); font-size: 13px;
+  outline: none; resize: none; transition: border-color 0.2s;
+ }
+ .contact-form input::placeholder, .contact-form textarea::placeholder { color: var(--text-muted); }
+ .contact-form input:focus, .contact-form textarea:focus { border-color: rgba(0,212,255,0.35); }
+ .contact-form-btn {
+  padding: 11px; border-radius: 10px;
+  background: rgba(0,212,255,0.1); border: 1px solid rgba(0,212,255,0.25);
+  color: var(--accent); font-family: var(--font-main); font-size: 13px; font-weight: 600;
+  cursor: pointer; transition: all 0.18s;
+ }
+ .contact-form-btn:hover { background: rgba(0,212,255,0.18); }
 
-  /* ===== FAQ ===== */
-  .faq-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: 40px; animation: fadeUp 0.45s 0.24s cubic-bezier(0.16,1,0.3,1) both; }
-  .faq-item { background: var(--bg-card); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; }
-  .faq-q { padding: 16px 18px; font-size: 13.5px; font-weight: 500; color: var(--text-primary); cursor: pointer; display: flex; align-items: center; justify-content: space-between; gap: 12px; user-select: none; }
-  .faq-q:hover { color: var(--accent); }
-  .faq-chevron { width: 16px; height: 16px; flex-shrink: 0; color: var(--text-muted); transition: transform 0.2s; }
-  .faq-item.open .faq-chevron { transform: rotate(180deg); }
-  .faq-a { display: none; padding: 0 18px 16px; font-size: 13px; color: var(--text-secondary); line-height: 1.7; border-top: 1px solid var(--border); padding-top: 14px; }
-  .faq-item.open .faq-a { display: block; }
+ /* ===== FAQ ===== */
+ .faq-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: 40px; animation: fadeUp 0.45s 0.24s cubic-bezier(0.16,1,0.3,1) both; }
+ .faq-item { background: var(--bg-card); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; }
+ .faq-q { padding: 16px 18px; font-size: 13.5px; font-weight: 500; color: var(--text-primary); cursor: pointer; display: flex; align-items: center; justify-content: space-between; gap: 12px; user-select: none; }
+ .faq-q:hover { color: var(--accent); }
+ .faq-chevron { width: 16px; height: 16px; flex-shrink: 0; color: var(--text-muted); transition: transform 0.2s; }
+ .faq-item.open .faq-chevron { transform: rotate(180deg); }
+ .faq-a { display: none; padding: 0 18px 16px; font-size: 13px; color: var(--text-secondary); line-height: 1.7; border-top: 1px solid var(--border); padding-top: 14px; }
+ .faq-item.open .faq-a { display: block; }
 
-  /* Loading state */
-  .sub-loading { display: flex; align-items: center; justify-content: center; gap: 8px; padding: 60px 20px; color: var(--text-muted); font-size: 13px; }
-  .sub-loading-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); animation: dotBounce 1.2s ease-in-out infinite; }
-  .sub-loading-dot:nth-child(2) { animation-delay: 180ms; }
-  .sub-loading-dot:nth-child(3) { animation-delay: 360ms; }
-  @keyframes dotBounce { 0%,80%,100%{ transform:translateY(0);opacity:.4; } 40%{ transform:translateY(-5px);opacity:1; } }
+ /* Loading state */
+ .sub-loading { display: flex; align-items: center; justify-content: center; gap: 8px; padding: 60px 20px; color: var(--text-muted); font-size: 13px; }
+ .sub-loading-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); animation: dotBounce 1.2s ease-in-out infinite; }
+ .sub-loading-dot:nth-child(2) { animation-delay: 180ms; }
+ .sub-loading-dot:nth-child(3) { animation-delay: 360ms; }
+ @keyframes dotBounce { 0%,80%,100%{ transform:translateY(0);opacity:.4; } 40%{ transform:translateY(-5px);opacity:1; } }
 
-  /* Toast */
-  .sub-toast {
-    position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%) translateY(60px);
-    background: #1a1d27; border: 1px solid rgba(52,211,153,0.3); color: #34d399;
-    padding: 12px 20px; border-radius: 12px; font-size: 13px; font-weight: 500;
-    z-index: 9999; transition: transform 0.3s cubic-bezier(0.16,1,0.3,1);
-    white-space: nowrap; pointer-events: none;
-  }
-  .sub-toast.show { transform: translateX(-50%) translateY(0); }
+ /* Toast */
+ .sub-toast {
+  position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%) translateY(60px);
+  background: #1a1d27; border: 1px solid rgba(52,211,153,0.3); color: #34d399;
+  padding: 12px 20px; border-radius: 12px; font-size: 13px; font-weight: 500;
+  z-index: 9999; transition: transform 0.3s cubic-bezier(0.16,1,0.3,1);
+  white-space: nowrap; pointer-events: none;
+ }
+ .sub-toast.show { transform: translateX(-50%) translateY(0); }
 
-  /* ===== Mobile ===== */
-  @media (max-width: 880px) {
-    .content { padding: 24px 16px 40px; }
-    .usage-grid { grid-template-columns: 1fr; }
-    .plans-grid { grid-template-columns: 1fr; }
-  }
+ /* ===== Mobile ===== */
+ @media (max-width: 880px) {
+  .content { padding: 24px 16px 40px; }
+  .usage-grid { grid-template-columns: 1fr; }
+  .plans-grid { grid-template-columns: 1fr; }
+ }
 @keyframes rippleAnim{to{transform:scale(2);opacity:0;}}
 </style>
 </head>
@@ -210,117 +210,117 @@
 <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
 <aside class="sidebar" id="sidebar">
-  <div class="logo-area">
-    <a href="index.html" class="logo">
-      <img src="logo.svg" alt="Aquila AI" class="logo-img">
-      <span class="logo-text">Aquila AI</span>
-    </a>
-    <button class="sidebar-close" id="sidebarClose" aria-label="Close menu">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-    </button>
-  </div>
-  <button class="new-chat-btn" id="newChatBtn">
-    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-    New Chat
+ <div class="logo-area">
+  <a href="index.html" class="logo">
+   <img src="logo.svg" alt="Aquila AI" class="logo-img">
+   <span class="logo-text">Aquila AI</span>
+  </a>
+  <button class="sidebar-close" id="sidebarClose" aria-label="Close menu">
+   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
   </button>
-  <nav class="nav-section" id="navSection">
-    <div class="nav-label">Main</div>
-    <a href="home.html" class="nav-item">
-      <span class="nav-icon"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg></span>
-      Home
-      <span class="nav-badge" style="background:rgba(0,212,255,0.15);color:var(--accent)" id="reviewBadge"></span>
+ </div>
+ <button class="new-chat-btn" id="newChatBtn">
+  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+  New Chat
+ </button>
+ <nav class="nav-section" id="navSection">
+  <div class="nav-label">Main</div>
+  <a href="home.html" class="nav-item">
+   <span class="nav-icon"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg></span>
+   Home
+   <span class="nav-badge" style="background:rgba(0,212,255,0.15);color:var(--accent)" id="reviewBadge"></span>
+  </a>
+  <a href="chat.html" class="nav-item">
+   <span class="nav-icon"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg></span>
+   Chat
+  </a>
+  <a href="analyze.html" class="nav-item">
+   <span class="nav-icon"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.35-4.35"/><path d="M11 8v6M8 11h6"/></svg></span>
+   Analyze
+  </a>
+  <a href="study-session.html" class="nav-item">
+   <span class="nav-icon"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/></svg></span>
+   Study Session
+   <span class="nav-badge green">New</span>
+  </a>
+  <a href="planner.html" class="nav-item">
+   <span class="nav-icon"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M3 10h18M8 2v4M16 2v4"/></svg></span>
+   Study Planner
+  </a>
+  <div class="nav-label">Community</div>
+  <div class="nav-group">
+   <div class="nav-group-toggle nav-item" onclick="toggleNavGroup(this)">
+    <span class="nav-icon"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></span>
+    Community
+    <span class="nav-group-chevron">▼</span>
+   </div>
+   <div class="nav-group-children open">
+    <a href="beyond-marks.html" class="nav-item nav-group-item">
+     Beyond Marks
+     <span class="nav-badge purple">New</span>
     </a>
-    <a href="chat.html" class="nav-item">
-      <span class="nav-icon"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg></span>
-      Chat
+    <a href="student-invoice.html" class="nav-item nav-group-item">
+     Community Board
     </a>
-    <a href="analyze.html" class="nav-item">
-      <span class="nav-icon"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.35-4.35"/><path d="M11 8v6M8 11h6"/></svg></span>
-      Analyze
-    </a>
-    <a href="study-session.html" class="nav-item">
-      <span class="nav-icon"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/></svg></span>
-      Study Session
-      <span class="nav-badge green">New</span>
-    </a>
-    <a href="planner.html" class="nav-item">
-      <span class="nav-icon"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M3 10h18M8 2v4M16 2v4"/></svg></span>
-      Study Planner
-    </a>
-    <div class="nav-label">Community</div>
-    <div class="nav-group">
-      <div class="nav-group-toggle nav-item" onclick="toggleNavGroup(this)">
-        <span class="nav-icon"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></span>
-        Community
-        <span class="nav-group-chevron">▼</span>
-      </div>
-      <div class="nav-group-children open">
-        <a href="beyond-marks.html" class="nav-item nav-group-item">
-          Beyond Marks
-          <span class="nav-badge purple">New</span>
-        </a>
-        <a href="student-invoice.html" class="nav-item nav-group-item">
-          Community Board
-        </a>
-      </div>
-    </div>
+   </div>
+  </div>
 
-    <div class="nav-label">Account</div>
-    <a href="referral.html" class="nav-item">
-      <span class="nav-icon" style="color:var(--green)">
-        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-      </span>
-      Refer & Earn
-    </a>
-    <a href="subscription.html" class="upgrade-nav-btn active">
-      <span class="nav-icon" style="color:var(--accent2)">
-        <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-      </span>
-      Subscription
-    </a>
-    <a href="profile.html" class="nav-item">
-      <span class="nav-icon"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span>
-      Profile
-    </a>
-    <a href="settings.html" class="nav-item">
-      <span class="nav-icon"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.6 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.6a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></span>
-      Settings
-    </a>
-  </nav>
-  <!-- Compact real syllabus + AIConsole — low height -->
-  <div style="padding:8px 10px 0;">
-    <div id="syllabusCard" style="background:linear-gradient(135deg, #0f172a 0%, #1e293b 100%);border:1px solid var(--border);border-radius:10px;padding:10px 12px;display:flex;align-items:center;gap:10px;min-height:52px;">
-      <div style="width:32px;height:32px;border-radius:8px;background:rgba(16,185,129,0.14);display:grid;place-items:center;flex-shrink:0;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="1.7"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
-      <div style="flex:1;min-width:0;">
-        <div style="font-size:11px;font-weight:600;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" id="syllabusLabel">Upload syllabus</div>
-        <div style="font-size:10px;color:rgba(255,255,255,0.55);" id="syllabusSub">JPG, PNG, PDF — personalises plan</div>
-      </div>
-      <input type="file" id="syllabusFile" accept=".jpg,.jpeg,.png,.pdf" hidden />
-      <button id="syllabusUploadBtn" style="background:#10b981;color:#fff;border:none;border-radius:999px;padding:6px 12px;font-size:11px;font-weight:600;cursor:pointer;flex-shrink:0;">Upload</button>
-    </div>
-    <div id="syllabusProgress" style="display:none;margin-top:6px;font-size:10px;color:var(--text-muted);"></div>
+  <div class="nav-label">Account</div>
+  <a href="referral.html" class="nav-item">
+   <span class="nav-icon" style="color:var(--green)">
+    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+   </span>
+   Refer & Earn
+  </a>
+  <a href="subscription.html" class="upgrade-nav-btn active">
+   <span class="nav-icon" style="color:var(--accent2)">
+    <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+   </span>
+   Subscription
+  </a>
+  <a href="profile.html" class="nav-item">
+   <span class="nav-icon"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span>
+   Profile
+  </a>
+  <a href="settings.html" class="nav-item">
+   <span class="nav-icon"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.6 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.6a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></span>
+   Settings
+  </a>
+ </nav>
+ <!-- Compact real syllabus + AIConsole — low height -->
+ <div style="padding:8px 10px 0;">
+  <div id="syllabusCard" style="background:linear-gradient(135deg, #0f172a 0%, #1e293b 100%);border:1px solid var(--border);border-radius:10px;padding:10px 12px;display:flex;align-items:center;gap:10px;min-height:52px;">
+   <div style="width:32px;height:32px;border-radius:8px;background:rgba(16,185,129,0.14);display:grid;place-items:center;flex-shrink:0;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="1.7"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
+   <div style="flex:1;min-width:0;">
+    <div style="font-size:11px;font-weight:600;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" id="syllabusLabel">Upload syllabus</div>
+    <div style="font-size:10px;color:rgba(255,255,255,0.55);" id="syllabusSub">JPG, PNG, PDF — personalises plan</div>
+   </div>
+   <input type="file" id="syllabusFile" accept=".jpg,.jpeg,.png,.pdf" hidden />
+   <button id="syllabusUploadBtn" style="background:#10b981;color:#fff;border:none;border-radius:999px;padding:6px 12px;font-size:11px;font-weight:600;cursor:pointer;flex-shrink:0;">Upload</button>
   </div>
-  <div style="padding:8px 10px;">
-    <div style="background:linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);border:1px solid var(--border);border-radius:10px;padding:10px 12px;display:flex;align-items:center;gap:10px;min-height:52px;position:relative;overflow:hidden;">
-      <div style="position:absolute;inset:0;background:radial-gradient(200px 80px at 85% 100%, rgba(37,99,235,0.18), transparent 60%);pointer-events:none;"></div>
-      <div style="width:32px;height:32px;border-radius:8px;background:rgba(37,99,235,0.15);display:grid;place-items:center;flex-shrink:0;position:relative;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#60a5fa" stroke-width="1.7"><path d="M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8z"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="M4.93 4.93l1.41 1.41"/><path d="M17.66 17.66l1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="M6.34 17.66l-1.41 1.41"/><path d="M19.07 4.93l-1.41 1.41"/></svg></div>
-      <div style="flex:1;min-width:0;position:relative;">
-        <div style="font-size:11px;font-weight:700;color:#fff;">AIConsole</div>
-        <div style="font-size:10px;color:rgba(255,255,255,0.55);">Study assistant</div>
-      </div>
-      <button onclick="window.location.href='chat.html'" style="background:#2563eb;color:#fff;border:none;border-radius:999px;padding:6px 12px;font-size:11px;font-weight:600;cursor:pointer;flex-shrink:0;position:relative;">Ask</button>
-    </div>
+  <div id="syllabusProgress" style="display:none;margin-top:6px;font-size:10px;color:var(--text-muted);"></div>
+ </div>
+ <div style="padding:8px 10px;">
+  <div style="background:linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);border:1px solid var(--border);border-radius:10px;padding:10px 12px;display:flex;align-items:center;gap:10px;min-height:52px;position:relative;overflow:hidden;">
+   <div style="position:absolute;inset:0;background:radial-gradient(200px 80px at 85% 100%, rgba(37,99,235,0.18), transparent 60%);pointer-events:none;"></div>
+   <div style="width:32px;height:32px;border-radius:8px;background:rgba(37,99,235,0.15);display:grid;place-items:center;flex-shrink:0;position:relative;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#60a5fa" stroke-width="1.7"><path d="M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8z"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="M4.93 4.93l1.41 1.41"/><path d="M17.66 17.66l1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="M6.34 17.66l-1.41 1.41"/><path d="M19.07 4.93l-1.41 1.41"/></svg></div>
+   <div style="flex:1;min-width:0;position:relative;">
+    <div style="font-size:11px;font-weight:700;color:#fff;">AIConsole</div>
+    <div style="font-size:10px;color:rgba(255,255,255,0.55);">Study assistant</div>
+   </div>
+   <button onclick="window.location.href='chat.html'" style="background:#2563eb;color:#fff;border:none;border-radius:999px;padding:6px 12px;font-size:11px;font-weight:600;cursor:pointer;flex-shrink:0;position:relative;">Ask</button>
   </div>
-  <div class="sidebar-bottom">
-    <button class="signout-btn" id="signOutBtn">Sign out</button>
-    <div class="user-card">
-      <div class="avatar" id="userAvatar">G</div>
-      <div class="user-info">
-        <div class="user-name" id="userName">Guest</div>
-        <div class="user-plan" id="userPlan">Free Plan</div>
-      </div>
-    </div>
+ </div>
+ <div class="sidebar-bottom">
+  <button class="signout-btn" id="signOutBtn">Sign out</button>
+  <div class="user-card">
+   <div class="avatar" id="userAvatar">G</div>
+   <div class="user-info">
+    <div class="user-name" id="userName">Guest</div>
+    <div class="user-plan" id="userPlan">Free Plan</div>
+   </div>
   </div>
+ </div>
 </aside>
 
 <!-- Real syllabus upload — stores metadata in Firestore, no fake showpiece -->
@@ -335,455 +335,455 @@ const label = document.getElementById("syllabusLabel");
 const sub = document.getElementById("syllabusSub");
 function toast(msg){ const t=document.createElement("div"); t.textContent=msg; t.style.cssText="position:fixed;bottom:16px;left:50%;transform:translateX(-50%);background:#0f172a;color:#fff;border:1px solid var(--border);padding:8px 14px;border-radius:999px;font-size:12px;z-index:9999;"; document.body.appendChild(t); setTimeout(()=>t.remove(),2500); }
 if(btn && input){
-  btn.addEventListener("click", ()=> input.click());
-  // also clicking card triggers upload (except button)
-  document.getElementById("syllabusCard")?.addEventListener("click", (e)=>{ if(e.target===btn||e.target===input) return; input.click(); });
-  input.addEventListener("change", async ()=>{
-    const f = input.files?.[0];
-    if(!f) return;
-    const allowed = ["application/pdf","image/jpeg","image/png","image/jpg"];
-    if(!allowed.includes(f.type) && !f.name.match(/\.(pdf|jpe?g|png)$/i)){ toast("Only JPG, PNG, PDF"); input.value=""; return; }
-    if(f.size>8*1024*1024){ toast("Max 8MB"); input.value=""; return; }
-    const user = auth?.currentUser;
-    if(!user){ toast("Please sign in to upload your syllabus"); return; }
-    try { await user.getIdToken(true); } catch(e) { console.warn("Token refresh failed", e); }
-    if(prog){ prog.style.display="block"; prog.textContent = `Uploading ${f.name}…`; }
-    btn.disabled=true; btn.textContent="…";
-    try{
-      // Light parse: read first 4k as text snippet for personalisation (client-side)
-      let snippet = "";
-      try{
-        if(f.type==="application/pdf"){
-          snippet = `[PDF ${f.name} ${Math.round(f.size/1024)}KB] — will personalise after server parse`;
-        } else {
-          snippet = await new Promise(res=>{
-            const r=new FileReader(); r.onload=()=>res(String(r.result).slice(0,3000)); r.onerror=()=>res(""); r.readAsText(f.slice(0,8192));
-          });
-          if(!snippet) snippet = `[Image ${f.name}]`;
-        }
-      }catch{ snippet=""; }
-      const id = Date.now().toString(36)+Math.random().toString(36).slice(2,6);
-      const ref = doc(collection(db, "users", user.uid, "syllabus"), id);
-      await setDoc(ref, { fileName:f.name, fileType:f.type||"unknown", fileSize:f.size, snippet: snippet.slice(0,4000), uploadedAt: serverTimestamp(), status:"ready" });
-      // Mirror to learning profile for personalisation
-      try{
-        const profRef = doc(db, "users", user.uid, "learning", "profile");
-        const { getDoc } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
-        const s = await getDoc(profRef);
-        const cur = s.exists()? s.data(): {};
-        await setDoc(profRef, { syllabus:{ fileName:f.name, uploadedAt: new Date().toISOString(), status:"ready" }, onboardingComplete: cur.onboardingComplete ?? false, updatedAt: serverTimestamp() }, { merge:true });
-      }catch{}
-      try{ await emitLearningEvent(db, user.uid, "syllabus_uploaded", { source:"syllabus", subject:"syllabus", topic:f.name, payload:{ fileName:f.name, fileType:f.type, fileSize:f.size } }); }catch{}
-      if(label) label.textContent = f.name.slice(0,28);
-      if(sub) sub.textContent = "Personalised ✓";
-      if(prog) prog.textContent = "Saved — personalising your plan";
-      toast("Syllabus saved — personalising ✓");
-      // Refresh hub subtitle if on home
-      setTimeout(()=>{ prog.style.display="none"; }, 2500);
-    }catch(e){
-      console.error("Syllabus upload error:", e);
-      let msg = e.message || "Unknown error";
-      if(msg.includes("Missing or insufficient permissions") || msg.includes("permission")){
-        msg = "We couldn't upload your syllabus. Please check your connection and try signing in again.";
-        try { await auth.currentUser?.getIdToken(true); } catch {}
-      } else if(msg.includes("network") || msg.includes("offline")){
-        msg = "No internet connection. Please check your connection and try again.";
-      }
-      if(prog) prog.textContent = msg;
-      toast(msg);
-    } finally { btn.disabled=false; btn.textContent="Upload"; input.value=""; }
-  });
-  // Show existing syllabus name on load
-  auth?.onAuthStateChanged?.(async (u)=>{
-    if(!u) return;
-    try{
-      const snap= await getDocs(collection(db, "users", u.uid, "syllabus"));
-      if(!snap.empty){
-        const d=snap.docs.sort((a,b)=> (b.data().uploadedAt?.toMillis?.()||0)-(a.data().uploadedAt?.toMillis?.()||0))[0]?.data();
-        if(d?.fileName && label){ label.textContent=d.fileName.slice(0,28); if(sub) sub.textContent="Personalising • tap to update"; }
-      }
-    }catch{}
-  });
+ btn.addEventListener("click", ()=> input.click());
+ // also clicking card triggers upload (except button)
+ document.getElementById("syllabusCard")?.addEventListener("click", (e)=>{ if(e.target===btn||e.target===input) return; input.click(); });
+ input.addEventListener("change", async ()=>{
+  const f = input.files?.[0];
+  if(!f) return;
+  const allowed = ["application/pdf","image/jpeg","image/png","image/jpg"];
+  if(!allowed.includes(f.type) && !f.name.match(/\.(pdf|jpe?g|png)$/i)){ toast("Only JPG, PNG, PDF"); input.value=""; return; }
+  if(f.size>8*1024*1024){ toast("Max 8MB"); input.value=""; return; }
+  const user = auth?.currentUser;
+  if(!user){ toast("Please sign in to upload your syllabus"); return; }
+  try { await user.getIdToken(true); } catch(e) { console.warn("Token refresh failed", e); }
+  if(prog){ prog.style.display="block"; prog.textContent = `Uploading ${f.name}…`; }
+  btn.disabled=true; btn.textContent="…";
+  try{
+   // Light parse: read first 4k as text snippet for personalisation (client-side)
+   let snippet = "";
+   try{
+    if(f.type==="application/pdf"){
+     snippet = `[PDF ${f.name} ${Math.round(f.size/1024)}KB] — will personalise after server parse`;
+    } else {
+     snippet = await new Promise(res=>{
+      const r=new FileReader(); r.onload=()=>res(String(r.result).slice(0,3000)); r.onerror=()=>res(""); r.readAsText(f.slice(0,8192));
+     });
+     if(!snippet) snippet = `[Image ${f.name}]`;
+    }
+   }catch{ snippet=""; }
+   const id = Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+   const ref = doc(collection(db, "users", user.uid, "syllabus"), id);
+   await setDoc(ref, { fileName:f.name, fileType:f.type||"unknown", fileSize:f.size, snippet: snippet.slice(0,4000), uploadedAt: serverTimestamp(), status:"ready" });
+   // Mirror to learning profile for personalisation
+   try{
+    const profRef = doc(db, "users", user.uid, "learning", "profile");
+    const { getDoc } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
+    const s = await getDoc(profRef);
+    const cur = s.exists()? s.data(): {};
+    await setDoc(profRef, { syllabus:{ fileName:f.name, uploadedAt: new Date().toISOString(), status:"ready" }, onboardingComplete: cur.onboardingComplete ?? false, updatedAt: serverTimestamp() }, { merge:true });
+   }catch{}
+   try{ await emitLearningEvent(db, user.uid, "syllabus_uploaded", { source:"syllabus", subject:"syllabus", topic:f.name, payload:{ fileName:f.name, fileType:f.type, fileSize:f.size } }); }catch{}
+   if(label) label.textContent = f.name.slice(0,28);
+   if(sub) sub.textContent = "Personalised ✓";
+   if(prog) prog.textContent = "Saved — personalising your plan";
+   toast("Syllabus saved — personalising ✓");
+   // Refresh hub subtitle if on home
+   setTimeout(()=>{ prog.style.display="none"; }, 2500);
+  }catch(e){
+   console.error("Syllabus upload error:", e);
+   let msg = e.message || "Unknown error";
+   if(msg.includes("Missing or insufficient permissions") || msg.includes("permission")){
+    msg = "We couldn't upload your syllabus. Please check your connection and try signing in again.";
+    try { await auth.currentUser?.getIdToken(true); } catch {}
+   } else if(msg.includes("network") || msg.includes("offline")){
+    msg = "No internet connection. Please check your connection and try again.";
+   }
+   if(prog) prog.textContent = msg;
+   toast(msg);
+  } finally { btn.disabled=false; btn.textContent="Upload"; input.value=""; }
+ });
+ // Show existing syllabus name on load
+ auth?.onAuthStateChanged?.(async (u)=>{
+  if(!u) return;
+  try{
+   const snap= await getDocs(collection(db, "users", u.uid, "syllabus"));
+   if(!snap.empty){
+    const d=snap.docs.sort((a,b)=> (b.data().uploadedAt?.toMillis?.()||0)-(a.data().uploadedAt?.toMillis?.()||0))[0]?.data();
+    if(d?.fileName && label){ label.textContent=d.fileName.slice(0,28); if(sub) sub.textContent="Personalising • tap to update"; }
+   }
+  }catch{}
+ });
 }
 </script>
 
 <main class="main">
-  <div class="topbar" style="background:var(--bg-base);border-bottom:1px solid var(--border-subtle);">
-    <div class="topbar-left">
-      <button class="menu-btn" id="menuBtn" aria-label="Open menu">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
-      </button>
-      <div class="topbar-mobile-logo"><img src="logo.svg" alt="Aquila AI" class="logo-img"><span class="logo-text">Aquila AI</span></div>
-      <div style="display:none;" class="model-selector"><span class="model-dot"></span>Aquila AI</div>
-      <div id="topbarGreeting" style="font-size:14px;font-weight:500;color:var(--text-secondary);margin-left:8px;">Hi, <span id="greetingName">there</span></div>
-    </div>
-    <div style="flex:1;display:flex;justify-content:center;max-width:480px;margin:0 16px;" class="topbar-center">
-      <div style="position:relative;width:100%;max-width:360px;">
-        <input id="topbarSearch" placeholder="search" style="width:100%;height:36px;background:var(--bg-card);border:1px solid var(--border);border-radius:999px;padding:0 36px 0 14px;font-size:13px;color:var(--text-primary);outline:none;" />
-        <svg style="position:absolute;right:10px;top:50%;transform:translateY(-50%);width:16px;height:16px;color:var(--text-muted);" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.35-4.35"/></svg>
-      </div>
-    </div>
-    <div style="display:flex;align-items:center;gap:12px;" class="topbar-right">
-      <button style="width:36px;height:36px;border-radius:999px;background:var(--bg-card);border:1px solid var(--border);display:grid;place-items:center;color:var(--text-muted);position:relative;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 8a6 6 0 0 1 12 0c0 7-6 11-6 11s-6-4-6-11"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg><span style="position:absolute;top:6px;right:7px;width:7px;height:7px;background:var(--green);border-radius:50%;border:1px solid var(--bg-card);"></span></button>
-      <div style="display:flex;align-items:center;gap:8px;cursor:pointer;">
-        <img id="topbarAvatar" src="" data-pending-avatar="1" alt="User" style="width:32px;height:32px;border-radius:50%;object-fit:cover;border:1px solid var(--border);" />
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--text-muted);"><path d="m6 9 6 6 6-6"/></svg>
-      </div>
-    </div>
+ <div class="topbar" style="background:var(--bg-base);border-bottom:1px solid var(--border-subtle);">
+  <div class="topbar-left">
+   <button class="menu-btn" id="menuBtn" aria-label="Open menu">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+   </button>
+   <div class="topbar-mobile-logo"><img src="logo.svg" alt="Aquila AI" class="logo-img"><span class="logo-text">Aquila AI</span></div>
+   <div style="display:none;" class="model-selector"><span class="model-dot"></span>Aquila AI</div>
+   <div id="topbarGreeting" style="font-size:14px;font-weight:500;color:var(--text-secondary);margin-left:8px;">Hi, <span id="greetingName">there</span></div>
   </div>
+  <div style="flex:1;display:flex;justify-content:center;max-width:480px;margin:0 16px;" class="topbar-center">
+   <div style="position:relative;width:100%;max-width:360px;">
+    <input id="topbarSearch" placeholder="search" style="width:100%;height:36px;background:var(--bg-card);border:1px solid var(--border);border-radius:999px;padding:0 36px 0 14px;font-size:13px;color:var(--text-primary);outline:none;" />
+    <svg style="position:absolute;right:10px;top:50%;transform:translateY(-50%);width:16px;height:16px;color:var(--text-muted);" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.35-4.35"/></svg>
+   </div>
+  </div>
+  <div style="display:flex;align-items:center;gap:12px;" class="topbar-right">
+   <button style="width:36px;height:36px;border-radius:999px;background:var(--bg-card);border:1px solid var(--border);display:grid;place-items:center;color:var(--text-muted);position:relative;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 8a6 6 0 0 1 12 0c0 7-6 11-6 11s-6-4-6-11"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg><span style="position:absolute;top:6px;right:7px;width:7px;height:7px;background:var(--green);border-radius:50%;border:1px solid var(--bg-card);"></span></button>
+   <div style="display:flex;align-items:center;gap:8px;cursor:pointer;">
+    <img id="topbarAvatar" src="" data-pending-avatar="1" alt="User" style="width:32px;height:32px;border-radius:50%;object-fit:cover;border:1px solid var(--border);" />
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--text-muted);"><path d="m6 9 6 6 6-6"/></svg>
+   </div>
+  </div>
+ </div>
 
-  <div class="content" id="mainContent">
-    <!-- Loading state -->
-    <div class="sub-loading" id="loadingState">
-      <div class="sub-loading-dot"></div>
-      <div class="sub-loading-dot"></div>
-      <div class="sub-loading-dot"></div>
-    </div>
+ <div class="content" id="mainContent">
+  <!-- Loading state -->
+  <div class="sub-loading" id="loadingState">
+   <div class="sub-loading-dot"></div>
+   <div class="sub-loading-dot"></div>
+   <div class="sub-loading-dot"></div>
   </div>
+ </div>
 </main>
 
 <div class="sub-toast" id="subToast"></div>
 
 <script>
-  /* ── Mobile sidebar ── */
-  const sidebar        = document.getElementById('sidebar');
-  const sidebarOverlay = document.getElementById('sidebarOverlay');
-  const menuBtn        = document.getElementById('menuBtn');
-  const sidebarCloseBtn= document.getElementById('sidebarClose');
-  function openSidebar()  { sidebar.classList.add('open'); sidebarOverlay.classList.add('open'); menuBtn.setAttribute('aria-expanded', 'true'); document.body.style.overflow = 'hidden'; }
-  function closeSidebar() { sidebar.classList.remove('open'); sidebarOverlay.classList.remove('open'); menuBtn.setAttribute('aria-expanded', 'false'); document.body.style.overflow = ''; }
-  menuBtn.addEventListener('click', openSidebar);
-  sidebarCloseBtn.addEventListener('click', closeSidebar);
-  sidebarOverlay.addEventListener('click', closeSidebar);
-  document.querySelectorAll('.nav-item:not(.nav-group-toggle)').forEach((link) => {
-    link.addEventListener('click', () => { if (window.innerWidth <= 880) closeSidebar(); });
+ /* ── Mobile sidebar ── */
+ const sidebar    = document.getElementById('sidebar');
+ const sidebarOverlay = document.getElementById('sidebarOverlay');
+ const menuBtn    = document.getElementById('menuBtn');
+ const sidebarCloseBtn= document.getElementById('sidebarClose');
+ function openSidebar() { sidebar.classList.add('open'); sidebarOverlay.classList.add('open'); menuBtn.setAttribute('aria-expanded', 'true'); document.body.style.overflow = 'hidden'; }
+ function closeSidebar() { sidebar.classList.remove('open'); sidebarOverlay.classList.remove('open'); menuBtn.setAttribute('aria-expanded', 'false'); document.body.style.overflow = ''; }
+ menuBtn.addEventListener('click', openSidebar);
+ sidebarCloseBtn.addEventListener('click', closeSidebar);
+ sidebarOverlay.addEventListener('click', closeSidebar);
+ document.querySelectorAll('.nav-item:not(.nav-group-toggle)').forEach((link) => {
+  link.addEventListener('click', () => { if (window.innerWidth <= 880) closeSidebar(); });
+ });
+ function toggleNavGroup(el) {
+  el.classList.toggle('open');
+  const children = el.nextElementSibling;
+  if (children) children.classList.toggle('open');
+ }
+
+ /* ── Toast ── */
+ function showToast(msg, isError = false) {
+  const t = document.getElementById('subToast');
+  t.textContent = msg;
+  t.style.borderColor = isError ? 'rgba(255,107,107,0.3)' : 'rgba(52,211,153,0.3)';
+  t.style.color = isError ? '#ff6b6b' : '#34d399';
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3200);
+ }
+
+ /* ── FAQ toggle ── */
+ function toggleFaq(el) {
+  const item = el.closest('.faq-item');
+  item.classList.toggle('open');
+ }
+
+ /* ── Contact options toggle ── */
+ function toggleContact() {
+  const box = document.getElementById('contactOptions');
+  const btn = document.getElementById('requestBtn');
+  if (box.classList.contains('show')) {
+   box.classList.remove('show');
+  } else {
+   box.classList.add('show');
+   btn.classList.add('requested');
+   btn.innerHTML = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Request sent — choose contact method`;
+  }
+ }
+
+ /* ── Contact form submit ── */
+ function submitContactForm() {
+  const name = document.getElementById('cfName').value.trim();
+  const email = document.getElementById('cfEmail').value.trim();
+  const msg = document.getElementById('cfMsg').value.trim();
+  if (!name || !email) { showToast('Please enter your name and email.', true); return; }
+  // Only record (and report success) for an actually signed-in, verified user.
+  import('./firebase-config.js').then(async ({ auth }) => {
+   const user = auth && auth.currentUser;
+   if (!user || !user.emailVerified) {
+    showToast('Please sign in and verify your email to submit a Pro request.', true);
+    return;
+   }
+   const { requestProAccess } = await import('./subscription.js');
+   try {
+    await requestProAccess(user.uid, user.email);
+    showToast('✓ Request submitted! We\'ll reach out soon.');
+    document.getElementById('cfName').value = '';
+    document.getElementById('cfEmail').value = '';
+    document.getElementById('cfMsg').value = '';
+   } catch (e) {
+    console.error(e);
+    showToast('Could not submit your request. Please try again.', true);
+   }
   });
-  function toggleNavGroup(el) {
-    el.classList.toggle('open');
-    const children = el.nextElementSibling;
-    if (children) children.classList.toggle('open');
-  }
-
-  /* ── Toast ── */
-  function showToast(msg, isError = false) {
-    const t = document.getElementById('subToast');
-    t.textContent = msg;
-    t.style.borderColor = isError ? 'rgba(255,107,107,0.3)' : 'rgba(52,211,153,0.3)';
-    t.style.color = isError ? '#ff6b6b' : '#34d399';
-    t.classList.add('show');
-    setTimeout(() => t.classList.remove('show'), 3200);
-  }
-
-  /* ── FAQ toggle ── */
-  function toggleFaq(el) {
-    const item = el.closest('.faq-item');
-    item.classList.toggle('open');
-  }
-
-  /* ── Contact options toggle ── */
-  function toggleContact() {
-    const box = document.getElementById('contactOptions');
-    const btn = document.getElementById('requestBtn');
-    if (box.classList.contains('show')) {
-      box.classList.remove('show');
-    } else {
-      box.classList.add('show');
-      btn.classList.add('requested');
-      btn.innerHTML = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Request sent — choose contact method`;
-    }
-  }
-
-  /* ── Contact form submit ── */
-  function submitContactForm() {
-    const name = document.getElementById('cfName').value.trim();
-    const email = document.getElementById('cfEmail').value.trim();
-    const msg = document.getElementById('cfMsg').value.trim();
-    if (!name || !email) { showToast('Please enter your name and email.', true); return; }
-    // Only record (and report success) for an actually signed-in, verified user.
-    import('./firebase-config.js').then(async ({ auth }) => {
-      const user = auth && auth.currentUser;
-      if (!user || !user.emailVerified) {
-        showToast('Please sign in and verify your email to submit a Pro request.', true);
-        return;
-      }
-      const { requestProAccess } = await import('./subscription.js');
-      try {
-        await requestProAccess(user.uid, user.email);
-        showToast('✓ Request submitted! We\'ll reach out soon.');
-        document.getElementById('cfName').value = '';
-        document.getElementById('cfEmail').value = '';
-        document.getElementById('cfMsg').value = '';
-      } catch (e) {
-        console.error(e);
-        showToast('Could not submit your request. Please try again.', true);
-      }
-    });
-  }
+ }
 </script>
 
 <script type="module">
-  import { auth, db } from './firebase-config.js';
-  import { onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
-  import { onUserReady, getUserPlan, getUsage, requestProAccess, PLANS } from './subscription.js';
+ import { auth, db } from './firebase-config.js';
+ import { onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
+ import { onUserReady, getUserPlan, getUsage, requestProAccess, PLANS } from './subscription.js';
 
-  function pct(used, limit) {
-    if (limit === Infinity) return 100;
-    return Math.min(100, Math.round((used / limit) * 100));
-  }
+ function pct(used, limit) {
+  if (limit === Infinity) return 100;
+  return Math.min(100, Math.round((used / limit) * 100));
+ }
 
-  function statusClass(p) {
-    if (p >= 100) return 'full';
-    if (p >= 75) return 'warn';
-    return 'ok';
-  }
+ function statusClass(p) {
+  if (p >= 100) return 'full';
+  if (p >= 75) return 'warn';
+  return 'ok';
+ }
 
-  function statusText(used, limit, unit = '') {
-    if (limit === Infinity) return 'Unlimited';
-    const rem = limit - used;
-    if (rem <= 0) return 'Limit reached';
-    return `${rem} ${unit} remaining today`;
-  }
+ function statusText(used, limit, unit = '') {
+  if (limit === Infinity) return 'Unlimited';
+  const rem = limit - used;
+  if (rem <= 0) return 'Limit reached';
+  return `${rem} ${unit} remaining today`;
+ }
 
-  function renderPage({ user, plan, usage }) {
-    const limits = PLANS[plan];
-    const isPro = plan === 'pro';
+ function renderPage({ user, plan, usage }) {
+  const limits = PLANS[plan];
+  const isPro = plan === 'pro';
 
-    const chatPct = pct(usage.dailyChatCount, limits.chatLimit);
-    const analysisPct = pct(usage.dailyAnalysisCount, limits.analysisLimit);
-    const plannerPct = pct(usage.plannerUsageMinutes, limits.plannerMinutes);
+  const chatPct = pct(usage.dailyChatCount, limits.chatLimit);
+  const analysisPct = pct(usage.dailyAnalysisCount, limits.analysisLimit);
+  const plannerPct = pct(usage.plannerUsageMinutes, limits.plannerMinutes);
 
-    const chatLimit = limits.chatLimit === Infinity ? '∞' : limits.chatLimit;
-    const analysisLimit = limits.analysisLimit === Infinity ? '∞' : limits.analysisLimit;
-    const plannerLimit = limits.plannerMinutes === Infinity ? '∞' : limits.plannerMinutes;
+  const chatLimit = limits.chatLimit === Infinity ? '∞' : limits.chatLimit;
+  const analysisLimit = limits.analysisLimit === Infinity ? '∞' : limits.analysisLimit;
+  const plannerLimit = limits.plannerMinutes === Infinity ? '∞' : limits.plannerMinutes;
 
-    document.getElementById('mainContent').innerHTML = `
-      <div class="page-header">
-        <h1>Your <span>Subscription</span></h1>
-        <p>Manage your plan and track daily usage across Aquila AI.</p>
+  document.getElementById('mainContent').innerHTML = `
+   <div class="page-header">
+    <h1>Your <span>Subscription</span></h1>
+    <p>Manage your plan and track daily usage across Aquila AI.</p>
+   </div>
+
+   <!-- Usage -->
+   <div class="section-label">Today's Usage</div>
+   <div class="usage-grid">
+    <div class="usage-card">
+     <div class="usage-card-top">
+      <div class="usage-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg></div>
+      ${isPro ? '<span class="unlimited-pill">∞ Unlimited</span>' : `<span class="usage-fraction"><span class="used">${usage.dailyChatCount}</span>/${chatLimit}</span>`}
+     </div>
+     <div class="usage-label">AI Chats</div>
+     ${isPro ? '' : `<div class="usage-bar"><div class="usage-bar-fill${chatPct >= 100 ? ' full' : ''}" style="width:${chatPct}%"></div></div>`}
+     <div class="usage-status ${isPro ? 'ok' : statusClass(chatPct)}">${statusText(usage.dailyChatCount, limits.chatLimit, 'chats')}</div>
+    </div>
+    <div class="usage-card">
+     <div class="usage-card-top">
+      <div class="usage-icon violet"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.35-4.35"/></svg></div>
+      ${isPro ? '<span class="unlimited-pill">∞ Unlimited</span>' : `<span class="usage-fraction"><span class="used" style="color:var(--accent2)">${usage.dailyAnalysisCount}</span>/${analysisLimit}</span>`}
+     </div>
+     <div class="usage-label">AI Analyses</div>
+     ${isPro ? '' : `<div class="usage-bar"><div class="usage-bar-fill violet${analysisPct >= 100 ? ' full' : ''}" style="width:${analysisPct}%"></div></div>`}
+     <div class="usage-status ${isPro ? 'ok' : statusClass(analysisPct)}">${statusText(usage.dailyAnalysisCount, limits.analysisLimit, 'analyses')}</div>
+    </div>
+    <div class="usage-card">
+     <div class="usage-card-top">
+      <div class="usage-icon coral"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M3 10h18M8 2v4M16 2v4"/></svg></div>
+      ${isPro ? '<span class="unlimited-pill">∞ Unlimited</span>' : `<span class="usage-fraction"><span class="used" style="color:var(--accent3)">${usage.plannerUsageMinutes}</span>/${plannerLimit} min</span>`}
+     </div>
+     <div class="usage-label">Study Planner</div>
+     ${isPro ? '' : `<div class="usage-bar"><div class="usage-bar-fill${plannerPct >= 100 ? ' full' : ''}" style="width:${plannerPct}%; background:linear-gradient(90deg,var(--accent3),#ff8f8f)"></div></div>`}
+     <div class="usage-status ${isPro ? 'ok' : statusClass(plannerPct)}">${statusText(usage.plannerUsageMinutes, limits.plannerMinutes, 'min')}</div>
+    </div>
+   </div>
+
+   <!-- Plans -->
+   <div class="section-label">Plans</div>
+   <div class="plans-grid">
+
+    <!-- Free -->
+    <div class="plan-card ${!isPro ? 'current-free' : ''}">
+     <div class="plan-header">
+      <div class="plan-name">Starter</div>
+      <div class="plan-title">Free</div>
+      <div class="plan-price"><strong>₹0</strong> <span class="per">/ forever</span></div>
+     </div>
+     <div class="plan-divider"></div>
+     <ul class="plan-features">
+      <li class="plan-feature"><span class="check cyan"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></span><span class="feat-text"><strong>20 AI Chats/day</strong><span>Resets every 24 hours</span></span></li>
+      <li class="plan-feature"><span class="check cyan"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></span><span class="feat-text"><strong>20 AI Analyses/day</strong><span>Quiz & performance analysis</span></span></li>
+      <li class="plan-feature"><span class="check cyan"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></span><span class="feat-text"><strong>30 min Study Planner/day</strong><span>Plan your daily schedule</span></span></li>
+      <li class="plan-feature"><span class="check cyan"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></span><span class="feat-text"><strong>Community access</strong><span>Join other JEE/NEET aspirants</span></span></li>
+     </ul>
+     <button class="plan-btn ${!isPro ? 'current' : 'request'}" ${!isPro ? 'disabled' : 'onclick="window.location.href=\'home.html\'"'}>
+      ${!isPro ? '✓ Your current plan' : 'Switch to Free'}
+     </button>
+    </div>
+
+    <!-- Pro -->
+    <div class="plan-card pro">
+     <div class="plan-ribbon">✨ Early Access</div>
+     <div class="plan-header">
+      <div class="plan-name">Premium</div>
+      <div class="plan-title pro-gradient">Aquila Pro</div>
+      <div class="plan-price"><strong>Free*</strong> <span class="per">during Early Access</span></div>
+     </div>
+     <div class="plan-divider"></div>
+     <ul class="plan-features">
+      <li class="plan-feature"><span class="check violet"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></span><span class="feat-text"><strong>Unlimited AI Chats</strong><span>No daily restrictions</span></span></li>
+      <li class="plan-feature"><span class="check violet"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></span><span class="feat-text"><strong>Unlimited AI Analyses</strong><span>Deep-dive any quiz anytime</span></span></li>
+      <li class="plan-feature"><span class="check violet"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></span><span class="feat-text"><strong>Unlimited Study Planner</strong><span>Build plans without limits</span></span></li>
+      <li class="plan-feature"><span class="check violet"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></span><span class="feat-text"><strong>Priority AI responses</strong><span>Faster, smarter answers</span></span></li>
+      <li class="plan-feature"><span class="check violet"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></span><span class="feat-text"><strong>Early access to new features</strong><span>Be the first to try everything</span></span></li>
+     </ul>
+     ${isPro ? `
+      <button class="plan-btn requested" disabled>✓ You have Aquila Pro</button>
+     ` : `
+      <button class="plan-btn request" id="requestBtn" onclick="toggleContact()">
+       ✨ Request Pro Access — Free
+      </button>
+      <div class="contact-options" id="contactOptions">
+       <div class="contact-label">Choose how to reach us</div>
+       <a href="https://discord.gg/vDvrJhUzud" target="_blank" class="contact-link">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057c.001.022.01.043.027.057a19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028c.462-.63.874-1.295 1.226-1.994a.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03z"/></svg>
+        <span>
+         <span class="cl-label">Join our Discord</span>
+         <span class="cl-sub">Message us directly for instant access</span>
+        </span>
+       </a>
+       <a href="mailto:hello@aquila.ai?subject=Pro Access Request&body=Hi, I'd like to request Aquila Pro access. My email is: ${user.email}" class="contact-link">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+        <span>
+         <span class="cl-label">Send an email</span>
+         <span class="cl-sub">aiaquilaoffical@gmail.com — we'll reply within 24h</span>
+        </span>
+       </a>
+       <div class="contact-divider"></div>
+       <div class="contact-label">Or fill this quick form</div>
+       <div class="contact-form">
+        <input id="cfName" type="text" placeholder="Your name" value="${user.displayName || ''}" />
+        <input id="cfEmail" type="email" placeholder="Your email" value="${user.email || ''}" />
+        <textarea id="cfMsg" rows="2" placeholder="Anything you'd like us to know? (optional)"></textarea>
+        <button class="contact-form-btn" onclick="submitContactForm()">Submit Request</button>
+       </div>
       </div>
+     `}
+    </div>
+   </div>
 
-      <!-- Usage -->
-      <div class="section-label">Today's Usage</div>
-      <div class="usage-grid">
-        <div class="usage-card">
-          <div class="usage-card-top">
-            <div class="usage-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg></div>
-            ${isPro ? '<span class="unlimited-pill">∞ Unlimited</span>' : `<span class="usage-fraction"><span class="used">${usage.dailyChatCount}</span>/${chatLimit}</span>`}
-          </div>
-          <div class="usage-label">AI Chats</div>
-          ${isPro ? '' : `<div class="usage-bar"><div class="usage-bar-fill${chatPct >= 100 ? ' full' : ''}" style="width:${chatPct}%"></div></div>`}
-          <div class="usage-status ${isPro ? 'ok' : statusClass(chatPct)}">${statusText(usage.dailyChatCount, limits.chatLimit, 'chats')}</div>
-        </div>
-        <div class="usage-card">
-          <div class="usage-card-top">
-            <div class="usage-icon violet"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.35-4.35"/></svg></div>
-            ${isPro ? '<span class="unlimited-pill">∞ Unlimited</span>' : `<span class="usage-fraction"><span class="used" style="color:var(--accent2)">${usage.dailyAnalysisCount}</span>/${analysisLimit}</span>`}
-          </div>
-          <div class="usage-label">AI Analyses</div>
-          ${isPro ? '' : `<div class="usage-bar"><div class="usage-bar-fill violet${analysisPct >= 100 ? ' full' : ''}" style="width:${analysisPct}%"></div></div>`}
-          <div class="usage-status ${isPro ? 'ok' : statusClass(analysisPct)}">${statusText(usage.dailyAnalysisCount, limits.analysisLimit, 'analyses')}</div>
-        </div>
-        <div class="usage-card">
-          <div class="usage-card-top">
-            <div class="usage-icon coral"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M3 10h18M8 2v4M16 2v4"/></svg></div>
-            ${isPro ? '<span class="unlimited-pill">∞ Unlimited</span>' : `<span class="usage-fraction"><span class="used" style="color:var(--accent3)">${usage.plannerUsageMinutes}</span>/${plannerLimit} min</span>`}
-          </div>
-          <div class="usage-label">Study Planner</div>
-          ${isPro ? '' : `<div class="usage-bar"><div class="usage-bar-fill${plannerPct >= 100 ? ' full' : ''}" style="width:${plannerPct}%; background:linear-gradient(90deg,var(--accent3),#ff8f8f)"></div></div>`}
-          <div class="usage-status ${isPro ? 'ok' : statusClass(plannerPct)}">${statusText(usage.plannerUsageMinutes, limits.plannerMinutes, 'min')}</div>
-        </div>
-      </div>
+   <!-- FAQ -->
+   <div class="section-label">Frequently Asked Questions</div>
+   <div class="faq-list">
+    <div class="faq-item">
+     <div class="faq-q" onclick="toggleFaq(this)">
+      When do daily limits reset?
+      <svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+     </div>
+     <div class="faq-a">All free plan limits reset every 24 hours at midnight. Your usage counter starts fresh each day automatically.</div>
+    </div>
+    <div class="faq-item">
+     <div class="faq-q" onclick="toggleFaq(this)">
+      Is Aquila Pro really free during Early Access?
+      <svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+     </div>
+     <div class="faq-a">Yes — Aquila Pro is completely free during our Early Access period. No credit card, no payment of any kind. We're giving early supporters unlimited access as a thank-you for helping us grow.</div>
+    </div>
+    <div class="faq-item">
+     <div class="faq-q" onclick="toggleFaq(this)">
+      How do I get Pro access?
+      <svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+     </div>
+     <div class="faq-a">Click "Request Pro Access" above and reach out via Discord, email, or the contact form. We'll manually upgrade your account within 24 hours. Pro access is granted by our team during Early Access.</div>
+    </div>
+    <div class="faq-item">
+     <div class="faq-q" onclick="toggleFaq(this)">
+      What exams does Aquila AI support?
+      <svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+     </div>
+     <div class="faq-a">Aquila AI is built specifically for Indian students preparing for JEE (Main & Advanced), NEET, and Board exams (Class 10 & 12). Our AI is tuned to the NCERT and JEE/NEET syllabi.</div>
+    </div>
+   </div>
+  `;
+ }
 
-      <!-- Plans -->
-      <div class="section-label">Plans</div>
-      <div class="plans-grid">
+ // Auth + data load — v2 null-safe + try/catch (fixes #720 + hard-refresh cache)
+ onAuthStateChanged(auth, async (user) => {
+  try {
+   if (!user) { window.location.href = 'login.html'; return; }
+   if (user && !user.emailVerified) { window.location.href = 'verify-email.html'; return; }
 
-        <!-- Free -->
-        <div class="plan-card ${!isPro ? 'current-free' : ''}">
-          <div class="plan-header">
-            <div class="plan-name">Starter</div>
-            <div class="plan-title">Free</div>
-            <div class="plan-price"><strong>₹0</strong> <span class="per">/ forever</span></div>
-          </div>
-          <div class="plan-divider"></div>
-          <ul class="plan-features">
-            <li class="plan-feature"><span class="check cyan"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></span><span class="feat-text"><strong>20 AI Chats/day</strong><span>Resets every 24 hours</span></span></li>
-            <li class="plan-feature"><span class="check cyan"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></span><span class="feat-text"><strong>20 AI Analyses/day</strong><span>Quiz & performance analysis</span></span></li>
-            <li class="plan-feature"><span class="check cyan"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></span><span class="feat-text"><strong>30 min Study Planner/day</strong><span>Plan your daily schedule</span></span></li>
-            <li class="plan-feature"><span class="check cyan"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></span><span class="feat-text"><strong>Community access</strong><span>Join other JEE/NEET aspirants</span></span></li>
-          </ul>
-          <button class="plan-btn ${!isPro ? 'current' : 'request'}" ${!isPro ? 'disabled' : 'onclick="window.location.href=\'home.html\'"'}>
-            ${!isPro ? '✓ Your current plan' : 'Switch to Free'}
-          </button>
-        </div>
-
-        <!-- Pro -->
-        <div class="plan-card pro">
-          <div class="plan-ribbon">✨ Early Access</div>
-          <div class="plan-header">
-            <div class="plan-name">Premium</div>
-            <div class="plan-title pro-gradient">Aquila Pro</div>
-            <div class="plan-price"><strong>Free*</strong> <span class="per">during Early Access</span></div>
-          </div>
-          <div class="plan-divider"></div>
-          <ul class="plan-features">
-            <li class="plan-feature"><span class="check violet"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></span><span class="feat-text"><strong>Unlimited AI Chats</strong><span>No daily restrictions</span></span></li>
-            <li class="plan-feature"><span class="check violet"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></span><span class="feat-text"><strong>Unlimited AI Analyses</strong><span>Deep-dive any quiz anytime</span></span></li>
-            <li class="plan-feature"><span class="check violet"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></span><span class="feat-text"><strong>Unlimited Study Planner</strong><span>Build plans without limits</span></span></li>
-            <li class="plan-feature"><span class="check violet"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></span><span class="feat-text"><strong>Priority AI responses</strong><span>Faster, smarter answers</span></span></li>
-            <li class="plan-feature"><span class="check violet"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></span><span class="feat-text"><strong>Early access to new features</strong><span>Be the first to try everything</span></span></li>
-          </ul>
-          ${isPro ? `
-            <button class="plan-btn requested" disabled>✓ You have Aquila Pro</button>
-          ` : `
-            <button class="plan-btn request" id="requestBtn" onclick="toggleContact()">
-              ✨ Request Pro Access — Free
-            </button>
-            <div class="contact-options" id="contactOptions">
-              <div class="contact-label">Choose how to reach us</div>
-              <a href="https://discord.gg/vDvrJhUzud" target="_blank" class="contact-link">
-                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057c.001.022.01.043.027.057a19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028c.462-.63.874-1.295 1.226-1.994a.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03z"/></svg>
-                <span>
-                  <span class="cl-label">Join our Discord</span>
-                  <span class="cl-sub">Message us directly for instant access</span>
-                </span>
-              </a>
-              <a href="mailto:hello@aquila.ai?subject=Pro Access Request&body=Hi, I'd like to request Aquila Pro access. My email is: ${user.email}" class="contact-link">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
-                <span>
-                  <span class="cl-label">Send an email</span>
-                  <span class="cl-sub">aiaquilaoffical@gmail.com — we'll reply within 24h</span>
-                </span>
-              </a>
-              <div class="contact-divider"></div>
-              <div class="contact-label">Or fill this quick form</div>
-              <div class="contact-form">
-                <input id="cfName" type="text" placeholder="Your name" value="${user.displayName || ''}" />
-                <input id="cfEmail" type="email" placeholder="Your email" value="${user.email || ''}" />
-                <textarea id="cfMsg" rows="2" placeholder="Anything you'd like us to know? (optional)"></textarea>
-                <button class="contact-form-btn" onclick="submitContactForm()">Submit Request</button>
-              </div>
-            </div>
-          `}
-        </div>
-      </div>
-
-      <!-- FAQ -->
-      <div class="section-label">Frequently Asked Questions</div>
-      <div class="faq-list">
-        <div class="faq-item">
-          <div class="faq-q" onclick="toggleFaq(this)">
-            When do daily limits reset?
-            <svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
-          </div>
-          <div class="faq-a">All free plan limits reset every 24 hours at midnight. Your usage counter starts fresh each day automatically.</div>
-        </div>
-        <div class="faq-item">
-          <div class="faq-q" onclick="toggleFaq(this)">
-            Is Aquila Pro really free during Early Access?
-            <svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
-          </div>
-          <div class="faq-a">Yes — Aquila Pro is completely free during our Early Access period. No credit card, no payment of any kind. We're giving early supporters unlimited access as a thank-you for helping us grow.</div>
-        </div>
-        <div class="faq-item">
-          <div class="faq-q" onclick="toggleFaq(this)">
-            How do I get Pro access?
-            <svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
-          </div>
-          <div class="faq-a">Click "Request Pro Access" above and reach out via Discord, email, or the contact form. We'll manually upgrade your account within 24 hours. Pro access is granted by our team during Early Access.</div>
-        </div>
-        <div class="faq-item">
-          <div class="faq-q" onclick="toggleFaq(this)">
-            What exams does Aquila AI support?
-            <svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
-          </div>
-          <div class="faq-a">Aquila AI is built specifically for Indian students preparing for JEE (Main & Advanced), NEET, and Board exams (Class 10 & 12). Our AI is tuned to the NCERT and JEE/NEET syllabi.</div>
-        </div>
-      </div>
-    `;
-  }
-
-  // Auth + data load — v2 null-safe + try/catch (fixes #720 + hard-refresh cache)
-  onAuthStateChanged(auth, async (user) => {
-    try {
-      if (!user) { window.location.href = 'login.html'; return; }
-      if (user && !user.emailVerified) { window.location.href = 'verify-email.html'; return; }
-
-      // Sidebar user info (null-safe — fixes #720 TypeError)
-      try {
-        const nameEl = document.getElementById('userName');
-        if (nameEl) nameEl.textContent = user.displayName || user.email || 'Guest';
-        const avatarEl = document.getElementById('userAvatar');
-        if (avatarEl) {
-          if (user.photoURL) {
-            avatarEl.innerHTML = `<img src="${String(user.photoURL).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c])}" alt="avatar" style="width:100%;height:100%;border-radius:50%;object-fit:cover;" />`;
-          } else {
-            avatarEl.textContent = (user.displayName || user.email || 'G')[0].toUpperCase();
-          }
-        }
-      } catch (e) { console.warn('sidebar update skipped', e); }
-
-      let plan = 'free';
-      let usage = { dailyChatCount: 0, dailyAnalysisCount: 0, plannerUsageMinutes: 0, date: new Date().toISOString().slice(0,10) };
-      try {
-        const mod = await import('./subscription.js');
-        plan = await mod.getUserPlan(user.uid, user).catch(()=> 'free');
-        usage = await mod.getUsage(user.uid).catch(()=> usage);
-      } catch (e) { console.warn('plan/usage load failed', e); }
-
-      // Supports both old (userPlanLabel) and current (userPlan) markup
-      try {
-        const planEl = document.getElementById('userPlanLabel') || document.getElementById('userPlan') || document.querySelector('.user-plan');
-        if (planEl) planEl.textContent = plan === 'pro' ? '✨ Aquila Pro' : 'Free Plan';
-      } catch (e) { console.warn('plan badge skipped', e); }
-
-      const ls = document.getElementById('loadingState');
-      if (ls) ls.style.display = 'none';
-      try { renderPage({ user, plan, usage }); } catch (e) { console.error('renderPage failed', e); const ls2 = document.getElementById('loadingState'); if (ls2) ls2.innerHTML = '<div style="color:#ff6b6b;padding:20px;">Failed to load subscription. Please refresh.</div>'; }
-    } catch (e) {
-      console.error('subscription auth handler failed', e);
-      const ls = document.getElementById('loadingState');
-      if (ls) { ls.style.display = 'block'; ls.innerHTML = '<div style="color:#ff6b6b;padding:20px;">Something went wrong. Please refresh.</div>'; }
+   // Sidebar user info (null-safe — fixes #720 TypeError)
+   try {
+    const nameEl = document.getElementById('userName');
+    if (nameEl) nameEl.textContent = user.displayName || user.email || 'Guest';
+    const avatarEl = document.getElementById('userAvatar');
+    if (avatarEl) {
+     if (user.photoURL) {
+      avatarEl.innerHTML = `<img src="${String(user.photoURL).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c])}" alt="avatar" style="width:100%;height:100%;border-radius:50%;object-fit:cover;" />`;
+     } else {
+      avatarEl.textContent = (user.displayName || user.email || 'G')[0].toUpperCase();
+     }
     }
-  });
+   } catch (e) { console.warn('sidebar update skipped', e); }
 
-  // Sign out
-  document.getElementById('signOutBtn').addEventListener('click', async () => {
-    await signOut(auth);
-    window.location.href = 'login.html';
-  });
+   let plan = 'free';
+   let usage = { dailyChatCount: 0, dailyAnalysisCount: 0, plannerUsageMinutes: 0, date: new Date().toISOString().slice(0,10) };
+   try {
+    const mod = await import('./subscription.js');
+    plan = await mod.getUserPlan(user.uid, user).catch(()=> 'free');
+    usage = await mod.getUsage(user.uid).catch(()=> usage);
+   } catch (e) { console.warn('plan/usage load failed', e); }
+
+   // Supports both old (userPlanLabel) and current (userPlan) markup
+   try {
+    const planEl = document.getElementById('userPlanLabel') || document.getElementById('userPlan') || document.querySelector('.user-plan');
+    if (planEl) planEl.textContent = plan === 'pro' ? '✨ Aquila Pro' : 'Free Plan';
+   } catch (e) { console.warn('plan badge skipped', e); }
+
+   const ls = document.getElementById('loadingState');
+   if (ls) ls.style.display = 'none';
+   try { renderPage({ user, plan, usage }); } catch (e) { console.error('renderPage failed', e); const ls2 = document.getElementById('loadingState'); if (ls2) ls2.innerHTML = '<div style="color:#ff6b6b;padding:20px;">Failed to load subscription. Please refresh.</div>'; }
+  } catch (e) {
+   console.error('subscription auth handler failed', e);
+   const ls = document.getElementById('loadingState');
+   if (ls) { ls.style.display = 'block'; ls.innerHTML = '<div style="color:#ff6b6b;padding:20px;">Something went wrong. Please refresh.</div>'; }
+  }
+ });
+
+ // Sign out
+ document.getElementById('signOutBtn').addEventListener('click', async () => {
+  await signOut(auth);
+  window.location.href = 'login.html';
+ });
 
 /* ── Scroll progress bar ── */
 (function(){
-  var bar = document.createElement('div');
-  bar.className = 'scroll-progress';
-  document.body.prepend(bar);
-  var ticking = false;
-  window.addEventListener('scroll', function(){
-    if(!ticking){ requestAnimationFrame(function(){
-      var h = document.documentElement.scrollHeight - window.innerHeight;
-      bar.style.width = h > 0 ? ((window.scrollY / h) * 100) + '%' : '0%';
-      ticking = false;
-    }); ticking = true; }
-  });
+ var bar = document.createElement('div');
+ bar.className = 'scroll-progress';
+ document.body.prepend(bar);
+ var ticking = false;
+ window.addEventListener('scroll', function(){
+  if(!ticking){ requestAnimationFrame(function(){
+   var h = document.documentElement.scrollHeight - window.innerHeight;
+   bar.style.width = h > 0 ? ((window.scrollY / h) * 100) + '%' : '0%';
+   ticking = false;
+  }); ticking = true; }
+ });
 }());
 
 /* ── Ripple effect ── */
 (function(){
-  var rm = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  if(rm) return;
-  document.querySelectorAll('.btn-primary, .btn-secondary, .btn-ghost-nav, .signout-btn, .new-chat-btn, .upgrade-nav-btn, .send-btn').forEach(function(btn){
-    btn.addEventListener('click', function(e){
-      var rp = document.createElement('span');
-      var r = btn.getBoundingClientRect();
-      var s = Math.max(r.width, r.height);
-      rp.style.cssText = 'position:absolute;top:'+(e.clientY-r.top-s/2)+'px;left:'+(e.clientX-r.left-s/2)+'px;width:'+s+'px;height:'+s+'px;border-radius:50%;background:rgba(255,255,255,0.15);transform:scale(0);animation:rippleAnim .5s ease-out;pointer-events:none;z-index:0;';
-      btn.style.position = 'relative';
-      btn.style.overflow = 'hidden';
-      btn.appendChild(rp);
-      setTimeout(function(){ rp.remove(); }, 600);
-    });
+ var rm = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+ if(rm) return;
+ document.querySelectorAll('.btn-primary, .btn-secondary, .btn-ghost-nav, .signout-btn, .new-chat-btn, .upgrade-nav-btn, .send-btn').forEach(function(btn){
+  btn.addEventListener('click', function(e){
+   var rp = document.createElement('span');
+   var r = btn.getBoundingClientRect();
+   var s = Math.max(r.width, r.height);
+   rp.style.cssText = 'position:absolute;top:'+(e.clientY-r.top-s/2)+'px;left:'+(e.clientX-r.left-s/2)+'px;width:'+s+'px;height:'+s+'px;border-radius:50%;background:rgba(255,255,255,0.15);transform:scale(0);animation:rippleAnim .5s ease-out;pointer-events:none;z-index:0;';
+   btn.style.position = 'relative';
+   btn.style.overflow = 'hidden';
+   btn.appendChild(rp);
+   setTimeout(function(){ rp.remove(); }, 600);
   });
+ });
 }());
 </script>
 

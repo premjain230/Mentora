@@ -473,7 +473,9 @@ service cloud.firestore {
 
       allow write: if isOwner(userId)
         && request.resource.data.stage is number
+        && request.resource.data.stage >= 0 && request.resource.data.stage <= 20
         && request.resource.data.xp is number
+        && request.resource.data.xp >= 0 && request.resource.data.xp <= 1000000
         && request.resource.data.uid == request.auth.uid;
     }
 

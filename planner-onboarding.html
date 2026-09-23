@@ -4,7 +4,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-<meta http-equiv="Content-Security-Policy" content="default-src 'self' https:; script-src 'self' 'unsafe-inline' 'unsafe-eval' blob: https://www.gstatic.com https://apis.google.com https://accounts.google.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://www.googletagmanager.com https://esm.sh; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: https:; font-src 'self' https://fonts.gstatic.com; connect-src 'self' blob: https://www.googleapis.com https://apis.google.com https://accounts.google.com https://esm.sh https://www.gstatic.com https://firestore.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://analytics.vercel.com; object-src 'none'; frame-src 'self' https://www.gstatic.com https://accounts.google.com https://mentora-c6dca.firebaseapp.com">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self' https:; script-src 'self' 'unsafe-inline' blob: https://www.gstatic.com https://apis.google.com https://accounts.google.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://www.googletagmanager.com https://esm.sh; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: https:; font-src 'self' https://fonts.gstatic.com; connect-src 'self' blob: https://www.googleapis.com https://apis.google.com https://accounts.google.com https://esm.sh https://www.gstatic.com https://firestore.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://analytics.vercel.com; object-src 'none'; frame-src 'self' https://www.gstatic.com https://accounts.google.com https://mentora-c6dca.firebaseapp.com">
 <meta name="description" content="Set up your personalized AI study plan for JEE, NEET or Board exams with Aquila AI." />
 <meta name="keywords" content="study plan setup, JEE study plan creator, NEET preparation plan, AI study planner, personalized study schedule" />
 <link rel="canonical" href="https://aquila-sand.vercel.app/planner-onboarding.html" />
@@ -41,10 +41,10 @@ body { min-height: 100vh; display: flex; align-items: center; justify-content: c
 .field { margin-bottom: 18px; }
 .field label { display: block; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-muted); margin-bottom: 8px; }
 .field input, .field select {
-  width: 100%; background: var(--bg-input); border: 1px solid var(--border);
-  border-radius: 10px; padding: 11px 14px; color: var(--text-primary);
-  font-family: var(--font-main); font-size: 14px; outline: none;
-  transition: border-color 0.2s;
+ width: 100%; background: var(--bg-input); border: 1px solid var(--border);
+ border-radius: 10px; padding: 11px 14px; color: var(--text-primary);
+ font-family: var(--font-main); font-size: 14px; outline: none;
+ transition: border-color 0.2s;
 }
 .field input:focus, .field select:focus { border-color: rgba(108,99,255,0.5); }
 .field select { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%238b8fa8' d='M6 8L1 3h10z'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 14px center; cursor: pointer; }
@@ -107,171 +107,171 @@ input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 18p
 .loading-sub { font-size: 12px; color: var(--text-muted); font-family: var(--font-mono); }
 
 @media (max-width: 520px) {
-  .step-card { padding: 24px 20px; }
-  .exam-grid { grid-template-columns: repeat(2, 1fr); }
-  .date-row { grid-template-columns: 1fr; }
-  .onboard-wrap { padding-top: 48px; }
+ .step-card { padding: 24px 20px; }
+ .exam-grid { grid-template-columns: repeat(2, 1fr); }
+ .date-row { grid-template-columns: 1fr; }
+ .onboard-wrap { padding-top: 48px; }
 }
 </style>
 </head>
 <body>
 <button class="mnav-btn" id="mnavBtn" aria-label="Open menu" aria-expanded="false">
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+ <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
 </button>
 <div class="mnav-overlay" id="mnavOverlay"></div>
 <nav class="mnav-panel" id="mnavPanel" aria-label="Site navigation">
-  <div class="mnav-head">
-    <span class="mnav-brand"><img src="logo.svg" alt="Aquila AI">Aquila AI</span>
-    <button class="mnav-close" id="mnavClose" aria-label="Close menu">✕</button>
-  </div>
-  <div class="mnav-links">
-    <div class="mnav-label">App</div>
-    <a href="home.html">Home</a>
-    <a href="home.html?mode=chat">Chat</a>
-    <a href="study-session.html">Study Session</a>
-    <a href="quiz.html">Quiz</a>
-    <a href="planner.html">Study Planner</a>
-    <a href="analyze.html">Analyze</a>
-    <div class="mnav-label">Account</div>
-    <a href="referral.html">Refer &amp; Earn</a>
-    <a href="subscription.html">Subscription</a>
-    <a href="profile.html">Profile</a>
-    <a href="settings.html">Settings</a>
-  </div>
+ <div class="mnav-head">
+  <span class="mnav-brand"><img src="logo.svg" alt="Aquila AI">Aquila AI</span>
+  <button class="mnav-close" id="mnavClose" aria-label="Close menu">✕</button>
+ </div>
+ <div class="mnav-links">
+  <div class="mnav-label">App</div>
+  <a href="home.html">Home</a>
+  <a href="home.html?mode=chat">Chat</a>
+  <a href="study-session.html">Study Session</a>
+  <a href="quiz.html">Quiz</a>
+  <a href="planner.html">Study Planner</a>
+  <a href="analyze.html">Analyze</a>
+  <div class="mnav-label">Account</div>
+  <a href="referral.html">Refer &amp; Earn</a>
+  <a href="subscription.html">Subscription</a>
+  <a href="profile.html">Profile</a>
+  <a href="settings.html">Settings</a>
+ </div>
 </nav>
 
 <div class="onboard-wrap">
-  <div class="progress-header">
-    <span class="progress-label" id="stepLabel">STEP 1 / 3</span>
-    <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:33%"></div></div>
-    <span class="progress-label" id="stepName">Exam Setup</span>
+ <div class="progress-header">
+  <span class="progress-label" id="stepLabel">STEP 1 / 3</span>
+  <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:33%"></div></div>
+  <span class="progress-label" id="stepName">Exam Setup</span>
+ </div>
+
+ <!-- STEP 1: Exam type + name -->
+ <div class="step-card" id="step1">
+  <div class="step-icon">🎯</div>
+  <div class="step-title">What are you preparing for?</div>
+  <div class="step-subtitle">Choose your target exam and tell us your name so Mentora can personalise your plan.</div>
+
+  <div class="field">
+   <label>Your Name</label>
+   <input type="text" id="studentName" placeholder="e.g. Aryan Sharma" maxlength="80" autocomplete="off" />
+   <div class="field-error" id="nameError">Please enter your name.</div>
   </div>
 
-  <!-- STEP 1: Exam type + name -->
-  <div class="step-card" id="step1">
-    <div class="step-icon">🎯</div>
-    <div class="step-title">What are you preparing for?</div>
-    <div class="step-subtitle">Choose your target exam and tell us your name so Mentora can personalise your plan.</div>
-
-    <div class="field">
-      <label>Your Name</label>
-      <input type="text" id="studentName" placeholder="e.g. Aryan Sharma" maxlength="80" autocomplete="off" />
-      <div class="field-error" id="nameError">Please enter your name.</div>
+  <div class="field">
+   <label>Target Exam</label>
+   <div class="exam-grid" id="examGrid">
+    <div class="exam-option" data-val="JEE">
+     <span class="exam-icon">⚗️</span>
+     <div class="exam-label">JEE</div>
+     <div class="exam-desc">Main / Advanced</div>
     </div>
-
-    <div class="field">
-      <label>Target Exam</label>
-      <div class="exam-grid" id="examGrid">
-        <div class="exam-option" data-val="JEE">
-          <span class="exam-icon">⚗️</span>
-          <div class="exam-label">JEE</div>
-          <div class="exam-desc">Main / Advanced</div>
-        </div>
-        <div class="exam-option" data-val="NEET">
-          <span class="exam-icon">🧬</span>
-          <div class="exam-label">NEET</div>
-          <div class="exam-desc">UG Medical</div>
-        </div>
-        <div class="exam-option" data-val="BOARDS">
-          <span class="exam-icon">📚</span>
-          <div class="exam-label">Boards</div>
-          <div class="exam-desc">Class 10 / 12</div>
-        </div>
-        <div class="exam-option" data-val="COLLEGE">
-          <span class="exam-icon">🎓</span>
-          <div class="exam-label">College</div>
-          <div class="exam-desc">Semester exams</div>
-        </div>
-        <div class="exam-option" data-val="CUSTOM">
-          <span class="exam-icon">✨</span>
-          <div class="exam-label">Custom</div>
-          <div class="exam-desc">Any other goal</div>
-        </div>
-      </div>
-      <div class="field-error" id="examError">Please select an exam type.</div>
+    <div class="exam-option" data-val="NEET">
+     <span class="exam-icon">🧬</span>
+     <div class="exam-label">NEET</div>
+     <div class="exam-desc">UG Medical</div>
     </div>
-
-    <div class="field">
-      <label>Target Score / Rank <span style="color:var(--text-muted);font-weight:400">(optional)</span></label>
-      <input type="text" id="targetScore" placeholder="e.g. AIR under 1000 / 95%" maxlength="80" />
+    <div class="exam-option" data-val="BOARDS">
+     <span class="exam-icon">📚</span>
+     <div class="exam-label">Boards</div>
+     <div class="exam-desc">Class 10 / 12</div>
     </div>
-
-    <div class="step-nav">
-      <button class="btn btn-primary" onclick="goStep(2)">Continue →</button>
+    <div class="exam-option" data-val="COLLEGE">
+     <span class="exam-icon">🎓</span>
+     <div class="exam-label">College</div>
+     <div class="exam-desc">Semester exams</div>
     </div>
+    <div class="exam-option" data-val="CUSTOM">
+     <span class="exam-icon">✨</span>
+     <div class="exam-label">Custom</div>
+     <div class="exam-desc">Any other goal</div>
+    </div>
+   </div>
+   <div class="field-error" id="examError">Please select an exam type.</div>
   </div>
 
-  <!-- STEP 2: Subjects + weak topics -->
-  <div class="step-card" id="step2" style="display:none">
-    <div class="step-icon">📖</div>
-    <div class="step-title">What subjects are you studying?</div>
-    <div class="step-subtitle">Add the subjects in your syllabus. Then optionally mark your weak topics so the AI prioritises them.</div>
-
-    <div class="field">
-      <label>Subjects</label>
-      <div class="tag-input-wrap" id="subjectTagWrap" onclick="document.getElementById('subjectInput').focus()">
-        <input type="text" class="tag-input" id="subjectInput" placeholder="Type a subject and press Enter" maxlength="60" />
-      </div>
-      <div class="tag-hint">Press <kbd style="background:rgba(255,255,255,0.07);padding:1px 5px;border-radius:4px;font-size:10px">Enter</kbd> or comma to add</div>
-      <div class="field-error" id="subjectError">Add at least one subject.</div>
-    </div>
-
-    <div class="field">
-      <label>Weak Topics <span style="color:var(--text-muted);font-weight:400">(optional — AI will prioritise these)</span></label>
-      <div class="tag-input-wrap" id="weakTagWrap" onclick="document.getElementById('weakInput').focus()">
-        <input type="text" class="tag-input" id="weakInput" placeholder="e.g. Thermodynamics, Organic Chemistry" maxlength="60" />
-      </div>
-      <div class="tag-hint">Press <kbd style="background:rgba(255,255,255,0.07);padding:1px 5px;border-radius:4px;font-size:10px">Enter</kbd> or comma to add</div>
-    </div>
-
-    <div class="step-nav">
-      <button class="btn btn-ghost" onclick="goStep(1)">← Back</button>
-      <button class="btn btn-primary" onclick="goStep(3)">Continue →</button>
-    </div>
+  <div class="field">
+   <label>Target Score / Rank <span style="color:var(--text-muted);font-weight:400">(optional)</span></label>
+   <input type="text" id="targetScore" placeholder="e.g. AIR under 1000 / 95%" maxlength="80" />
   </div>
 
-  <!-- STEP 3: Schedule -->
-  <div class="step-card" id="step3" style="display:none">
-    <div class="step-icon">📅</div>
-    <div class="step-title">Set your schedule</div>
-    <div class="step-subtitle">Tell us how many hours you can study daily and when your exam is. Mentora will build around your timeline.</div>
-
-    <div class="field">
-      <label>Daily Study Hours</label>
-      <div class="hours-row">
-        <div>
-          <div class="hours-val" id="hoursVal">6</div>
-          <div class="hours-sub">hrs / day</div>
-        </div>
-        <input type="range" id="hoursRange" min="1" max="18" value="6" oninput="document.getElementById('hoursVal').textContent=this.value" />
-      </div>
-    </div>
-
-    <div class="date-row">
-      <div class="field">
-        <label>Start Date</label>
-        <input type="date" id="startDate" />
-        <div class="field-error" id="startError">Select a start date.</div>
-      </div>
-      <div class="field">
-        <label>Exam Date</label>
-        <input type="date" id="examDate" />
-        <div class="field-error" id="examDateError">Select your exam date.</div>
-      </div>
-    </div>
-
-    <div class="step-nav">
-      <button class="btn btn-ghost" onclick="goStep(2)">← Back</button>
-      <button class="btn btn-success" id="generateBtn" onclick="generatePlan()">✨ Generate My Plan</button>
-    </div>
+  <div class="step-nav">
+   <button class="btn btn-primary" onclick="goStep(2)">Continue →</button>
   </div>
+ </div>
+
+ <!-- STEP 2: Subjects + weak topics -->
+ <div class="step-card" id="step2" style="display:none">
+  <div class="step-icon">📖</div>
+  <div class="step-title">What subjects are you studying?</div>
+  <div class="step-subtitle">Add the subjects in your syllabus. Then optionally mark your weak topics so the AI prioritises them.</div>
+
+  <div class="field">
+   <label>Subjects</label>
+   <div class="tag-input-wrap" id="subjectTagWrap" onclick="document.getElementById('subjectInput').focus()">
+    <input type="text" class="tag-input" id="subjectInput" placeholder="Type a subject and press Enter" maxlength="60" />
+   </div>
+   <div class="tag-hint">Press <kbd style="background:rgba(255,255,255,0.07);padding:1px 5px;border-radius:4px;font-size:10px">Enter</kbd> or comma to add</div>
+   <div class="field-error" id="subjectError">Add at least one subject.</div>
+  </div>
+
+  <div class="field">
+   <label>Weak Topics <span style="color:var(--text-muted);font-weight:400">(optional — AI will prioritise these)</span></label>
+   <div class="tag-input-wrap" id="weakTagWrap" onclick="document.getElementById('weakInput').focus()">
+    <input type="text" class="tag-input" id="weakInput" placeholder="e.g. Thermodynamics, Organic Chemistry" maxlength="60" />
+   </div>
+   <div class="tag-hint">Press <kbd style="background:rgba(255,255,255,0.07);padding:1px 5px;border-radius:4px;font-size:10px">Enter</kbd> or comma to add</div>
+  </div>
+
+  <div class="step-nav">
+   <button class="btn btn-ghost" onclick="goStep(1)">← Back</button>
+   <button class="btn btn-primary" onclick="goStep(3)">Continue →</button>
+  </div>
+ </div>
+
+ <!-- STEP 3: Schedule -->
+ <div class="step-card" id="step3" style="display:none">
+  <div class="step-icon">📅</div>
+  <div class="step-title">Set your schedule</div>
+  <div class="step-subtitle">Tell us how many hours you can study daily and when your exam is. Mentora will build around your timeline.</div>
+
+  <div class="field">
+   <label>Daily Study Hours</label>
+   <div class="hours-row">
+    <div>
+     <div class="hours-val" id="hoursVal">6</div>
+     <div class="hours-sub">hrs / day</div>
+    </div>
+    <input type="range" id="hoursRange" min="1" max="18" value="6" oninput="document.getElementById('hoursVal').textContent=this.value" />
+   </div>
+  </div>
+
+  <div class="date-row">
+   <div class="field">
+    <label>Start Date</label>
+    <input type="date" id="startDate" />
+    <div class="field-error" id="startError">Select a start date.</div>
+   </div>
+   <div class="field">
+    <label>Exam Date</label>
+    <input type="date" id="examDate" />
+    <div class="field-error" id="examDateError">Select your exam date.</div>
+   </div>
+  </div>
+
+  <div class="step-nav">
+   <button class="btn btn-ghost" onclick="goStep(2)">← Back</button>
+   <button class="btn btn-success" id="generateBtn" onclick="generatePlan()">✨ Generate My Plan</button>
+  </div>
+ </div>
 </div>
 
 <!-- Loading overlay -->
 <div class="loading-overlay" id="loadingOverlay">
-  <div class="spinner"></div>
-  <div class="loading-text">Building your personalised plan…</div>
-  <div class="loading-sub" id="loadingSubtext">Analysing subjects and allocating time</div>
+ <div class="spinner"></div>
+ <div class="loading-text">Building your personalised plan…</div>
+ <div class="loading-sub" id="loadingSubtext">Analysing subjects and allocating time</div>
 </div>
 
 <div class="toast" id="toast"></div>
@@ -283,145 +283,145 @@ import { saveExamProfile, saveStudyPlan, createTasksFromPlan, logEvent } from ".
 
 // ── Auth guard ───────────────────────────────────────────────
 onAuthStateChanged(auth, (user) => {
-  if (user && !user.emailVerified) { window.location.href = "verify-email.html"; return; }
-  if (!user) window.location.replace("login.html");
+ if (user && !user.emailVerified) { window.location.href = "verify-email.html"; return; }
+ if (!user) window.location.replace("login.html");
 });
 
 // ── State ────────────────────────────────────────────────────
 const state = {
-  examType: null,
-  subjects: [],
-  weakTopics: [],
-  currentStep: 1,
+ examType: null,
+ subjects: [],
+ weakTopics: [],
+ currentStep: 1,
 };
 
 // ── Step navigation ──────────────────────────────────────────
 window.goStep = function(step) {
-  if (step > state.currentStep && !validateStep(state.currentStep)) return;
+ if (step > state.currentStep && !validateStep(state.currentStep)) return;
 
-  document.getElementById(`step${state.currentStep}`).style.display = "none";
-  document.getElementById(`step${step}`).style.display = "block";
-  state.currentStep = step;
+ document.getElementById(`step${state.currentStep}`).style.display = "none";
+ document.getElementById(`step${step}`).style.display = "block";
+ state.currentStep = step;
 
-  const labels = ["", "Exam Setup", "Subjects", "Schedule"];
-  document.getElementById("stepLabel").textContent = `STEP ${step} / 3`;
-  document.getElementById("stepName").textContent = labels[step];
-  document.getElementById("progressFill").style.width = `${(step / 3) * 100}%`;
+ const labels = ["", "Exam Setup", "Subjects", "Schedule"];
+ document.getElementById("stepLabel").textContent = `STEP ${step} / 3`;
+ document.getElementById("stepName").textContent = labels[step];
+ document.getElementById("progressFill").style.width = `${(step / 3) * 100}%`;
 };
 
 // ── Validation per step ──────────────────────────────────────
 function validateStep(step) {
-  if (step === 1) {
-    let ok = true;
-    const name = document.getElementById("studentName").value.trim();
-    const nameErr = document.getElementById("nameError");
-    const examErr = document.getElementById("examError");
+ if (step === 1) {
+  let ok = true;
+  const name = document.getElementById("studentName").value.trim();
+  const nameErr = document.getElementById("nameError");
+  const examErr = document.getElementById("examError");
 
-    if (!name) { nameErr.classList.add("visible"); ok = false; }
-    else nameErr.classList.remove("visible");
+  if (!name) { nameErr.classList.add("visible"); ok = false; }
+  else nameErr.classList.remove("visible");
 
-    if (!state.examType) { examErr.classList.add("visible"); ok = false; }
-    else examErr.classList.remove("visible");
+  if (!state.examType) { examErr.classList.add("visible"); ok = false; }
+  else examErr.classList.remove("visible");
 
-    return ok;
+  return ok;
+ }
+
+ if (step === 2) {
+  const subjectErr = document.getElementById("subjectError");
+  if (state.subjects.length === 0) {
+   subjectErr.classList.add("visible");
+   return false;
   }
-
-  if (step === 2) {
-    const subjectErr = document.getElementById("subjectError");
-    if (state.subjects.length === 0) {
-      subjectErr.classList.add("visible");
-      return false;
-    }
-    subjectErr.classList.remove("visible");
-    return true;
-  }
-
+  subjectErr.classList.remove("visible");
   return true;
+ }
+
+ return true;
 }
 
 // ── Exam type selection ──────────────────────────────────────
 document.getElementById("examGrid").addEventListener("click", (e) => {
-  const option = e.target.closest(".exam-option");
-  if (!option) return;
-  document.querySelectorAll(".exam-option").forEach((o) => o.classList.remove("selected"));
-  option.classList.add("selected");
-  state.examType = option.dataset.val;
-  document.getElementById("examError").classList.remove("visible");
+ const option = e.target.closest(".exam-option");
+ if (!option) return;
+ document.querySelectorAll(".exam-option").forEach((o) => o.classList.remove("selected"));
+ option.classList.add("selected");
+ state.examType = option.dataset.val;
+ document.getElementById("examError").classList.remove("visible");
 
-  // Auto-populate subjects for known exams
-  const defaults = {
-    JEE: ["Physics", "Chemistry", "Mathematics"],
-    NEET: ["Physics", "Chemistry", "Biology"],
-    BOARDS: ["Physics", "Chemistry", "Mathematics", "English"],
-  };
-  if (defaults[state.examType] && state.subjects.length === 0) {
-    defaults[state.examType].forEach((s) => addTag("subject", s));
-  }
+ // Auto-populate subjects for known exams
+ const defaults = {
+  JEE: ["Physics", "Chemistry", "Mathematics"],
+  NEET: ["Physics", "Chemistry", "Biology"],
+  BOARDS: ["Physics", "Chemistry", "Mathematics", "English"],
+ };
+ if (defaults[state.examType] && state.subjects.length === 0) {
+  defaults[state.examType].forEach((s) => addTag("subject", s));
+ }
 });
 
 // ── Tag system (subjects + weak topics) ─────────────────────
 function addTag(type, value) {
-  const clean = value.replace(/<[^>]*>/g, "").trim();
-  if (!clean || clean.length > 60) return;
+ const clean = value.replace(/<[^>]*>/g, "").trim();
+ if (!clean || clean.length > 60) return;
 
-  const arr = type === "subject" ? state.subjects : state.weakTopics;
-  const wrapId = type === "subject" ? "subjectTagWrap" : "weakTagWrap";
-  const inputId = type === "subject" ? "subjectInput" : "weakInput";
-  const maxTags = type === "subject" ? 10 : 20;
+ const arr = type === "subject" ? state.subjects : state.weakTopics;
+ const wrapId = type === "subject" ? "subjectTagWrap" : "weakTagWrap";
+ const inputId = type === "subject" ? "subjectInput" : "weakInput";
+ const maxTags = type === "subject" ? 10 : 20;
 
-  if (arr.includes(clean) || arr.length >= maxTags) return;
+ if (arr.includes(clean) || arr.length >= maxTags) return;
 
-  arr.push(clean);
+ arr.push(clean);
 
-  const tag = document.createElement("div");
-  tag.className = "tag";
+ const tag = document.createElement("div");
+ tag.className = "tag";
 
-  const label = document.createElement("span");
-  label.textContent = clean; // textContent — XSS safe
+ const label = document.createElement("span");
+ label.textContent = clean; // textContent — XSS safe
 
-  const removeBtn = document.createElement("button");
-  removeBtn.className = "tag-remove";
-  removeBtn.setAttribute("aria-label", `Remove ${clean}`);
-  removeBtn.textContent = "×";
-  removeBtn.addEventListener("click", () => {
-    const idx = arr.indexOf(clean);
-    if (idx > -1) arr.splice(idx, 1);
-    tag.remove();
-  });
+ const removeBtn = document.createElement("button");
+ removeBtn.className = "tag-remove";
+ removeBtn.setAttribute("aria-label", `Remove ${clean}`);
+ removeBtn.textContent = "×";
+ removeBtn.addEventListener("click", () => {
+  const idx = arr.indexOf(clean);
+  if (idx > -1) arr.splice(idx, 1);
+  tag.remove();
+ });
 
-  tag.appendChild(label);
-  tag.appendChild(removeBtn);
+ tag.appendChild(label);
+ tag.appendChild(removeBtn);
 
-  const wrap = document.getElementById(wrapId);
-  const input = document.getElementById(inputId);
-  wrap.insertBefore(tag, input);
+ const wrap = document.getElementById(wrapId);
+ const input = document.getElementById(inputId);
+ wrap.insertBefore(tag, input);
 }
 
 function setupTagInput(inputId, type) {
-  const input = document.getElementById(inputId);
-  input.addEventListener("keydown", (e) => {
-    if (e.key === "Enter" || e.key === ",") {
-      e.preventDefault();
-      addTag(type, input.value);
-      input.value = "";
-    }
-    if (e.key === "Backspace" && input.value === "") {
-      const arr = type === "subject" ? state.subjects : state.weakTopics;
-      if (arr.length > 0) {
-        const last = arr[arr.length - 1];
-        const wrapId = type === "subject" ? "subjectTagWrap" : "weakTagWrap";
-        const tags = document.getElementById(wrapId).querySelectorAll(".tag");
-        if (tags.length > 0) tags[tags.length - 1].remove();
-        arr.pop();
-      }
-    }
-  });
-  input.addEventListener("blur", () => {
-    if (input.value.trim()) {
-      addTag(type, input.value);
-      input.value = "";
-    }
-  });
+ const input = document.getElementById(inputId);
+ input.addEventListener("keydown", (e) => {
+  if (e.key === "Enter" || e.key === ",") {
+   e.preventDefault();
+   addTag(type, input.value);
+   input.value = "";
+  }
+  if (e.key === "Backspace" && input.value === "") {
+   const arr = type === "subject" ? state.subjects : state.weakTopics;
+   if (arr.length > 0) {
+    const last = arr[arr.length - 1];
+    const wrapId = type === "subject" ? "subjectTagWrap" : "weakTagWrap";
+    const tags = document.getElementById(wrapId).querySelectorAll(".tag");
+    if (tags.length > 0) tags[tags.length - 1].remove();
+    arr.pop();
+   }
+  }
+ });
+ input.addEventListener("blur", () => {
+  if (input.value.trim()) {
+   addTag(type, input.value);
+   input.value = "";
+  }
+ });
 }
 
 setupTagInput("subjectInput", "subject");
@@ -439,117 +439,117 @@ document.getElementById("examDate").min = todayStr;
 
 // ── Generate plan ────────────────────────────────────────────
 window.generatePlan = async function() {
-  // Validate step 3
-  const startDate = document.getElementById("startDate").value;
-  const examDate = document.getElementById("examDate").value;
-  let ok = true;
+ // Validate step 3
+ const startDate = document.getElementById("startDate").value;
+ const examDate = document.getElementById("examDate").value;
+ let ok = true;
 
-  if (!startDate) { document.getElementById("startError").classList.add("visible"); ok = false; }
-  else document.getElementById("startError").classList.remove("visible");
+ if (!startDate) { document.getElementById("startError").classList.add("visible"); ok = false; }
+ else document.getElementById("startError").classList.remove("visible");
 
-  if (!examDate) { document.getElementById("examDateError").classList.add("visible"); ok = false; }
-  else document.getElementById("examDateError").classList.remove("visible");
+ if (!examDate) { document.getElementById("examDateError").classList.add("visible"); ok = false; }
+ else document.getElementById("examDateError").classList.remove("visible");
 
-  if (examDate && startDate && new Date(examDate) <= new Date(startDate)) {
-    showToast("Exam date must be after start date.", true);
-    ok = false;
+ if (examDate && startDate && new Date(examDate) <= new Date(startDate)) {
+  showToast("Exam date must be after start date.", true);
+  ok = false;
+ }
+
+ if (!ok) return;
+
+ const user = auth.currentUser;
+ if (!user) { window.location.replace("/index.html"); return; }
+
+ const loadingMessages = [
+  "Analysing subjects and allocating time…",
+  "Prioritising your weak topics…",
+  "Crafting your weekly schedule…",
+  "Almost done — finalising your plan…",
+ ];
+ let msgIdx = 0;
+ const loadingSub = document.getElementById("loadingSubtext");
+ const msgInterval = setInterval(() => {
+  msgIdx = (msgIdx + 1) % loadingMessages.length;
+  loadingSub.textContent = loadingMessages[msgIdx];
+ }, 2200);
+
+ document.getElementById("loadingOverlay").classList.add("show");
+ document.getElementById("generateBtn").disabled = true;
+
+ const payload = {
+  studentName: document.getElementById("studentName").value.trim(),
+  examType: state.examType,
+  targetScore: document.getElementById("targetScore").value.trim(),
+  subjects: state.subjects,
+  weakTopics: state.weakTopics,
+  dailyHours: parseInt(document.getElementById("hoursRange").value, 10),
+  startDate,
+  examDate,
+ };
+
+ try {
+  // 1. Get Firebase ID token to authenticate the request
+  const idToken = await user.getIdToken();
+
+  // 2. Call the Vercel function
+  const res = await fetch("/api/generate-plan", {
+   method: "POST",
+   headers: {
+    "Content-Type": "application/json",
+    Authorization: `Bearer ${idToken}`,
+   },
+   credentials: "same-origin",
+   body: JSON.stringify(payload),
+  });
+
+  if (!res.ok) {
+   const err = await res.json().catch(() => ({}));
+   throw new Error(err.error || `Request failed: ${res.status}`);
   }
 
-  if (!ok) return;
+  const { plan } = await res.json();
+  plan.examType = state.examType; // attach for Firestore record
 
-  const user = auth.currentUser;
-  if (!user) { window.location.replace("/index.html"); return; }
+  // 3. Save profile
+  await saveExamProfile(payload);
 
-  const loadingMessages = [
-    "Analysing subjects and allocating time…",
-    "Prioritising your weak topics…",
-    "Crafting your weekly schedule…",
-    "Almost done — finalising your plan…",
-  ];
-  let msgIdx = 0;
-  const loadingSub = document.getElementById("loadingSubtext");
-  const msgInterval = setInterval(() => {
-    msgIdx = (msgIdx + 1) % loadingMessages.length;
-    loadingSub.textContent = loadingMessages[msgIdx];
-  }, 2200);
+  // 4. Save plan to Firestore
+  const savedPlan = await saveStudyPlan(plan);
 
-  document.getElementById("loadingOverlay").classList.add("show");
-  document.getElementById("generateBtn").disabled = true;
+  // 5. Create individual tasks from the weekly plan
+  await createTasksFromPlan(savedPlan.planId, plan.weeklyPlan || []);
 
-  const payload = {
-    studentName: document.getElementById("studentName").value.trim(),
-    examType: state.examType,
-    targetScore: document.getElementById("targetScore").value.trim(),
-    subjects: state.subjects,
-    weakTopics: state.weakTopics,
-    dailyHours: parseInt(document.getElementById("hoursRange").value, 10),
-    startDate,
-    examDate,
-  };
+  // 6. Log analytics event
+  await logEvent("plan_generated", { examType: state.examType });
+  window.AquaTrack?.track("study_plan_created", { examType: state.examType, tasks: (savedPlan.weeklyPlan || plan.weeklyPlan || []).length });
 
-  try {
-    // 1. Get Firebase ID token to authenticate the request
-    const idToken = await user.getIdToken();
+  clearInterval(msgInterval);
 
-    // 2. Call the Vercel function
-    const res = await fetch("/api/generate-plan", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${idToken}`,
-      },
-      credentials: "same-origin",
-      body: JSON.stringify(payload),
-    });
-
-    if (!res.ok) {
-      const err = await res.json().catch(() => ({}));
-      throw new Error(err.error || `Request failed: ${res.status}`);
-    }
-
-    const { plan } = await res.json();
-    plan.examType = state.examType; // attach for Firestore record
-
-    // 3. Save profile
-    await saveExamProfile(payload);
-
-    // 4. Save plan to Firestore
-    const savedPlan = await saveStudyPlan(plan);
-
-    // 5. Create individual tasks from the weekly plan
-    await createTasksFromPlan(savedPlan.planId, plan.weeklyPlan || []);
-
-    // 6. Log analytics event
-    await logEvent("plan_generated", { examType: state.examType });
-    window.AquaTrack?.track("study_plan_created", { examType: state.examType, tasks: (savedPlan.weeklyPlan || plan.weeklyPlan || []).length });
-
-    clearInterval(msgInterval);
-
-    // 7. Redirect to planner dashboard
-    window.location.replace("/planner.html");
-  } catch (err) {
-    clearInterval(msgInterval);
-    document.getElementById("loadingOverlay").classList.remove("show");
-    document.getElementById("generateBtn").disabled = false;
-    showToast(err.message || "Could not generate plan. Please try again.", true);
-    console.error("Plan generation failed:", err);
-  }
+  // 7. Redirect to planner dashboard
+  window.location.replace("/planner.html");
+ } catch (err) {
+  clearInterval(msgInterval);
+  document.getElementById("loadingOverlay").classList.remove("show");
+  document.getElementById("generateBtn").disabled = false;
+  showToast(err.message || "Could not generate plan. Please try again.", true);
+  console.error("Plan generation failed:", err);
+ }
 };
 
 // ── Toast ─────────────────────────────────────────────────────
 function showToast(msg, isError = false) {
-  const toast = document.getElementById("toast");
-  toast.textContent = msg; // textContent — XSS safe
-  toast.className = "toast show" + (isError ? " error" : "");
-  setTimeout(() => { toast.className = "toast"; }, 3500);
+ const toast = document.getElementById("toast");
+ toast.textContent = msg; // textContent — XSS safe
+ toast.className = "toast show" + (isError ? " error" : "");
+ setTimeout(() => { toast.className = "toast"; }, 3500);
 }
 </script>
-  <!-- Vercel Web Analytics -->
-  <script type="module">import { inject } from 'https://esm.sh/@vercel/analytics'; inject();</script>
-  <!-- Growth Agent: first-party analytics -->
-  <script type="module" src="./modules/track.js"></script>
-  <!-- Vercel Speed Insights -->
-  <script type="module">import { injectSpeedInsights } from 'https://esm.sh/@vercel/speed-insights'; injectSpeedInsights();</script>
+ <!-- Vercel Web Analytics -->
+ <script type="module">import { inject } from 'https://esm.sh/@vercel/analytics'; inject();</script>
+ <!-- Growth Agent: first-party analytics -->
+ <script type="module" src="./modules/track.js"></script>
+ <!-- Vercel Speed Insights -->
+ <script type="module">import { injectSpeedInsights } from 'https://esm.sh/@vercel/speed-insights'; injectSpeedInsights();</script>
 <script type="application/ld+json">
 {"@context":"https://schema.org","@type":"WebPage","name":"Set Up Study Plan - Aquila AI","description":"Set up your personalized AI study plan for JEE, NEET or Board exams.","url":"https://aquila-sand.vercel.app/planner-onboarding.html","breadcrumb":{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://aquila-sand.vercel.app/"},{"@type":"ListItem","position":2,"name":"Plan Setup","item":"https://aquila-sand.vercel.app/planner-onboarding.html"}]}}
 </script>
