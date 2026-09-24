@@ -1,5 +1,5 @@
 /**
- * Aquila Mastery Engine — Prompt 5 deterministic estimator
+ * Learning Allied Mastery Engine — Prompt 5 deterministic estimator
  * Pure, no side effects, same logic must be mirrored server-side.
  */
 import { clamp01, getSourceWeight, getHintFactor, getRecencyFactor, normalizeConfidence, masteryStateV2, MASTERY_PRIOR } from "./schema.js";

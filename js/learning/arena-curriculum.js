@@ -1,5 +1,5 @@
 /**
- * Aquila Arena — Curriculum Engine
+ * Learning Allied Arena — Curriculum Engine
  * Arena Engine + Curriculum Data (not 4 separate systems)
  * Transforms CURRICULUM_CONCEPTS into game-like progression per exam/board.
  */

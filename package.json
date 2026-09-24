@@ -2,7 +2,7 @@
   "name": "mentora",
   "version": "1.0.0",
   "type": "commonjs",
-  "description": "Mentora AI - Your AI-powered learning companion",
+  "description": "Learning Allied - Your AI-powered learning companion",
   "engines": {
     "node": "20.x"
   },
@@ -13,7 +13,8 @@
   },
   "keywords": [
     "ai",
-    "mentora",
+    "learning-allied",
+    "learning allied",
     "education"
   ],
   "author": "",

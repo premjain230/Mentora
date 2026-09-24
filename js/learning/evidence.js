@@ -1,5 +1,5 @@
 /**
- * Aquila Learning — Evidence Architecture (Prompt 2)
+ * Learning Allied Learning — Evidence Architecture (Prompt 2)
  * LearningEvent emit → validation → append to users/{uid}/learningEvents
  * Client optimistic; server will be authoritative in Prompt 5.
  */

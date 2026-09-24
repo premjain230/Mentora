@@ -1,5 +1,5 @@
 /**
- * Aquila Growth Agent — Admin dashboard client.
+ * Learning Allied Growth Agent — Admin dashboard client.
  *
  * Views (mirror the server API, see /api/admin and /api/admin/*):
  *   dashboard  → GET /api/admin?view=overview + view=acquisition
@@ -195,7 +195,7 @@ async function viewDashboard(main) {
   const m = ov.metrics;
   main.innerHTML = `
   <div class="topbar">
-    <div><h1>Dashboard</h1><div class="sub">Aquila growth performance — ${esc(ov.range && ov.range.from)} → ${esc(ov.range && ov.range.to)}</div></div>
+    <div><h1>Dashboard</h1><div class="sub">Learning Allied growth performance — ${esc(ov.range && ov.range.from)} → ${esc(ov.range && ov.range.to)}</div></div>
     <div class="range">${rangeSelect}</div>
   </div>
   ${insuff ? `<div class="card"><div class="note" style="margin-top:0">${esc(insuff)}</div></div>` : ""}
@@ -540,7 +540,7 @@ function logout() {
 
 auth.onAuthStateChanged(async (u) => {
   user = u;
-  if (!u) { showGate("Sign in with your Aquila account to open the growth console.", true); return; }
+  if (!u) { showGate("Sign in with your Learning Allied account to open the growth console.", true); return; }
   try {
     const r = await api("/api/admin");
     if (!r || !r.ok) throw new Error("not authorized");

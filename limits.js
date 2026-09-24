@@ -102,7 +102,7 @@ function ensureModal() {
         Limit Reached
       </div>
       <div class="aum-title" id="aumTitle">You've hit your daily limit</div>
-      <div class="aum-subtitle" id="aumSubtitle">Upgrade to Aquila Pro for unlimited access — no payment needed during Early Access.</div>
+      <div class="aum-subtitle" id="aumSubtitle">Upgrade to Learning Allied Pro for unlimited access — no payment needed during Early Access.</div>
       <div class="aum-limit-bar" id="aumLimitBar"></div>
       <ul class="aum-perks">
         <li class="aum-perk"><span class="aum-perk-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></span>Unlimited AI Chats</li>
@@ -122,18 +122,19 @@ function ensureModal() {
   });
 }
 
-// ─── Persisted limit lock (survives new chat + reload until next day) ─────────
-function limitLockKey(uid, type) { return `aquila_limit_${type}_${uid}_${new Date().toISOString().slice(0,10)}`; }
-function setLimitLock(uid, type) { try { localStorage.setItem(limitLockKey(uid, type), "1"); } catch {} }
-function isLimitLocked(uid, type) { try { return localStorage.getItem(limitLockKey(uid, type)) === "1"; } catch { return false; } }
-function clearLimitLock(uid, type) { try { localStorage.removeItem(limitLockKey(uid, type)); } catch {} }
+// ─── Persisted limit lock (survives new chat + reload until next day) — dual-key for migration ─────────
+function limitLockKey(uid, type) { return `learning-allied-limit_${type}_${uid}_${new Date().toISOString().slice(0,10)}`; }
+function legacyLimitLockKey(uid, type) { return `aquila_limit_${type}_${uid}_${new Date().toISOString().slice(0,10)}`; }
+function setLimitLock(uid, type) { try { localStorage.setItem(limitLockKey(uid, type), "1"); localStorage.setItem(legacyLimitLockKey(uid, type), "1"); } catch {} }
+function isLimitLocked(uid, type) { try { return localStorage.getItem(limitLockKey(uid, type)) === "1" || localStorage.getItem(legacyLimitLockKey(uid, type)) === "1"; } catch { return false; } }
+function clearLimitLock(uid, type) { try { localStorage.removeItem(limitLockKey(uid, type)); localStorage.removeItem(legacyLimitLockKey(uid, type)); } catch {} }
 
 function setChatDisabled(disabled, msg) {
   const input = document.getElementById("chatInput");
   const send = document.getElementById("sendBtn");
   if (input) {
     input.disabled = disabled;
-    input.placeholder = disabled ? (msg || "Daily limit reached — upgrade to continue") : "Ask Aquila anything — verified with web search...";
+    input.placeholder = disabled ? (msg || "Daily limit reached — upgrade to continue") : "Ask Learning Allied anything — verified with web search...";
     input.style.opacity = disabled ? "0.6" : "";
   }
   if (send) {
@@ -152,7 +153,7 @@ function showUpgradeModal(limitResult) {
   const modal = document.getElementById("aquilaUpgradeModal");
 
   const labels = {
-    chat: { name: "AI Chats", title: "Daily chat limit reached", sub: "You've used all 20 free AI chats today. Upgrade to Aquila Pro for unlimited conversations." },
+    chat: { name: "AI Chats", title: "Daily chat limit reached", sub: "You've used all 20 free AI chats today. Upgrade to Learning Allied Pro for unlimited conversations." },
     analysis: { name: "AI Analyses", title: "Daily analysis limit reached", sub: "You've used all 20 free AI analyses today. Upgrade for unlimited quiz analysis." },
     planner: { name: "Planner Time", title: "Daily planner limit reached", sub: "You've used your 30 minutes of free Study Planner time today. Upgrade for unlimited planning." },
   };
@@ -176,7 +177,7 @@ function showUpgradeModal(limitResult) {
   // Hard-disable chat input so "new chat" or refresh cannot bypass (persists via localStorage)
   if (limitResult.type === "chat" && limitResult.used != null) {
     try {
-      const uid = limitResult.uid || (window.__aquila_uid || "");
+      const uid = limitResult.uid || (window.__learningAlliedUid || window.__aquila_uid || "");
       if (uid) setLimitLock(uid, limitResult.type);
     } catch {}
     setChatDisabled(true);
@@ -204,8 +205,8 @@ export async function checkAndGate(uid, type) {
 // friendly early gate so users don't burn a request.
 
 export async function preCheckLimit(uid, type) {
-  // If we previously locked this uid/type today, keep it locked حتى new day (prevents new-chat bypass)
-  try { window.__aquila_uid = uid; } catch {}
+  // If we previously locked this uid/type today, keep it locked until new day (prevents new-chat bypass)
+  try { window.__aquila_uid = window.__learningAlliedUid = uid; } catch {}
   if (isLimitLocked(uid, type)) {
     const r = await checkLimitWithBonus(uid, type);
     // If server now says allowed (e.g. upgraded to pro or new day), clear the lock and allow
@@ -242,7 +243,7 @@ export function showLimitModal(result = {}) {
     plan: result.plan || "free",
     used: Number(result.used) || 0,
     limit: result.limit == null ? 20 : Number(result.limit),
-    uid: result.uid || window.__aquila_uid || "",
+    uid: result.uid || window.__learningAlliedUid || window.__aquila_uid || "",
   };
   // persist the lock immediately — even if the client never called preCheckLimit, the server 429 is authoritative
   try { if (res.uid) setLimitLock(res.uid, res.type); } catch {}

@@ -1,5 +1,5 @@
 /**
- * Aquila Learning — Misconception Model (Prompt 2)
+ * Learning Allied Learning — Misconception Model (Prompt 2)
  * Distinguishes "does not know" vs "believes something incorrect".
  */
 

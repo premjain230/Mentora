@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
-<script>document.documentElement.className=localStorage.getItem('aquila-theme')==='dark'?'':'light-mode'</script>
+<script>(function(){try{var v=localStorage.getItem('learning-allied-theme')||localStorage.getItem('aquila-theme');document.documentElement.className=v==='dark'?'':'light-mode'}catch(e){document.documentElement.className=''}})();</script>
 <head>
 <meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
-<title>Review — Aquila AI</title>
+<title>Review — Learning Allied</title>
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700&family=Space+Mono:wght@400&display=swap" rel="stylesheet"/>
 <link rel="stylesheet" href="/css/tokens.css"/><link rel="stylesheet" href="/css/base.css"/><link rel="stylesheet" href="/css/graphs.css"/>
 <style>body{padding:24px;}.card{background:var(--bg-card);border:1px solid var(--border);border-radius:14px;padding:16px;margin:10px 0;}</style>
@@ -40,7 +40,7 @@ onAuthStateChanged(auth, async (user)=>{
     if(r.reviewState==="review_soon") return "Review soon";
     return r.reviewState;
   }
-  if(display.length===0) listEl.innerHTML=`<div class="card" style="color:var(--text-secondary);">No concepts due right now. Keep learning — Aquila will schedule reviews as you practice.</div>`;
+  if(display.length===0) listEl.innerHTML=`<div class="card" style="color:var(--text-secondary);">No concepts due right now. Keep learning — Learning Allied will schedule reviews as you practice.</div>`;
   else listEl.innerHTML = display.map(r=>`<div class="card"><strong>${r.conceptId}</strong> — ${humanState(r)}<div style="font-size:11px;color:var(--text-muted);">${r.subject||""} ${r.topic||""} • interval ${r.intervalDays}d • mastery ${Math.round((r.masteryScore||0)*100)}% • strength ${Math.round((r.evidenceStrength||0)*100)}% • retention ${Math.round((r.retentionScore||0)*100)}%</div><div style="font-size:11px;color:var(--text-muted);">Next: ${r.nextReviewAtIso? r.nextReviewAtIso.slice(0,10): (r.nextReviewAt? new Date(r.nextReviewAt.seconds*1000).toLocaleDateString() : "")}</div></div>`).join("");
   if(display.length>0) document.getElementById("startBtn").style.display="block";
   try{ renderRetentionTimeline(document.getElementById("graph"), reviews); }catch{}

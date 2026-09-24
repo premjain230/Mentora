@@ -1,4 +1,4 @@
-# Aquila Learner Model — Prompt 2 Technical Design
+# Learning Allied Learner Model — Prompt 2 Technical Design
 
 > **Prompt 2/8 — Personalized Learner Profile + Learner Modeling System**
 > Builds on `docs/LEARNING_ARCHITECTURE.md` (Prompt 1). No UI, no recommendation engine, no full adaptive tutor in this prompt.
@@ -358,7 +358,7 @@ Current state (mutable): learning/profile, learning/studentModel, mastery/{conce
 Snapshot (derived):      LearnerSnapshot = f(Current state + recent History)
 ```
 
-Queries Aquila must support (and how):
+Queries Learning Allied must support (and how):
 
 - *What has this student learned?* → scan `mastery` where `masteryState != unseen`, sorted by `lastReviewed`.
 - *What did they struggle with last month?* → `learningEvents` where `createdAt >= 30d` and `type=question_incorrect`, grouped by `conceptId`.
@@ -405,9 +405,9 @@ buildLearningContext({ snapshot, currentSubject, currentTopic, currentConceptId,
 ## 10. Web / Android Integration
 
 ```
-Aquila Web  ─┐
+Learning Allied Web  ─┐
               ├─ Firebase Auth (same UID) ── Firestore (same project mentora-c6dca) ── /api/* (same token verification _admin.js)
-Aquila And. ─┘                │
+Learning Allied And. ─┘                │
                               └─ Shared contracts (js/learning ↔ lib/learning) + shared service interfaces
                                       │
                               LearnerSnapshot built identically on both
@@ -472,7 +472,7 @@ curriculum/{curriculumId}/{doc}           // future read-only
 
 ---
 
-## 13. Migration Strategy for Existing Aquila Users
+## 13. Migration Strategy for Existing Learning Allied Users
 
 No data loss; no forced re-onboarding.
 

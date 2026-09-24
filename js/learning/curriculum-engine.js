@@ -1,5 +1,5 @@
 /**
- * Aquila Arena — Curriculum Engine v2 (versioned, lazy, scalable)
+ * Learning Allied Arena — Curriculum Engine v2 (versioned, lazy, scalable)
  * Centralized, official-source-of-truth, supports 2026-27, 2027-28, etc. without destroying progress.
  * Web + Mobile share same logical IDs via js/learning/curriculum/*.json and mobile/assets/curriculum/*.
  */

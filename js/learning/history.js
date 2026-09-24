@@ -1,5 +1,5 @@
 /**
- * Aquila Learning — History Model (Prompt 2)
+ * Learning Allied Learning — History Model (Prompt 2)
  * Append-only learningEvents + derived LearnerSnapshot.
  * Never overwrites history; corrections emit new events.
  */

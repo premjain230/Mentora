@@ -1,5 +1,5 @@
 // ─────────────────────────────────────────────────────────────
-// Aquila Growth Agent — metric computations (shared).
+// Learning Allied Growth Agent — metric computations (shared).
 // All numbers derive from real Firestore reads via the Admin SDK.
 // Below-minimum samples are flagged, never padded.
 // ─────────────────────────────────────────────────────────────

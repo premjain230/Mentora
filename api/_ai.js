@@ -1,5 +1,5 @@
 // ─────────────────────────────────────────────────────────────
-// Aquila Growth Agent — server-side Groq helper.
+// Learning Allied Growth Agent — server-side Groq helper.
 // Reuses the existing GROQ_API_KEY / GROQ_MODEL env vars. Kept
 // server-only so the key is never exposed to browsers.
 // ─────────────────────────────────────────────────────────────

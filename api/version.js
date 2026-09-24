@@ -1,19 +1,26 @@
-// Lightweight app-version endpoint used by the mobile app's UpdateService.
+// Learning Allied — app-version endpoint used by mobile UpdateService.
+// Rebranded from Aquila (keeps AQUILA_ env fallback for zero-downtime migration).
+// Env overrides (Vercel):
+//   LEARNING_ALLIED_LATEST_VERSION / AQUILA_LATEST_VERSION  e.g. "10"
+//   LEARNING_ALLIED_MINIMUM_VERSION / AQUILA_MINIMUM_VERSION e.g. "1"
+//   LEARNING_ALLIED_DOWNLOAD_URL    Play Store / direct APK release URL
+//   LEARNING_ALLIED_UPDATE_NOTES    Short changelog
 //
-// Compares integer version codes (build numbers). These can be overridden with
-// Vercel env vars (useful once the app is versioned further):
-//   AQUILA_LATEST_VERSION  e.g. "2"
-//   AQUILA_MINIMUM_VERSION e.g. "1"
-//   AQUILA_DOWNLOAD_URL    Play Store / direct APK release URL
-//   AQUILA_UPDATE_NOTES    Short changelog
-//
-// Defaults keep the in-app updater working out of the box: the app is on
-// versionCode 2 and downloads the direct APK asset from the GitHub release.
-// Featured announcements surfaced inside the app's "Update / What's New"
-// section so every user of an installed build sees new features without
-// shipping an app update. The app keeps per-announcement read/seen state
-// locally (shared_preferences); the web mirrors it via localStorage.
+// Defaults: latest build 10 (v1.1.0 Learning Allied) downloads from Mentora release.
+// Featured announcements surfaced in app's "Update / What's New" — per-announcement
+// read/seen state stored locally (shared_preferences); web mirrors via localStorage.
 const DEFAULT_ANNOUNCEMENTS = [
+  {
+    id: "learning-allied-rebrand",
+    type: "feature",
+    title: "Welcome to Learning Allied",
+    description:
+      "Aquila is now Learning Allied — same progress, same syllabus, ship-ready polish: unified brand, premium dark/light themes, reliable auth, responsive web + mobile as one product.",
+    icon: "sparkles",
+    releaseDate: "2026-09-24",
+    url: "https://aquila-sand.vercel.app/",
+    appPath: null,
+  },
   {
     id: "study-session",
     type: "feature",
@@ -33,18 +40,19 @@ export default async function handler(req, res) {
   }
 
   try {
+    const latest = process.env.LEARNING_ALLIED_LATEST_VERSION ?? process.env.AQUILA_LATEST_VERSION ?? "10";
+    const minimum = process.env.LEARNING_ALLIED_MINIMUM_VERSION ?? process.env.AQUILA_MINIMUM_VERSION ?? "1";
+    const dlUrl = process.env.LEARNING_ALLIED_DOWNLOAD_URL ?? process.env.AQUILA_DOWNLOAD_URL ?? "https://github.com/premjain230/Mentora/releases/download/v1.1.0/app-release.apk";
+    const notesDefault =
+      "What's new in v1.1.0 (Learning Allied): complete rebrand Aquila → Learning Allied, ship-ready polish — unified web+mobile design system, premium dark/light themes with no flash, reliable theme persistence, hardened auth/session, Firestore safety, responsive polish (320-430px phones, tablets, safe areas, 44px targets), navigation/a11y fixes, update-available flow, and updated mobile build (1.1.0+10).";
     return res.status(200).json({
-      latestVersion: process.env.AQUILA_LATEST_VERSION ?? "9",
-      minimumVersion: process.env.AQUILA_MINIMUM_VERSION ?? "1",
-      downloadUrl:
-        process.env.AQUILA_DOWNLOAD_URL ??
-        "https://github.com/premjain230/aquila-mobile/releases/download/v1.4.1/app-release.apk",
-      notes:
-        process.env.AQUILA_UPDATE_NOTES ??
-        "What's new in v1.4.1: ship-ready polish — fixed syllabus upload permissions (added token refresh + Storage rules, real file picker + Storage upload on mobile, user-isolated paths), made website fully responsive on phones (320-430px, tablets, safe areas, 44px touch targets, fixed topbar overflow, experience mock stack), polished mobile UX (Android back handling, live theme toggle, quiz overflow fix, syllabus Storage, study-session lifecycle). Plus all v1.4.0 parity fixes.",
+      latestVersion: latest,
+      minimumVersion: minimum,
+      downloadUrl: dlUrl,
+      notes: process.env.LEARNING_ALLIED_UPDATE_NOTES ?? process.env.AQUILA_UPDATE_NOTES ?? notesDefault,
       announcements:
-        process.env.AQUILA_ANNOUNCEMENTS
-          ? JSON.parse(process.env.AQUILA_ANNOUNCEMENTS)
+        process.env.LEARNING_ALLIED_ANNOUNCEMENTS ?? process.env.AQUILA_ANNOUNCEMENTS
+          ? JSON.parse(process.env.LEARNING_ALLIED_ANNOUNCEMENTS ?? process.env.AQUILA_ANNOUNCEMENTS)
           : DEFAULT_ANNOUNCEMENTS,
     });
   } catch (error) {

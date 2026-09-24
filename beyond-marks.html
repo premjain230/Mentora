@@ -1,19 +1,19 @@
 <!DOCTYPE html>
 <html lang="en">
-<script>document.documentElement.className=localStorage.getItem('aquila-theme')==='dark'?'':'light-mode'</script>
+<script>(function(){try{var v=localStorage.getItem('learning-allied-theme')||localStorage.getItem('aquila-theme');document.documentElement.className=v==='dark'?'':'light-mode'}catch(e){document.documentElement.className=''}})();</script>
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 <meta http-equiv="Content-Security-Policy" content="default-src 'self' https:; script-src 'self' 'unsafe-inline' blob: https://www.gstatic.com https://apis.google.com https://accounts.google.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://www.googletagmanager.com https://esm.sh; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: https:; font-src 'self' https://fonts.gstatic.com; connect-src 'self' blob: https://www.googleapis.com https://apis.google.com https://accounts.google.com https://esm.sh https://www.gstatic.com https://firestore.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://analytics.vercel.com; object-src 'none'; frame-src 'self' https://www.gstatic.com https://accounts.google.com https://mentora-c6dca.firebaseapp.com">
 <meta name="description" content="Beyond Marks — explore student well-being, mental health resources, and stories from Indian exam aspirants." />
-<meta property="og:title" content="Beyond Marks - Aquila AI" />
+<meta property="og:title" content="Beyond Marks - Learning Allied" />
 <meta property="og:description" content="Student well-being, mental health resources, and stories from Indian exam aspirants." />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://aquila-sand.vercel.app/beyond-marks.html" />
 <meta name="twitter:card" content="summary_large_image" />
 <meta name="keywords" content="student well-being, mental health for students, exam stress, JEE aspirant stories, NEET motivation, Indian exam stress relief" />
 <link rel="canonical" href="https://aquila-sand.vercel.app/beyond-marks.html" />
-<title>Beyond Marks · Aquila AI</title>
+<title>Beyond Marks · Learning Allied</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%234f8cff'/><text x='16' y='22' text-anchor='middle' fill='white' font-size='18' font-weight='bold'>A</text></svg>">
 <meta name="referrer" content="no-referrer-when-downgrade">
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
@@ -666,8 +666,8 @@ a:focus-visible, button:focus-visible, [tabindex]:focus-visible {
 <aside class="sidebar" id="sidebar">
  <div class="logo-area">
   <a href="index.html" class="logo">
-   <img src="logo.svg" alt="Aquila AI" class="logo-img">
-   <span class="logo-text">Aquila AI</span>
+   <img src="logo.svg" alt="Learning Allied" class="logo-img">
+   <span class="logo-text">Learning Allied</span>
   </a>
   <button class="sidebar-close" id="sidebarClose" aria-label="Close menu">
    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
@@ -867,8 +867,8 @@ if(btn && input){
    <button class="menu-btn" id="menuBtn" aria-label="Open menu">
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
    </button>
-   <div class="topbar-mobile-logo"><img src="logo.svg" alt="Aquila AI" class="logo-img"><span class="logo-text">Aquila AI</span></div>
-   <div style="display:none;" class="model-selector"><span class="model-dot"></span>Aquila AI</div>
+   <div class="topbar-mobile-logo"><img src="logo.svg" alt="Learning Allied" class="logo-img"><span class="logo-text">Learning Allied</span></div>
+   <div style="display:none;" class="model-selector"><span class="model-dot"></span>Learning Allied</div>
    <div id="topbarGreeting" style="font-size:14px;font-weight:500;color:var(--text-secondary);margin-left:8px;">Hi, <span id="greetingName">there</span></div>
   </div>
   <div style="flex:1;display:flex;justify-content:center;max-width:480px;margin:0 16px;" class="topbar-center">
@@ -1161,7 +1161,7 @@ onAuthStateChanged(authInstance, async (user) => {
  }
 
  const plan = await getUserPlan(user.uid, user);
- document.getElementById("userPlan").textContent = plan === "pro" ? "✨ Aquila Pro" : "Free Plan";
+ document.getElementById("userPlan").textContent = plan === "pro" ? "✨ Learning Allied Pro" : "Free Plan";
 
  const userRef = doc(db, "users", user.uid);
  const userSnap = await getDoc(userRef);
@@ -1794,7 +1794,7 @@ function fmtTime(ts) {
 }());
 </script>
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"WebPage","name":"Beyond Marks - Aquila AI","description":"Student well-being, mental health resources, and stories from Indian exam aspirants.","url":"https://aquila-sand.vercel.app/beyond-marks.html","breadcrumb":{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://aquila-sand.vercel.app/"},{"@type":"ListItem","position":2,"name":"Beyond Marks","item":"https://aquila-sand.vercel.app/beyond-marks.html"}]}}
+{"@context":"https://schema.org","@type":"WebPage","name":"Beyond Marks - Learning Allied","description":"Student well-being, mental health resources, and stories from Indian exam aspirants.","url":"https://aquila-sand.vercel.app/beyond-marks.html","breadcrumb":{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://aquila-sand.vercel.app/"},{"@type":"ListItem","position":2,"name":"Beyond Marks","item":"https://aquila-sand.vercel.app/beyond-marks.html"}]}}
 </script>
 <script type="module" src="./js/avatar-sync.js"></script>
 </body>

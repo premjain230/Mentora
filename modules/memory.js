@@ -4,7 +4,7 @@
  * Stored in `users/{uid}/learning/memory` — an owner-only doc under the
  * `learning` profile path, so no Firestore rules changes are needed. The web
  * chat and the mobile app both read the latest entries and inject them into
- * the system prompt so Aquila "remembers" the student across conversations
+ * the system prompt so Learning Allied "remembers" the student across conversations
  * and devices.
  */
 

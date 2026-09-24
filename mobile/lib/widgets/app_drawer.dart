@@ -34,7 +34,7 @@ class AppDrawer extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('Aquila AI', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w700, fontSize: 15)),
+                        Text('Learning Allied', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w700, fontSize: 15)),
                         Text('Arena', style: TextStyle(color: Colors.white38, fontSize: 11)),
                       ],
                     ),

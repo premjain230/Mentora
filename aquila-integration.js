@@ -1,4 +1,4 @@
-// Aquila Integration — bridges onboarding memory + learning profile into chat
+// Learning Allied Integration — bridges onboarding memory + learning profile into chat
 import { auth, db } from "./firebase-config.js";
 
 let _cachedProfile = null;

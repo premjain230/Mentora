@@ -1,15 +1,15 @@
-# Aquila Learning Architecture — Prompt 1 Foundation
+# Learning Allied Learning Architecture — Prompt 1 Foundation
 
 > **Prompt 1/8 — Audit → Design → Foundation. No feature UI/algorithms implemented.**
 
 ## A. Final Target Architecture
 
 ```
-                    AQUILA LEARNING ENGINE (shared logic + contracts)
+                    Learning Allied LEARNING ENGINE (shared logic + contracts)
                             │
               ┌─────────────┴─────────────┐
               │                           │
-          AQUILA WEB                AQUILA MOBILE (Flutter)
+          Learning Allied WEB                Learning Allied MOBILE (Flutter)
      js/learning/*               lib/learning/*
               │                           │
               └─────────────┬─────────────┘

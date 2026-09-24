@@ -1,5 +1,5 @@
 // ─────────────────────────────────────────────────────────────
-// Aquila Growth Agent — single consolidated serverless function.
+// Learning Allied Growth Agent — single consolidated serverless function.
 //
 // One Vercel function serves every growth-agent endpoint (Hobby
 // plan allows ≤12 functions; this keeps us at 10 total). Paths are
@@ -439,7 +439,7 @@ async function adminContent(req, res, id, sub) {
 
 function contentPrompt(type, topic, audience, instructions) {
   const intro =
-    "You are the content strategist for Aquila AI, a study companion for Indian school students (JEE, NEET, boards). " +
+    "You are the content strategist for Learning Allied, a study companion for Indian school students (JEE, NEET, boards). " +
     "Create genuinely useful, honest student content. NEVER invent statistics, testimonials, or exam claims. " +
     `Format: a ready-to-share piece. Type: ${type}. Topic: ${topic}. Audience: ${audience || "students"}. ` +
     (instructions ? `Extra guidance: ${instructions}` : "");
@@ -640,7 +640,7 @@ async function adminAnalyst(req, res) {
         {
           role: "system",
           content:
-            "You are Aquila's growth analyst. You receive only real, server-collected numbers. " +
+            "You are Learning Allied's growth analyst. You receive only real, server-collected numbers. " +
             "STRICT RULES: (1) Never invent, estimate, guess or extrapolate any statistic — if you don't " +
             "have a number, say so. (2) Distinguish correlation from causation: use language like " +
             "'is associated with' and 'correlated with', never 'causes', unless the user proves it. " +
@@ -914,7 +914,7 @@ async function doResearch(topic, n) {
       {
         role: "system",
         content:
-          "You are Aquila's research analyst for educational content (Indian school students). " +
+          "You are Learning Allied's research analyst for educational content (Indian school students). " +
           "Identify REAL, common study problems and content opportunities around a topic. " +
           "NEVER invent statistics, testimonials or false claims about apps/companies. " +
           'Return strict JSON: {"items":[{"topic","problem","audience","opportunityScore"(0-100 int),' +

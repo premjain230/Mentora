@@ -1,28 +1,54 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'theme/tokens.dart';
+import 'screens/home_screen.dart';
+import 'screens/study_screen.dart';
+import 'screens/chat_screen.dart';
 import 'screens/arena_landing_screen.dart';
+import 'screens/profile_screen.dart';
+import 'widgets/bottom_nav.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   try{ await Firebase.initializeApp(); }catch(e){ debugPrint('Firebase init: $e'); }
-  runApp(const AquilaArenaApp());
+  runApp(const LearningAlliedApp());
 }
 
-class AquilaArenaApp extends StatelessWidget {
-  const AquilaArenaApp({super.key});
+class LearningAlliedApp extends StatelessWidget {
+  const LearningAlliedApp({super.key});
   @override
   Widget build(BuildContext context){
     return MaterialApp(
-      title: 'Arena — Aquila AI',
+      title: 'Learning Allied — One Product',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         brightness: Brightness.dark,
-        scaffoldBackgroundColor: const Color(0xFF070A14),
-        colorScheme: const ColorScheme.dark(primary: Color(0xFF0EA5E9), secondary: Color(0xFF8B5CF6)),
+        scaffoldBackgroundColor: LearningAlliedTokens.bgBase,
+        colorScheme: const ColorScheme.dark(primary: LearningAlliedTokens.accent, secondary: LearningAlliedTokens.accent2),
         useMaterial3: true,
-        fontFamily: 'Inter',
+        fontFamily: LearningAlliedTokens.fontMain,
       ),
-      home: const ArenaLandingScreen(),
+      home: const LearningAlliedShell(),
+    );
+  }
+}
+
+// Backward compat aliases
+typedef AquilaApp = LearningAlliedApp;
+typedef AquilaShell = LearningAlliedShell;
+
+class LearningAlliedShell extends StatefulWidget {
+  const LearningAlliedShell({super.key});
+  @override State<LearningAlliedShell> createState()=> _LearningAlliedShellState();
+}
+class _LearningAlliedShellState extends State<LearningAlliedShell> {
+  int _index = 0;
+  final _pages = const [HomeScreen(), StudyScreen(), ChatScreen(), ArenaLandingScreen(), ProfileScreen()];
+  @override
+  Widget build(BuildContext context){
+    return Scaffold(
+      body: IndexedStack(index: _index, children: _pages),
+      bottomNavigationBar: LearningAlliedBottomNav(currentIndex: _index, onTap: (i)=> setState(()=> _index=i)),
     );
   }
 }

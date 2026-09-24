@@ -68,7 +68,7 @@ firebaseReady.then(() => {
     const isChatMode = new URLSearchParams(window.location.search).get("mode") === "chat" || window.location.pathname.endsWith("chat") || window.location.pathname.endsWith("chat.html");
     const inputArea = document.querySelector(".input-area");
     const modelSel = document.querySelector(".model-selector");
-    if (modelSel) modelSel.textContent = isChatMode ? "Aquila AI — Chat" : "Aquila AI — Today";
+    if (modelSel) modelSel.textContent = isChatMode ? "Learning Allied — Chat" : "Learning Allied — Today";
     if (inputArea) inputArea.style.display = isChatMode ? "" : "none";
     populateUserCard(user);
     // Render home hub graphs (real, not fake) — ensure welcome/hub shows even before chat
@@ -79,14 +79,14 @@ firebaseReady.then(() => {
     wireNewChatBtn();
     wireSignOutBtn();
     loadRecommendations(user.uid);
-    // If navigated from chat-history.html, auto-open that chat
-    const openId = sessionStorage.getItem("aquila_open_chat");
+    // If navigated from chat-history.html, auto-open that chat (supports both keys)
+    const openId = sessionStorage.getItem("learning-allied-open-chat") || sessionStorage.getItem("aquila_open_chat");
     if(openId){
-      sessionStorage.removeItem("aquila_open_chat");
+      try{ sessionStorage.removeItem("learning-allied-open-chat"); sessionStorage.removeItem("aquila_open_chat"); }catch(e){}
       setTimeout(()=> loadChat(openId, null), 300);
     }
 
-    // Initialize Aquila learning modules
+    // Initialize Learning Allied learning modules
     import("./chat.js").then(({ ensureModulesInitialized }) => {
       ensureModulesInitialized();
     }).catch(() => {});
@@ -142,7 +142,7 @@ function populateUserCard(user) {
         if (!q) return;
         const isChat = window.location.pathname.endsWith("chat") || window.location.pathname.endsWith("chat.html") || new URLSearchParams(window.location.search).get("mode")==="chat";
         if (isChat) { const inp=document.getElementById("chatInput"); if(inp){ inp.value=q; inp.dispatchEvent(new Event("input")); import("./chat.js").then(m=>m.sendMessage()); } }
-        else { sessionStorage.setItem("aquila_pending_prompt", q); window.location.href = "/chat"; }
+        else { try{ sessionStorage.setItem("learning-allied-pending-prompt", q); sessionStorage.setItem("aquila_pending_prompt", q);}catch(e){} window.location.href = "/chat"; }
       }
     });
   }
@@ -324,4 +324,4 @@ async function loadRecommendations(uid){
 }
 
 // Expose globally for any inline onclick fallbacks
-window.mentora_signOut = signOut;
+window.mentora_signOut = window.learningAllied_signOut = window.learning_allied_signOut = signOut;

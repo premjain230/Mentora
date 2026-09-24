@@ -15,7 +15,7 @@
   <circle cx="120" cy="560" r="260" fill="#9b7bff" opacity="0.08"/>
   <rect x="70" y="70" width="96" height="96" rx="24" fill="url(#acc)"/>
   <text x="118" y="140" text-anchor="middle" font-family="Sora, Arial, sans-serif" font-weight="800" font-size="54" fill="#ffffff">A</text>
-  <text x="200" y="132" font-family="Sora, Arial, sans-serif" font-weight="700" font-size="34" fill="#ffffff">Aquila AI</text>
+  <text x="200" y="132" font-family="Sora, Arial, sans-serif" font-weight="700" font-size="34" fill="#ffffff">Learning Allied</text>
   <text x="70" y="250" font-family="Sora, Arial, sans-serif" font-weight="800" font-size="66" fill="#f1f2f8">JEE Study Plan</text>
   <text x="70" y="330" font-family="Sora, Arial, sans-serif" font-weight="600" font-size="40" fill="#9aa0b5">How to make one, with a timetable</text>
   <rect x="70" y="430" width="520" height="6" rx="3" fill="url(#acc)"/>

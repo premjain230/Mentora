@@ -1,5 +1,5 @@
 // ─────────────────────────────────────────────────────────────
-// Aquila Growth Agent — shared analytics module.
+// Learning Allied Growth Agent — shared analytics module.
 //
 // Reads/writes growth data with the Admin SDK:
 //   growth_events/{id}   — first-party event stream { ev, visitorId, uid, props, ts, day }

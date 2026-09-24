@@ -1,5 +1,5 @@
 /**
- * Aquila Learning — Learner Model Orchestrator (Prompt 2)
+ * Learning Allied Learning — Learner Model Orchestrator (Prompt 2)
  * Re-exports and migration helper for legacy users.
  */
 

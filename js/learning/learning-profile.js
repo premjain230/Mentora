@@ -1,5 +1,5 @@
 /**
- * Aquila Learning — UserLearningProfile service (Prompt 1 foundation)
+ * Learning Allied Learning — UserLearningProfile service (Prompt 1 foundation)
  * Additive: reads/writes users/{uid}/learning/profile via existing Firestore rules.
  * Coexists with legacy fields on users/{uid} root doc.
  */

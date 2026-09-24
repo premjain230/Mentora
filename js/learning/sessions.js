@@ -1,5 +1,5 @@
 /**
- * Aquila Learning — Learning Sessions (Prompt 1 foundation)
+ * Learning Allied Learning — Learning Sessions (Prompt 1 foundation)
  * Unified session model co-existing with existing users/{uid}/studySessions.
  * New path: users/{uid}/sessions/{sessionId}
  */

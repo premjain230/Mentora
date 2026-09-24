@@ -1,5 +1,5 @@
 /**
- * Aquila Learning — Adaptive Onboarding (Prompt 2)
+ * Learning Allied Learning — Adaptive Onboarding (Prompt 2)
  * Graph-driven interview: tiered, branchable, shared Web ↔ Android.
  * Every answer persists immediately (partial save) to users/{uid}/learning/profile.
  */

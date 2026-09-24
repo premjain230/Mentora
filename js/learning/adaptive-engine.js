@@ -1,5 +1,5 @@
 ﻿/**
- * Aquila Adaptive Learning Engine V1 — The central learning loop
+ * Learning Allied Adaptive Learning Engine V1 — The central learning loop
  * 
  * Connects: Events → Evidence → Mastery → Retention → Curriculum → Recommendations → Actions → New Evidence
  * 

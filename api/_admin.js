@@ -1,5 +1,5 @@
 // ─────────────────────────────────────────────────────────────
-// Aquila Growth Agent — shared admin/auth server helpers.
+// Learning Allied Growth Agent — shared admin/auth server helpers.
 //
 // Every /api/admin/*, /api/marketing/* and /api/cron/* endpoint
 // must call requireAdmin/verifyCron before touching data.
@@ -293,7 +293,7 @@ async function checkAndIncrementChat(uid) {
       plan,
       used,
       limit,
-      error: `Daily chat limit reached (${limit}). Upgrade to Aquila Pro for unlimited access.`,
+      error: `Daily chat limit reached (${limit}). Upgrade to Learning Allied Pro for unlimited access.`,
     };
   }
 

@@ -1,5 +1,5 @@
 /**
- * Aquila Learning — Recommendation Engine (Prompt 1 foundation)
+ * Learning Allied Learning — Recommendation Engine (Prompt 1 foundation)
  * Prompt 6 will implement the ranking algorithm. This file defines the
  * interface and shared priority rules.
  */

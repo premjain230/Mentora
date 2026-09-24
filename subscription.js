@@ -25,7 +25,7 @@ export const PLANS = {
     plannerMinutes: 30,
   },
   pro: {
-    label: "Aquila Pro",
+    label: "Learning Allied Pro",
     chatLimit: Infinity,
     analysisLimit: Infinity,
     plannerMinutes: Infinity,

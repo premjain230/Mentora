@@ -1,5 +1,5 @@
 /**
- * Aquila Learning — StudentModel service (Prompt 1 foundation)
+ * Learning Allied Learning — StudentModel service (Prompt 1 foundation)
  * Web equivalent of modules/student-model.js but versioned and scoped to the
  * new learning engine Firestore paths.
  */

@@ -1,5 +1,5 @@
 /**
- * Aquila Arena — Progress Model + Sync (shared Web & Mobile)
+ * Learning Allied Arena — Progress Model + Sync (shared Web & Mobile)
  * Firestore: users/{uid}/arenaProgress/{subjectKey} + users/{uid}/arenaEvents/{eventId}
  * Client never trusts local-only defeated; server transaction validates prerequisites.
  */

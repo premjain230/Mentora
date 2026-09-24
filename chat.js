@@ -65,9 +65,9 @@ const ICON_COPY_CHECK = `<svg width="13" height="13" viewBox="0 0 24 24" fill="n
 const ICON_SHARE = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>`;
 
 (function injectActionButtonStyles() {
-  if (document.getElementById("aquila-action-styles")) return;
+  if (document.getElementById("aquila-action-styles") || document.getElementById("learning-allied-action-styles")) return;
   const style = document.createElement("style");
-  style.id = "aquila-action-styles";
+  style.id = "learning-allied-action-styles";
   style.textContent = `
     .ai-actions {
       display: flex;
@@ -261,7 +261,7 @@ firebaseReady.then(() => {
     }
     // On every auth, re-check limit so UI stays locked for free users even after new chat / reload (fixes bypass)
     if (user) {
-      window.__aquila_uid = user.uid;
+      window.__aquila_uid = window.__learningAlliedUid = user.uid;
       import("./limits.js").then(({ preCheckLimit }) => preCheckLimit(user.uid, "chat").catch(()=>{})).catch(()=>{});
     }
   });
@@ -284,7 +284,7 @@ export function resetChat() {
   if (chatArea) chatArea.innerHTML = "";
   renderWelcome(chatArea);
   // Re-apply limit lock after new chat — free users cannot bypass by clicking New Chat
-  const uid = auth?.currentUser?.uid || window.__aquila_uid;
+  const uid = auth?.currentUser?.uid || window.__learningAlliedUid || window.__aquila_uid;
   if (uid) {
     import("./limits.js").then(({ preCheckLimit }) => preCheckLimit(uid, "chat").catch(()=>{})).catch(()=>{});
   }
@@ -301,10 +301,10 @@ export function renderWelcome(container) {
   // for homeHub, don't return if it exists — we need to populate the static one with real data
   const firstName = auth?.currentUser?.displayName?.split(" ")[0] || "";
   const greeting  = firstName ? `What are we tackling today, ${firstName}?` : "What are we tackling today?";
-  // Consume pending prompt from home search
-  const pending = sessionStorage.getItem("aquila_pending_prompt");
+  // Consume pending prompt from home search (support both keys for migration)
+  const pending = sessionStorage.getItem("learning-allied-pending-prompt") || sessionStorage.getItem("aquila_pending_prompt");
   if (pending && isChatMode) {
-    sessionStorage.removeItem("aquila_pending_prompt");
+    try{ sessionStorage.removeItem("learning-allied-pending-prompt"); sessionStorage.removeItem("aquila_pending_prompt"); }catch(e){}
     setTimeout(()=> { const inp=document.getElementById("chatInput"); if(inp){ inp.value=pending; inp.dispatchEvent(new Event("input")); sendMessage(); } }, 250);
   }
 
@@ -317,7 +317,7 @@ export function renderWelcome(container) {
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a3 3 0 0 0-3 3v1a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/><path d="M19 10a7 7 0 0 1-14 0"/><path d="M12 17a5 5 0 0 0 5-5"/><path d="M12 17v4"/><path d="M8 21h8"/></svg>
     </div>
     <h1 style="font-family:var(--font-display);font-size:28px;font-weight:700;letter-spacing:-0.04em;line-height:1.15;color:var(--text-primary);">${greeting}</h1>
-    <p style="font-size:14px;color:var(--text-secondary);max-width:480px;line-height:1.6;font-weight:400;letter-spacing:-0.01em;">Aquila is your intelligent learning companion — ask anything, or start from a suggested path. It remembers your syllabus and adapts to you.</p>
+    <p style="font-size:14px;color:var(--text-secondary);max-width:480px;line-height:1.6;font-weight:400;letter-spacing:-0.01em;">Learning Allied is your intelligent learning companion — ask anything, or start from a suggested path. It remembers your syllabus and adapts to you.</p>
     <div class="suggestion-grid">
       <div class="suggestion-card" tabindex="0" role="button" onclick="runPrompt('Explain a concept I find hard')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();runPrompt('Explain a concept I find hard')}">
         <div class="sug-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6M10 22h4M12 2a7 7 0 0 0-4 12.7c.6.5 1 1.3 1 2.1h6c0-.8.4-1.6 1-2.1A7 7 0 0 0 12 2z"/></svg></div>
@@ -867,7 +867,7 @@ async function runAiReply(chatRef, rawText, searchResults, searchError, searchSk
     }
 
     // Long-term memory (shared with the mobile app) — the most recent entries
-    // are injected so Aquila remembers the student across conversations.
+    // are injected so Learning Allied remembers the student across conversations.
     try {
       const memories = await loadMemory(auth?.currentUser?.uid);
       if (Array.isArray(memories) && memories.length > 0) {
@@ -979,7 +979,7 @@ async function runAiReply(chatRef, rawText, searchResults, searchError, searchSk
         const loopDiv = document.createElement("div");
         loopDiv.style.cssText = "margin-top:12px;padding:14px;border:1px solid rgba(167,139,250,0.25);border-radius:12px;background:rgba(167,139,250,0.08);";
         loopDiv.innerHTML = `<div style="font-weight:600;margin-bottom:6px;">🔄 Let's try a different way</div><div style="font-size:12px;color:var(--text-secondary);margin-bottom:10px;">It looks like this explanation isn't clicking. I'll find exactly where the problem is.</div><div style="display:flex;gap:8px;flex-wrap:wrap;"><button class="btn-outline" style="flex:1;">Explain differently</button><button class="btn-outline" style="flex:1;">Try an example</button><button class="btn-outline" style="flex:1;">Practice together</button><button class="btn-ghost" style="flex:1;">Skip for now</button></div>`;
-        loopDiv.querySelectorAll("button").forEach(b=> b.addEventListener("click", ()=> { loopDiv.remove(); window.__aquilaToast("Loop: "+b.textContent+" — coming soon"); }));
+        loopDiv.querySelectorAll("button").forEach(b=> b.addEventListener("click", ()=> { loopDiv.remove(); (window.__learningAlliedToast||window.__aquilaToast)("Loop: "+b.textContent+" — coming soon"); }));
         if (aiBubble) aiBubble.appendChild(loopDiv);
       }
     } catch {}
@@ -1003,7 +1003,7 @@ async function runAiReply(chatRef, rawText, searchResults, searchError, searchSk
     console.error(err);
     console.error(err?.stack);
     if (aiBubble) {
-      const friendly = safeErrorMessage(err, "Something went wrong while connecting to Aquila.");
+      const friendly = safeErrorMessage(err, "Something went wrong while connecting to Learning Allied.");
       aiBubble.innerHTML = `
         <div style="display:flex;align-items:flex-start;gap:10px;flex-wrap:wrap;">
           <span style="color:#ff6b6b;font-size:14px;line-height:1.6;">\u26a0 ${escapeHtml(friendly)}</span>
@@ -1098,8 +1098,8 @@ function createActionButtons(rawText) {
   shareBtn.innerHTML = `${ICON_SHARE}<span>Share</span>`;
   shareBtn.addEventListener("click", () => {
     const sharePayload = {
-      title: "Aquila AI",
-      text: `Here's what Aquila AI said:\n\n${safeText}`,
+      title: "Learning Allied",
+      text: `Here's what Learning Allied said:\n\n${safeText}`,
     };
     try {
       if (navigator.share) {
@@ -1229,7 +1229,7 @@ async function streamGroqResponse(bubble, systemPrompt) {
     if (res.status === 429 || err?.error?.code === "limit_reached") {
       let info = {};
       try { info = err?.error || {}; } catch { /* ignore */ }
-      const uid = auth?.currentUser?.uid || window.__aquila_uid || "";
+      const uid = auth?.currentUser?.uid || window.__learningAlliedUid || window.__aquila_uid || "";
       showLimitModal({ type: "chat", plan: info.plan, used: info.used, limit: info.limit, uid });
       throw new Error("Daily chat limit reached.");
     }
@@ -1468,12 +1468,16 @@ function typingIndicator() {
     ${[0, 200, 400].map(d =>
       `<span style="
         width:6px;height:6px;border-radius:50%;background:#6c63ff;
-        animation:aquilaDot 1.2s ease-in-out ${d}ms infinite;
+        animation:learningAlliedDot 1.2s ease-in-out ${d}ms infinite;
         display:inline-block;
       "></span>`
     ).join("")}
   </span>
   <style>
+    @keyframes learningAlliedDot {
+      0%,80%,100%{transform:translateY(0);opacity:.4}
+      40%{transform:translateY(-6px);opacity:1}
+    }
     @keyframes aquilaDot {
       0%,80%,100%{transform:translateY(0);opacity:.4}
       40%{transform:translateY(-6px);opacity:1}

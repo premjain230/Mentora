@@ -1,19 +1,19 @@
 <!DOCTYPE html>
 <html lang="en">
-<script>document.documentElement.className=localStorage.getItem('aquila-theme')==='dark'?'':'light-mode'</script>
+<script>(function(){try{var v=localStorage.getItem('learning-allied-theme')||localStorage.getItem('aquila-theme');document.documentElement.className=v==='dark'?'':'light-mode'}catch(e){document.documentElement.className=''}})();</script>
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 <meta http-equiv="Content-Security-Policy" content="default-src 'self' https:; script-src 'self' 'unsafe-inline' blob: https://www.gstatic.com https://apis.google.com https://accounts.google.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://www.googletagmanager.com https://esm.sh; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: https:; font-src 'self' https://fonts.gstatic.com; connect-src 'self' blob: https://www.googleapis.com https://apis.google.com https://accounts.google.com https://esm.sh https://www.gstatic.com https://firestore.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://analytics.vercel.com; object-src 'none'; frame-src 'self' https://www.gstatic.com https://accounts.google.com https://mentora-c6dca.firebaseapp.com">
-<meta name="description" content="Upgrade your Aquila AI subscription for Pro features — unlimited quizzes, advanced analytics & priority support." />
-<meta property="og:title" content="Subscription - Aquila AI" />
-<meta property="og:description" content="Upgrade your Aquila AI subscription for Pro features." />
+<meta name="description" content="Upgrade your Learning Allied subscription for Pro features — unlimited quizzes, advanced analytics & priority support." />
+<meta property="og:title" content="Subscription - Learning Allied" />
+<meta property="og:description" content="Upgrade your Learning Allied subscription for Pro features." />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://aquila-sand.vercel.app/subscription.html" />
 <meta name="twitter:card" content="summary_large_image" />
-<meta name="keywords" content="Aquila AI Pro, subscription, premium features, unlimited quizzes, study analytics, priority support" />
+<meta name="keywords" content="Learning Allied Pro, subscription, premium features, unlimited quizzes, study analytics, priority support" />
 <link rel="canonical" href="https://aquila-sand.vercel.app/subscription.html" />
-<title>Subscription — Aquila AI</title>
+<title>Subscription — Learning Allied</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%234f8cff'/><text x='16' y='22' text-anchor='middle' fill='white' font-size='18' font-weight='bold'>A</text></svg>">
 <meta name="referrer" content="no-referrer-when-downgrade">
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
@@ -212,8 +212,8 @@
 <aside class="sidebar" id="sidebar">
  <div class="logo-area">
   <a href="index.html" class="logo">
-   <img src="logo.svg" alt="Aquila AI" class="logo-img">
-   <span class="logo-text">Aquila AI</span>
+   <img src="logo.svg" alt="Learning Allied" class="logo-img">
+   <span class="logo-text">Learning Allied</span>
   </a>
   <button class="sidebar-close" id="sidebarClose" aria-label="Close menu">
    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
@@ -413,8 +413,8 @@ if(btn && input){
    <button class="menu-btn" id="menuBtn" aria-label="Open menu">
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
    </button>
-   <div class="topbar-mobile-logo"><img src="logo.svg" alt="Aquila AI" class="logo-img"><span class="logo-text">Aquila AI</span></div>
-   <div style="display:none;" class="model-selector"><span class="model-dot"></span>Aquila AI</div>
+   <div class="topbar-mobile-logo"><img src="logo.svg" alt="Learning Allied" class="logo-img"><span class="logo-text">Learning Allied</span></div>
+   <div style="display:none;" class="model-selector"><span class="model-dot"></span>Learning Allied</div>
    <div id="topbarGreeting" style="font-size:14px;font-weight:500;color:var(--text-secondary);margin-left:8px;">Hi, <span id="greetingName">there</span></div>
   </div>
   <div style="flex:1;display:flex;justify-content:center;max-width:480px;margin:0 16px;" class="topbar-center">
@@ -559,7 +559,7 @@ if(btn && input){
   document.getElementById('mainContent').innerHTML = `
    <div class="page-header">
     <h1>Your <span>Subscription</span></h1>
-    <p>Manage your plan and track daily usage across Aquila AI.</p>
+    <p>Manage your plan and track daily usage across Learning Allied.</p>
    </div>
 
    <!-- Usage -->
@@ -622,7 +622,7 @@ if(btn && input){
      <div class="plan-ribbon">✨ Early Access</div>
      <div class="plan-header">
       <div class="plan-name">Premium</div>
-      <div class="plan-title pro-gradient">Aquila Pro</div>
+      <div class="plan-title pro-gradient">Learning Allied Pro</div>
       <div class="plan-price"><strong>Free*</strong> <span class="per">during Early Access</span></div>
      </div>
      <div class="plan-divider"></div>
@@ -634,7 +634,7 @@ if(btn && input){
       <li class="plan-feature"><span class="check violet"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></span><span class="feat-text"><strong>Early access to new features</strong><span>Be the first to try everything</span></span></li>
      </ul>
      ${isPro ? `
-      <button class="plan-btn requested" disabled>✓ You have Aquila Pro</button>
+      <button class="plan-btn requested" disabled>✓ You have Learning Allied Pro</button>
      ` : `
       <button class="plan-btn request" id="requestBtn" onclick="toggleContact()">
        ✨ Request Pro Access — Free
@@ -648,13 +648,13 @@ if(btn && input){
          <span class="cl-sub">Message us directly for instant access</span>
         </span>
        </a>
-       <a href="mailto:hello@aquila.ai?subject=Pro Access Request&body=Hi, I'd like to request Aquila Pro access. My email is: ${user.email}" class="contact-link">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
-        <span>
-         <span class="cl-label">Send an email</span>
-         <span class="cl-sub">aiaquilaoffical@gmail.com — we'll reply within 24h</span>
-        </span>
-       </a>
+        <a href="mailto:hello@learningallied.com?subject=Pro Access Request&body=Hi, I'd like to request Learning Allied Pro access. My email is: ${user.email}" class="contact-link">
+         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+         <span>
+          <span class="cl-label">Send an email</span>
+          <span class="cl-sub">hello@learningallied.com — we'll reply within 24h</span>
+         </span>
+        </a>
        <div class="contact-divider"></div>
        <div class="contact-label">Or fill this quick form</div>
        <div class="contact-form">
@@ -680,10 +680,10 @@ if(btn && input){
     </div>
     <div class="faq-item">
      <div class="faq-q" onclick="toggleFaq(this)">
-      Is Aquila Pro really free during Early Access?
+      Is Learning Allied Pro really free during Early Access?
       <svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
      </div>
-     <div class="faq-a">Yes — Aquila Pro is completely free during our Early Access period. No credit card, no payment of any kind. We're giving early supporters unlimited access as a thank-you for helping us grow.</div>
+     <div class="faq-a">Yes — Learning Allied Pro is completely free during our Early Access period. No credit card, no payment of any kind. We're giving early supporters unlimited access as a thank-you for helping us grow.</div>
     </div>
     <div class="faq-item">
      <div class="faq-q" onclick="toggleFaq(this)">
@@ -694,10 +694,10 @@ if(btn && input){
     </div>
     <div class="faq-item">
      <div class="faq-q" onclick="toggleFaq(this)">
-      What exams does Aquila AI support?
+      What exams does Learning Allied support?
       <svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
      </div>
-     <div class="faq-a">Aquila AI is built specifically for Indian students preparing for JEE (Main & Advanced), NEET, and Board exams (Class 10 & 12). Our AI is tuned to the NCERT and JEE/NEET syllabi.</div>
+     <div class="faq-a">Learning Allied is built specifically for Indian students preparing for JEE (Main & Advanced), NEET, and Board exams (Class 10 & 12). Our AI is tuned to the NCERT and JEE/NEET syllabi.</div>
     </div>
    </div>
   `;
@@ -734,7 +734,7 @@ if(btn && input){
    // Supports both old (userPlanLabel) and current (userPlan) markup
    try {
     const planEl = document.getElementById('userPlanLabel') || document.getElementById('userPlan') || document.querySelector('.user-plan');
-    if (planEl) planEl.textContent = plan === 'pro' ? '✨ Aquila Pro' : 'Free Plan';
+    if (planEl) planEl.textContent = plan === 'pro' ? '✨ Learning Allied Pro' : 'Free Plan';
    } catch (e) { console.warn('plan badge skipped', e); }
 
    const ls = document.getElementById('loadingState');
@@ -788,7 +788,7 @@ if(btn && input){
 </script>
 
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"WebPage","name":"Subscription - Aquila AI","description":"Upgrade your Aquila AI subscription for Pro features.","url":"https://aquila-sand.vercel.app/subscription.html","breadcrumb":{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://aquila-sand.vercel.app/"},{"@type":"ListItem","position":2,"name":"Subscription","item":"https://aquila-sand.vercel.app/subscription.html"}]}}
+{"@context":"https://schema.org","@type":"WebPage","name":"Subscription - Learning Allied","description":"Upgrade your Learning Allied subscription for Pro features.","url":"https://aquila-sand.vercel.app/subscription.html","breadcrumb":{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://aquila-sand.vercel.app/"},{"@type":"ListItem","position":2,"name":"Subscription","item":"https://aquila-sand.vercel.app/subscription.html"}]}}
 </script>
 <script type="module" src="./js/avatar-sync.js"></script>
 </body>

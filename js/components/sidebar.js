@@ -1,6 +1,6 @@
 /**
  * Sidebar Component — DRY for 7 pages (home, chat, analyze, planner, study-session, profile, subscription)
- * Injects the Aquila sidebar HTML + handles overlay, toggle, and active nav highlighting.
+ * Injects the Learning Allied sidebar HTML + handles overlay, toggle, and active nav highlighting.
  * Usage: <div id="sidebarMount"></div> + <script type="module"> import { mountSidebar } from "./js/components/sidebar.js"; mountSidebar(); </script>
  * Clean URLs: hrefs use /home, /arena etc. (vercel cleanUrls:true serves *.html without extension)
  */
@@ -21,8 +21,8 @@ export function mountSidebar({ activeHref } = {}) {
     <aside class="sidebar" id="sidebar">
       <div class="logo-area">
         <a href="/" class="logo">
-          <img src="logo.svg" alt="Aquila AI" class="logo-img">
-          <span class="logo-text">Aquila AI</span>
+          <img src="logo.svg" alt="Learning Allied" class="logo-img">
+          <span class="logo-text">Learning Allied</span>
         </a>
         <button class="sidebar-close" id="sidebarClose" aria-label="Close menu">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>

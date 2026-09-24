@@ -1,5 +1,5 @@
 /**
- * Aquila Learning — Mastery Engine (Prompt 1 foundation)
+ * Learning Allied Learning — Mastery Engine (Prompt 1 foundation)
  * Defines the single mastery calculation contract. Full spaced-repetition
  * algorithm is Prompt 5. No client may implement a divergent formula.
  */

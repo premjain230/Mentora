@@ -1,5 +1,5 @@
 /**
- * Aquila Learning Engine — Web barrel export
+ * Learning Allied Learning Engine — Web barrel export
  * Import via: import * as Learning from "./js/learning/index.js"
  */
 

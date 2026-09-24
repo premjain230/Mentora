@@ -1,4 +1,4 @@
-/* Aquila AI — mobile navigation (mnav) — extracted for index.html/quiz.html */
+/* Learning Allied — mobile navigation (mnav) — extracted for index.html/quiz.html */
 .mnav-btn {
   position: fixed;
   top: calc(16px + env(safe-area-inset-top));

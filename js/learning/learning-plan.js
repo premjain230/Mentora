@@ -1,5 +1,5 @@
 /**
- * Aquila Learning — LearningPlan service (Prompt 1 foundation)
+ * Learning Allied Learning — LearningPlan service (Prompt 1 foundation)
  * Coexists with existing studyPlans / tasks collections.
  * New path: users/{uid}/learningPlans/{planId}
  */

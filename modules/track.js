@@ -1,5 +1,5 @@
 /**
- * Aquila Growth Agent — first-party analytics.
+ * Learning Allied Growth Agent — first-party analytics.
  *
  * Lightweight, privacy-conscious event tracking shared by every page.
  *  - anonymous visitorId cookie (aq_visitor)

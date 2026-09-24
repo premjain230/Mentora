@@ -1,4 +1,4 @@
-/* Aquila Graphs — cool, premium, CSS-only where possible */
+/* Learning Allied Graphs — cool, premium, CSS-only where possible */
 .aq-graph-card{background:var(--bg-card);border:1px solid var(--border);border-radius:16px;padding:16px;position:relative;overflow:hidden}
 .aq-graph-card::before{content:"";position:absolute;inset:0;background:radial-gradient(600px 200px at 20% 0%, rgba(0,212,255,0.08), transparent 60%);pointer-events:none}
 .aq-radial{--p:0;--c:var(--accent);width:96px;height:96px;border-radius:50%;background:conic-gradient(var(--c) calc(var(--p)*1%), rgba(255,255,255,0.08) 0);display:grid;place-items:center;position:relative;animation:aq-spin-in .6s var(--ease-out)}

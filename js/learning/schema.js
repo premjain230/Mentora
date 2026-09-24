@@ -1,5 +1,5 @@
 /**
- * Aquila Learning Engine — Schema Versioning & Constants
+ * Learning Allied Learning Engine — Schema Versioning & Constants
  * Platform-independent. Web + Android must use identical versions.
  *
  * This is Prompt 1/8 foundation: no feature logic yet, only contracts.

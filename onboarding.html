@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
-<script>document.documentElement.className=localStorage.getItem('aquila-theme')==='dark'?'':'light-mode'</script>
+<script>(function(){try{var v=localStorage.getItem('learning-allied-theme')||localStorage.getItem('aquila-theme');document.documentElement.className=v==='dark'?'':'light-mode'}catch(e){document.documentElement.className=''}})();</script>
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
 <meta http-equiv="Content-Security-Policy" content="default-src 'self' https:; script-src 'self' 'unsafe-inline' blob: https://www.gstatic.com https://apis.google.com https://accounts.google.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://www.googletagmanager.com https://esm.sh; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: https:; font-src 'self' https://fonts.gstatic.com; connect-src 'self' blob: https://www.googleapis.com https://apis.google.com https://accounts.google.com https://esm.sh https://www.gstatic.com https://firestore.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://analytics.vercel.com; object-src 'none'; frame-src 'self' https://www.gstatic.com https://accounts.google.com https://mentora-c6dca.firebaseapp.com">
-<title>Get to know you — Aquila AI</title>
+<title>Get to know you — Learning Allied</title>
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet"/>
 <link rel="stylesheet" href="/css/tokens.css"/>
 <link rel="stylesheet" href="/css/base.css"/>
@@ -54,7 +54,7 @@
 <div id="splash" class="splash"><div style="display:flex;gap:6px;"><span class="dot"></span><span class="dot" style="animation-delay:120ms"></span><span class="dot" style="animation-delay:240ms"></span></div><div style="font-family:var(--font-mono);font-size:11px;letter-spacing:.08em;color:var(--text-muted);text-transform:uppercase;">Loading your profile</div></div>
 <div class="wrap" id="app" style="display:none;">
  <div class="top">
-  <a href="home.html" class="logo"><img src="logo.svg" alt="Aquila"/>Aquila AI</a>
+  <a href="home.html" class="logo"><img src="logo.svg" alt="Learning Allied"/>Learning Allied</a>
   <div class="progress"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
   <div class="stage" id="stageLabel">Academic</div>
  </div>
@@ -80,17 +80,17 @@ let profileRaw=null;
 
 function whyText(q){
  const map={
-  grade:"Helps Aquila pick the right level and curriculum.",
+  grade:"Helps Learning Allied pick the right level and curriculum.",
   board:"So recommendations match your board's syllabus.",
   track:"Determines school vs competitive focus.",
-  subjects:"Aquila tracks each subject separately.",
+  subjects:"Learning Allied tracks each subject separately.",
   goals:"Prioritizes what matters most to you.",
   prioritySubject:"Decides what to surface first.",
   dailyHours:"Needed for realistic planning.",
   difficultSubjects:"Stored as self-reported evidence — not mastery yet.",
   learningStyle:"Only preferences, not a fixed trait.",
  };
- return map[q.id] || "This helps Aquila personalize your learning.";
+ return map[q.id] || "This helps Learning Allied personalize your learning.";
 }
 
 function stageFor(q){
@@ -422,7 +422,7 @@ function renderSummary(alreadyComplete){
  const style = answers["preferences.preferredStyle"] || "—";
  card.innerHTML=`
   <div class="q-title">${alreadyComplete?'Welcome back':'You’re all set'}</div>
-  <div class="q-why">Aquila will use this as your starting point and keep learning from your actual work.</div>
+  <div class="q-why">Learning Allied will use this as your starting point and keep learning from your actual work.</div>
   <div class="summary-grid">
    <div class="sum-card"><div class="sum-label">Primary priority</div><div class="sum-val">${pri}</div></div>
    <div class="sum-card"><div class="sum-label">Subjects</div><div class="sum-val">${subjects}</div></div>
@@ -433,7 +433,7 @@ function renderSummary(alreadyComplete){
    <div class="sum-card"><div class="sum-label">Preferred interaction</div><div class="sum-val">${style}</div></div>
   </div>
   <div style="background:rgba(167,139,250,0.08);border:1px solid rgba(167,139,250,0.2);border-radius:12px;padding:12px 14px;margin-bottom:14px;">
-   <div style="font-size:13px;font-weight:600;">Aquila will initially prioritize ${pri} and start by checking your fundamentals.</div>
+   <div style="font-size:13px;font-weight:600;">Learning Allied will initially prioritize ${pri} and start by checking your fundamentals.</div>
    <div style="font-size:12px;color:var(--text-secondary);margin-top:4px;">Your mastery stays evidence-driven — difficulties above are self-report until confirmed by practice.</div>
   </div>
   <div class="nav">
@@ -442,7 +442,7 @@ function renderSummary(alreadyComplete){
   </div>
   <div style="margin-top:14px;text-align:center;">
    <a href="quiz.html" style="font-size:13px;color:var(--accent2);">Want a quick check of your current level? Take a 5-min assessment →</a>
-   <div style="font-size:11px;color:var(--text-muted);margin-top:4px;">Optional — skipping still works, Aquila learns from real work.</div>
+   <div style="font-size:11px;color:var(--text-muted);margin-top:4px;">Optional — skipping still works, Learning Allied learns from real work.</div>
   </div>`;
 }
 

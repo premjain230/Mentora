@@ -1,4 +1,4 @@
-# Aquila Learning System — Final Architecture
+# Learning Allied Learning System — Final Architecture
 
 ## 1. Learning Architecture
 User → Learning Event → Evidence (sourceWeight*hint*recency) → Mastery V2 (weighted + small-sample + confidence) → Retention V1 (interval/priority/reviewState) + Misconceptions → Curriculum Graph (22 concepts, prerequisites, learningPath) → Recommendation V1 (score 0..1, diversity max3) → NextBestAction → Learn/Practice/Review/Diagnostic → New Evidence → loop. Server = truth.

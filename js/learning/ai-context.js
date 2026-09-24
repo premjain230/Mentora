@@ -1,5 +1,5 @@
 /**
- * Aquila Learning — AI Context Builder (Prompt 2)
+ * Learning Allied Learning — AI Context Builder (Prompt 2)
  * Filters LearnerSnapshot to the minimal relevant context for the current turn.
  * Privacy: never includes email/photoURL/account PII.
  */

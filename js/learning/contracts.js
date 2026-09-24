@@ -1,5 +1,5 @@
 /**
- * Aquila Learning Engine — Shared Data Contracts (Platform-Independent)
+ * Learning Allied Learning Engine — Shared Data Contracts (Platform-Independent)
  *
  * Web (js/learning/*) and Android (lib/learning/*) MUST use identical shapes.
  * All timestamps are ISO-8601 strings (new Date().toISOString()).

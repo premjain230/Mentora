@@ -1,4 +1,4 @@
-# Aquila Arena — Mobile (Flutter)
+# Learning Allied Arena — Mobile (Flutter)
 
 Same product, same game, same progress as web.
 

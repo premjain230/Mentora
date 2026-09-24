@@ -6,7 +6,7 @@
 // - Session view: live timer ring, objectives checklist, key points, practice
 //   questions, focus tips. Persists to `users/{uid}/studySessions/{sessionId}`.
 // - History: recent past sessions from the same Firestore collection (shared
-//   with the Aquila mobile app).
+//   with the Learning Allied mobile app).
 
 import { auth, db, firebaseReady } from "./firebase-config.js";
 import {
@@ -81,7 +81,7 @@ function renderSetup() {
 
   content().innerHTML = `
     <h1 class="page-title">Study Session</h1>
-    <p class="page-sub">A guided focus block — pick a subject and topic, set a timer, and Aquila builds you goals, key points and practice questions to work through.</p>
+    <p class="page-sub">A guided focus block — pick a subject and topic, set a timer, and Learning Allied builds you goals, key points and practice questions to work through.</p>
 
     <div class="card fade-up">
       <div class="card-label">Set up your session</div>
@@ -116,7 +116,7 @@ function renderHistory(list) {
   const wrap = document.getElementById("ssHistory");
   if (!wrap) return;
   if (!list.length) {
-    wrap.innerHTML = `<div class="empty-state">No sessions yet. Start your first guided focus block above — it stays synced with the Aquila app.</div>`;
+    wrap.innerHTML = `<div class="empty-state">No sessions yet. Start your first guided focus block above — it stays synced with the Learning Allied app.</div>`;
     return;
   }
   wrap.innerHTML = list.map((s) => {
@@ -222,8 +222,8 @@ async function startSession() {
   const activeChip = document.querySelector(".duration-chip.active");
   const durationMinutes = parseInt(activeChip?.dataset.min, 10) || 25;
 
-  if (!subject) return window.__aquilaToast("Please enter a subject.");
-  if (!topic)   return window.__aquilaToast("Please enter a topic.");
+  if (!subject) return (window.__learningAlliedToast||window.__aquilaToast)("Please enter a subject.");
+  if (!topic)   return (window.__learningAlliedToast||window.__aquilaToast)("Please enter a topic.");
 
   const btn = document.getElementById("ssStartBtn");
   btn.disabled = true;
@@ -272,7 +272,7 @@ async function startSession() {
   } catch (e) {
     btn.disabled = false;
     btn.textContent = "Start Session";
-    window.__aquilaToast(e.message || "Could not create your session right now.");
+    (window.__learningAlliedToast||window.__aquilaToast)(e.message || "Could not create your session right now.");
   }
 }
 
@@ -365,7 +365,7 @@ async function endSession() {
     }catch{}
   }
 
-  window.__aquilaToast("Session saved — nice focus! 🎉");
+  (window.__learningAlliedToast||window.__aquilaToast)("Session saved — nice focus! 🎉");
   loadHistory();
   renderSetup();
 }

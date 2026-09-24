@@ -22,7 +22,7 @@ const REASON_EXPLANATIONS = {
   misconception_risk: "Review this concept — repeated errors suggest a misconception.",
   recent_mistakes: "Practice this concept because recent answers show difficulty.",
   low_mastery: "Practice this concept — mastery is still low despite sufficient evidence.",
-  low_evidence: "Learn this concept because Aquila does not have enough evidence yet.",
+  low_evidence: "Learn this concept because Learning Allied does not have enough evidence yet.",
   priority_goal: "Priority for your current goals.",
   review_soon: "Review soon to keep this fresh.",
   stable_maintenance: "Stable — no urgent action needed.",

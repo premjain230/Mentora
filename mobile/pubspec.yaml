@@ -1,7 +1,7 @@
-name: aquila_arena
-description: Aquila Arena — Flutter mobile twin for web Arena. Same syllabus, same progress, same Firestore backend.
+name: learning_allied_arena
+description: Learning Allied Arena — Flutter mobile twin for web Arena. Same syllabus, same progress, same Firestore backend.
 publish_to: 'none'
-version: 1.0.0+1
+version: 1.1.0+10
 
 environment:
   sdk: ">=3.2.0 <4.0.0"

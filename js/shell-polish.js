@@ -1,8 +1,8 @@
-/* Aquila — shell polish (nav, search, drawer, a11y, premium feel)
+/* Learning Allied — shell polish (nav, search, drawer, a11y, premium feel)
    Loaded on every app page. Safe to include multiple times. */
 (function () {
-  if (window.__aquilaShellPolish) return;
-  window.__aquilaShellPolish = true;
+  if (window.__learningAlliedShellPolish || window.__aquilaShellPolish) return;
+  window.__aquilaShellPolish = window.__learningAlliedShellPolish = true;
 
   const $ = (s, r = document) => r.querySelector(s);
   const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
@@ -151,9 +151,9 @@
       a.dataset.drawer = "1";
       a.addEventListener("click", () => { if (window.innerWidth <= 880) closeDrawer(); });
     });
-    // Expose for other scripts
-    window.__aquilaOpenSidebar = openDrawer;
-    window.__aquilaCloseSidebar = closeDrawer;
+    // Expose for other scripts (Learning Allied aliases + legacy aquila)
+    window.__aquilaOpenSidebar = window.__learningAlliedOpenSidebar = openDrawer;
+    window.__aquilaCloseSidebar = window.__learningAlliedCloseSidebar = closeDrawer;
     // Override any prior global openSidebar/closeSidebar to use polished version
     try {
       window.openSidebar = openDrawer;
@@ -168,8 +168,8 @@
     input.dataset.polishedSearch = "1";
     input.setAttribute("type", "search");
     input.setAttribute("autocomplete", "off");
-    input.setAttribute("aria-label", "Search chats, topics, or ask Aquila");
-    input.setAttribute("placeholder", input.getAttribute("placeholder") || "Search or ask Aquila…");
+    input.setAttribute("aria-label", "Search chats, topics, or ask Learning Allied");
+    input.setAttribute("placeholder", input.getAttribute("placeholder") || "Search or ask Learning Allied…");
     // Clear button
     const wrap = input.parentElement;
     if (wrap && !wrap.querySelector(".topbar-search-clear")) {
@@ -214,7 +214,7 @@
           else inp.focus();
         }
       } else {
-        try { sessionStorage.setItem("aquila_pending_prompt", q); } catch {}
+        try { sessionStorage.setItem("learning-allied-pending-prompt", q); sessionStorage.setItem("aquila_pending_prompt", q); } catch {}
         location.href = "chat.html";
       }
     }

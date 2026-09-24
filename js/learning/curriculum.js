@@ -1,5 +1,5 @@
 /**
- * Aquila Learning — Curriculum (Foundation stub)
+ * Learning Allied Learning — Curriculum (Foundation stub)
  * Prompt 1: types + interfaces + TODOs. No content generation yet.
  *
  * Prompt 5+ will populate actual curriculum graphs per exam.

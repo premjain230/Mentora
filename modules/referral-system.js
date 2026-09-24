@@ -88,8 +88,8 @@ export function autoClaimReferral(uid) {
 
 export function shareReferral(link) {
   const payload = {
-    title: 'Join me on Aquila AI',
-    text: 'Learn faster with Aquila AI — a neuroscience-powered study companion. Join me!',
+    title: 'Join me on Learning Allied',
+    text: 'Learn faster with Learning Allied — a neuroscience-powered study companion. Join me!',
     url: link,
   };
   if (navigator.canShare?.(payload)) {

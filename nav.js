@@ -1,4 +1,4 @@
-/* Aquila AI — shared mobile navigation behavior.
+/* Learning Allied — shared mobile navigation behavior.
    Wire-up for .mnav-btn / .mnav-overlay / .mnav-panel markup. Also handles
    <button class="mnav-link" data-hash="..."> used by the admin dashboard. */
 (function () {
