@@ -327,7 +327,299 @@ export function renderWelcome(container) {
     return;
   }
 
-  // Non-chat contexts (home hub) are out of scope for chat.html and are left untouched here.
+  // Home hub — use existing static if present (so graphs always visible even before JS), else create
+  {
+    let graphWrap = document.getElementById("homeHub");
+    let isNew = false;
+    if(!graphWrap){
+      graphWrap = document.createElement("div");
+      graphWrap.id = "homeHub";
+      graphWrap.className = "hub-grid";
+      isNew = true;
+    }
+    if(isNew){
+      graphWrap.innerHTML = `
+      <div class="hub-row-head">
+        <div>
+          <div class="hub-title">Today</div>
+          <div id="hubSubtitle" class="hub-subtitle">Your personalised progress — real, not demo</div>
+        </div>
+        <a href="analyze.html" class="hub-link-pill">View analysis →</a>
+      </div>
+      <div class="cere-grid-3">
+        <div class="aq-graph-card hub-clickable" onclick="window.location.href='analyze.html'">
+          <div class="hub-eyebrow">Mastery</div>
+          <div id="hubMasteryGauge" class="hub-gauge-wrap">Loading…</div>
+          <div id="hubMasteryCaption" class="hub-caption-center">Analyse →</div>
+        </div>
+        <div class="aq-graph-card hub-clickable" onclick="window.location.href='study-session.html'">
+          <div class="hub-eyebrow">Volume — study time</div>
+          <div id="hubStudyTime" class="hub-big-number">—</div>
+          <div id="hubStudyVolume" class="hub-volume-chart"></div>
+          <div id="hubStudyCaption" class="hub-caption">Start a session →</div>
+        </div>
+        <div class="aq-graph-card hub-clickable" onclick="window.location.href='review.html'">
+          <div class="hub-eyebrow">Retention</div>
+          <div class="hub-medium-label" id="hubSparksTitle">Checking…</div>
+          <div id="hubSparksCounts" class="hub-counts-row"></div>
+          <div id="hubSparksBar" class="hub-bar-strip"></div>
+          <div id="hubSparksEmpty" class="hub-caption" style="display:none;"></div>
+        </div>
+      </div>
+      <div class="aq-graph-card">
+        <div class="hub-row-head" style="margin-bottom:0;">
+          <span class="hub-eyebrow">Performance — trend</span>
+          <span id="hubStockTag" class="hub-tag">Real • 15</span>
+        </div>
+        <div id="hubStockWrap" style="margin-top:12px;"><canvas id="hubStockCanvas" width="600" height="200" style="width:100%;height:200px;display:block;"></canvas></div>
+        <div id="hubStockCaption" class="hub-caption" style="margin-top:6px;"></div>
+      </div>
+      <div class="aq-graph-card">
+        <div class="hub-row-head" style="margin-bottom:0;">
+          <span class="hub-eyebrow">Next steps</span>
+          <a href="review.html" class="hub-tag" style="text-decoration:none;">Review ▾</a>
+        </div>
+        <div id="hubNextSteps" class="cere-grid" style="margin-top:12px;"></div>
+        <div id="hubNextEmpty" class="hub-caption" style="display:none;"></div>
+      </div>
+      <div class="aq-graph-card">
+        <div class="hub-row-head" style="margin-bottom:0;">
+          <span class="hub-eyebrow">Holdings — by subject</span>
+          <span class="hub-tag">Real</span>
+        </div>
+        <div id="hubSubjectBars" class="aq-bar-list" style="margin-top:12px;"></div>
+        <div class="hub-caption" style="margin-top:8px;"><a href="analyze.html" style="color:var(--accent);text-decoration:none;">Full analysis →</a></div>
+      </div>
+      <div class="aq-graph-card">
+        <div class="hub-eyebrow">Retention timeline</div>
+        <div id="hubRetentionTimeline" style="margin-top:12px;"></div>
+        <div id="hubRetentionEmpty" class="hub-caption" style="display:none;">No timeline yet — your reviews appear after first quiz</div>
+      </div>
+      <div style="display:none;"><div id="hubMasteryGraph"></div><div id="hubRetentionGraph"></div></div>`;
+      chatArea.appendChild(graphWrap);
+    }
+    import("./js/learning/graphs.js").then(({ renderMasteryRadial, renderProgressSparkline, renderSubjectBars, renderScoreTrend, renderRetentionTimeline, renderVolumeBars, renderStockChart }) => {
+      try {
+        const gaugeEl = document.getElementById("hubMasteryGauge");
+        const capEl = document.getElementById("hubMasteryCaption");
+        const studyTimeEl = document.getElementById("hubStudyTime");
+        const studyVolEl = document.getElementById("hubStudyVolume");
+        const studyCap = document.getElementById("hubStudyCaption");
+        const sparksTitle = document.getElementById("hubSparksTitle");
+        const sparksCounts = document.getElementById("hubSparksCounts");
+        const sparksBar = document.getElementById("hubSparksBar");
+        const sparksEmpty = document.getElementById("hubSparksEmpty");
+        const nextEl = document.getElementById("hubNextSteps");
+        const nextEmpty = document.getElementById("hubNextEmpty");
+        const subtitle = document.getElementById("hubSubtitle");
+
+        // Helper formatters (real, no demo)
+        const fmtHM = (secs) => {
+          const mins = Math.round((Number(secs)||0)/60);
+          const h = Math.floor(mins/60); const m = mins%60;
+          if(h===0) return `${m} min`;
+          return `${h} hr ${m} min`;
+        };
+        const toDate = (v) => {
+          if(!v) return null;
+          try{ if(v.toDate) return v.toDate(); return new Date(v); }catch{ return new Date(v); }
+        };
+
+        import("./firebase-config.js").then(async ({ db, auth }) => {
+          try {
+            const user = auth?.currentUser;
+            if (!user || !db) {
+              if(gaugeEl) gaugeEl.innerHTML = `<div style="font-size:12px;">Sign in to see mastery</div>`;
+              return;
+            }
+            const { collection, getDocs, query, orderBy, limit, doc, getDoc } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
+            // Mastery — real
+            let avg=0, avgEv=0, cnt=0;
+            let mastered=0, proficient=0, developing=0, emerging=0;
+            try{
+              const snap = await getDocs(collection(db, "users", user.uid, "mastery"));
+              cnt = snap.size;
+              if(cnt>0){
+                let sum=0, sumEv=0;
+                snap.forEach(d=>{
+                  const v=d.data();
+                  const s = Number(v.masteryScore)||0; const e=Number(v.evidenceStrength)||0;
+                  sum+=s; sumEv+=e;
+                  if(s>=0.85) mastered++; else if(s>=0.70) proficient++; else if(s>=0.40) developing++; else if(s>0) emerging++;
+                });
+                avg = sum/cnt; avgEv = sumEv/cnt;
+                if(gaugeEl) gaugeEl.innerHTML = `<div class="aq-radial" style="--p:${Math.round(avg*100)};--c:${avg>=0.75?'var(--accent2)':'var(--accent)'};width:110px;height:110px;"><span style="font-size:18px;">${Math.round(avg*100)}%</span></div><div style="text-align:center;"><div style="font-size:10px;color:var(--text-muted);font-family:var(--font-mono);">Evidence ${Math.round(avgEv*100)}%</div><div style="font-size:11px;color:${avgEv<0.35?'var(--amber)':avgEv<0.7?'var(--text-muted)':'var(--green)'};">${avgEv<0.35?'Limited':avgEv<0.7?'Adequate':'Strong'}</div></div>`;
+                if(capEl) capEl.textContent = `${cnt} concepts • ${mastered} mastered`;
+                if(subtitle) subtitle.textContent = cnt>=3 ? `Based on ${cnt} concepts — personalised` : `Based on ${cnt} concepts — keep learning`;
+                // Subject bars — real per-subject avg (stock holdings)
+                const subjEl = document.getElementById("hubSubjectBars");
+                if(subjEl){
+                  if(cnt===0){
+                    subjEl.innerHTML = `<div style="font-size:11px;color:var(--text-muted);">No subject data yet<br><span style="font-size:10px;">Quiz in any subject to build this graph</span></div>`;
+                  } else {
+                    const subjMap={};
+                    snap.forEach(d=>{
+                      const v=d.data(); const subj=(v.subject||"Unknown").trim()||"Unknown";
+                      if(!subjMap[subj]) subjMap[subj]={name:subj, sum:0, count:0};
+                      subjMap[subj].sum+=Number(v.masteryScore)||0; subjMap[subj].count++;
+                    });
+                    const subjectStats = Object.values(subjMap).map(s=> ({name:s.name, pct: s.count? (s.sum/s.count)*100:0})).sort((a,b)=>b.pct-a.pct);
+                    try{ renderSubjectBars(subjEl, subjectStats); }catch{}
+                  }
+                }
+              } else {
+                if(gaugeEl) gaugeEl.innerHTML = `<div style="text-align:center;"><div style="font-size:13px;font-weight:600;">No mastery yet</div><div style="font-size:11px;color:var(--text-muted);margin-top:4px;">Take a quiz or finish a study session</div><a href="quiz.html" style="display:inline-block;margin-top:8px;font-size:11px;color:var(--accent);text-decoration:none;border:1px solid var(--border);padding:5px 10px;border-radius:999px;">Start quiz →</a></div>`;
+                if(capEl) capEl.textContent = "Complete your first assessment";
+                const subjEl2 = document.getElementById("hubSubjectBars");
+                if(subjEl2) subjEl2.innerHTML = `<div style="font-size:11px;color:var(--text-muted);">No subject data yet<br><span style="font-size:10px;">Quiz in any subject to build this graph</span></div>`;
+              }
+            }catch(e){ if(gaugeEl) gaugeEl.innerHTML = `<div style="font-size:11px;color:var(--text-muted);">Couldn't load mastery</div>`; }
+
+            // Volume — 7d bars (real, not decoration)
+            let totalSecs = 0; let dailyMap = new Map(); let dailySecs = [];
+            try{
+              const sSnap = await getDocs(query(collection(db, "users", user.uid, "studySessions"), orderBy("startedAt","desc"), limit(50)));
+              const now = new Date(); const dayKey = (d)=> d.toISOString().slice(0,10);
+              sSnap.forEach(d=>{
+                const v=d.data();
+                let secs = Number(v.timeFocused ?? v.durationMinutes*60 ?? 0);
+                if(secs<0) secs=0; if(secs>4*3600) secs=4*3600;
+                totalSecs += secs;
+                const dt = toDate(v.startedAt) || now;
+                const k = dayKey(dt); dailyMap.set(k, (dailyMap.get(k)||0)+secs);
+              });
+              const days = [];
+              for(let i=6;i>=0;i--){ const d=new Date(); d.setDate(d.getDate()-i); const k=dayKey(d); days.push(dailyMap.get(k)||0); }
+              dailySecs = days;
+              const avgDaily = days.reduce((a,b)=>a+b,0)/7;
+              if(studyTimeEl) studyTimeEl.textContent = totalSecs? fmtHM(totalSecs) : "0 min";
+              if(studyCap) studyCap.textContent = sSnap.size ? `${sSnap.size} sessions • avg ${fmtHM(avgDaily)}/day` : "No sessions yet";
+              if(studyVolEl){
+                if(sSnap.size===0){
+                  studyVolEl.innerHTML = `<div style="font-size:11px;color:var(--text-muted);text-align:center;padding:12px 0;">No volume yet<br><a href="study-session.html" style="color:var(--accent);text-decoration:none;">Start 25 min →</a></div>`;
+                } else {
+                  try{ renderVolumeBars(studyVolEl, dailySecs); }catch{
+                    const maxD = Math.max(1, ...days); const pts = days.map(v=> v/maxD);
+                    try{ renderProgressSparkline(studyVolEl, pts); }catch{}
+                  }
+                }
+              }
+            }catch(e){
+              if(studyTimeEl) studyTimeEl.textContent = "—";
+            }
+
+            // Retention — real due/overdue from reviews
+            try{
+              const rSnap = await getDocs(collection(db, "users", user.uid, "reviews"));
+              let due=0, overdue=0, upcoming=0; const now=Date.now();
+              rSnap.forEach(d=>{
+                const v=d.data(); const t = v.nextReviewAt ? (v.nextReviewAt.toDate? v.nextReviewAt.toDate().getTime(): new Date(v.nextReviewAt).getTime()) : null;
+                if(!t) return;
+                if(t<=now) overdue++; else if(t<=now+24*3600*1000) due++; else upcoming++;
+              });
+              const totalR = rSnap.size;
+              if(totalR===0){
+                if(sparksTitle) sparksTitle.textContent = "No reviews yet";
+                if(sparksCounts) sparksCounts.innerHTML = `<span style="color:var(--text-muted);">Complete a quiz to generate retention schedule</span>`;
+                if(sparksBar) sparksBar.innerHTML = `<div style="flex:1;background:var(--bg-elevated);"></div>`;
+                if(sparksEmpty) { sparksEmpty.style.display="block"; sparksEmpty.innerHTML = `<a href="quiz.html" style="color:var(--accent);text-decoration:none;">Take quiz →</a> • <a href="review.html" style="color:var(--text-muted);text-decoration:none;">How reviews work</a>`; }
+              } else {
+                if(sparksTitle) sparksTitle.textContent = overdue? `${overdue} overdue` : due? `${due} due today` : `${upcoming} scheduled`;
+                if(sparksCounts) sparksCounts.innerHTML = `<span>Due <b style="color:var(--text-primary);">${due}</b></span><span>Overdue <b style="color:var(--accent3,#f87171);">${overdue}</b></span><span>Up <b>${upcoming}</b></span>`;
+                if(sparksBar){
+                  const tot = Math.max(1, due+overdue+upcoming);
+                  sparksBar.innerHTML = `<div style="flex:${due/tot};background:var(--accent);"></div><div style="flex:${overdue/tot};background:var(--accent3,#f87171);"></div><div style="flex:${upcoming/tot};background:var(--border-strong,var(--border));"></div>`;
+                }
+              }
+            }catch(e){
+              if(sparksTitle) sparksTitle.textContent = "Retention";
+            }
+
+            // Retention timeline — real reviews sorted
+            try{
+              const rtEl = document.getElementById("hubRetentionTimeline");
+              const rtEmpty = document.getElementById("hubRetentionEmpty");
+              if(rtEl){
+                const { collection: col2, getDocs: gd2 } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
+                let reviews = [];
+                try{
+                  const rs = await gd2(col2(db, `users/${user.uid}/reviews`));
+                  rs.forEach(d=> {
+                    const v=d.data();
+                    const t = v.nextReviewAt ? (v.nextReviewAt.toDate? v.nextReviewAt.toDate(): new Date(v.nextReviewAt)) : null;
+                    reviews.push({ conceptId: v.conceptId||d.id, nextReviewAt: t, reviewState: v.reviewState||"not_ready", subject: v.subject||"" });
+                  });
+                }catch{}
+                if(!reviews.length){
+                  rtEl.innerHTML = ""; if(rtEmpty) rtEmpty.style.display="block";
+                } else {
+                  try{ renderRetentionTimeline(rtEl, reviews.slice(0,5)); }catch{ rtEl.innerHTML = reviews.slice(0,5).map(r=>`<div style="display:flex;justify-content:space-between;font-size:12px;padding:6px 0;border-bottom:1px solid var(--border-subtle);"><span>${r.conceptId}</span><span style="color:var(--text-muted);">${r.reviewState} • ${r.nextReviewAt? r.nextReviewAt.toLocaleDateString(): ""}</span></div>`).join(""); }
+                  if(rtEmpty) rtEmpty.style.display="none";
+                }
+              }
+            }catch{}
+
+            // Stock chart — real quizAttempts last 15
+            try{
+              const stockCanvas = document.getElementById("hubStockCanvas");
+              const stockCap = document.getElementById("hubStockCaption");
+              const stockTag = document.getElementById("hubStockTag");
+              if(stockCanvas){
+                const { collection: col3, getDocs: gd3, query: q3, orderBy: ob3, limit: lim3 } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
+                const q = q3(col3(db, `users/${user.uid}/quizAttempts`), ob3("takenAt","desc"), lim3(15));
+                const snap = await gd3(q);
+                const vals = snap.docs.map(d=>{
+                  const v=d.data(); const tot=Number(v.totalQ)||1; const cor=Number(v.correct)||0;
+                  return Math.round((cor/tot)*100);
+                }).reverse();
+                const labels = snap.docs.map(d=>{
+                  const v=d.data(); const dt = v.takenAt?.toDate ? v.takenAt.toDate() : (v.takenAt ? new Date(v.takenAt) : null);
+                  return dt ? `${dt.getMonth()+1}/${dt.getDate()}` : `#${d.id.slice(0,3)}`;
+                }).reverse();
+                if(vals.length>=1){
+                  try{ renderStockChart(stockCanvas, vals, {labels}); }catch{ try{ renderScoreTrend(stockCanvas, vals); }catch{} }
+                  if(stockCap) stockCap.textContent = `${vals.length} quizzes • avg ${Math.round(vals.reduce((a,b)=>a+b,0)/vals.length)}% • hi ${Math.max(...vals)}%`;
+                  if(stockTag) stockTag.textContent = `Real • ${vals.length}`;
+                } else {
+                  if(stockCap) stockCap.textContent = "No quizzes yet — take one to seed your chart";
+                  try{ renderStockChart(stockCanvas, []); }catch{ try{ renderScoreTrend(stockCanvas, []); }catch{} }
+                  if(stockTag) stockTag.textContent = "Real • 0";
+                }
+              }
+            }catch{}
+
+            // Next steps — real recommendations via backend
+            try{
+              const token = await user.getIdToken();
+              const res = await fetch("/api/recommendations", { headers:{ "Authorization":`Bearer ${token}` }});
+              if(res.ok){
+                const data = await res.json();
+                const recs = (data.recommendations||[]).slice(0,3);
+                if(recs.length===0){
+                  if(nextEmpty){ nextEmpty.style.display="block"; nextEmpty.innerHTML = `No recommendations yet — <a href="quiz.html" style="color:var(--accent);text-decoration:none;">practice a topic</a> to get personalised next steps.`; }
+                  if(nextEl) nextEl.innerHTML = "";
+                } else {
+                  if(nextEl) nextEl.innerHTML = recs.map(r=>`<div class="suggestion-card" style="padding:12px;cursor:pointer;" onclick="window.location.href='${r.action==='review'?'review.html':r.action==='practice'?'quiz.html':'study-session.html'}'"><div style="font-size:11px;font-weight:600;">${r.subject||""} • ${r.topic||r.conceptId||""}</div><div style="font-size:11px;color:var(--text-muted);margin-top:2px;">${r.reason||r.explanation||""}</div><div style="font-size:10px;color:var(--accent);margin-top:6px;">${r.action} →</div></div>`).join("");
+                }
+              } else {
+                if(nextEmpty){ nextEmpty.style.display="block"; nextEmpty.textContent = "Couldn't load recommendations."; }
+              }
+            }catch(e){ if(nextEmpty){ nextEmpty.style.display="block"; nextEmpty.textContent = "Recommendations unavailable offline."; } }
+
+            // Syllabus badge in subtitle if exists
+            try{
+              const sSnap = await getDocs(collection(db, "users", user.uid, "syllabus"));
+              if(sSnap.size>0){
+                const last = sSnap.docs[0]?.data();
+                if(last?.fileName && subtitle) subtitle.textContent = `Syllabus: ${last.fileName} • personalising`;
+              }
+            }catch{}
+
+          } catch {}
+        });
+      } catch {}
+    }).catch(()=>{});
+  }
 }
 
 export function toggleSearch() {
