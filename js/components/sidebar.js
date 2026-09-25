@@ -18,17 +18,17 @@ export function mountSidebar({ activeHref } = {}) {
 
   mount.innerHTML = `
     <div class="sidebar-overlay" id="sidebarOverlay"></div>
-    <aside class="sidebar" id="sidebar">
+    <aside class="sidebar" id="sidebar" aria-label="Main navigation">
       <div class="logo-area">
         <a href="/" class="logo">
           <img src="logo.svg" alt="Learning Allied" class="logo-img">
           <span class="logo-text">Learning Allied</span>
         </a>
-        <button class="sidebar-close" id="sidebarClose" aria-label="Close menu">
+        <button class="sidebar-close" id="sidebarClose" type="button" aria-label="Close menu">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
         </button>
       </div>
-      <button class="new-chat-btn" id="newChatBtn">
+      <button class="new-chat-btn" id="newChatBtn" type="button">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
         New Chat
       </button>
@@ -63,12 +63,12 @@ export function mountSidebar({ activeHref } = {}) {
         </a>
         <div class="nav-label">Community</div>
         <div class="nav-group">
-          <div class="nav-group-toggle nav-item" onclick="window.toggleNavGroup && window.toggleNavGroup(this)">
+          <button class="nav-group-toggle nav-item" type="button" aria-expanded="true" aria-controls="communityNavGroup">
             <span class="nav-icon"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></span>
             Community
-            <span class="nav-group-chevron">▼</span>
-          </div>
-          <div class="nav-group-children open">
+            <span class="nav-group-chevron" aria-hidden="true">▼</span>
+          </button>
+          <div class="nav-group-children open" id="communityNavGroup">
             <a href="/beyond-marks" class="nav-item nav-group-item">Beyond Marks <span class="nav-badge purple">New</span></a>
             <a href="/student-invoice" class="nav-item nav-group-item">Community Board</a>
           </div>
@@ -134,30 +134,69 @@ export function mountSidebar({ activeHref } = {}) {
   const overlay = document.getElementById("sidebarOverlay");
   const menuBtn = document.getElementById("menuBtn");
   const closeBtn = document.getElementById("sidebarClose");
+  const main = document.querySelector(".main");
+  const groupToggle = sidebar?.querySelector(".nav-group-toggle");
   function openSidebar() {
-    if (sidebar) sidebar.classList.add("open");
-    if (overlay) overlay.classList.add("open");
-    if (menuBtn) menuBtn.setAttribute("aria-expanded", "true");
-    document.body.style.overflow = "hidden";
+    if (!sidebar || window.innerWidth > 880) return;
+    sidebar.classList.add("open");
+    overlay?.classList.add("open");
+    menuBtn?.setAttribute("aria-expanded", "true");
+    document.body.classList.add("sidebar-open");
+    if (main) main.inert = true;
+    requestAnimationFrame(() => closeBtn?.focus());
   }
-  function closeSidebar() {
-    if (sidebar) sidebar.classList.remove("open");
-    if (overlay) overlay.classList.remove("open");
-    if (menuBtn) menuBtn.setAttribute("aria-expanded", "false");
-    document.body.style.overflow = "";
+  function closeSidebar({ restoreFocus = true } = {}) {
+    if (!sidebar) return;
+    sidebar.classList.remove("open");
+    overlay?.classList.remove("open");
+    menuBtn?.setAttribute("aria-expanded", "false");
+    document.body.classList.remove("sidebar-open");
+    if (main) main.inert = false;
+    if (restoreFocus && window.innerWidth <= 880) menuBtn?.focus();
   }
-  if (menuBtn) menuBtn.addEventListener("click", openSidebar);
-  if (closeBtn) closeBtn.addEventListener("click", closeSidebar);
-  if (overlay) overlay.addEventListener("click", closeSidebar);
-  document.querySelectorAll('.nav-item:not(.nav-group-toggle)').forEach(el => {
-    el.addEventListener("click", () => { if (window.innerWidth <= 880) closeSidebar(); });
+  function toggleNavGroup(toggle = groupToggle) {
+    if (!toggle) return;
+    const children = toggle.nextElementSibling;
+    const open = !toggle.classList.contains("open");
+    toggle.classList.toggle("open", open);
+    toggle.setAttribute("aria-expanded", String(open));
+    if (children) children.classList.toggle("open", open);
+  }
+  menuBtn?.addEventListener("click", openSidebar);
+  closeBtn?.addEventListener("click", () => closeSidebar());
+  overlay?.addEventListener("click", () => closeSidebar());
+  groupToggle?.addEventListener("click", () => toggleNavGroup());
+  sidebar?.querySelectorAll('.nav-item:not(.nav-group-toggle)').forEach(el => {
+    el.addEventListener("click", () => { if (window.innerWidth <= 880) closeSidebar({ restoreFocus: false }); });
   });
-  // Expose for inline onclick
-  window.toggleNavGroup = function(el) {
-    el.classList.toggle("open");
-    const children = el.nextElementSibling;
-    if (children) children.classList.toggle("open");
-  };
+  document.addEventListener("keydown", (event) => {
+    if (!sidebar?.classList.contains("open")) return;
+    if (event.key === "Escape") {
+      event.preventDefault();
+      closeSidebar();
+      return;
+    }
+    if (event.key !== "Tab") return;
+    const focusable = [...sidebar.querySelectorAll('a[href], button:not([disabled]), input:not([disabled])')]
+      .filter(el => el.offsetParent !== null);
+    if (!focusable.length) return;
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+    if (event.shiftKey && document.activeElement === first) {
+      event.preventDefault();
+      last.focus();
+    } else if (!event.shiftKey && document.activeElement === last) {
+      event.preventDefault();
+      first.focus();
+    }
+  });
+  let mobileDrawer = window.innerWidth <= 880;
+  window.addEventListener("resize", () => {
+    const nextMobileDrawer = window.innerWidth <= 880;
+    if (mobileDrawer && !nextMobileDrawer) closeSidebar({ restoreFocus: false });
+    mobileDrawer = nextMobileDrawer;
+  }, { passive: true });
+  window.toggleNavGroup = toggleNavGroup;
   window.openSidebar = openSidebar;
   window.closeSidebar = closeSidebar;
 }

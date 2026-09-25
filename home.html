@@ -3,7 +3,7 @@
 <script>(function(){try{var v=localStorage.getItem('learning-allied-theme')||localStorage.getItem('aquila-theme');document.documentElement.className=v==='dark'?'':'light-mode'}catch(e){document.documentElement.className=''}})();</script>
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, interactive-widget=resizes-content" />
 <meta http-equiv="Content-Security-Policy" content="default-src 'self' https:; script-src 'self' 'unsafe-inline' blob: https://www.gstatic.com https://apis.google.com https://accounts.google.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://www.googletagmanager.com https://esm.sh; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: https:; font-src 'self' https://fonts.gstatic.com; connect-src 'self' blob: https://www.googleapis.com https://apis.google.com https://accounts.google.com https://esm.sh https://www.gstatic.com https://firestore.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://analytics.vercel.com; frame-src 'self' https://www.gstatic.com https://accounts.google.com https://mentora-c6dca.firebaseapp.com; object-src 'none';">
 <meta name="description" content="Learning Allied — your personalized AI study companion for JEE, NEET & Board exams." />
 <meta property="og:title" content="Today — Learning Allied" />
@@ -170,6 +170,10 @@
    </div>
   </div>
   <div class="topbar-right">
+   <button class="scroll-control" id="scrollControl" type="button" data-direction="down" aria-label="Scroll to latest" title="Scroll to latest">
+    <svg class="scroll-icon-up" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m18 15-6-6-6 6"/></svg>
+    <svg class="scroll-icon-down" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+   </button>
    <a class="chat-cta" href="/chat">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
     <span>Chat</span>
@@ -197,7 +201,77 @@ function handleKey(e) {
  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); }
 }
 
-/* Mobile sidebar open/close/toggle is handled by js/components/sidebar.js mountSidebar(). */
+(function(){
+ var viewport = window.visualViewport;
+ if (!viewport) return;
+ function syncViewportHeight(){
+  var target = document.activeElement;
+  if (target && target.matches('input, textarea')) document.documentElement.style.setProperty('--app-height', viewport.height + 'px');
+  else document.documentElement.style.removeProperty('--app-height');
+ }
+ document.addEventListener('focusin', syncViewportHeight);
+ document.addEventListener('focusout', function(){ setTimeout(syncViewportHeight, 0); });
+ viewport.addEventListener('resize', syncViewportHeight);
+ syncViewportHeight();
+}());
+
+(function(){
+ var chatArea = document.getElementById('chatArea');
+ var control = document.getElementById('scrollControl');
+ if (!chatArea) return;
+ var bar = document.createElement('div');
+ bar.className = 'scroll-progress';
+ document.body.prepend(bar);
+ var ticking = false;
+ function updateScrollState(){
+  ticking = false;
+  var max = Math.max(0, chatArea.scrollHeight - chatArea.clientHeight);
+  var top = Math.min(max, Math.max(0, chatArea.scrollTop));
+  bar.style.width = max > 0 ? ((top / max) * 100) + '%' : '0%';
+  if (!control) return;
+  var scrollable = max > 8;
+  var direction = top >= max - 48 || top > max * 0.55 ? 'up' : 'down';
+  control.classList.toggle('visible', scrollable);
+  control.dataset.direction = direction;
+  var label = direction === 'up' ? 'Scroll to top' : 'Scroll to latest';
+  control.setAttribute('aria-label', label);
+  control.title = label;
+ }
+ function scheduleScrollUpdate(){
+  if (ticking) return;
+  ticking = true;
+  requestAnimationFrame(updateScrollState);
+ }
+ if (control) {
+  control.addEventListener('click', function(){
+   var max = Math.max(0, chatArea.scrollHeight - chatArea.clientHeight);
+   var target = control.dataset.direction === 'up' ? 0 : max;
+   chatArea.scrollTo({ top: target, behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
+  });
+ }
+ chatArea.addEventListener('scroll', scheduleScrollUpdate, { passive: true });
+ window.addEventListener('resize', scheduleScrollUpdate, { passive: true });
+ if ('ResizeObserver' in window) new ResizeObserver(scheduleScrollUpdate).observe(chatArea);
+ if ('MutationObserver' in window) new MutationObserver(scheduleScrollUpdate).observe(chatArea, { childList: true, subtree: true });
+ scheduleScrollUpdate();
+}());
+
+(function(){
+ var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+ if(reduceMotion) return;
+ document.querySelectorAll('.send-btn, .signout-btn, .new-chat-btn, .upgrade-nav-btn').forEach(function(btn){
+  btn.addEventListener('click', function(e){
+   var ripple = document.createElement('span');
+   var r = btn.getBoundingClientRect();
+   var size = Math.max(r.width, r.height);
+   ripple.style.cssText = 'position:absolute;top:'+(e.clientY-r.top-size/2)+'px;left:'+(e.clientX-r.left-size/2)+'px;width:'+size+'px;height:'+size+'px;border-radius:50%;background:rgba(255,255,255,0.15);transform:scale(0);animation:rippleAnim 0.5s ease-out;pointer-events:none;z-index:0;';
+   btn.style.position = 'relative';
+   btn.style.overflow = 'hidden';
+   btn.appendChild(ripple);
+   setTimeout(function(){ ripple.remove(); }, 600);
+  });
+ });
+}());
 </script>
 
 <!-- ===== Module scripts ===== -->

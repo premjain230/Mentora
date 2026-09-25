@@ -279,7 +279,8 @@ export function renderWelcome(container) {
   // dedup: keep last homeHub if duplicate
   const hubs = document.querySelectorAll("#homeHub");
   hubs.forEach((el,i)=>{ if(i < hubs.length-1) el.remove(); });
-  const isChatMode = new URLSearchParams(window.location.search).get("mode") === "chat" || window.location.pathname.endsWith("chat.html");
+  const isChatMode = new URLSearchParams(window.location.search).get("mode") === "chat" || window.location.pathname === "/chat" || window.location.pathname.endsWith("/chat") || window.location.pathname.endsWith("chat.html");
+  chatArea.classList.toggle("chat-empty", isChatMode);
   if (isChatMode && document.getElementById("welcomeScreen")) return;
   // for homeHub, don't return if it exists — we need to populate the static one with real data
   const firstName = auth?.currentUser?.displayName?.split(" ")[0] || "";
@@ -297,30 +298,22 @@ export function renderWelcome(container) {
     el.id = "welcomeScreen";
     el.innerHTML = `
     <div class="welcome-icon">
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a3 3 0 0 0-3 3v1a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/><path d="M19 10a7 7 0 0 1-14 0"/><path d="M12 17a5 5 0 0 0 5-5"/><path d="M12 17v4"/><path d="M8 21h8"/></svg>
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a3 3 0 0 0-3 3v1a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/><path d="M19 10a7 7 0 0 1-14 0"/><path d="M12 17a5 5 0 0 0 5-5"/><path d="M12 17v4"/><path d="M8 21h8"/></svg>
     </div>
     <h1>${greeting}</h1>
-    <p>Learning Allied is your intelligent learning companion — ask anything, or start from a suggested path. It remembers your syllabus and adapts to you.</p>
+    <p>Ask anything about your studies. Learning Allied adapts to your syllabus, goals, and learning style.</p>
     <div class="suggestion-grid">
       <div class="suggestion-card" tabindex="0" role="button" onclick="runPrompt('Explain a concept I find hard')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();runPrompt('Explain a concept I find hard')}">
-        <div class="sug-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6M10 22h4M12 2a7 7 0 0 0-4 12.7c.6.5 1 1.3 1 2.1h6c0-.8.4-1.6 1-2.1A7 7 0 0 0 12 2z"/></svg></div>
-        <div class="sug-title">Understand a hard topic</div>
-        <div class="sug-desc">Break down any concept step by step</div>
+        <span class="chat-suggestion-title">Explain a difficult concept</span><span class="chat-suggestion-arrow" aria-hidden="true">↗</span>
       </div>
       <div class="suggestion-card" tabindex="0" role="button" onclick="runPrompt('Quiz me on my current chapter')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();runPrompt('Quiz me on my current chapter')}">
-        <div class="sug-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></div>
-        <div class="sug-title">Quiz me</div>
-        <div class="sug-desc">Test my understanding with questions</div>
+        <span class="chat-suggestion-title">Quiz me on this chapter</span><span class="chat-suggestion-arrow" aria-hidden="true">↗</span>
       </div>
-      <div class="suggestion-card" tabindex="0" role="button" onclick="runPrompt('Help me plan today\\'s study session')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();runPrompt('Help me plan today\\'s study session')}">
-        <div class="sug-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M3 10h18M8 2v4M16 2v4"/></svg></div>
-        <div class="sug-title">Plan my day</div>
-        <div class="sug-desc">Get a focused, realistic session plan</div>
+      <div class="suggestion-card" tabindex="0" role="button" onclick="runPrompt('Help me plan a focused study session')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();runPrompt('Help me plan a focused study session')}">
+        <span class="chat-suggestion-title">Plan a focused study session</span><span class="chat-suggestion-arrow" aria-hidden="true">↗</span>
       </div>
       <div class="suggestion-card" tabindex="0" role="button" onclick="runPrompt('Revise a topic I studied earlier')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();runPrompt('Revise a topic I studied earlier')}">
-        <div class="sug-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg></div>
-        <div class="sug-title">Revise earlier topics</div>
-        <div class="sug-desc">Recall &amp; strengthen what I've learned</div>
+        <span class="chat-suggestion-title">Revise an earlier topic</span><span class="chat-suggestion-arrow" aria-hidden="true">↗</span>
       </div>
     </div>`;
     chatArea.appendChild(el);
@@ -1243,7 +1236,7 @@ export function renderMessage(role, content) {
   } else {
     const wrap = document.createElement("div");
     wrap.className = "message-row assistant";
-    wrap.appendChild(assistantAvatarEl());
+
     const bubble = document.createElement("div");
     bubble.className = "ai-bubble";
     bubble.innerHTML = renderMarkdown(safeContent);
@@ -1252,44 +1245,39 @@ export function renderMessage(role, content) {
     wrap.appendChild(bubble);
     chatArea.appendChild(wrap);
   }
-  smoothScrollToBottom();
-}
-
-function assistantAvatarEl() {
-  const av = document.createElement("div");
-  av.className = "assistant-avatar";
-  av.setAttribute("aria-hidden", "true");
-  av.innerHTML = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a3 3 0 0 0-3 3v1a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/><path d="M19 10a7 7 0 0 1-14 0"/><path d="M12 17a5 5 0 0 0 5-5"/><path d="M12 17v4"/><path d="M8 21h8"/></svg>`;
-  return av;
+  smoothScrollToBottom(true);
 }
 
 function createAiBubble() {
   const chatArea = document.getElementById("chatArea");
   const wrap = document.createElement("div");
   wrap.className = "message-row assistant";
-  wrap.appendChild(assistantAvatarEl());
+
   const bubble = document.createElement("div");
   bubble.className = "ai-bubble";
   bubble.innerHTML = typingIndicator();
   wrap.appendChild(bubble);
   if (chatArea) chatArea.appendChild(wrap);
-  smoothScrollToBottom();
+  smoothScrollToBottom(true);
   return bubble;
 }
 
 export function clearWelcome() {
   const welcome = document.getElementById("welcomeScreen");
+  const chatArea = document.getElementById("chatArea");
   if (welcome) welcome.remove();
+  chatArea?.classList.remove("chat-empty");
 }
 
-function smoothScrollToBottom() {
+function smoothScrollToBottom(force = false) {
   const ca = document.getElementById("chatArea");
-  if (ca) {
-    ca.scrollTo({
-      top: ca.scrollHeight,
-      behavior: "smooth",
-    });
-  }
+  if (!ca) return;
+  const distance = ca.scrollHeight - ca.clientHeight - ca.scrollTop;
+  if (!force && distance > 240) return;
+  ca.scrollTo({
+    top: ca.scrollHeight,
+    behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth",
+  });
 }
 
 function normalizeMath(text) {
@@ -1370,7 +1358,7 @@ function renderMarkdown(md) {
       const tag = i === 0 ? "th" : "td";
       return `<tr>${cells.map(c => `<${tag}>${c}</${tag}>`).join("")}</tr>`;
     }).join("");
-    return `<table><tbody>${rows}</tbody></table>`;
+    return `<div class="markdown-table-wrap"><table style="border-collapse:collapse;width:100%;font-size:13px;"><tbody>${rows}</tbody></table></div>`;
   });
 
   // Horizontal rule.

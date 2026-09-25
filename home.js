@@ -62,14 +62,15 @@ firebaseReady.then(() => {
         }
       }
     } catch {}
-    document.body.classList.remove("auth-loading");
-    document.body.classList.add("auth-ready");
     // Mode: chat.html or ?mode=chat = normal chat, else big nav hub with cool graphs
     const isChatMode = new URLSearchParams(window.location.search).get("mode") === "chat" || window.location.pathname.endsWith("chat") || window.location.pathname.endsWith("chat.html");
     const inputArea = document.querySelector(".input-area");
     const modelSel = document.querySelector(".model-selector");
-    if (modelSel) modelSel.textContent = isChatMode ? "Learning Allied — Chat" : "Learning Allied — Today";
+    const modelLabel = modelSel?.querySelector(".model-label") || modelSel;
+    if (modelLabel) modelLabel.textContent = isChatMode ? "Learning Allied" : "Learning Allied — Today";
     if (inputArea) inputArea.style.display = isChatMode ? "" : "none";
+    document.body.classList.remove("auth-loading");
+    document.body.classList.add("auth-ready");
     populateUserCard(user);
     // Render home hub graphs (real, not fake) — ensure welcome/hub shows even before chat
     import("./chat.js").then(({ renderWelcome }) => {
@@ -265,9 +266,14 @@ function wireNewChatBtn() {
   const btn = document.getElementById("newChatBtn");
   if (!btn) return;
   btn.addEventListener("click", async () => {
+    const isChatMode = new URLSearchParams(window.location.search).get("mode") === "chat" || window.location.pathname.endsWith("chat") || window.location.pathname.endsWith("chat.html");
+    if (!isChatMode) {
+      window.location.href = "/chat";
+      return;
+    }
     const { resetChat } = await import("./chat.js");
     resetChat();
-    document.querySelectorAll(".chat-history-item").forEach((el) => el.classList.remove("active"));
+    document.querySelectorAll(".chat-history-item").forEach((el) => el.removeAttribute("active"));
   });
 }
 
