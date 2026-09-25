@@ -1,4 +1,4 @@
-﻿import { escapeHtml } from "./xss.js";
+import { escapeHtml } from "./xss.js";
 import { auth, db, firebaseReady } from "./firebase-config.js";
 import {
   collection,
@@ -94,28 +94,28 @@ const ICON_SHARE = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" 
     }
     .ai-action-btn:hover {
       color: var(--text-secondary);
-      border-color: var(--border-hover);
-      background: rgba(255,255,255,0.04);
+      border-color: var(--border-strong, var(--border));
+      background: var(--bg-elevated);
     }
     .ai-action-btn.active-good {
       color: var(--accent);
-      border-color: rgba(0,212,255,0.4);
-      background: rgba(0,212,255,0.08);
+      border-color: var(--accent);
+      background: var(--accent-soft, var(--bg-elevated));
     }
     .ai-action-btn.active-bad {
-      color: var(--accent3);
-      border-color: rgba(255,107,107,0.4);
-      background: rgba(255,107,107,0.08);
+      color: var(--accent3, #f87171);
+      border-color: var(--accent3, #f87171);
+      background: rgba(248,113,113,0.08);
     }
     .ai-action-btn.active-copy {
       color: var(--accent);
-      border-color: rgba(0,212,255,0.4);
-      background: rgba(0,212,255,0.08);
+      border-color: var(--accent);
+      background: var(--accent-soft, var(--bg-elevated));
     }
     .ai-action-btn.active-share {
       color: var(--accent2);
-      border-color: rgba(167,139,250,0.4);
-      background: rgba(167,139,250,0.08);
+      border-color: var(--accent2);
+      background: rgba(139,124,247,0.08);
     }
     .ai-action-divider {
       width: 1px;
@@ -124,28 +124,12 @@ const ICON_SHARE = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" 
       flex-shrink: 0;
       margin: 0 2px;
     }
-    @keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
-    .search-pulse {
-      position: relative;
-    }
-    .search-pulse::after {
-      content: '';
-      position: absolute;
-      inset: -2px;
-      border-radius: 11px;
-      border: 2px solid var(--accent2);
-      opacity: 0;
-      animation: pulseRing 1.2s ease-out infinite;
-    }
-    @keyframes pulseRing {
-      0% { opacity: 0.6; transform: scale(1); }
-      100% { opacity: 0; transform: scale(1.2); }
-    }
     .confidence-bar {
       display: flex;
       gap: 6px;
       margin-top: 10px;
       flex-wrap: wrap;
+      align-items: center;
     }
     .conf-btn {
       padding: 4px 10px;
@@ -158,13 +142,13 @@ const ICON_SHARE = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" 
       cursor: pointer;
       transition: all 0.15s;
     }
-    .conf-btn:hover { border-color: var(--border-hover); color: var(--text-secondary); }
-    .conf-btn.selected { background: rgba(0,212,255,0.1); border-color: rgba(0,212,255,0.3); color: var(--accent); }
+    .conf-btn:hover { border-color: var(--border-strong, var(--border)); color: var(--text-secondary); }
+    .conf-btn.selected { background: var(--accent-soft, var(--bg-elevated)); border-color: var(--accent); color: var(--accent); }
     .recall-prompt {
       margin-top: 12px;
       padding: 12px 16px;
-      background: rgba(0,212,255,0.05);
-      border: 1px solid rgba(0,212,255,0.15);
+      background: var(--accent-soft, var(--bg-elevated));
+      border: 1px solid var(--border);
       border-radius: 10px;
       font-size: 13px;
       color: var(--accent);
@@ -175,15 +159,14 @@ const ICON_SHARE = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" 
       font-family: 'Sora', sans-serif;
       font-weight: 600;
       border-radius: 8px;
-      border: 1px solid rgba(0,212,255,0.35);
-      background: rgba(0,212,255,0.1);
+      border: 1px solid var(--accent);
+      background: var(--accent-soft, var(--bg-elevated));
       color: var(--accent);
       cursor: pointer;
       transition: all 0.15s;
     }
     .retry-btn:hover {
-      background: rgba(0,212,255,0.18);
-      border-color: rgba(0,212,255,0.5);
+      filter: brightness(1.08);
     }
   `;
   document.head.appendChild(style);
@@ -313,11 +296,11 @@ export function renderWelcome(container) {
     el.className = "welcome";
     el.id = "welcomeScreen";
     el.innerHTML = `
-    <div class="welcome-icon" style="background:var(--bg-card);border:1px solid var(--border);box-shadow:var(--shadow-sm);">
+    <div class="welcome-icon">
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a3 3 0 0 0-3 3v1a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/><path d="M19 10a7 7 0 0 1-14 0"/><path d="M12 17a5 5 0 0 0 5-5"/><path d="M12 17v4"/><path d="M8 21h8"/></svg>
     </div>
-    <h1 style="font-family:var(--font-display);font-size:28px;font-weight:700;letter-spacing:-0.04em;line-height:1.15;color:var(--text-primary);">${greeting}</h1>
-    <p style="font-size:14px;color:var(--text-secondary);max-width:480px;line-height:1.6;font-weight:400;letter-spacing:-0.01em;">Learning Allied is your intelligent learning companion — ask anything, or start from a suggested path. It remembers your syllabus and adapts to you.</p>
+    <h1>${greeting}</h1>
+    <p>Learning Allied is your intelligent learning companion — ask anything, or start from a suggested path. It remembers your syllabus and adapts to you.</p>
     <div class="suggestion-grid">
       <div class="suggestion-card" tabindex="0" role="button" onclick="runPrompt('Explain a concept I find hard')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();runPrompt('Explain a concept I find hard')}">
         <div class="sug-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6M10 22h4M12 2a7 7 0 0 0-4 12.7c.6.5 1 1.3 1 2.1h6c0-.8.4-1.6 1-2.1A7 7 0 0 0 12 2z"/></svg></div>
@@ -334,11 +317,6 @@ export function renderWelcome(container) {
         <div class="sug-title">Plan my day</div>
         <div class="sug-desc">Get a focused, realistic session plan</div>
       </div>
-      <div class="suggestion-card" tabindex="0" role="button" onclick="window.location.href='study-session.html'" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();window.location.href='study-session.html'}">
-        <div class="sug-icon" style="background:rgba(52,211,153,0.1);border:1px solid rgba(52,211,153,0.25);color:var(--green);"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/></svg></div>
-        <div class="sug-title">Start a study session</div>
-        <div class="sug-desc">Guided AI focus block with a timer</div>
-      </div>
       <div class="suggestion-card" tabindex="0" role="button" onclick="runPrompt('Revise a topic I studied earlier')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();runPrompt('Revise a topic I studied earlier')}">
         <div class="sug-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg></div>
         <div class="sug-title">Revise earlier topics</div>
@@ -349,337 +327,11 @@ export function renderWelcome(container) {
     return;
   }
 
-  // Home hub — use existing static if present (so graphs always visible even before JS), else create
-  {
-    let graphWrap = document.getElementById("homeHub");
-    let isNew = false;
-    if(!graphWrap){
-      graphWrap = document.createElement("div");
-      graphWrap.id = "homeHub";
-      graphWrap.style.cssText = "display:grid;gap:12px;width:100%;max-width:720px;";
-      isNew = true;
-    }
-    if(isNew){
-      graphWrap.innerHTML = `
-      <div style="display:flex;align-items:baseline;justify-content:space-between;gap:12px;">
-        <div>
-          <div style="font-family:var(--font-display);font-size:18px;font-weight:700;letter-spacing:-0.02em;">Today</div>
-          <div id="hubSubtitle" style="font-size:12px;color:var(--text-muted);margin-top:2px;">Your personalised progress — real, not demo</div>
-        </div>
-        <a href="analyze.html" style="font-size:11px;color:var(--accent);text-decoration:none;border:1px solid var(--border);padding:6px 10px;border-radius:999px;background:var(--bg-card);">View analysis →</a>
-      </div>
-      <div class="cere-grid-3">
-        <div class="aq-graph-card" style="cursor:pointer;padding:14px;display:flex;flex-direction:column;align-items:center;gap:8px;" onclick="window.location.href='analyze.html'">
-          <div style="font-size:10px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);align-self:flex-start;">Mastery</div>
-          <div id="hubMasteryGauge" style="width:112px;height:112px;display:grid;place-items:center;color:var(--text-muted);font-size:12px;">Loading…</div>
-          <div id="hubMasteryCaption" style="font-size:11px;color:var(--text-muted);text-align:center;">Analyse →</div>
-        </div>
-        <div class="aq-graph-card" style="cursor:pointer;padding:14px;" onclick="window.location.href='study-session.html'">
-          <div style="font-size:10px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);">Volume — study time</div>
-          <div id="hubStudyTime" style="font-size:20px;font-weight:700;margin-top:6px;">—</div>
-          <div id="hubStudyVolume" style="margin-top:10px;height:64px;"></div>
-          <div id="hubStudyCaption" style="font-size:11px;color:var(--text-muted);margin-top:6px;">Start a session →</div>
-        </div>
-        <div class="aq-graph-card" style="cursor:pointer;padding:14px;" onclick="window.location.href='review.html'">
-          <div style="font-size:10px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);">Retention</div>
-          <div style="font-size:13px;font-weight:600;margin-top:6px;" id="hubSparksTitle">Checking…</div>
-          <div id="hubSparksCounts" style="display:flex;gap:10px;font-size:11px;color:var(--text-muted);margin-top:4px;"></div>
-          <div id="hubSparksBar" style="margin-top:10px;height:8px;display:flex;gap:2px;border-radius:999px;overflow:hidden;background:var(--bg-elevated);"></div>
-          <div id="hubSparksEmpty" style="font-size:11px;color:var(--text-muted);margin-top:8px;display:none;"></div>
-        </div>
-      </div>
-      <div class="aq-graph-card" style="padding:14px;">
-        <div style="display:flex;justify-content:space-between;align-items:center;"><span style="font-size:10px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);">Performance — stock trend</span><span id="hubStockTag" style="font-size:10px;background:var(--bg-elevated);padding:2px 6px;border-radius:999px;">Real • 15</span></div>
-        <div id="hubStockWrap" style="margin-top:12px;"><canvas id="hubStockCanvas" width="600" height="200" style="width:100%;height:200px;display:block;"></canvas></div>
-        <div id="hubStockCaption" style="font-size:10px;color:var(--text-muted);margin-top:6px;"></div>
-      </div>
-      <div class="aq-graph-card" style="padding:14px;">
-        <div style="display:flex;justify-content:space-between;align-items:center;"><span style="font-size:10px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);">Next steps</span><a href="review.html" style="font-size:10px;background:var(--bg-elevated);padding:4px 8px;border-radius:999px;color:var(--text-muted);text-decoration:none;">Review ▾</a></div>
-        <div id="hubNextSteps" class="cere-grid" style="margin-top:12px;"></div>
-        <div id="hubNextEmpty" style="font-size:12px;color:var(--text-muted);margin-top:8px;display:none;"></div>
-      </div>
-      <div class="aq-graph-card" style="padding:14px;">
-        <div style="font-size:10px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);display:flex;justify-content:space-between;">Holdings — by subject <span style="font-size:10px;background:var(--bg-elevated);padding:2px 6px;border-radius:999px;">Real</span></div>
-        <div id="hubSubjectBars" class="aq-bar-list" style="margin-top:12px;"></div>
-        <div style="font-size:10px;color:var(--text-muted);margin-top:8px;"><a href="analyze.html" style="color:var(--accent);text-decoration:none;">Full analysis →</a></div>
-      </div>
-      <div class="aq-graph-card" style="padding:14px;">
-        <div style="font-size:10px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);">Retention timeline</div>
-        <div id="hubRetentionTimeline" style="margin-top:12px;"></div>
-        <div id="hubRetentionEmpty" style="font-size:11px;color:var(--text-muted);display:none;">No timeline yet — your reviews appear after first quiz</div>
-      </div>
-      <div style="display:none;"><div id="hubMasteryGraph"></div><div id="hubRetentionGraph"></div></div>`;
-      if(isNew) chatArea.appendChild(graphWrap);
-    }
-    import("./js/learning/graphs.js").then(({ renderMasteryRadial, renderProgressSparkline, renderSubjectBars, renderScoreTrend, renderRetentionTimeline, renderVolumeBars, renderStockChart }) => {
-      try {
-        const gaugeEl = document.getElementById("hubMasteryGauge");
-        const capEl = document.getElementById("hubMasteryCaption");
-        const studyTimeEl = document.getElementById("hubStudyTime");
-        const studyVolEl = document.getElementById("hubStudyVolume");
-        const studyCap = document.getElementById("hubStudyCaption");
-        const stockCanvas = document.getElementById("hubStockCanvas");
-        const stockCap = document.getElementById("hubStockCaption");
-        const stockTag = document.getElementById("hubStockTag");
-        const sparksTitle = document.getElementById("hubSparksTitle");
-        const sparksCounts = document.getElementById("hubSparksCounts");
-        const sparksBar = document.getElementById("hubSparksBar");
-        const sparksEmpty = document.getElementById("hubSparksEmpty");
-        const nextEl = document.getElementById("hubNextSteps");
-        const nextEmpty = document.getElementById("hubNextEmpty");
-        const subtitle = document.getElementById("hubSubtitle");
-
-        // Helper formatters (real, no demo)
-        const fmtHM = (secs) => {
-          const mins = Math.round((Number(secs)||0)/60);
-          const h = Math.floor(mins/60); const m = mins%60;
-          if(h===0) return `${m} min`;
-          return `${h} hr ${m} min`;
-        };
-        const toDate = (v) => {
-          if(!v) return null;
-          try{ if(v.toDate) return v.toDate(); return new Date(v); }catch{ return new Date(v); }
-        };
-
-        import("./firebase-config.js").then(async ({ db, auth }) => {
-          try {
-            const user = auth?.currentUser;
-            if (!user || !db) {
-              if(gaugeEl) gaugeEl.innerHTML = `<div style="font-size:12px;">Sign in to see mastery</div>`;
-              return;
-            }
-            const { collection, getDocs, query, orderBy, limit, doc, getDoc } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
-            // Mastery — real
-            let avg=0, avgEv=0, cnt=0;
-            let mastered=0, proficient=0, developing=0, emerging=0;
-            try{
-              const snap = await getDocs(collection(db, "users", user.uid, "mastery"));
-              cnt = snap.size;
-              if(cnt>0){
-                let sum=0, sumEv=0;
-                snap.forEach(d=>{
-                  const v=d.data();
-                  const s = Number(v.masteryScore)||0; const e=Number(v.evidenceStrength)||0;
-                  sum+=s; sumEv+=e;
-                  if(s>=0.85) mastered++; else if(s>=0.70) proficient++; else if(s>=0.40) developing++; else if(s>0) emerging++;
-                });
-                avg = sum/cnt; avgEv = sumEv/cnt;
-                if(gaugeEl) gaugeEl.innerHTML = `<div class="aq-radial" style="--p:${Math.round(avg*100)};--c:${avg>=0.75?'var(--accent2)':'var(--accent)'};width:110px;height:110px;"><span style="font-size:18px;">${Math.round(avg*100)}%</span></div><div style="text-align:center;"><div style="font-size:10px;color:var(--text-muted);font-family:var(--font-mono);">Evidence ${Math.round(avgEv*100)}%</div><div style="font-size:11px;color:${avgEv<0.35?'var(--amber)':avgEv<0.7?'var(--text-muted)':'var(--green)'};">${avgEv<0.35?'Limited':avgEv<0.7?'Adequate':'Strong'}</div></div>`;
-                if(capEl) capEl.textContent = `${cnt} concepts • ${mastered} mastered`;
-                if(subtitle) subtitle.textContent = cnt>=3 ? `Based on ${cnt} concepts — personalised` : `Based on ${cnt} concepts — keep learning`;
-                // Roadmap real: show mastery breakdown as radials with real counts
-                if(roadmapEl){
-                  const total = Math.max(1, cnt);
-                  const pM = Math.round(mastered/total*100), pP = Math.round(proficient/total*100), pD = Math.round(developing/total*100);
-                  roadmapEl.innerHTML = `<div style="display:flex;gap:12px;justify-content:space-around;">
-                    <div style="text-align:center;"><div class="aq-radial" style="--p:${pM};--c:#10b981;width:58px;height:58px;"><span style="font-size:11px;">${mastered}</span></div><div style="font-size:10px;color:var(--text-muted);margin-top:4px;">Mastered</div></div>
-                    <div style="text-align:center;"><div class="aq-radial" style="--p:${pP};--c:#8b5cf6;width:58px;height:58px;"><span style="font-size:11px;">${proficient}</span></div><div style="font-size:10px;color:var(--text-muted);margin-top:4px;">Proficient</div></div>
-                    <div style="text-align:center;"><div class="aq-radial" style="--p:${pD};--c:#eab308;width:58px;height:58px;"><span style="font-size:11px;">${developing}</span></div><div style="font-size:10px;color:var(--text-muted);margin-top:4px;">Developing</div></div>
-                  </div>`;
-                }
-                // Subject bars — real per-subject avg (stock holdings)
-                const subjEl = document.getElementById("hubSubjectBars");
-                if(subjEl){
-                  if(cnt===0){
-                    subjEl.innerHTML = `<div style="font-size:11px;color:var(--text-muted);">No subject data yet<br><span style="font-size:10px;">Quiz in any subject to build this graph</span></div>`;
-                  } else {
-                    const subjMap={};
-                    snap.forEach(d=>{
-                      const v=d.data(); const subj=(v.subject||"Unknown").trim()||"Unknown";
-                      if(!subjMap[subj]) subjMap[subj]={name:subj, sum:0, count:0};
-                      subjMap[subj].sum+=Number(v.masteryScore)||0; subjMap[subj].count++;
-                    });
-                    const subjectStats = Object.values(subjMap).map(s=> ({name:s.name, pct: s.count? (s.sum/s.count)*100:0})).sort((a,b)=>b.pct-a.pct);
-                    try{ renderSubjectBars(subjEl, subjectStats); }catch{}
-                  }
-                }
-                // Radar real: skill proxy from mastery states distribution
-                if(radarEl){
-                  if(cnt===0){
-                    radarEl.innerHTML = `<div style="font-size:12px;">No skills yet<br><a href="quiz.html" style="color:var(--accent);text-decoration:none;">Take a quiz →</a></div>`;
-                  } else {
-                    // simple polygon scaled by mastered/proficient/developing
-                    const a = mastered/total, b= proficient/total, c= developing/total;
-                    // 3-point radar approximated
-                    radarEl.innerHTML = `<svg viewBox="0 0 100 100" style="width:100%;height:90px;"><polygon points="50,12 82,28 82,72 50,88 18,72 18,28" fill="none" stroke="rgba(255,255,255,0.10)" stroke-width="1"/><polygon points="50,${50-a*30} ${50+b*28},${50-b*16} ${50+c*22},${50+c*14}" fill="rgba(0,212,255,0.14)" stroke="var(--accent)" stroke-width="1.3"/><circle cx="50" cy="50" r="1.5" fill="var(--accent)"/></svg><div style="display:flex;justify-content:space-around;font-size:10px;color:var(--text-muted);margin-top:2px;"><span>Mastered ${mastered}</span><span>Proficient ${proficient}</span><span>Learning ${developing+emerging}</span></div>`;
-                  }
-                }
-              } else {
-                if(gaugeEl) gaugeEl.innerHTML = `<div style="text-align:center;"><div style="font-size:13px;font-weight:600;">No mastery yet</div><div style="font-size:11px;color:var(--text-muted);margin-top:4px;">Take a quiz or finish a study session</div><a href="quiz.html" style="display:inline-block;margin-top:8px;font-size:11px;color:var(--accent);text-decoration:none;border:1px solid var(--border);padding:5px 10px;border-radius:999px;">Start quiz →</a></div>`;
-                if(capEl) capEl.textContent = "Complete your first assessment";
-                if(roadmapEl) roadmapEl.innerHTML = `<div style="font-size:12px;color:var(--text-muted);">No roadmap until first concept tracked.<br><a href="analyze.html" style="color:var(--accent);text-decoration:none;">Go to Analyze →</a></div>`;
-                if(roadmapTag) roadmapTag.textContent = "—";
-                if(radarEl) radarEl.innerHTML = `<div style="font-size:12px;color:var(--text-muted);">No skills to show<br><span style="font-size:11px;">Your skill map appears after 2–3 sessions</span></div>`;
-                const subjEl2 = document.getElementById("hubSubjectBars");
-                if(subjEl2) subjEl2.innerHTML = `<div style="font-size:11px;color:var(--text-muted);">No subject data yet<br><span style="font-size:10px;">Quiz in any subject to build this graph</span></div>`;
-              }
-            }catch(e){ if(gaugeEl) gaugeEl.innerHTML = `<div style="font-size:11px;color:var(--text-muted);">Couldn’t load mastery</div>`; }
-
-            // Volume — stock-like 7d bars (real, not decoration)
-            let totalSecs = 0; let dailyMap = new Map(); let dailySecs = [];
-            try{
-              const sSnap = await getDocs(query(collection(db, "users", user.uid, "studySessions"), orderBy("startedAt","desc"), limit(50)));
-              const now = new Date(); const dayKey = (d)=> d.toISOString().slice(0,10);
-              sSnap.forEach(d=>{
-                const v=d.data();
-                let secs = Number(v.timeFocused ?? v.durationMinutes*60 ?? 0);
-                if(secs<0) secs=0; if(secs>4*3600) secs=4*3600;
-                totalSecs += secs;
-                const dt = toDate(v.startedAt) || now;
-                const k = dayKey(dt); dailyMap.set(k, (dailyMap.get(k)||0)+secs);
-              });
-              const days = [];
-              for(let i=6;i>=0;i--){ const d=new Date(); d.setDate(d.getDate()-i); const k=dayKey(d); days.push(dailyMap.get(k)||0); }
-              dailySecs = days;
-              const avgDaily = days.reduce((a,b)=>a+b,0)/7;
-              if(studyTimeEl) studyTimeEl.textContent = totalSecs? fmtHM(totalSecs) : "0 min";
-              if(studyCap) studyCap.textContent = sSnap.size ? `${sSnap.size} sessions • avg ${fmtHM(avgDaily)}/day` : "No sessions yet";
-              if(studyVolEl){
-                if(sSnap.size===0){
-                  studyVolEl.innerHTML = `<div style="font-size:11px;color:var(--text-muted);text-align:center;padding:12px 0;">No volume yet<br><a href="study-session.html" style="color:var(--accent);text-decoration:none;">Start 25 min →</a></div>`;
-                } else {
-                  try{ renderVolumeBars(studyVolEl, dailySecs); }catch{ /* fallback sparkline */ 
-                    const maxD = Math.max(1, ...days); const pts = days.map(v=> v/maxD);
-                    try{ renderProgressSparkline(studyVolEl, pts); }catch{}
-                  }
-                }
-              }
-            }catch(e){
-              if(studyTimeEl) studyTimeEl.textContent = "—";
-            }
-
-            // Retention — real due/overdue from reviews
-            try{
-              const rSnap = await getDocs(collection(db, "users", user.uid, "reviews"));
-              let due=0, overdue=0, upcoming=0; const now=Date.now();
-              rSnap.forEach(d=>{
-                const v=d.data(); const t = v.nextReviewAt ? (v.nextReviewAt.toDate? v.nextReviewAt.toDate().getTime(): new Date(v.nextReviewAt).getTime()) : null;
-                if(!t) return;
-                if(t<=now) overdue++; else if(t<=now+24*3600*1000) due++; else upcoming++;
-              });
-              const totalR = rSnap.size;
-              if(totalR===0){
-                if(sparksTitle) sparksTitle.textContent = "No reviews yet";
-                if(sparksCounts) sparksCounts.innerHTML = `<span style="color:var(--text-muted);">Complete a quiz to generate retention schedule</span>`;
-                if(sparksBar) sparksBar.innerHTML = `<div style="flex:1;background:rgba(255,255,255,0.08);"></div>`;
-                if(sparksEmpty) { sparksEmpty.style.display="block"; sparksEmpty.innerHTML = `<a href="quiz.html" style="color:var(--accent);text-decoration:none;">Take quiz →</a> • <a href="review.html" style="color:var(--text-muted);text-decoration:none;">How reviews work</a>`; }
-              } else {
-                if(sparksTitle) sparksTitle.textContent = overdue? `${overdue} overdue` : due? `${due} due today` : `${upcoming} scheduled`;
-                if(sparksCounts) sparksCounts.innerHTML = `<span>Due <b style="color:var(--text-primary);">${due}</b></span><span>Overdue <b style="color:var(--accent3);">${overdue}</b></span><span>Up <b>${upcoming}</b></span>`;
-                if(sparksBar){
-                  const tot = Math.max(1, due+overdue+upcoming);
-                  sparksBar.innerHTML = `<div style="flex:${due/tot};background:var(--accent);"></div><div style="flex:${overdue/tot};background:var(--accent3);"></div><div style="flex:${upcoming/tot};background:rgba(255,255,255,0.14);"></div>`;
-                }
-              }
-            }catch(e){
-              if(sparksTitle) sparksTitle.textContent = "Retention";
-            }
-
-            // Retention timeline — real reviews sorted
-            try{
-              const rtEl = document.getElementById("hubRetentionTimeline");
-              const rtEmpty = document.getElementById("hubRetentionEmpty");
-              if(rtEl){
-                const { collection: col2, getDocs: gd2 } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
-                // Reuse rSnap if available else fetch
-                let reviews = [];
-                try{
-                  const rs = await gd2(col2(db, `users/${user.uid}/reviews`));
-                  rs.forEach(d=> {
-                    const v=d.data();
-                    const t = v.nextReviewAt ? (v.nextReviewAt.toDate? v.nextReviewAt.toDate(): new Date(v.nextReviewAt)) : null;
-                    reviews.push({ conceptId: v.conceptId||d.id, nextReviewAt: t, reviewState: v.reviewState||"not_ready", subject: v.subject||"" });
-                  });
-                }catch{}
-                if(!reviews.length){
-                  rtEl.innerHTML = ""; if(rtEmpty) rtEmpty.style.display="block";
-                } else {
-                  try{ renderRetentionTimeline(rtEl, reviews.slice(0,5)); }catch{ rtEl.innerHTML = reviews.slice(0,5).map(r=>`<div style="display:flex;justify-content:space-between;font-size:12px;padding:6px 0;border-bottom:1px solid var(--border-subtle);"><span>${r.conceptId}</span><span style="color:var(--text-muted);">${r.reviewState} • ${r.nextReviewAt? r.nextReviewAt.toLocaleDateString(): ""}</span></div>`).join(""); }
-                  if(rtEmpty) rtEmpty.style.display="none";
-                }
-              }
-            }catch{}
-
-            // Stock chart — real quizAttempts last 15 (stock price)
-            try{
-              const stockCanvas = document.getElementById("hubStockCanvas");
-              const stockCap = document.getElementById("hubStockCaption");
-              const stockTag = document.getElementById("hubStockTag");
-              if(stockCanvas){
-                const { collection: col3, getDocs: gd3, query: q3, orderBy: ob3, limit: lim3 } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
-                const q = q3(col3(db, `users/${user.uid}/quizAttempts`), ob3("takenAt","desc"), lim3(15));
-                const snap = await gd3(q);
-                const vals = snap.docs.map(d=>{
-                  const v=d.data(); const tot=Number(v.totalQ)||1; const cor=Number(v.correct)||0;
-                  return Math.round((cor/tot)*100);
-                }).reverse();
-                const labels = snap.docs.map(d=>{
-                  const v=d.data(); const dt = v.takenAt?.toDate ? v.takenAt.toDate() : (v.takenAt ? new Date(v.takenAt) : null);
-                  return dt ? `${dt.getMonth()+1}/${dt.getDate()}` : `#${d.id.slice(0,3)}`;
-                }).reverse();
-                if(vals.length>=1){
-                  try{ renderStockChart(stockCanvas, vals, {labels}); }catch{ try{ renderScoreTrend(stockCanvas, vals); }catch{} }
-                  if(stockCap) stockCap.textContent = `${vals.length} quizzes • avg ${Math.round(vals.reduce((a,b)=>a+b,0)/vals.length)}% • hi ${Math.max(...vals)}% • like price action`;
-                  if(stockTag) stockTag.textContent = `Real • ${vals.length}`;
-                } else {
-                  if(stockCap) stockCap.textContent = "No trades yet — take a quiz to seed your chart";
-                  try{ renderStockChart(stockCanvas, []); }catch{ try{ renderScoreTrend(stockCanvas, []); }catch{} }
-                  if(stockTag) stockTag.textContent = "Real • 0";
-                }
-              }
-            }catch{}
-            // Keep old small trend for backwards compat (if still present)
-            try{
-              const trendCanvas = document.getElementById("hubTrendCanvas");
-              const trendCap = document.getElementById("hubTrendCaption");
-              if(trendCanvas && !document.getElementById("hubStockCanvas")){
-                const { collection: col3b, getDocs: gd3b, query: q3b, orderBy: ob3b, limit: lim3b } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
-                const qb = q3b(col3b(db, `users/${user.uid}/quizAttempts`), ob3b("takenAt","desc"), lim3b(15));
-                const snapb = await gd3b(qb);
-                const valsb = snapb.docs.map(d=>{ const v=d.data(); const tot=Number(v.totalQ)||1; const cor=Number(v.correct)||0; return Math.round((cor/tot)*100); }).reverse();
-                if(valsb.length>=1){ try{ renderScoreTrend(trendCanvas, valsb); }catch{} if(trendCap) trendCap.textContent = `${valsb.length} quizzes`; } else { try{ renderScoreTrend(trendCanvas, []); }catch{} }
-              }
-            }catch{}
-
-            // Next steps — real recommendations via backend
-            try{
-              const token = await user.getIdToken();
-              const res = await fetch("/api/recommendations", { headers:{ "Authorization":`Bearer ${token}` }});
-              if(res.ok){
-                const data = await res.json();
-                const recs = (data.recommendations||[]).slice(0,3);
-                if(recs.length===0){
-                  if(nextEmpty){ nextEmpty.style.display="block"; nextEmpty.innerHTML = `No recommendations yet — <a href="quiz.html" style="color:var(--accent);text-decoration:none;">practice a topic</a> to get personalised next steps.`; }
-                  if(nextEl) nextEl.innerHTML = "";
-                } else {
-                  if(nextEl) nextEl.innerHTML = recs.map(r=>`<div class="suggestion-card card-interactive" style="padding:12px;cursor:pointer;" onclick="window.location.href='${r.action==='review'?'review.html':r.action==='practice'?'quiz.html':'study-session.html'}'"><div style="font-size:11px;font-weight:600;">${r.subject||""} • ${r.topic||r.conceptId||""}</div><div style="font-size:11px;color:var(--text-muted);margin-top:2px;">${r.reason||r.explanation||""}</div><div style="font-size:10px;color:var(--accent);margin-top:6px;">${r.action} →</div></div>`).join("");
-                }
-              } else {
-                if(nextEmpty){ nextEmpty.style.display="block"; nextEmpty.textContent = "Couldn’t load recommendations."; }
-              }
-            }catch(e){ if(nextEmpty){ nextEmpty.style.display="block"; nextEmpty.textContent = "Recommendations unavailable offline."; } }
-
-            // Syllabus badge in subtitle if exists
-            try{
-              const sSnap = await getDocs(collection(db, "users", user.uid, "syllabus"));
-              if(sSnap.size>0){
-                const last = sSnap.docs[0]?.data();
-                if(last?.fileName && subtitle) subtitle.textContent = `Syllabus: ${last.fileName} • personalising`;
-                const labelEl=document.getElementById("syllabusLabel"); const subEl=document.getElementById("syllabusSub");
-                if(labelEl && last?.fileName) labelEl.textContent = last.fileName.slice(0,28);
-                if(subEl) subEl.textContent = "Personalising • tap to update";
-              }
-            }catch{}
-
-          } catch {}
-        });
-      } catch {}
-    }).catch(()=>{});
-  }
+  // Non-chat contexts (home hub) are out of scope for chat.html and are left untouched here.
 }
 
 export function toggleSearch() {
-  // No-op now: search is always on. Keep for backwards compat if old HTML calls it.
+  // No-op now: search is always on. Kept for backwards compat if old markup calls it.
   isSearchEnabled = true;
   return true;
 }
@@ -749,7 +401,7 @@ function formatSearchResults(results) {
 }
 
 function pulseSearchBtn(pulse) {
-  // Now pulses the send button / input box instead of the removed search toggle
+  // Pulses the send button while a search is in flight.
   const sendBtn = document.getElementById("sendBtn");
   const inputBox = document.querySelector(".input-box");
   const targets = [sendBtn, inputBox].filter(Boolean);
@@ -977,9 +629,9 @@ async function runAiReply(chatRef, rawText, searchResults, searchError, searchSk
       const score = calculateStuckScore({ recentIncorrectCount: effectiveIncorrect, misconceptions, explicitStruggle: /don't understand|confused|stuck|hard|difficult/i.test(rawText) ? 1 : 0, hintCount: 0, recentEvents: [] });
       if (shouldOfferLoop(score, 0)) {
         const loopDiv = document.createElement("div");
-        loopDiv.style.cssText = "margin-top:12px;padding:14px;border:1px solid rgba(167,139,250,0.25);border-radius:12px;background:rgba(167,139,250,0.08);";
-        loopDiv.innerHTML = `<div style="font-weight:600;margin-bottom:6px;">🔄 Let's try a different way</div><div style="font-size:12px;color:var(--text-secondary);margin-bottom:10px;">It looks like this explanation isn't clicking. I'll find exactly where the problem is.</div><div style="display:flex;gap:8px;flex-wrap:wrap;"><button class="btn-outline" style="flex:1;">Explain differently</button><button class="btn-outline" style="flex:1;">Try an example</button><button class="btn-outline" style="flex:1;">Practice together</button><button class="btn-ghost" style="flex:1;">Skip for now</button></div>`;
-        loopDiv.querySelectorAll("button").forEach(b=> b.addEventListener("click", ()=> { loopDiv.remove(); (window.__learningAlliedToast||window.__aquilaToast)("Loop: "+b.textContent+" — coming soon"); }));
+        loopDiv.style.cssText = "margin-top:12px;padding:14px;border:1px solid var(--border);border-radius:12px;background:var(--bg-card);";
+        loopDiv.innerHTML = `<div style="font-weight:600;margin-bottom:6px;color:var(--text-primary);">Let's try a different way</div><div style="font-size:12px;color:var(--text-secondary);margin-bottom:10px;">It looks like this explanation isn't clicking. I'll find exactly where the problem is.</div><div style="display:flex;gap:8px;flex-wrap:wrap;"><button class="ai-action-btn" style="flex:1;justify-content:center;">Explain differently</button><button class="ai-action-btn" style="flex:1;justify-content:center;">Try an example</button><button class="ai-action-btn" style="flex:1;justify-content:center;">Practice together</button><button class="ai-action-btn" style="flex:1;justify-content:center;">Skip for now</button></div>`;
+        loopDiv.querySelectorAll("button").forEach(b=> b.addEventListener("click", ()=> { loopDiv.remove(); (window.__learningAlliedToast||window.__aquilaToast||(()=>{}))("Loop: "+b.textContent+" — coming soon"); }));
         if (aiBubble) aiBubble.appendChild(loopDiv);
       }
     } catch {}
@@ -1006,7 +658,7 @@ async function runAiReply(chatRef, rawText, searchResults, searchError, searchSk
       const friendly = safeErrorMessage(err, "Something went wrong while connecting to Learning Allied.");
       aiBubble.innerHTML = `
         <div style="display:flex;align-items:flex-start;gap:10px;flex-wrap:wrap;">
-          <span style="color:#ff6b6b;font-size:14px;line-height:1.6;">\u26a0 ${escapeHtml(friendly)}</span>
+          <span style="color:var(--accent3,#f87171);font-size:14px;line-height:1.6;">${escapeHtml(friendly)}</span>
           <button type="button" class="retry-btn">Retry</button>
         </div>`;
       const retryBtn = aiBubble.querySelector(".retry-btn");
@@ -1290,57 +942,43 @@ export function renderMessage(role, content) {
 
   if (role === "user") {
     const wrap = document.createElement("div");
-    wrap.style.cssText = "display:flex;justify-content:flex-end;padding:6px 20px;";
-    wrap.innerHTML = `
-      <div style="
-        background:#1e2130;
-        border:1px solid rgba(255,255,255,0.08);
-        border-radius:14px 14px 4px 14px;
-        padding:12px 16px;
-        max-width:72%;
-        font-size:14px;
-        line-height:1.65;
-        color:#f0f0f8;
-        word-break:break-word;
-      ">${escapeHtml(safeContent)}</div>`;
+    wrap.className = "message-row user";
+    const bubble = document.createElement("div");
+    bubble.className = "user-bubble";
+    bubble.textContent = safeContent;
+    wrap.appendChild(bubble);
     chatArea.appendChild(wrap);
   } else {
     const wrap = document.createElement("div");
-    wrap.style.cssText = "display:flex;gap:12px;padding:6px 20px;align-items:flex-start;";
+    wrap.className = "message-row assistant";
+    wrap.appendChild(assistantAvatarEl());
     const bubble = document.createElement("div");
     bubble.className = "ai-bubble";
-    bubble.style.cssText = "flex:1;font-size:14px;line-height:1.75;word-break:break-word;";
     bubble.innerHTML = renderMarkdown(safeContent);
     bubble.appendChild(createActionButtons(safeContent));
     bubble.appendChild(createConfidenceBar());
-    wrap.innerHTML = `
-      <div style="
-        width:30px;height:30px;flex-shrink:0;
-        background:linear-gradient(135deg,#6c63ff,#00d4aa);
-        border-radius:8px;display:flex;align-items:center;
-        justify-content:center;font-size:14px;margin-top:2px;
-      ">\u{1F4DD}</div>`;
     wrap.appendChild(bubble);
     chatArea.appendChild(wrap);
   }
   smoothScrollToBottom();
 }
 
+function assistantAvatarEl() {
+  const av = document.createElement("div");
+  av.className = "assistant-avatar";
+  av.setAttribute("aria-hidden", "true");
+  av.innerHTML = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a3 3 0 0 0-3 3v1a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/><path d="M19 10a7 7 0 0 1-14 0"/><path d="M12 17a5 5 0 0 0 5-5"/><path d="M12 17v4"/><path d="M8 21h8"/></svg>`;
+  return av;
+}
+
 function createAiBubble() {
   const chatArea = document.getElementById("chatArea");
   const wrap = document.createElement("div");
-  wrap.style.cssText = "display:flex;gap:12px;padding:6px 20px;align-items:flex-start;";
+  wrap.className = "message-row assistant";
+  wrap.appendChild(assistantAvatarEl());
   const bubble = document.createElement("div");
   bubble.className = "ai-bubble";
-  bubble.style.cssText = "flex:1;font-size:14px;line-height:1.75;word-break:break-word;";
   bubble.innerHTML = typingIndicator();
-  wrap.innerHTML = `
-    <div style="
-      width:30px;height:30px;flex-shrink:0;
-      background:linear-gradient(135deg,#6c63ff,#00d4aa);
-      border-radius:8px;display:flex;align-items:center;
-      justify-content:center;font-size:14px;margin-top:2px;
-    ">\u{1F4DD}</div>`;
   wrap.appendChild(bubble);
   if (chatArea) chatArea.appendChild(wrap);
   smoothScrollToBottom();
@@ -1391,53 +1029,43 @@ function renderMarkdown(md) {
 
   // Fenced code blocks (language-agnostic).
   html = html.replace(/```[\w]*\n?([\s\S]*?)```/g, (_, code) =>
-    `<pre style="background:var(--bg-card);border:1px solid var(--border);border-radius:10px;padding:14px 16px;overflow-x:auto;font-family:'Space Mono',monospace;font-size:12.5px;margin:10px 0;"><code>${toSafeString(code).trim()}</code></pre>`
+    `<pre><code>${toSafeString(code).trim()}</code></pre>`
   );
 
   // Inline code.
-  html = html.replace(/`([^`]+)`/g,
-    `<code style="background:rgba(108,99,255,0.15);border-radius:4px;padding:2px 6px;font-family:'Space Mono',monospace;font-size:12.5px;color:var(--accent2);">$1</code>`
-  );
+  html = html.replace(/`([^`]+)`/g, `<code>$1</code>`);
 
   // Markdown links -> safe anchors.
   html = html.replace(/\[([^\]]+)\]\((https?:\/\/[^)\s]+)\)/g,
-    `<a href="$2" target="_blank" rel="noopener noreferrer" style="color:var(--accent);text-decoration:underline;">$1</a>`
+    `<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>`
   );
   // Bare URLs -> autolinks.
   html = html.replace(/(?<!["'>])(https?:\/\/[^\s<]+)/g,
-    `<a href="$1" target="_blank" rel="noopener noreferrer" style="color:var(--accent);text-decoration:underline;">$1</a>`
+    `<a href="$1" target="_blank" rel="noopener noreferrer">$1</a>`
   );
 
   // Headings.
-  html = html.replace(/^### (.+)$/gm,
-    `<h3 style="font-size:15px;font-weight:600;margin:14px 0 6px;">$1</h3>`
-  );
-  html = html.replace(/^## (.+)$/gm,
-    `<h2 style="font-size:17px;font-weight:700;margin:16px 0 8px;border-bottom:1px solid var(--border);padding-bottom:6px;">$1</h2>`
-  );
-  html = html.replace(/^# (.+)$/gm,
-    `<h1 style="font-size:20px;font-weight:700;margin:18px 0 10px;">$1</h1>`
-  );
+  html = html.replace(/^### (.+)$/gm, `<h3>$1</h3>`);
+  html = html.replace(/^## (.+)$/gm, `<h2>$1</h2>`);
+  html = html.replace(/^# (.+)$/gm, `<h1>$1</h1>`);
 
   // Bold & italic.
-  html = html.replace(/\*\*(.+?)\*\*/g,
-    `<strong style="font-weight:600;">$1</strong>`
-  );
+  html = html.replace(/\*\*(.+?)\*\*/g, `<strong>$1</strong>`);
   html = html.replace(/\*(.+?)\*/g, `<em>$1</em>`);
 
   // Blockquotes: wrap consecutive `&gt; ` lines in a styled block.
   html = html.replace(/((?:^|(?<=\n))&gt; [^\n]+(?:\n&gt; [^\n]+)*)/g,
-    `<blockquote style="border-left:3px solid var(--accent2);padding:4px 14px;margin:10px 0;color:var(--text-secondary);background:rgba(167,139,250,0.06);border-radius:6px;">$1</blockquote>`
+    `<blockquote>$1</blockquote>`
   ).replace(/&gt; /g, "");
 
   // Unordered lists: group consecutive items into one <ul>.
   html = html.replace(/((?:^|(?<=\n))(?:[*\-] [^\n]+)(?:\n[*\-] [^\n]+)*)/g,
-    (m) => `<ul style="margin:8px 0;padding-left:20px;">${m.split("\n").map(l => `<li style="margin:4px 0;list-style:disc;">${l.replace(/^[*\-] /, "")}</li>`).join("")}</ul>`
+    (m) => `<ul>${m.split("\n").map(l => `<li>${l.replace(/^[*\-] /, "")}</li>`).join("")}</ul>`
   );
 
   // Ordered lists.
   html = html.replace(/((?:^|(?<=\n))(?:[0-9]+\. [^\n]+)(?:\n[0-9]+\. [^\n]+)*)/g,
-    (m) => `<ol style="margin:8px 0;padding-left:20px;">${m.split("\n").map(l => `<li style="margin:4px 0;">${l.replace(/^[0-9]+\. /, "")}</li>`).join("")}</ol>`
+    (m) => `<ol>${m.split("\n").map(l => `<li>${l.replace(/^[0-9]+\. /, "")}</li>`).join("")}</ol>`
   );
 
   // Markdown tables.
@@ -1448,15 +1076,13 @@ function renderMarkdown(md) {
     const rows = body.map((l, i) => {
       const cells = l.replace(/^\||\|$/g, "").split("|").map(c => c.trim());
       const tag = i === 0 ? "th" : "td";
-      return `<tr>${cells.map(c => `<${tag} style="padding:8px 12px;border:1px solid var(--border);text-align:left;">${c}</${tag}>`).join("")}</tr>`;
+      return `<tr>${cells.map(c => `<${tag}>${c}</${tag}>`).join("")}</tr>`;
     }).join("");
-    return `<div style="overflow-x:auto;margin:10px 0;"><table style="border-collapse:collapse;width:100%;font-size:13px;"><tbody>${rows}</tbody></table></div>`;
+    return `<table><tbody>${rows}</tbody></table>`;
   });
 
   // Horizontal rule.
-  html = html.replace(/^---$/gm,
-    `<hr style="border:none;border-top:1px solid var(--border);margin:16px 0;">`
-  );
+  html = html.replace(/^---$/gm, `<hr>`);
 
   html = html.replace(/\n/g, "<br>");
 
@@ -1465,32 +1091,12 @@ function renderMarkdown(md) {
 
 function typingIndicator() {
   return `<span style="display:inline-flex;gap:4px;align-items:center;height:22px;">
-    ${[0, 200, 400].map(d =>
-      `<span style="
-        width:6px;height:6px;border-radius:50%;background:#6c63ff;
-        animation:learningAlliedDot 1.2s ease-in-out ${d}ms infinite;
-        display:inline-block;
-      "></span>`
-    ).join("")}
-  </span>
-  <style>
-    @keyframes learningAlliedDot {
-      0%,80%,100%{transform:translateY(0);opacity:.4}
-      40%{transform:translateY(-6px);opacity:1}
-    }
-    @keyframes aquilaDot {
-      0%,80%,100%{transform:translateY(0);opacity:.4}
-      40%{transform:translateY(-6px);opacity:1}
-    }
-  </style>`;
+    <span class="typing-dot"></span><span class="typing-dot" style="animation-delay:200ms;"></span><span class="typing-dot" style="animation-delay:400ms;"></span>
+  </span>`;
 }
 
 function cursorHtml() {
-  return `<span style="
-    display:inline-block;width:2px;height:15px;background:#6c63ff;
-    border-radius:2px;margin-left:2px;vertical-align:middle;
-    animation:blink .7s step-end infinite;
-  "></span>`;
+  return `<span class="stream-cursor"></span>`;
 }
 
 async function ensureChatSession(firstMessage) {
