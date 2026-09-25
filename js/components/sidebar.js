@@ -21,7 +21,7 @@ export function mountSidebar({ activeHref } = {}) {
     <aside class="sidebar" id="sidebar" aria-label="Main navigation">
       <div class="logo-area">
         <a href="/" class="logo">
-          <img src="logo.svg" alt="Learning Allied" class="logo-img">
+          <img src="logo.png" alt="Learning Allied" class="logo-img">
           <span class="logo-text">Learning Allied</span>
         </a>
         <button class="sidebar-close" id="sidebarClose" type="button" aria-label="Close menu">

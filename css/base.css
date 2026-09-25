@@ -17,6 +17,7 @@ body {
 }
 
 img, svg, video { display: block; max-width: 100%; }
+img[src$="logo.png"] { aspect-ratio: 1 / 1; object-fit: cover; border-radius: 8px; }
 button, input, select, textarea { font: inherit; color: inherit; }
 button { background: none; border: none; cursor: pointer; }
 a { color: var(--accent); text-decoration: none; transition: color var(--dur-fast) ease; }
