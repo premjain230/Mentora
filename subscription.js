@@ -1,6 +1,6 @@
 // ── subscription.js ──
 // Handles: plan reads/writes, daily usage tracking, reset logic.
-// Imported by: subscription.html, limits.js, chat.js, analyze.js, planner.js
+// Imported by: subscription.html, limits.js, chat.js, planner.js
 
 import { auth, db } from "./firebase-config.js";
 import {

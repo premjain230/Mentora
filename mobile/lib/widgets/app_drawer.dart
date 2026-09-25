@@ -100,16 +100,6 @@ class AppDrawer extends StatelessWidget {
                   ),
                   _navItem(
                     context,
-                    icon: Icons.analytics_rounded,
-                    label: 'Analyze',
-                    active: false,
-                    onTap: () {
-                      Navigator.pop(context);
-                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Analyze — web only for now')));
-                    },
-                  ),
-                  _navItem(
-                    context,
                     icon: Icons.bolt_rounded,
                     label: 'Study Session',
                     active: false,

@@ -124,7 +124,7 @@ body{min-height:100vh;display:flex;flex-direction:column;align-items:center;padd
   <a href="study-session.html">Study Session</a>
   <a href="quiz.html">Quiz</a>
   <a href="planner.html">Study Planner</a>
-  <a href="analyze.html">Analyze</a>
+  <a href="arena.html">Arena</a>
   <div class="mnav-label">Account</div>
   <a href="referral.html">Refer &amp; Earn</a>
   <a href="subscription.html">Subscription</a>
@@ -243,7 +243,7 @@ body{min-height:100vh;display:flex;flex-direction:column;align-items:center;padd
   </div>
   <div class="row2">
    <button class="btn secondary" id="retakeBtn">Retake</button>
-   <a class="btn" href="analyze.html" style="text-align:center;text-decoration:none;">View Analysis</a>
+     <a class="btn" href="arena.html" style="text-align:center;text-decoration:none;">Open Arena</a>
   </div>
   <div class="saving" id="savingMsg">Saving attempt…</div>
  </div>
@@ -788,7 +788,7 @@ async function finishQuiz() {
    mode: quizMode,
    takenAt: serverTimestamp(),
   });
-  savingEl.textContent = "✅ Saved — visible in Quiz Analysis";
+  savingEl.textContent = "✅ Saved — visible on your dashboard";
   window.AquaTrack?.track("quiz_completed", { subject, topic, score, total });
  } catch (err) {
   console.error(err);

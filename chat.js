@@ -337,13 +337,13 @@ export function renderWelcome(container) {
           <div class="hub-title">Today</div>
           <div id="hubSubtitle" class="hub-subtitle">Your personalised progress — real, not demo</div>
         </div>
-        <a href="analyze.html" class="hub-link-pill">View analysis →</a>
+         <a href="arena.html" class="hub-link-pill">Open Arena →</a>
       </div>
       <div class="cere-grid-3">
-        <div class="aq-graph-card hub-clickable" onclick="window.location.href='analyze.html'">
-          <div class="hub-eyebrow">Mastery</div>
-          <div id="hubMasteryGauge" class="hub-gauge-wrap">Loading…</div>
-          <div id="hubMasteryCaption" class="hub-caption-center">Analyse →</div>
+         <div class="aq-graph-card hub-clickable" onclick="window.location.href='arena.html'">
+           <div class="hub-eyebrow">Arena progress</div>
+           <div id="hubMasteryGauge" class="hub-gauge-wrap">Loading…</div>
+           <div id="hubMasteryCaption" class="hub-caption-center">Open Arena →</div>
         </div>
         <div class="aq-graph-card hub-clickable" onclick="window.location.href='study-session.html'">
           <div class="hub-eyebrow">Volume — study time</div>
@@ -381,7 +381,7 @@ export function renderWelcome(container) {
           <span class="hub-tag">Real</span>
         </div>
         <div id="hubSubjectBars" class="aq-bar-list" style="margin-top:12px;"></div>
-        <div class="hub-caption" style="margin-top:8px;"><a href="analyze.html" style="color:var(--accent);text-decoration:none;">Full analysis →</a></div>
+         <div class="hub-caption" style="margin-top:8px;"><a href="arena.html" style="color:var(--accent);text-decoration:none;">Open Arena →</a></div>
       </div>
       <div class="aq-graph-card">
         <div class="hub-eyebrow">Retention timeline</div>

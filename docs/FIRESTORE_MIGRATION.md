@@ -3,7 +3,7 @@
 ## Existing structure (DO NOT DELETE)
 - `users/{uid}` — root profile
 - `users/{uid}/chats/{id}/messages/{id}`
-- `users/{uid}/quizAttempts/{id}` → powers `analyze.html`
+- `users/{uid}/quizAttempts/{id}` → powers the `home.html` dashboard
 - `users/{uid}/studySessions/{id}` → `study-session.html`
 - `users/{uid}/learning/profile`, `users/{uid}/learning/memory`, `users/{uid}/cards`, `users/{uid}/interactions`, `users/{uid}/misconceptions`, `users/{uid}/analytics`, `users/{uid}/dailyQuestions`
 - `studyPlans/{id}`, `tasks/{id}`, `progress/{uid}`, `usage/{uid}`, `analytics/{uid}/events/{id}`

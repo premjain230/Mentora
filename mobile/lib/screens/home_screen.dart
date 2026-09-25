@@ -31,7 +31,7 @@ class HomeScreen extends StatelessWidget {
                 _suggestion('Explain a concept', 'Get a clear explanation', Icons.lightbulb_rounded),
                 _suggestion('Practice quiz', 'Test your knowledge', Icons.quiz_rounded),
                 _suggestion('Study plan', 'Personalized roadmap', Icons.calendar_month_rounded),
-                _suggestion('Analyze', 'Track your progress', Icons.analytics_rounded),
+                 _suggestion('Arena', 'Enter the battlefield', Icons.sports_esports_rounded),
               ]),
             ]),
           ),

@@ -316,7 +316,7 @@ async function loadRecommendations(uid){
       item.title = r.explanation || r.reason;
       item.addEventListener("click", ()=>{
         if(r.action==="review") window.location.href="/review";
-        else if(r.action==="diagnostic") window.location.href="/analyze";
+         else if(r.action==="diagnostic") window.location.href="/quiz";
         else if(r.action==="practice") window.location.href="/quiz";
         else window.location.href="/study-session";
         // analytics: recommendation_clicked (not mastery evidence)

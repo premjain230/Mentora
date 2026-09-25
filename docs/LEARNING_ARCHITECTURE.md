@@ -68,7 +68,7 @@ Canonical `Mastery` shape (both platforms identical):
 ```
 users/{uid}                           // root doc (plan, displayName, exam, referralRewards)
 users/{uid}/chats                     // chat.js
-users/{uid}/quizAttempts              // quiz.html → analyze.html
+users/{uid}/quizAttempts              // quiz.html → home.html dashboard
 users/{uid}/studySessions             // study-session.js
 users/{uid}/cards, /interactions, /misconceptions, /analytics, /dailyQuestions
 studyPlans/{planId} + tasks/{taskId} + progress/{userId}

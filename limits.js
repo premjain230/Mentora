@@ -1,5 +1,5 @@
 // ── limits.js ──
-// Drop this import into chat.js, analyze.js, planner.js.
+// Drop this import into chat.js, planner.js.
 // Call checkAndGate(uid, "chat"|"analysis"|"planner") before any AI action.
 // If limit is reached, shows the upgrade modal and returns false.
 // If allowed, increments usage and returns true.
