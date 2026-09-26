@@ -1,27 +1,26 @@
 {
-  "name": "mentora",
-  "version": "1.0.0",
-  "type": "commonjs",
-  "description": "Learning Allied - Your AI-powered learning companion",
-  "engines": {
-    "node": "20.x"
-  },
-  "scripts": {
-    "dev": "vercel dev",
-    "build": "echo 'No build step required for vanilla HTML'",
-    "test": "echo 'No tests specified'"
-  },
-  "keywords": [
-    "ai",
-    "learning-allied",
-    "learning allied",
-    "education"
-  ],
-  "author": "",
-  "license": "ISC",
-  "dependencies": {
-    "@vercel/analytics": "^1.4.1",
-    "@vercel/speed-insights": "^2.0.0",
-    "firebase-admin": "^12.7.0"
-  }
+    "name": "mentora",
+    "version": "1.0.0",
+    "type": "commonjs",
+    "description": "Learning Allied - Your AI-powered learning companion",
+    "engines": {
+        "node": "20.x"
+    },
+    "scripts": {
+        "build": "echo \"No build step required for vanilla HTML\"",
+        "test": "echo \"No tests specified\""
+    },
+    "keywords": [
+        "ai",
+        "learning-allied",
+        "learning allied",
+        "education"
+    ],
+    "author": "",
+    "license": "ISC",
+    "dependencies": {
+        "@vercel/analytics": "^1.4.1",
+        "@vercel/speed-insights": "^2.0.0",
+        "firebase-admin": "^12.7.0"
+    }
 }
