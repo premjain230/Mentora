@@ -1,63 +1,69 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://aquila-sand.vercel.app/</loc>
+    <loc>https://learningallied.world/</loc>
     <lastmod>2026-07-09</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://aquila-sand.vercel.app/beyond-marks.html</loc>
+    <loc>https://learningallied.world/beyond-marks</loc>
     <lastmod>2026-07-09</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://aquila-sand.vercel.app/planner.html</loc>
+    <loc>https://learningallied.world/planner</loc>
     <lastmod>2026-07-09</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://aquila-sand.vercel.app/quiz.html</loc>
+    <loc>https://learningallied.world/quiz</loc>
     <lastmod>2026-07-09</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://aquila-sand.vercel.app/blog/how-to-make-a-jee-study-plan</loc>
+    <loc>https://learningallied.world/blog/how-to-make-a-jee-study-plan</loc>
     <lastmod>2026-08-13</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://aquila-sand.vercel.app/student-invoice.html</loc>
+    <loc>https://learningallied.world/student-invoice</loc>
     <lastmod>2026-07-09</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://aquila-sand.vercel.app/subscription.html</loc>
+    <loc>https://learningallied.world/subscription</loc>
     <lastmod>2026-07-09</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://aquila-sand.vercel.app/login.html</loc>
+    <loc>https://learningallied.world/login</loc>
     <lastmod>2026-07-09</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
-    <loc>https://aquila-sand.vercel.app/signup.html</loc>
+    <loc>https://learningallied.world/signup</loc>
     <lastmod>2026-07-09</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
-    <loc>https://aquila-sand.vercel.app/verify-email.html</loc>
+    <loc>https://learningallied.world/verify-email</loc>
     <lastmod>2026-07-09</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.3</priority>
+  </url>
+  <url>
+    <loc>https://learningallied.world/arena</loc>
+    <lastmod>2026-09-26</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
   </url>
 </urlset>

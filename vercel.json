@@ -45,6 +45,20 @@
       "schedule": "0 2 * * *"
     }
   ],
+  "redirects": [
+    {
+      "source": "/(.*)",
+      "has": [{ "type": "host", "value": "aquila-sand.vercel.app" }],
+      "destination": "https://learningallied.world/$1",
+      "permanent": true
+    },
+    {
+      "source": "/(.*)",
+      "has": [{ "type": "host", "value": "aquila-ai.vercel.app" }],
+      "destination": "https://learningallied.world/$1",
+      "permanent": true
+    }
+  ],
   "headers": [
     {
       "source": "/sitemap.xml",

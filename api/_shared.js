@@ -4,15 +4,14 @@ const RATE_WINDOW_MS = 60_000;
 function applyCors(req, res, allowedMethods = ["OPTIONS"]) {
   const origin = req.headers.origin || req.headers.host || "*";
   const allowed = [
-    "https://aquila-sand.vercel.app",
-    "https://aquila-ai.vercel.app",
+    "https://learningallied.world",
     "http://localhost:3000",
     "http://localhost:5173",
   ];
   if (allowed.includes(origin) || origin === "*") {
     res.setHeader("Access-Control-Allow-Origin", origin);
   } else if (origin) {
-    res.setHeader("Access-Control-Allow-Origin", "https://aquila-sand.vercel.app");
+    res.setHeader("Access-Control-Allow-Origin", "https://learningallied.world");
   } else {
     res.setHeader("Access-Control-Allow-Origin", "*");
   }

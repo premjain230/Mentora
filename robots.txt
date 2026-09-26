@@ -1,8 +1,10 @@
 User-agent: *
 Allow: /
-Disallow: /home.html
-Disallow: /planner-onboarding.html
-Disallow: /profile.html
-Disallow: /settings.html
+Disallow: /home
+Disallow: /planner-onboarding
+Disallow: /profile
+Disallow: /settings
+Disallow: /admin
+Disallow: /api/
 
-Sitemap: https://aquila-sand.vercel.app/sitemap.xml
+Sitemap: https://learningallied.world/sitemap.xml

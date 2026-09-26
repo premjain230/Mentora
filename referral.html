@@ -6,11 +6,11 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
 <meta http-equiv="Content-Security-Policy" content="default-src 'self' https:; script-src 'self' 'unsafe-inline' blob: https://www.gstatic.com https://apis.google.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://esm.sh; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: https:; font-src 'self' https://fonts.gstatic.com; connect-src 'self' blob: https://www.googleapis.com https://esm.sh https://www.gstatic.com https://firestore.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com; object-src 'none'; frame-src 'self' https://www.gstatic.com;">
 <meta name="description" content="Refer friends to Learning Allied and unlock rewards — more AI chats, premium quizzes, and Pro access."/>
-<link rel="canonical" href="https://aquila-sand.vercel.app/referral.html"/>
+<link rel="canonical" href="https://learningallied.world/referral"/>
 <meta property="og:title" content="Refer & Earn — Learning Allied"/>
 <meta property="og:description" content="Invite friends to Learning Allied and unlock premium rewards."/>
 <meta property="og:type" content="website"/>
-<meta property="og:url" content="https://aquila-sand.vercel.app/referral.html"/>
+<meta property="og:url" content="https://learningallied.world/referral"/>
 <title>Refer & Earn — Learning Allied</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%234f8cff'/><text x='16' y='22' text-anchor='middle' fill='white' font-size='18' font-weight='bold'>A</text></svg>">
 <meta name="referrer" content="no-referrer-when-downgrade">
@@ -124,7 +124,7 @@ import { onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.12.0/f
 import { getReferralCode, getDashboard, getTiers, getBadges, shareReferral, startDashboardRefresh, stopDashboardRefresh } from './modules/referral-system.js';
 import { ensureModulesInitialized } from './chat.js';
 
-const BASE = 'https://aquila-sand.vercel.app';
+const BASE = location.origin;
 
 function $(id) { return document.getElementById(id); }
 
