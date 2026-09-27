@@ -3,9 +3,9 @@
     "version": "1.0.0",
     "type": "commonjs",
     "description": "Learning Allied - Your AI-powered learning companion",
-    "engines": {
-        "node": "20.x"
-    },
+  "engines": {
+    "node": "24.x"
+  },
     "scripts": {
         "build": "echo \"No build step required for vanilla HTML\"",
         "test": "echo \"No tests specified\""
