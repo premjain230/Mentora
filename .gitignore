@@ -8,3 +8,5 @@ test_*.js
 test_prompt*.js
 .env*.local
 
+.vercel
+.env*
