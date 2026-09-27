@@ -49,13 +49,13 @@
     {
       "source": "/(.*)",
       "has": [{ "type": "host", "value": "aquila-sand.vercel.app" }],
-      "destination": "https://learningallied.world/$1",
+      "destination": "https://www.learningallied.world/$1",
       "permanent": true
     },
     {
       "source": "/(.*)",
       "has": [{ "type": "host", "value": "aquila-ai.vercel.app" }],
-      "destination": "https://learningallied.world/$1",
+      "destination": "https://www.learningallied.world/$1",
       "permanent": true
     }
   ],

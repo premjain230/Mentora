@@ -18,7 +18,7 @@ const DEFAULT_ANNOUNCEMENTS = [
       "Aquila is now Learning Allied — same progress, same syllabus, ship-ready polish: unified brand, premium dark/light themes, reliable auth, responsive web + mobile as one product.",
     icon: "sparkles",
     releaseDate: "2026-09-24",
-    url: "https://learningallied.world/",
+    url: "https://www.learningallied.world/",
     appPath: null,
   },
   {
@@ -29,7 +29,7 @@ const DEFAULT_ANNOUNCEMENTS = [
       "Focus on any topic with a guided study session — goals, key concepts, practice questions and a timer. Start one from the app or website.",
     icon: "timer",
     releaseDate: "2026-08-10",
-    url: "https://learningallied.world/study-session",
+    url: "https://www.learningallied.world/study-session",
     appPath: null, // deep-link target in-app; null falls back to opening url
   },
 ];

@@ -127,7 +127,7 @@ module.exports = async function handler(req, res) {
       const user = await getUserDoc(`users/${uid}`);
       if (!user) return res.status(404).json({ error: "User not found" });
       if (user.referralCode) {
-        return res.json({ code: user.referralCode, link: `https://learningallied.world/signup?ref=${user.referralCode}` });
+        return res.json({ code: user.referralCode, link: `https://www.learningallied.world/signup?ref=${user.referralCode}` });
       }
       let code, existing;
       for (let i = 0; i < GEN_RETRIES; i++) {
@@ -144,7 +144,7 @@ module.exports = async function handler(req, res) {
       await firestore("PATCH", `/users/${uid}?updateMask.fieldPaths=referralCode`, {
         fields: { referralCode: { stringValue: code } },
       });
-      return res.json({ code, link: `https://learningallied.world/signup?ref=${code}` });
+      return res.json({ code, link: `https://www.learningallied.world/signup?ref=${code}` });
     }
 
     if (req.method === "POST" && path === "claim") {

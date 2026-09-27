@@ -6,7 +6,10 @@ import 'package:http/http.dart' as http;
 import 'package:firebase_auth/firebase_auth.dart';
 
 class ArenaApi {
-  static const baseUrl = 'https://aquila-sand.vercel.app'; // production; localhost fallback handled by caller
+  // Serve the host that answers directly. The old aquila-sand.vercel.app host
+  // redirected to the apex domain, which itself 308-redirects to www, adding
+  // two hops to every request. localhost fallback handled by caller.
+  static const baseUrl = 'https://www.learningallied.world';
   static Future<Map<String,dynamic>> _headers() async {
     final user=FirebaseAuth.instance.currentUser;
     String? token;
