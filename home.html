@@ -194,7 +194,7 @@ function resizeInput(input) {
 }
 function fillPrompt(text) {
  try { sessionStorage.setItem('learning-allied-pending-prompt', text); sessionStorage.setItem('aquila_pending_prompt', text); } catch(e){}
- window.location.href = '/chat';
+ window.location.href = window.pageUrl ? window.pageUrl('/chat') : '/chat';
 }
 function runPrompt(text) { fillPrompt(text); }
 function handleKey(e) {

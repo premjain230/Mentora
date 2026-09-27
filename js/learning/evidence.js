@@ -5,6 +5,7 @@
  */
 
 import { createLearningEvent, validateLearningEvent } from "./contracts.js";
+import { apiFetch } from "../../api-base.js";
 
 export function validateEventPayload(event) {
   return validateLearningEvent(event);
@@ -47,7 +48,7 @@ export async function emitLearningEvent(db, uid, type, fields = {}) {
   // strip null eventId? keep for idempotency
   try {
     const headers = await authHeaders();
-    const res = await fetch("/api/learning-event", {
+    const res = await apiFetch("/api/learning-event", {
       method: "POST",
       headers,
       body: JSON.stringify(body),

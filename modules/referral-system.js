@@ -3,7 +3,9 @@
  * Handles referral code management, dashboard data, and reward tracking.
  */
 
-const API_BASE = '/api/referral';
+import { apiUrl } from '../api-base.js';
+
+const API_BASE = apiUrl('/api/referral');
 
 let cachedDashboard = null;
 let refreshTimer = null;

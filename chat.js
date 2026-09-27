@@ -12,9 +12,10 @@ import * as Aquila from "./aquila-integration.js";
 import { loadMemory, addMemory } from "./modules/memory.js";
 import { track } from "./modules/track.js";
 import { SYSTEM_PROMPT } from "./js/ai/system-prompt.js";
+import { apiUrl, apiFetch } from "./api-base.js";
 
-const API_ENDPOINT  = "/api/groq-proxy";
-const SEARCH_ENDPOINT = "/api/search";
+const API_ENDPOINT  = apiUrl("/api/groq-proxy");
+const SEARCH_ENDPOINT = apiUrl("/api/search");
 const MODEL         = "openai/gpt-oss-120b";
 const MAX_HISTORY   = 60;
 
@@ -584,7 +585,7 @@ export function renderWelcome(container) {
             // Next steps — real recommendations via backend
             try{
               const token = await user.getIdToken();
-              const res = await fetch("/api/recommendations", { headers:{ "Authorization":`Bearer ${token}` }});
+               const res = await apiFetch("/api/recommendations", { headers:{ "Authorization":`Bearer ${token}` }});
               if(res.ok){
                 const data = await res.json();
                 const recs = (data.recommendations||[]).slice(0,3);

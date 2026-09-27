@@ -25,8 +25,9 @@ import {
   serverTimestamp,
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 import { emitLearningEvent } from "./js/learning/evidence.js";
+import { apiUrl } from "./api-base.js";
 
-const API_ENDPOINT = "/api/study-session";
+const API_ENDPOINT = apiUrl("/api/study-session");
 
 let currentUser = null;
 let sessionDocId = null;

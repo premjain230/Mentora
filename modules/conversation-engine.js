@@ -17,8 +17,9 @@ import { getNextReviewBatch, calculateNextReview } from './retrieval-scheduler.j
 import { SYSTEM_PROMPT } from '../js/ai/system-prompt.js';
 import { buildExplanationPlan, generateExplanation } from './explanation-engine.js';
 import { detectMisconception, evaluateAnswer, getAssessmentMix } from './assessment-engine.js';
+import { apiUrl } from '../api-base.js';
 
-const API_ENDPOINT = '/api/groq-proxy';
+const API_ENDPOINT = apiUrl('/api/groq-proxy');
 const MAX_HISTORY = 60;
 
 const TEACHING_PHASES = [

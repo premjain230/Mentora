@@ -4,14 +4,19 @@ const RATE_WINDOW_MS = 60_000;
 function applyCors(req, res, allowedMethods = ["OPTIONS"]) {
   const origin = req.headers.origin || req.headers.host || "*";
   const allowed = [
+    // The apex domain redirects to www, so www is the origin that serves requests.
+    "https://www.learningallied.world",
     "https://learningallied.world",
     "http://localhost:3000",
     "http://localhost:5173",
+    // VS Code Live Server, used for frontend-only local development.
+    "http://127.0.0.1:5500",
+    "http://localhost:5500",
   ];
   if (allowed.includes(origin) || origin === "*") {
     res.setHeader("Access-Control-Allow-Origin", origin);
   } else if (origin) {
-    res.setHeader("Access-Control-Allow-Origin", "https://learningallied.world");
+    res.setHeader("Access-Control-Allow-Origin", "https://www.learningallied.world");
   } else {
     res.setHeader("Access-Control-Allow-Origin", "*");
   }

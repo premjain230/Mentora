@@ -24,6 +24,9 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 import "./modules/track.js";
+import { apiFetch, pageUrl, applyCleanUrlLinks } from "./api-base.js";
+
+applyCleanUrlLinks();
 
 // ─── Global state ─────────────────────────────────────────────────────────────
 export let currentUser = null;
@@ -37,11 +40,11 @@ firebaseReady.then(() => {
   }
   onAuthStateChanged(auth, async (user) => {
     if (!user) {
-      window.location.href = "/login";
+      window.location.href = pageUrl("/login");
       return;
     }
     if (!user.emailVerified) {
-      window.location.href = "/verify-email";
+      window.location.href = pageUrl("/verify-email");
       return;
     }
     currentUser = user;
@@ -58,7 +61,7 @@ firebaseReady.then(() => {
           // For fresh signups, redirect to onboarding.html
           const createdAt = snap.exists() ? snap.data().createdAt : null;
           const isFresh = !snap.exists() || (createdAt && (Date.now() - (createdAt.toDate ? createdAt.toDate().getTime() : Date.now()) < 5*60*1000));
-          if (isFresh) { window.location.href = "/onboarding"; return; }
+          if (isFresh) { window.location.href = pageUrl("/onboarding"); return; }
         }
       }
     } catch {}
@@ -143,7 +146,7 @@ function populateUserCard(user) {
         if (!q) return;
         const isChat = window.location.pathname.endsWith("chat") || window.location.pathname.endsWith("chat.html") || new URLSearchParams(window.location.search).get("mode")==="chat";
         if (isChat) { const inp=document.getElementById("chatInput"); if(inp){ inp.value=q; inp.dispatchEvent(new Event("input")); import("./chat.js").then(m=>m.sendMessage()); } }
-        else { try{ sessionStorage.setItem("learning-allied-pending-prompt", q); sessionStorage.setItem("aquila_pending_prompt", q);}catch(e){} window.location.href = "/chat"; }
+        else { try{ sessionStorage.setItem("learning-allied-pending-prompt", q); sessionStorage.setItem("aquila_pending_prompt", q);}catch(e){} window.location.href = pageUrl("/chat"); }
       }
     });
   }
@@ -192,7 +195,7 @@ export async function loadRecentChats(uid) {
 
     const btn = document.createElement("a");
     btn.className = "nav-item";
-    btn.href = "/chat-history";
+    btn.href = pageUrl("/chat-history");
     btn.innerHTML = `<span class="nav-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></span> Chat History${hasChats ? ` <span style="margin-left:auto;font-size:11px;opacity:0.7;">View all →</span>` : ""}`;
     btn.title = hasChats ? "View all chats" : "No chats yet — start a new chat";
     section.appendChild(btn);
@@ -268,7 +271,7 @@ function wireNewChatBtn() {
   btn.addEventListener("click", async () => {
     const isChatMode = new URLSearchParams(window.location.search).get("mode") === "chat" || window.location.pathname.endsWith("chat") || window.location.pathname.endsWith("chat.html");
     if (!isChatMode) {
-      window.location.href = "/chat";
+      window.location.href = pageUrl("/chat");
       return;
     }
     const { resetChat } = await import("./chat.js");
@@ -287,13 +290,13 @@ function wireSignOutBtn() {
 // ─── Sign out ─────────────────────────────────────────────────────────────────
 export async function signOut() {
   await fbSignOut(auth);
-  window.location.href = "/login";
+  window.location.href = pageUrl("/login");
 }
 
 async function loadRecommendations(uid){
   try{
     const token = await currentUser.getIdToken();
-    const res = await fetch("/api/recommendations", { headers:{ "Authorization":`Bearer ${token}` }});
+    const res = await apiFetch("/api/recommendations", { headers:{ "Authorization":`Bearer ${token}` }});
     if(!res.ok) return;
     const data = await res.json();
     const recs = data.recommendations || [];
@@ -315,12 +318,12 @@ async function loadRecommendations(uid){
       item.innerHTML = `<span style="font-size:13px;font-weight:600;">${r.subject} • ${r.topic}</span><span style="font-size:11px;color:var(--text-muted);">${r.action} — ${r.reason}</span>`;
       item.title = r.explanation || r.reason;
       item.addEventListener("click", ()=>{
-        if(r.action==="review") window.location.href="/review";
-         else if(r.action==="diagnostic") window.location.href="/quiz";
-        else if(r.action==="practice") window.location.href="/quiz";
-        else window.location.href="/study-session";
+        if(r.action==="review") window.location.href=pageUrl("/review");
+         else if(r.action==="diagnostic") window.location.href=pageUrl("/quiz");
+        else if(r.action==="practice") window.location.href=pageUrl("/quiz");
+        else window.location.href=pageUrl("/study-session");
         // analytics: recommendation_clicked (not mastery evidence)
-        try{ fetch("/api/learning-event",{method:"POST", headers:{"Content-Type":"application/json","Authorization":`Bearer ${token}`}, body: JSON.stringify({type:"recommendation_clicked", source:"recommendation", payload:{conceptId:r.conceptId, action:r.action}})}).catch(()=>{});}catch{}
+        try{ apiFetch("/api/learning-event",{method:"POST", headers:{"Content-Type":"application/json","Authorization":`Bearer ${token}`}, body: JSON.stringify({type:"recommendation_clicked", source:"recommendation", payload:{conceptId:r.conceptId, action:r.action}})}).catch(()=>{});}catch{}
       });
       sec.appendChild(item);
     });

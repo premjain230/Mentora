@@ -183,6 +183,7 @@ import { doc, getDoc, collection } from "https://www.gstatic.com/firebasejs/10.1
 import { getTracks, getSubjectsForTrack, getChapters, toSubjectKey } from "./js/learning/arena-curriculum.js";
 import { createDefaultProgress, computeProgress, canBattle, DEFEAT_SCORE, FINAL_BOSS_DEFEAT_SCORE } from "./js/learning/arena-progress.js";
 import { emitLearningEvent } from "./js/learning/evidence.js";
+import { apiUrl, pageUrl } from "./api-base.js";
 
 function escapeHtml(s){ return String(s||"").replace(/[&<>"']/g, m=>({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[m])); }
 
@@ -196,7 +197,7 @@ let progressUnsub=null;
 // — Auth gate —
 await firebaseReady;
 onAuthStateChanged(auth, async (user)=>{
-  if(!user){ location.href="/login"; return; }
+  if(!user){ location.href=pageUrl("/login"); return; }
   if(!user.emailVerified){ location.href="verify-email.html"; return; }
   currentUser=user;
   document.body.classList.remove("auth-loading");
@@ -338,7 +339,7 @@ async function enterSubject(subject){
   try{
     const payloadChapters = chapters.map(c=> ({ conceptId: c.conceptId, prerequisites: c.prerequisites }));
     const token = await currentUser.getIdToken();
-    const res = await fetch("/api/arena", { method:"POST", headers:{ "Content-Type":"application/json", "Authorization":`Bearer ${token}` }, body: JSON.stringify({ subjectKey: selectedSubjectKey, action:"init", trackId: selectedTrack.id, subject, classNum: selectedClass, chapters: payloadChapters }) });
+    const res = await fetch(apiUrl("/api/arena"), { method:"POST", headers:{ "Content-Type":"application/json", "Authorization":`Bearer ${token}` }, body: JSON.stringify({ subjectKey: selectedSubjectKey, action:"init", trackId: selectedTrack.id, subject, classNum: selectedClass, chapters: payloadChapters }) });
     const j=await res.json();
     if(!res.ok) throw new Error(j.error||`init failed ${res.status}`);
     progress=j.progress;
@@ -456,7 +457,7 @@ async function loadContinue(){
     // naive: try known keys from localStorage last arena
     const last=localStorage.getItem("arena_last_subjectKey");
     if(!last) return;
-    const r=await fetch(`/api/arena?subjectKey=${encodeURIComponent(last)}`, { headers:{ Authorization:`Bearer ${token}` }});
+    const r=await fetch(apiUrl(`/api/arena?subjectKey=${encodeURIComponent(last)}`), { headers:{ Authorization:`Bearer ${token}` }});
     if(!r.ok) return;
     const j=await r.json(); const p=j.progress; if(!p) return;
     document.getElementById("continueRow").style.display="block";
@@ -540,7 +541,7 @@ async function startBattle(chapter, isReplay=false){
   // Try AI generation, fallback local
   try{
     const token=await currentUser.getIdToken();
-    const r=await fetch("/api/groq-proxy", { method:"POST", headers:{ "Content-Type":"application/json", Authorization:`Bearer ${token}` }, body: JSON.stringify({ model:"openai/gpt-oss-120b", messages:[{role:"user", content:`Generate ${total} MCQs for ${chapter.subject} — ${chapter.name} (${chapter.topic}). Return JSON array [{"q":"","options":["A) ...","B) ...","C) ...","D) ..."],"answer":"B","explanation":"..."}]. Only JSON.` }], temperature:0.7, max_tokens:900 })});
+    const r=await fetch(apiUrl("/api/groq-proxy"), { method:"POST", headers:{ "Content-Type":"application/json", Authorization:`Bearer ${token}` }, body: JSON.stringify({ model:"openai/gpt-oss-120b", messages:[{role:"user", content:`Generate ${total} MCQs for ${chapter.subject} — ${chapter.name} (${chapter.topic}). Return JSON array [{"q":"","options":["A) ...","B) ...","C) ...","D) ..."],"answer":"B","explanation":"..."}]. Only JSON.` }], temperature:0.7, max_tokens:900 })});
     if(r.ok){
       const d=await r.json(); const txt=d.choices?.[0]?.message?.content||""; const parsed=JSON.parse(txt.replace(/```json|```/g,"").trim());
       if(Array.isArray(parsed) && parsed.length){ battleQs=parsed.slice(0,total).map(x=> ({q:x.q||x.question, options:x.options, answer: (x.answer||"A").charAt(0), explanation:x.explanation||""})); }
@@ -619,14 +620,14 @@ async function finishBattle(){
     if(passed){
       // fetch mastery after events (small delay) to include evidence
       let masteryScore=null; try{ const snap=await getDoc(doc(db,"users",currentUser.uid,"mastery",battleConcept.conceptId)); if(snap.exists()) masteryScore=snap.data().masteryScore; }catch{}
-      const r=await fetch("/api/arena",{ method:"POST", headers:{ "Content-Type":"application/json", Authorization:`Bearer ${token}` }, body: JSON.stringify({ subjectKey: selectedSubjectKey, action:"defeat_chapter", conceptId: battleConcept.conceptId, score, masteryScore }) });
+      const r=await fetch(apiUrl("/api/arena"),{ method:"POST", headers:{ "Content-Type":"application/json", Authorization:`Bearer ${token}` }, body: JSON.stringify({ subjectKey: selectedSubjectKey, action:"defeat_chapter", conceptId: battleConcept.conceptId, score, masteryScore }) });
       const j=await r.json(); if(!r.ok) throw new Error(j.error||"defeat failed");
       progress=j.progress;
       try{ localStorage.setItem("arena_last_subjectKey", selectedSubjectKey); }catch{}
       burstVictory(pct, total, battleScore, masteryScore);
     } else {
       // still record attempt as in_progress
-      await fetch("/api/arena",{ method:"POST", headers:{ "Content-Type":"application/json", Authorization:`Bearer ${token}` }, body: JSON.stringify({ subjectKey: selectedSubjectKey, action:"level_complete", conceptId: battleConcept.conceptId, score, level:"challenge" }) });
+      await fetch(apiUrl("/api/arena"),{ method:"POST", headers:{ "Content-Type":"application/json", Authorization:`Bearer ${token}` }, body: JSON.stringify({ subjectKey: selectedSubjectKey, action:"level_complete", conceptId: battleConcept.conceptId, score, level:"challenge" }) });
       showToast(`Keep fighting! ${pct}% — need 60% to defeat. Review and try again.`, 3200);
       // refresh progress
       const snap=await getDoc(doc(db,"users",currentUser.uid,"arenaProgress",selectedSubjectKey)); if(snap.exists()) progress=snap.data();
@@ -666,7 +667,7 @@ async function startFinalBoss(){
   try{
     const token=await currentUser.getIdToken();
     const topics=chapters.slice(0,4).map(c=> c.name).join(", ");
-    const r=await fetch("/api/groq-proxy",{ method:"POST", headers:{ "Content-Type":"application/json", Authorization:`Bearer ${token}` }, body: JSON.stringify({ model:"openai/gpt-oss-120b", messages:[{role:"user", content:`Generate ${total} MCQs covering ${selectedSubject} chapters: ${topics}. Mix difficulties. Return JSON array [{"q":"","options":["A) ...","B) ...","C) ...","D) ..."],"answer":"B","explanation":"..."}] Only JSON.`}], temperature:0.7, max_tokens:1200 })});
+    const r=await fetch(apiUrl("/api/groq-proxy"),{ method:"POST", headers:{ "Content-Type":"application/json", Authorization:`Bearer ${token}` }, body: JSON.stringify({ model:"openai/gpt-oss-120b", messages:[{role:"user", content:`Generate ${total} MCQs covering ${selectedSubject} chapters: ${topics}. Mix difficulties. Return JSON array [{"q":"","options":["A) ...","B) ...","C) ...","D) ..."],"answer":"B","explanation":"..."}] Only JSON.`}], temperature:0.7, max_tokens:1200 })});
     if(r.ok){ const d=await r.json(); const txt=d.choices?.[0]?.message?.content||""; const p=JSON.parse(txt.replace(/```json|```/g,"").trim()); if(Array.isArray(p)) bossQs=p.slice(0,total).map(x=> ({q:x.q||x.question, options:x.options, answer:(x.answer||"A").charAt(0), explanation:x.explanation||""})); }
     if(!bossQs.length) throw new Error("no boss qs");
   }catch{
@@ -684,7 +685,7 @@ async function startFinalBoss(){
       if(score >= FINAL_BOSS_DEFEAT_SCORE){
         try{
           const token=await currentUser.getIdToken();
-          const r=await fetch("/api/arena",{ method:"POST", headers:{ "Content-Type":"application/json", Authorization:`Bearer ${token}` }, body: JSON.stringify({ subjectKey: selectedSubjectKey, action:"final_boss_attempt", score }) });
+          const r=await fetch(apiUrl("/api/arena"),{ method:"POST", headers:{ "Content-Type":"application/json", Authorization:`Bearer ${token}` }, body: JSON.stringify({ subjectKey: selectedSubjectKey, action:"final_boss_attempt", score }) });
           const j=await r.json(); if(!r.ok) throw new Error(j.error);
           progress=j.progress;
         }catch(e){ showToast(e.message||"Boss defeat failed"); return; }

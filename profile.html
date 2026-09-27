@@ -455,6 +455,7 @@ window.showToast = showToast;
 <script type="module">
 import { auth, db } from "./firebase-config.js";
 import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { apiUrl } from "./api-base.js";
 import {
  doc, getDoc, setDoc, serverTimestamp,
  collection, getDocs
@@ -463,7 +464,7 @@ import {
 const authInstance = auth || getAuth();
 let currentUser = null;
 let profileData = {};
-const GROQ_ENDPOINT = "/api/groq-proxy";
+const GROQ_ENDPOINT = apiUrl("/api/groq-proxy");
 
 const PERSONALITIES = [
  { id: "mentor", emoji: "🧭", name: "Mentor", desc: "Wise and experienced, guides you with patience and deep knowledge." },

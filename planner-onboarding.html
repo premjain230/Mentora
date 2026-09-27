@@ -280,6 +280,7 @@ input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 18p
 import { auth } from "./firebase-config.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 import { saveExamProfile, saveStudyPlan, createTasksFromPlan, logEvent } from "./planner-db.js";
+import { apiUrl } from "./api-base.js";
 
 // ── Auth guard ───────────────────────────────────────────────
 onAuthStateChanged(auth, (user) => {
@@ -492,7 +493,7 @@ window.generatePlan = async function() {
   const idToken = await user.getIdToken();
 
   // 2. Call the Vercel function
-  const res = await fetch("/api/generate-plan", {
+  const res = await fetch(apiUrl("/api/generate-plan"), {
    method: "POST",
    headers: {
     "Content-Type": "application/json",

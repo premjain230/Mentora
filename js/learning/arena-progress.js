@@ -4,6 +4,8 @@
  * Client never trusts local-only defeated; server transaction validates prerequisites.
  */
 
+import { apiFetch } from "../../api-base.js";
+
 export const ArenaState = Object.freeze({
   LOCKED: "locked",
   AVAILABLE: "available",
@@ -157,7 +159,7 @@ export async function fetchProgress(db, uid, subjectKey){
   // Try API
   try{
     const h = await authHeaders();
-    const r = await fetch(`/api/arena?subjectKey=${encodeURIComponent(subjectKey)}`, { headers: h });
+    const r = await apiFetch(`/api/arena?subjectKey=${encodeURIComponent(subjectKey)}`, { headers: h });
     if(r.ok){ const j=await r.json(); if(j.progress) return j.progress; }
     if(r.status===404) return null;
   }catch(e){ /* fallback */ }
@@ -174,7 +176,7 @@ export async function fetchProgress(db, uid, subjectKey){
 export async function saveProgressViaApi(subjectKey, action, payload={}){
   const h = await authHeaders();
   const body = { subjectKey, action, ...payload };
-  const r = await fetch("/api/arena", { method:"POST", headers: h, body: JSON.stringify(body) });
+  const r = await apiFetch("/api/arena", { method:"POST", headers: h, body: JSON.stringify(body) });
   const j = await r.json().catch(()=>({}));
   if(!r.ok) throw new Error(j.error || `Arena ${action} failed (${r.status})`);
   return j;

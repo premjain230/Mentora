@@ -12,11 +12,12 @@
  */
 
 import { auth } from "../firebase-config.js";
+import { apiUrl } from "../api-base.js";
 
 const VISITOR_KEY = "aq_visitor";
 const UTM_KEY = "aq_utm";
 const FIRST_KEY = "aq_first_seen";
-const API = "/api/track";
+const API = apiUrl("/api/track");
 const UTM_PARAMS = ["utm_source", "utm_medium", "utm_campaign", "utm_content", "utm_term"];
 
 function uuid() {

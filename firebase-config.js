@@ -5,10 +5,11 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getAuth, GoogleAuthProvider } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 import { getFirestore } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { apiFetch } from "./api-base.js";
 
 async function loadFirebaseConfig() {
   try {
-    const response = await fetch("/api/firebase-config", {
+    const response = await apiFetch("/api/firebase-config", {
       method: "GET",
       headers: { "Accept": "application/json" },
       credentials: "same-origin",

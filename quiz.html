@@ -254,6 +254,7 @@ import { auth, db } from "./firebase-config.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 import { collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 import { emitLearningEvent } from "./js/learning/evidence.js";
+import { apiUrl } from "./api-base.js";
 
 const authInstance = auth;
 let currentUser = null;
@@ -263,7 +264,7 @@ onAuthStateChanged(authInstance, (user) => {
  currentUser = user;
 });
 
-const API_ENDPOINT = "/api/groq-proxy";
+const API_ENDPOINT = apiUrl("/api/groq-proxy");
 const MODEL = "openai/gpt-oss-120b";
 
 async function groqHeaders() {

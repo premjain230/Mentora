@@ -10,6 +10,7 @@ import {
   googleProvider,
   firebaseReady,
 } from "./firebase-config.js";
+import { apiFetch } from "./api-base.js";
 
 import {
   signInWithEmailAndPassword,
@@ -181,7 +182,7 @@ export async function signUp(btnEl, extra = {}) {
 
 // Add user to Brevo contact list
 try {
-  await fetch("/api/add-contact", {
+  await apiFetch("/api/add-contact", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",

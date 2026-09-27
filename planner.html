@@ -294,6 +294,7 @@ import {
 import { doc, getDoc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 import { db } from "./firebase-config.js";
 import { getUserPlan } from "./subscription.js";
+import { apiUrl } from "./api-base.js";
 
 let appState = { user: null, profile: null, plan: null, tasks: [], progress: null, currentTab: "today" };
 let _getProgress = getProgress;
@@ -731,7 +732,7 @@ window.executeReplan = async function() {
  try {
   const user=auth.currentUser;
   const idToken=await user.getIdToken();
-  const res=await fetch("/api/replan",{method:"POST",headers:{"Content-Type":"application/json","Authorization":`Bearer ${idToken}`},credentials:"same-origin",body:JSON.stringify({missedTasks:missedTasks.map(t=>({subject:t.subject,topic:t.topic,durationMinutes:t.durationMinutes})),dailyHours:profile?.dailyHours||6,examDate:profile?.examDate||"",examType:profile?.examType||""})});
+  const res=await fetch(apiUrl("/api/replan"),{method:"POST",headers:{"Content-Type":"application/json","Authorization":`Bearer ${idToken}`},credentials:"same-origin",body:JSON.stringify({missedTasks:missedTasks.map(t=>({subject:t.subject,topic:t.topic,durationMinutes:t.durationMinutes})),dailyHours:profile?.dailyHours||6,examDate:profile?.examDate||"",examType:profile?.examType||""})});
   if (!res.ok) { const err=await res.json().catch(()=>({})); throw new Error(err.error||"Replan failed."); }
   closeReplanModal();
   await logEvent("replan_generated",{missedCount:missedTasks.length});

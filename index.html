@@ -182,6 +182,10 @@ img{display:block;max-width:100%}
 <script type="module">
 import { auth } from "./firebase-config.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { applyCleanUrlLinks } from "./api-base.js";
+
+// Vercel serves clean URLs (/blog/...) via rewrites; Live Server needs the real file.
+applyCleanUrlLinks();
 const loading = document.getElementById("authLoading");
 const hide = () => { if (loading) loading.style.display = "none"; };
 setTimeout(hide, 2500);

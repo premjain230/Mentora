@@ -17,6 +17,7 @@
  */
 
 import { auth } from "../firebase-config.js";
+import { apiUrl } from "../api-base.js";
 
 const $ = (s, el = document) => el.querySelector(s);
 const $$ = (s, el = document) => [...el.querySelectorAll(s)];
@@ -51,7 +52,7 @@ const route = () => location.hash.slice(1) || "dashboard";
 /* ---------- api ---------- */
 async function api(path, { method = "GET", body } = {}) {
   const token = user ? await user.getIdToken(true) : null;
-  const resp = await fetch(path, {
+  const resp = await fetch(apiUrl(path), {
     method,
     headers: { "Content-Type": "application/json", ...(token ? { Authorization: "Bearer " + token } : {}) },
     body: body ? JSON.stringify(body) : undefined,
