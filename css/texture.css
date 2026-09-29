@@ -1,0 +1,101 @@
+/* Learning Allied — ambient texture layers
+   =========================
+   Two themes, two textures:
+     dark  -> .island / .islandt / .hatch   (SVG-lit topographic noise)
+     light -> .cracked-earth                (dark crackle, low opacity)
+
+   Markup + the <filter> defs are injected by js/texture.js, so this file only
+   styles them. The defs MUST live in the document (filter: url(#id) is a
+   same-document reference), which is why they are JS-injected rather than here.
+
+   Tunables live in css/tokens.css:
+     --texture-veil        overall strength of the whole stack
+     --texture-island      .island opacity
+     --texture-island-t    .islandt opacity
+     --texture-hatch       .hatch opacity
+     --texture-cracks      .cracked-earth opacity
+
+   js/texture.js may add .no-filters (mobile / reduced-motion / user opt-out),
+   which swaps the expensive SVG filters for a cheap static gradient.
+*/
+
+.texture-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+  contain: strict;
+  opacity: var(--texture-veil, 0.14);
+}
+.texture-layer > * {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+/* Hidden until texture.js confirms it can run (avoids a flash of unstyled
+   background if the module is blocked). */
+.texture-layer:not(.is-ready) { opacity: 0; }
+
+/* ── Dark theme ────────────────────────────────────────────────────────── */
+/* brightness() is 1.15, not the 20 from the original snippet: the corrected
+   filters already output mid-tones (measured avg 142/255), and brightness(20)
+   clipped them to pure white. */
+.island,
+.islandt {
+  transform: scale(1);
+  background: rgb(52, 65, 73);
+}
+.island {
+  opacity: var(--texture-island, 0.65);
+  filter: url(#octave1) brightness(1.15) contrast(1.05);
+}
+.islandt {
+  opacity: var(--texture-island-t, 0.5);
+  filter: url(#octave2) brightness(1.15) contrast(1.05);
+}
+
+/* NOTE: no .hatch styling was supplied with the original snippet, so this is a
+   cross-hatch built from the accent token. Delete it if you have a real one. */
+.hatch {
+  opacity: var(--texture-hatch, 0.16);
+  background-image:
+    repeating-linear-gradient(45deg,  rgba(120, 200, 255, 0.5) 0 1px, transparent 1px 7px),
+    repeating-linear-gradient(-45deg, rgba(120, 200, 255, 0.5) 0 1px, transparent 1px 7px);
+  -webkit-mask-image: radial-gradient(120% 90% at 50% 0%, #000 30%, transparent 78%);
+  mask-image: radial-gradient(120% 90% at 50% 0%, #000 30%, transparent 78%);
+}
+
+.cracked-earth { display: none; }
+
+/* ── Light theme ───────────────────────────────────────────────────────── */
+.light-mode .island,
+.light-mode .islandt,
+.light-mode .hatch { display: none; }
+
+.light-mode .cracked-earth {
+  display: block;
+  /* #191999 is near-black; at full opacity this would be a black rectangle on
+     a light theme, so it is drawn as a faint crackle instead. */
+  background-color: #191919;
+  opacity: var(--texture-cracks, 0.07);
+  filter: url(#cracks);
+}
+
+/* ── Reduced cost fallback ────────────────────────────────────────────── */
+.texture-layer.no-filters .island,
+.texture-layer.no-filters .islandt,
+.texture-layer.no-filters .cracked-earth {
+  filter: none;
+  background: transparent;
+}
+.texture-layer.no-filters .island {
+  background: radial-gradient(60% 50% at 18% 8%,  rgba(14, 165, 233, 0.5), transparent 70%);
+}
+.texture-layer.no-filters .islandt {
+  background: radial-gradient(55% 45% at 84% 92%, rgba(139, 124, 247, 0.45), transparent 70%);
+}
+.texture-layer.no-filters .hatch { opacity: 0.08; }
+.light-mode .texture-layer.no-filters .cracked-earth { background: transparent; }

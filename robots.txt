@@ -6,5 +6,6 @@ Disallow: /profile
 Disallow: /settings
 Disallow: /admin
 Disallow: /api/
+Disallow: /sidebar.html
 
 Sitemap: https://www.learningallied.world/sitemap.xml

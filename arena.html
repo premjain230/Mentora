@@ -4,7 +4,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-<meta http-equiv="Content-Security-Policy" content="default-src 'self' https:; script-src 'self' 'unsafe-inline' blob: https://www.gstatic.com https://apis.google.com https://accounts.google.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://www.googletagmanager.com https://esm.sh; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: https:; font-src 'self' https://fonts.gstatic.com; connect-src 'self' blob: https://www.googleapis.com https://apis.google.com https://accounts.google.com https://esm.sh https://www.gstatic.com https://firestore.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://analytics.vercel.com; object-src 'none'; frame-src 'self' https://www.gstatic.com https://accounts.google.com https://mentora-c6dca.firebaseapp.com">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self' https:; script-src 'self' 'unsafe-inline' blob: https://www.gstatic.com https://apis.google.com https://accounts.google.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://www.googletagmanager.com https://esm.sh; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: https:; font-src 'self' https://fonts.gstatic.com; connect-src 'self' blob: https://www.googleapis.com https://apis.google.com https://accounts.google.com https://esm.sh https://www.gstatic.com https://firestore.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://analytics.vercel.com https://learningallied.world https://www.learningallied.world; object-src 'none'; frame-src 'self' https://www.gstatic.com https://accounts.google.com https://mentora-c6dca.firebaseapp.com">
 <meta name="description" content="Arena — Conquer your syllabus. JEE, NEET, CBSE & Maharashtra Board as a progression game." />
 <meta property="og:url" content="https://www.learningallied.world/arena" />
 <link rel="canonical" href="https://www.learningallied.world/arena" />
@@ -13,6 +13,9 @@
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=Inter:wght@400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
 <link rel="stylesheet" href="/css/tokens.css" />
 <link rel="stylesheet" href="/css/base.css" />
+<link rel="stylesheet" href="/css/sidebar.css" />
+<link rel="stylesheet" href="/css/texture.css" />
+<script type="module" src="/js/texture.js"></script>
 <link rel="stylesheet" href="/css/shell.css" />
 <link rel="stylesheet" href="/css/arena.css" />
 <style>
@@ -22,7 +25,7 @@
   #authSplash .dot{ width:8px; height:8px; border-radius:50%; background:var(--accent); animation:aquilaSplashDot 1.2s ease-in-out infinite; display:inline-block; }
   @keyframes learningAlliedSplashDot {0%,80%,100%{transform:translateY(0);opacity:.4}40%{transform:translateY(-6px);opacity:1}}
  @keyframes aquilaSplashDot{0%,80%,100%{transform:translateY(0);opacity:.4}40%{transform:translateY(-6px);opacity:1}}
-  .chat-area{ flex:1; overflow-y:auto; padding:0; display:flex; flex-direction:column; background: var(--bg-base); }
+  .chat-area{ flex:1; overflow-y:auto; padding:0; display:flex; flex-direction:column; background: transparent; }
 </style>
 </head>
 <body class="auth-loading">
@@ -32,11 +35,11 @@
 <div id="sidebarMount"></div>
 <script type="module">
   import { mountSidebar } from "./js/components/sidebar.js";
-  mountSidebar({ activeHref: "arena.html" });
+  await mountSidebar("arena.html");
 </script>
 
 <main class="main">
-  <div class="topbar" style="background:var(--bg-base);border-bottom:1px solid var(--border-subtle);">
+  <div class="topbar" style="background:transparent;border-bottom:1px solid var(--border-subtle);">
     <div class="topbar-left">
       <button class="menu-btn" id="menuBtn" aria-label="Open menu"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
       <div style="font-family:var(--font-display);font-weight:800;letter-spacing:-0.02em;display:flex;align-items:center;gap:8px;"><span style="filter:drop-shadow(0 0 8px rgba(14,165,233,0.4))">⚔</span> Arena</div>

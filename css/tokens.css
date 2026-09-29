@@ -5,6 +5,10 @@
   /* Surfaces — refined premium dark */
   --bg-base: #080a0f;
   --bg-base-soft: #0c0e14;
+  /* Translucent variant used by large surfaces (.main, .chat-area, topbars) so the
+     ambient texture in css/texture.css can read through. Keep text contrast in
+     mind when changing this: lower alpha = more visible texture, less contrast. */
+  --bg-base-veil: rgba(8, 10, 15, 0.72);
   --bg-sidebar: #0e1016;
   --bg-sidebar-hover: #13151d;
   --bg-card: #151821;
@@ -117,12 +121,23 @@
   --topbar-h: 56px;
   --content-max: 960px;
   --content-wide: 1100px;
+
+  /* Ambient texture (css/texture.css). --texture-veil is the master strength;
+     the rest are per-layer. It reads through --bg-base-veil on .main, so only
+     ~28% of it actually lands on screen — hence the fairly high default.
+     Lower this first if the texture is too strong. */
+  --texture-veil: 0.5;
+  --texture-island: 0.65;
+  --texture-island-t: 0.5;
+  --texture-hatch: 0.16;
+  --texture-cracks: 0.32;
 }
 
 .light-mode {
   color-scheme: light;
 
   --bg-base: #f7f8fb;
+  --bg-base-veil: rgba(247, 248, 251, 0.78);
   --bg-base-soft: #f1f2f6;
   --bg-sidebar: #eef0f4;
   --bg-sidebar-hover: #e6e8ee;
