@@ -54,7 +54,7 @@ export async function mountSidebar(active) {
   // Resolve clean URLs for local static serving (/chat -> /chat.html).
   if (pageUrl("/chat") !== "/chat") {
     mount.querySelectorAll("a[href^='/']").forEach((a) => {
-      const href = a.getAttribute("href");
+      const href = a.getAttribute("href")
       a.setAttribute("href", pageUrl(href));
     });
   }

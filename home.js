@@ -82,7 +82,6 @@ firebaseReady.then(() => {
     await loadRecentChats(user.uid);
     wireNewChatBtn();
     wireSignOutBtn();
-    loadRecommendations(user.uid);
     // If navigated from chat-history.html, auto-open that chat (supports both keys)
     const openId = sessionStorage.getItem("learning-allied-open-chat") || sessionStorage.getItem("aquila_open_chat");
     if(openId){
@@ -291,45 +290,6 @@ function wireSignOutBtn() {
 export async function signOut() {
   await fbSignOut(auth);
   window.location.href = pageUrl("/login");
-}
-
-async function loadRecommendations(uid){
-  try{
-    const token = await currentUser.getIdToken();
-    const res = await apiFetch("/api/recommendations", { headers:{ "Authorization":`Bearer ${token}` }});
-    if(!res.ok) return;
-    const data = await res.json();
-    const recs = data.recommendations || [];
-    if(!recs.length) return;
-    const navSection = document.getElementById("navSection");
-    if(!navSection) return;
-    const sec = document.createElement("div");
-    sec.className = "recent-section";
-    const label = document.createElement("div");
-    label.className = "nav-label";
-    label.textContent = "Recommended for You";
-    sec.appendChild(label);
-    recs.slice(0,5).forEach(r=>{
-      const item = document.createElement("div");
-      item.className = "nav-item";
-      item.style.flexDirection = "column";
-      item.style.alignItems = "flex-start";
-      item.style.gap = "2px";
-      item.innerHTML = `<span style="font-size:13px;font-weight:600;">${r.subject} • ${r.topic}</span><span style="font-size:11px;color:var(--text-muted);">${r.action} — ${r.reason}</span>`;
-      item.title = r.explanation || r.reason;
-      item.addEventListener("click", ()=>{
-        if(r.action==="review") window.location.href=pageUrl("/review");
-         else if(r.action==="diagnostic") window.location.href=pageUrl("/quiz");
-        else if(r.action==="practice") window.location.href=pageUrl("/quiz");
-        else window.location.href=pageUrl("/study-session");
-        // analytics: recommendation_clicked (not mastery evidence)
-        try{ apiFetch("/api/learning-event",{method:"POST", headers:{"Content-Type":"application/json","Authorization":`Bearer ${token}`}, body: JSON.stringify({type:"recommendation_clicked", source:"recommendation", payload:{conceptId:r.conceptId, action:r.action}})}).catch(()=>{});}catch{}
-      });
-      sec.appendChild(item);
-    });
-    const accountLabel = [...navSection.querySelectorAll(".nav-label")].find(el=>el.textContent.trim()==="Account");
-    navSection.insertBefore(sec, accountLabel || null);
-  }catch(e){ console.warn("recommendations failed", e); }
 }
 
 // Expose globally for any inline onclick fallbacks
