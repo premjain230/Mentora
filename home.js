@@ -79,7 +79,6 @@ firebaseReady.then(() => {
     import("./chat.js").then(({ renderWelcome }) => {
       try{ renderWelcome(); }catch(e){ console.warn("renderWelcome failed", e); }
     }).catch(()=>{});
-    await loadRecentChats(user.uid);
     wireNewChatBtn();
     wireSignOutBtn();
     // If navigated from chat-history.html, auto-open that chat (supports both keys)
@@ -168,45 +167,6 @@ function populateUserCard(user) {
       planEl.textContent = plan === "pro" ? "Pro Plan ✨" : "Free Plan";
     }
   }).catch(() => {});
-}
-
-// ─── Load recent chat sessions into sidebar ───────────────────────────────────
-// Recent section removed per request — nav now shows a single Chat History button instead of inline recents
-export async function loadRecentChats(uid) {
-  const navSection = document.getElementById("navSection") || document.querySelector(".nav-section");
-  if (!navSection) return;
-
-  // Remove any previous recent section so re-renders stay clean
-  const existing = navSection.querySelector(".recent-section");
-  if (existing) existing.remove();
-
-  try {
-    const q = query(
-      collection(db, "users", uid, "chats"),
-      orderBy("updatedAt", "desc"),
-      limit(1)
-    );
-    const snap = await getDocs(q);
-    const hasChats = !snap.empty;
-
-    const section = document.createElement("div");
-    section.className = "recent-section";
-
-    const btn = document.createElement("a");
-    btn.className = "nav-item";
-    btn.href = pageUrl("/chat-history");
-    btn.innerHTML = `<span class="nav-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></span> Chat History${hasChats ? ` <span style="margin-left:auto;font-size:11px;opacity:0.7;">View all →</span>` : ""}`;
-    btn.title = hasChats ? "View all chats" : "No chats yet — start a new chat";
-    section.appendChild(btn);
-
-    // Insert before the Account nav-label
-    const accountLabel = [...navSection.querySelectorAll(".nav-label")]
-      .find((el) => el.textContent.trim() === "Account");
-    navSection.insertBefore(section, accountLabel || null);
-
-  } catch (e) {
-    console.warn("Could not load recent chats:", e);
-  }
 }
 
 // ─── Load a specific chat session into the chat area ──────────────────────────

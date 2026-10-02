@@ -4,7 +4,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, interactive-widget=resizes-content" />
-<meta http-equiv="Content-Security-Policy" content="default-src 'self' https:; script-src 'self' 'unsafe-inline' blob: https://www.gstatic.com https://apis.google.com https://accounts.google.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://www.googletagmanager.com https://esm.sh; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: https:; font-src 'self' https://fonts.gstatic.com; connect-src 'self' blob: https://www.googleapis.com https://apis.google.com https://accounts.google.com https://esm.sh https://www.gstatic.com https://firestore.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://analytics.vercel.com https://learningallied.world https://www.learningallied.world; frame-src 'self' https://www.gstatic.com https://accounts.google.com https://mentora-c6dca.firebaseapp.com; object-src 'none';">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self' https:; script-src 'self' 'unsafe-inline' blob: https://www.gstatic.com https://apis.google.com https://accounts.google.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://www.googletagmanager.com https://esm.sh https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: https:; font-src 'self' https://fonts.gstatic.com; connect-src 'self' blob: https://www.googleapis.com https://apis.google.com https://accounts.google.com https://esm.sh https://www.gstatic.com https://firestore.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://analytics.vercel.com https://learningallied.world https://www.learningallied.world https://cloudflareinsights.com; frame-src 'self' https://www.gstatic.com https://accounts.google.com https://mentora-c6dca.firebaseapp.com; object-src 'none';">
 <meta name="description" content="Learning Allied — your personalized AI study assistant for JEE, NEET & Board exams." />
 <meta property="og:title" content="Chat with Learning Allied" />
 <meta property="og:description" content="Your personalized AI study assistant for JEE, NEET & Board exams." />
@@ -100,6 +100,25 @@
 .chat-topbar .topbar-left { flex: 0 1 auto; overflow: visible; }
 .chat-topbar .model-selector { display: flex; }
 .chat-topbar .model-selector::after { content: '⌄'; margin-left: 2px; color: var(--text-muted); }
+
+/* Chat history button — lives in the topbar because the sidebar no longer
+   carries a Chat History entry. */
+.history-btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  height: 32px; padding: 0 12px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
+  background: var(--bg-card);
+  color: var(--text-secondary);
+  font-size: 12.5px; font-weight: 600;
+  text-decoration: none; white-space: nowrap;
+  cursor: pointer;
+  transition: color var(--dur-fast) var(--ease-out), border-color var(--dur-fast) var(--ease-out), background var(--dur-fast) var(--ease-out);
+}
+.history-btn svg { width: 15px; height: 15px; flex-shrink: 0; }
+.history-btn:hover { color: var(--text-primary); border-color: var(--border-strong); background: var(--bg-card-hover); }
+.history-btn:active { transform: translateY(1px); }
+@media (max-width: 560px) { .history-btn span { display: none; } .history-btn { width: 32px; padding: 0; justify-content: center; } }
 @media (max-width: 880px) {
 .chat-area { padding: 18px 12px calc(14px + env(safe-area-inset-bottom)); gap: 18px; }
 .input-area { padding: 10px 10px 12px; }
@@ -146,6 +165,12 @@ import { initSyllabusUpload } from "./js/syllabus.js";
 import { auth, db } from "./firebase-config.js";
 await mountSidebar();
 initSyllabusUpload({ auth, db });
+
+// Remember that we came from the chat page, so chat-history.html can send the
+// user back here after they open a past conversation.
+document.getElementById("historyBtn")?.addEventListener("click", () => {
+  try { sessionStorage.setItem("chat-history-return", "chat.html"); } catch (e) {}
+});
 </script>
 <main class="main">
 <div class="topbar chat-topbar">
@@ -155,13 +180,17 @@ initSyllabusUpload({ auth, db });
   </button>
   <div class="model-selector"><span class="model-dot"></span><span class="model-label">Learning Allied</span></div>
  </div>
- <div class="topbar-right">
-  <button class="scroll-control" id="scrollControl" type="button" data-direction="down" aria-label="Scroll to latest" title="Scroll to latest">
-   <svg class="scroll-icon-up" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m18 15-6-6-6 6"/></svg>
-   <svg class="scroll-icon-down" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
-  </button>
-  <div class="topbar-avatar"><img id="topbarAvatar" src="" data-pending-avatar="1" alt="User" /></div>
- </div>
+  <div class="topbar-right">
+   <a class="history-btn" id="historyBtn" href="/chat-history" title="Chat history" aria-label="Chat history">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3v5h5"/><path d="M3.05 13A9 9 0 1 0 6 5.3L3 8"/><path d="M12 7v5l4 2"/></svg>
+    <span>History</span>
+   </a>
+   <button class="scroll-control" id="scrollControl" type="button" data-direction="down" aria-label="Scroll to latest" title="Scroll to latest">
+    <svg class="scroll-icon-up" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m18 15-6-6-6 6"/></svg>
+    <svg class="scroll-icon-down" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+   </button>
+   <div class="topbar-avatar"><img id="topbarAvatar" src="" data-pending-avatar="1" alt="User" /></div>
+  </div>
 </div>
 <div class="chat-area" id="chatArea"></div>
 <div class="input-area">

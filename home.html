@@ -4,7 +4,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, interactive-widget=resizes-content" />
-<meta http-equiv="Content-Security-Policy" content="default-src 'self' https:; script-src 'self' 'unsafe-inline' blob: https://www.gstatic.com https://apis.google.com https://accounts.google.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://www.googletagmanager.com https://esm.sh; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: https:; font-src 'self' https://fonts.gstatic.com; connect-src 'self' blob: https://www.googleapis.com https://apis.google.com https://accounts.google.com https://esm.sh https://www.gstatic.com https://firestore.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://analytics.vercel.com https://learningallied.world https://www.learningallied.world; frame-src 'self' https://www.gstatic.com https://accounts.google.com https://mentora-c6dca.firebaseapp.com; object-src 'none';">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self' https:; script-src 'self' 'unsafe-inline' blob: https://www.gstatic.com https://apis.google.com https://accounts.google.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://www.googletagmanager.com https://esm.sh https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: https:; font-src 'self' https://fonts.gstatic.com; connect-src 'self' blob: https://www.googleapis.com https://apis.google.com https://accounts.google.com https://esm.sh https://www.gstatic.com https://firestore.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://analytics.vercel.com https://learningallied.world https://www.learningallied.world https://cloudflareinsights.com; frame-src 'self' https://www.gstatic.com https://accounts.google.com https://mentora-c6dca.firebaseapp.com; object-src 'none';">
 <meta name="description" content="Learning Allied — your personalized AI study companion for JEE, NEET & Board exams." />
 <meta property="og:title" content="Today — Learning Allied" />
 <meta property="og:description" content="Your personalised progress — mastery, study time, and what to do next." />
@@ -13,7 +13,7 @@
 <meta name="twitter:card" content="summary_large_image" />
 <meta name="keywords" content="Learning Allied, AI study assistant, JEE preparation, NEET preparation, board exam help, AI tutor, study planner" />
 <link rel="canonical" href="https://www.learningallied.world/home" />
-<title>Today — Learning Allied</title>
+<title>Home - Learning Allied</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%234f8cff'/><text x='16' y='22' text-anchor='middle' fill='white' font-size='18' font-weight='bold'>A</text></svg>">
 <meta name="referrer" content="no-referrer-when-downgrade">
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=Inter:wght@400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
@@ -55,14 +55,7 @@
  .topbar-search-wrap input::placeholder { color: var(--text-faint); }
  .topbar-search-wrap svg { position: absolute; right: 11px; top: 50%; transform: translateY(-50%); width: 15px; height: 15px; color: var(--text-muted); pointer-events: none; }
  .topbar-right { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
- .chat-cta {
-  display: flex; align-items: center; gap: 6px; height: 32px; padding: 0 14px;
-  border-radius: var(--radius-md); border: 1px solid var(--text-primary); background: var(--text-primary);
-  color: var(--bg-base); font-size: 12.5px; font-weight: 600; cursor: pointer; text-decoration: none;
-  transition: all var(--dur-fast) var(--ease-out);
- }
- .chat-cta:hover { filter: brightness(1.1); transform: translateY(-1px); box-shadow: var(--shadow-sm); }
- .chat-cta svg { width: 14px; height: 14px; stroke-width: 2.2; }
+ 
  #topbarAvatar { width: 30px; height: 30px; border-radius: 50%; object-fit: cover; border: 1px solid var(--border); cursor: pointer; }
 
  /* ---- Hub layout ---- */
@@ -109,8 +102,7 @@
   .greeting { display: none; }
   .chat-area { padding: 18px 12px 28px; }
   .cere-grid-3, .cere-grid { grid-template-columns: 1fr; }
-  .chat-cta span { display: none; }
-  .chat-cta { width: 32px; padding: 0; justify-content: center; }
+  
  }
 </style>
 <style>
@@ -177,12 +169,7 @@
     <svg class="scroll-icon-up" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m18 15-6-6-6 6"/></svg>
     <svg class="scroll-icon-down" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
    </button>
-   <a class="chat-cta" href="/chat">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-    <span>chat
-    
-    </span>
-   </a>
+  
    <img id="topbarAvatar" src="" data-pending-avatar="1" alt="Your account" />
   </div>
  </div>
@@ -199,7 +186,8 @@ function resizeInput(input) {
 }
 function fillPrompt(text) {
  try { sessionStorage.setItem('learning-allied-pending-prompt', text); sessionStorage.setItem('aquila_pending_prompt', text); } catch(e){}
- window.location.href = window.pageUrl ? window.pageUrl('/chat') : '/chat';
+ window
+.location.href = window.pageUrl ? window.pageUrl('/chat') : '/chat';
 }
 function runPrompt(text) { fillPrompt(text); }
 function handleKey(e) {

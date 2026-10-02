@@ -61,7 +61,28 @@ export async function mountSidebar(active) {
 
   highlightActive(mount, navKey(activeHref || location.pathname));
   wireInteractions(mount);
+  watchOverflow(mount);
   return mount.querySelector(".sidebar");
+}
+
+/**
+ * Toggles data-scrollable on the nav list so css/sidebar.css only applies the
+ * top/bottom fade mask when the list actually overflows. Without this, the first
+ * and last items look permanently faded on a short nav.
+ */
+function watchOverflow(mount) {
+  const nav = mount.querySelector(".nav-section");
+  if (!nav) return;
+
+  const sync = () => {
+    const scrollable = nav.scrollHeight - nav.clientHeight > 4;
+    nav.dataset.scrollable = String(scrollable);
+  };
+
+  sync();
+  if (typeof ResizeObserver === "function") new ResizeObserver(sync).observe(nav);
+  if (typeof MutationObserver === "function") new MutationObserver(sync).observe(nav, { childList: true, subtree: true });
+  window.addEventListener("resize", sync, { passive: true });
 }
 
 function highlightActive(mount, currentKey) {

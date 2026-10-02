@@ -131,6 +131,15 @@
   --texture-island-t: 0.5;
   --texture-hatch: 0.16;
   --texture-cracks: 0.32;
+
+  /* Custom scrollbars (css/sidebar.css). Overridden in .light-mode below. */
+  --scroll-track: transparent;
+  --scroll-thumb-a: rgba(148, 163, 184, 0.34);
+  --scroll-thumb-b: rgba(14, 165, 233, 0.30);
+  --scroll-thumb-hover-a: rgba(203, 213, 225, 0.55);
+  --scroll-thumb-hover-b: rgba(56, 189, 248, 0.55);
+  --scroll-thumb-border: rgba(0, 0, 0, 0.35);
+  --scroll-fade: 14px;
 }
 
 .light-mode {
@@ -179,4 +188,12 @@
   --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.05), 0 1px 2px rgba(0, 0, 0, 0.04);
   --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.06), 0 1px 3px rgba(0, 0, 0, 0.04);
   --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.08), 0 4px 12px rgba(0, 0, 0, 0.05);
+
+  /* Custom scrollbars — light theme. Same tokens, darker values so the thumb
+     reads against a white sidebar. */
+  --scroll-thumb-a: rgba(15, 23, 42, 0.22);
+  --scroll-thumb-b: rgba(14, 165, 233, 0.26);
+  --scroll-thumb-hover-a: rgba(15, 23, 42, 0.40);
+  --scroll-thumb-hover-b: rgba(14, 165, 233, 0.50);
+  --scroll-thumb-border: rgba(255, 255, 255, 0.75);
 }

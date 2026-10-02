@@ -98,10 +98,55 @@
 .new-chat-btn svg { width: 15px; height: 15px; }
 
 /* ── Nav ──────────────────────────────────────────────────── */
-.nav-section { flex: 1; overflow-y: auto; padding: var(--space-2) var(--space-3); min-height: 0; -webkit-overflow-scrolling: touch; overscroll-behavior: contain; scrollbar-width: thin; }
-.nav-section::-webkit-scrollbar { width: 4px; }
-.nav-section::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
-.nav-section::-webkit-scrollbar-thumb:hover { background: var(--border-strong); }
+/* Custom scrollbar. Colours come from --scroll-* tokens in css/tokens.css, so
+   the light theme is handled by the .light-mode token overrides rather than a
+   second set of rules here.
+
+   The nav is short on most pages, so the scrollbar is deliberately subtle until
+   hovered: 6px wide at rest, 9px on hover, with a slate->accent gradient. */
+.nav-section {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--space-2) var(--space-3);
+  min-height: 0;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+
+  /* Firefox */
+  scrollbar-width: thin;
+  scrollbar-color: var(--scroll-thumb-a) var(--scroll-track);
+
+  /* Fade the nav out where it meets the cards below, so items do not appear
+     to be sliced off. Uses a mask, not a gradient overlay, so it costs nothing
+     and does not intercept clicks. */
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 var(--scroll-fade), #000 calc(100% - var(--scroll-fade)), transparent 100%);
+  mask-image: linear-gradient(to bottom, transparent 0, #000 var(--scroll-fade), #000 calc(100% - var(--scroll-fade)), transparent 100%);
+}
+
+/* Only mask when the list is actually scrollable, otherwise the top/bottom
+   items look faded on a short nav. --nav-overflow is set by sidebar.js. */
+.nav-section:not([data-scrollable="true"]) {
+  -webkit-mask-image: none;
+  mask-image: none;
+}
+
+.nav-section::-webkit-scrollbar { width: 6px; }
+.nav-section::-webkit-scrollbar-track { background: var(--scroll-track); }
+.nav-section::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+  background-image: linear-gradient(180deg, var(--scroll-thumb-a), var(--scroll-thumb-b));
+  border: 1px solid var(--scroll-thumb-border);
+  background-clip: padding-box;
+}
+/* Widen on hover: needs the pseudo-element to change width, and the container
+   to allow it, so the extra room is reserved with a negative margin. */
+.nav-section:hover::-webkit-scrollbar { width: 9px; }
+.nav-section::-webkit-scrollbar-thumb:hover {
+  background-image: linear-gradient(180deg, var(--scroll-thumb-hover-a), var(--scroll-thumb-hover-b));
+}
+.nav-section::-webkit-scrollbar-corner { background: transparent; }
+
+.nav-section::-webkit-scrollbar-button { display: none; height: 0; width: 0; }
 .nav-label {
   padding: var(--space-2) var(--space-2);
   font-size: var(--fs-xs);

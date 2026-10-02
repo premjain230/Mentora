@@ -1,0 +1,219 @@
+Date : 2026-09-30 12:53:09
+Directory : c:\Users\Administrator\Downloads\MentoraAI\Mentora
+Total : 161 files,  33069 codes, 1700 comments, 2788 blanks, all 37557 lines
+
+Languages
++------------+------------+------------+------------+------------+------------+
+| language   | files      | code       | comment    | blank      | total      |
++------------+------------+------------+------------+------------+------------+
+| JavaScript |         75 |     12,108 |      1,449 |      1,278 |     14,835 |
+| HTML       |         23 |     11,103 |         83 |        916 |     12,102 |
+| JSON       |         27 |      6,232 |          0 |         14 |      6,246 |
+| Dart       |         17 |      1,623 |         43 |         71 |      1,737 |
+| PostCSS    |          8 |      1,143 |        125 |        278 |      1,546 |
+| Markdown   |          8 |        751 |          0 |        225 |        976 |
+| XML        |          2 |         87 |          0 |          1 |         88 |
+| YAML       |          1 |         22 |          0 |          5 |         27 |
++------------+------------+------------+------------+------------+------------+
+
+Directories
++---------------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| path                                                                                                    | files      | code       | comment    | blank      | total      |
++---------------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| .                                                                                                       |        161 |     33,069 |      1,700 |      2,788 |     37,557 |
+| . (Files)                                                                                               |         41 |     16,211 |        355 |      1,298 |     17,864 |
+| api                                                                                                     |         17 |      3,286 |        200 |        342 |      3,828 |
+| blog                                                                                                    |          2 |        415 |          0 |         22 |        437 |
+| css                                                                                                     |          8 |      1,143 |        125 |        278 |      1,546 |
+| docs                                                                                                    |          7 |        724 |          0 |        218 |        942 |
+| js                                                                                                      |         47 |      6,163 |        887 |        377 |      7,427 |
+| js (Files)                                                                                              |          4 |        569 |        110 |         38 |        717 |
+| js\ai                                                                                                   |          1 |        404 |          5 |          2 |        411 |
+| js\components                                                                                           |          1 |        129 |         33 |         25 |        187 |
+| js\learning                                                                                             |         41 |      5,061 |        739 |        312 |      6,112 |
+| js\learning (Files)                                                                                     |         30 |      3,061 |        739 |        307 |      4,107 |
+| js\learning\curriculum                                                                                  |         11 |      2,000 |          0 |          5 |      2,005 |
+| js\learning\curriculum (Files)                                                                          |          1 |        118 |          0 |          1 |        119 |
+| js\learning\curriculum\2026-27                                                                          |         10 |      1,882 |          0 |          4 |      1,886 |
+| mobile                                                                                                  |         30 |      3,672 |         43 |         88 |      3,803 |
+| mobile (Files)                                                                                          |          2 |         49 |          0 |         12 |         61 |
+| mobile\assets                                                                                           |         11 |      2,000 |          0 |          5 |      2,005 |
+| mobile\assets\curriculum                                                                                |         11 |      2,000 |          0 |          5 |      2,005 |
+| mobile\assets\curriculum (Files)                                                                        |          1 |        118 |          0 |          1 |        119 |
+| mobile\assets\curriculum\2026-27                                                                        |         10 |      1,882 |          0 |          4 |      1,886 |
+| mobile\lib                                                                                              |         17 |      1,623 |         43 |         71 |      1,737 |
+| mobile\lib (Files)                                                                                      |          1 |         49 |          1 |          5 |         55 |
+| mobile\lib\screens                                                                                      |          9 |        585 |          4 |         25 |        614 |
+| mobile\lib\services                                                                                     |          3 |        624 |         22 |         19 |        665 |
+| mobile\lib\theme                                                                                        |          1 |         37 |         11 |         11 |         59 |
+| mobile\lib\widgets                                                                                      |          3 |        328 |          5 |         11 |        344 |
+| modules                                                                                                 |          9 |      1,455 |         90 |        165 |      1,710 |
++---------------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+
+Files
++---------------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| filename                                                                                                | language   | code       | comment    | blank      | total      |
++---------------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| c:\Users\Administrator\Downloads\MentoraAI\Mentora\admin.html                                           | HTML       |        353 |          2 |         15 |        370 |
+| c:\Users\Administrator\Downloads\MentoraAI\Mentora\api-base.js                                          | JavaScript |         60 |         49 |         17 |        126 |
+| c:\Users\Administrator\Downloads\MentoraAI\Mentora\api\_admin.js                                        | JavaScript |        245 |         53 |         35 |        333 |
+| c:\Users\Administrator\Downloads\MentoraAI\Mentora\api\_ai.js                                           | JavaScript |         41 |          6 |          3 |         50 |
+| c:\Users\Administrator\Downloads\MentoraAI\Mentora\api\_growth.js                                       | JavaScript |        166 |         14 |         13 |        193 |
+| c:\Users\Administrator\Downloads\MentoraAI\Mentora\api\_metrics.js                                      | JavaScript |        264 |          5 |         22 |        291 |
+| c:\Users\Administrator\Downloads\MentoraAI\Mentora\api\_shared.js                                       | JavaScript |         83 |          4 |         13 |        100 |
+| c:\Users\Administrator\Downloads\MentoraAI\Mentora\api\add-contact.js                                   | JavaScript |         46 |          0 |          9 |         55 |
+| c:\Users\Administrator\Downloads\MentoraAI\Mentora\api\firebase-config.js                               | JavaScript |         41 |          0 |          8 |         49 |
+| c:\Users\Administrator\Downloads\MentoraAI\Mentora\api\generate-plan.js                                 | JavaScript |        129 |          4 |         15 |        148 |
+| c:\Users\Administrator\Downloads\MentoraAI\Mentora\api\groq-proxy.js                                    | JavaScript |        152 |         29 |         28 |        209 |
+| c:\Users\Administrator\Downloads\MentoraAI\Mentora\api\growth.js                                        | JavaScript |        864 |         43 |         96 |      1,003 |
+| c:\Users\Administrator\Downloads\MentoraAI\Mentora\api\learning-event.js                                | JavaScript |        665 |         25 |         25 |        715 |
+| c:\Users\Administrator\Downloads\MentoraAI\Mentora\api\referral.js                                      | JavaScript |        231 |          0 |         20 |        251 |
+| c:\Users\Administrator\Downloads\MentoraAI\Mentora\api\replan.js                                        | JavaScript |         96 |          2 |         16 |        114 |
+| c:\Users\Administrator\Downloads\MentoraAI\Mentora\api\research-agent.js                                | JavaScript |         75 |          3 |         13 |         91 |
+| c:\Users\Administrator\Downloads\MentoraAI\Mentora\api\search.js                                        | JavaScript |         47 |          0 |          9 |         56 |
+| c:\Users\Administrator\Downloads\MentoraAI\Mentora\api\study-session.js                                 | JavaScript |         92 |          1 |         15 |        108 |
+| c:\Users\Administrator\Downloads\MentoraAI\Mentora\api\version.js                                       | JavaScript |         49 |         11 |          2 |         62 |
+| c:\Users\Administrator\Downloads\MentoraAI\Mentora\aquila-integration.js                                | JavaScript |         88 |          5 |          8 |        101 |
+| c:\Users\Administrator\Downloads\MentoraAI\Mentora\arena.html                                           | HTML       |        721 |          6 |         36 |        763 |
+| c:\Users\Administrator\Downloads\MentoraAI\Mentora\auth.js                                              | JavaScript |        242 |         20 |         32 |        294 |
+| c:\Users\Administrator\Downloads\MentoraAI\Mentora\beyond-marks.html                                    | HTML       |      1,652 |          8 |        144 |      1,804 |
+| c:\Users\Administrator\Downloads\MentoraAI\Mentora\blog\how-to-make-a-jee-study-plan.html               | HTML       |        391 |          0 |         22 |        413 |
+| c:\Users\Administrator\Downloads\MentoraAI\Mentora\blog\og-how-to-make-a-jee-study-plan.svg             | XML        |         24 |          0 |          0 |         24 |
+| c:\Users\Administrator\Downloads\MentoraAI\Mentora\chat-history.html                                    | HTML       |         60 |          0 |          3 |         63 |
+| c:\Users\Administrator\Downloads\MentoraAI\Mentora\chat.html                                            | HTML       |        335 |          0 |          3 |        338 |
+| c:\Users\Administrator\Downloads\MentoraAI\Mentora\chat.js                                              | JavaScript |      1,268 |         70 |        133 |      1,471 |
+| c:\Users\Administrator\Downloads\MentoraAI\Mentora\css\arena.css                                        | PostCSS    |        226 |         11 |         12 |        249 |
+| c:\Users\Administrator\Downloads\MentoraAI\Mentora\css\base.css                                         | PostCSS    |        181 |         11 |         20 |        212 |
+| c:\Users\Administrator\Downloads\MentoraAI\Mentora\css\graphs.css                                       | PostCSS    |         17 |          1 |          1 |         19 |
+| c:\Users\Administrator\Downloads\MentoraAI\Mentora\css\nav.css                                          | PostCSS    |         62 |          2 |          4 |         68 |
+| c:\Users\Administrator\Downloads\MentoraAI\Mentora\css\shell.css                                        | PostCSS    |        171 |         14 |        178 |        363 |
+| c:\Users\Administrator\Downloads\MentoraAI\Mentora\css\sidebar.css                                      | PostCSS    |        272 |         31 |         31 |        334 |
+| c:\Users\Administrator\Downloads\MentoraAI\Mentora\css\texture.css                                      | PostCSS    |         61 |         32 |          9 |        102 |
+| c:\Users\Administrator\Downloads\MentoraAI\Mentora\css\tokens.css                                       | PostCSS    |        153 |         23 |         23 |        199 |
+| c:\Users\Administrator\Downloads\MentoraAI\Mentora\dailyQuestion.js                                     | JavaScript |        220 |          0 |         17 |        237 |
+| c:\Users\Administrator\Downloads\MentoraAI\Mentora\docs\FIRESTORE_MIGRATION.md                          | Markdown   |         40 |          0 |          7 |         47 |
+| c:\Users\Administrator\Downloads\MentoraAI\Mentora\docs\LEARNER_MODEL.md                                | Markdown   |        415 |          0 |        123 |        538 |
+| c:\Users\Administrator\Downloads\MentoraAI\Mentora\docs\LEARNING_ARCHITECTURE.md                        | Markdown   |        134 |          0 |         29 |        163 |
+| c:\Users\Administrator\Downloads\MentoraAI\Mentora\docs\LEARNING_SYSTEM.md                              | Markdown   |         39 |          0 |         20 |         59 |
+| c:\Users\Administrator\Downloads\MentoraAI\Mentora\docs\MASTERY_ENGINE.md                               | Markdown   |         27 |          0 |         14 |         41 |
+| c:\Users\Administrator\Downloads\MentoraAI\Mentora\docs\RECOMMENDATION_ENGINE.md                        | Markdown   |         36 |          0 |         13 |         49 |
+| c:\Users\Administrator\Downloads\MentoraAI\Mentora\docs\RETENTION_ENGINE.md                             | Markdown   |         33 |          0 |         12 |         45 |
+| c:\Users\Administrator\Downloads\MentoraAI\Mentora\firebase-config.js                                   | JavaScript |         36 |          8 |          9 |         53 |
+| c:\Users\Administrator\Downloads\MentoraAI\Mentora\firebase.json                                        | JSON       |          9 |          0 |          1 |         10 |
+| c:\Users\Administrator\Downloads\MentoraAI\Mentora\firestore.indexes.json                               | JSON       |         33 |          0 |          1 |         34 |
+| c:\Users\Administrator\Downloads\MentoraAI\Mentora\googlea0922a137d66d3af.html                          | HTML       |          1 |          0 |          1 |          2 |
+| c:\Users\Administrator\Downloads\MentoraAI\Mentora\home.html                                            | HTML       |        273 |          5 |         21 |        299 |
+| c:\Users\Administrator\Downloads\MentoraAI\Mentora\home.js                                              | JavaScript |        198 |         31 |         28 |        257 |
+| c:\Users\Administrator\Downloads\MentoraAI\Mentora\index.html                                           | HTML       |        370 |          1 |         26 |        397 |
+| c:\Users\Administrator\Downloads\MentoraAI\Mentora\js\ai\system-prompt.js                               | JavaScript |        404 |          5 |          2 |        411 |
+| c:\Users\Administrator\Downloads\MentoraAI\Mentora\js\avatar-sync.js                                    | JavaScript |         76 |         11 |          4 |         91 |
+| c:\Users\Administrator\Downloads\MentoraAI\Mentora\js\components\sidebar.js                             | JavaScript |        129 |         33 |         25 |        187 |
+| c:\Users\Administrator\Downloads\MentoraAI\Mentora\js\learning\adaptive-engine.js                       | JavaScript |        203 |         59 |         36 |        298 |
+| c:\Users\Administrator\Downloads\MentoraAI\Mentora\js\learning\ai-context.js                            | JavaScript |         69 |         11 |          8 |         88 |
+| c:\Users\Administrator\Downloads\MentoraAI\Mentora\js\learning\arena-curriculum.js                      | JavaScript |        203 |         39 |         17 |        259 |
+| c:\Users\Administrator\Downloads\MentoraAI\Mentora\js\learning\arena-progress.js                        | JavaScript |        162 |         24 |         18 |        204 |
+| c:\Users\Administrator\Downloads\MentoraAI\Mentora\js\learning\contracts.js                             | JavaScript |        297 |        268 |         26 |        591 |
+| c:\Users\Administrator\Downloads\MentoraAI\Mentora\js\learning\curriculum-data.js                       | JavaScript |        393 |         17 |         10 |        420 |
+| c:\Users\Administrator\Downloads\MentoraAI\Mentora\js\learning\curriculum-engine.js                     | JavaScript |         52 |         15 |          9 |         76 |
+| c:\Users\Administrator\Downloads\MentoraAI\Mentora\js\learning\curriculum-graph.js                      | JavaScript |        119 |          3 |         10 |        132 |
+| c:\Users\Administrator\Downloads\MentoraAI\Mentora\js\learning\curriculum-schema.js                     | JavaScript |         49 |          3 |          5 |         57 |
+| c:\Users\Administrator\Downloads\MentoraAI\Mentora\js\learning\curriculum.js                            | JavaScript |         37 |         24 |          9 |         70 |
+| c:\Users\Administrator\Downloads\MentoraAI\Mentora\js\learning\curriculum\2026-27\cbse_09.json          | JSON       |        216 |          0 |          0 |        216 |
+| c:\Users\Administrator\Downloads\MentoraAI\Mentora\js\learning\curriculum\2026-27\cbse_10.json          | JSON       |        306 |          0 |          0 |        306 |
+| c:\Users\Administrator\Downloads\MentoraAI\Mentora\js\learning\curriculum\2026-27\cbse_11.json          | JSON       |        423 |          0 |          0 |        423 |
+| c:\Users\Administrator\Downloads\MentoraAI\Mentora\js\learning\curriculum\2026-27\cbse_12.json          | JSON       |         89 |          0 |          0 |         89 |
+| c:\Users\Administrator\Downloads\MentoraAI\Mentora\js\learning\curriculum\2026-27\jee_main_2026.json    | JSON       |        357 |          0 |          0 |        357 |
+| c:\Users\Administrator\Downloads\MentoraAI\Mentora\js\learning\curriculum\2026-27\maharashtra_09.json   | JSON       |        123 |          0 |          1 |        124 |
+| c:\Users\Administrator\Downloads\MentoraAI\Mentora\js\learning\curriculum\2026-27\maharashtra_10.json   | JSON       |         95 |          0 |          1 |         96 |
+| c:\Users\Administrator\Downloads\MentoraAI\Mentora\js\learning\curriculum\2026-27\maharashtra_11.json   | JSON       |         99 |          0 |          1 |        100 |
+| c:\Users\Administrator\Downloads\MentoraAI\Mentora\js\learning\curriculum\2026-27\maharashtra_12.json   | JSON       |        108 |          0 |          1 |        109 |
+| c:\Users\Administrator\Downloads\MentoraAI\Mentora\js\learning\curriculum\2026-27\neet_ug_2026.json     | JSON       |         66 |          0 |          0 |         66 |
+| c:\Users\Administrator\Downloads\MentoraAI\Mentora\js\learning\curriculum\index.json                    | JSON       |        118 |          0 |          1 |        119 |
+| c:\Users\Administrator\Downloads\MentoraAI\Mentora\js\learning\diagnostic-bank.js                       | JavaScript |         25 |         15 |          1 |         41 |
+| c:\Users\Administrator\Downloads\MentoraAI\Mentora\js\learning\diagnostic.js                            | JavaScript |        135 |         24 |         10 |        169 |
+| c:\Users\Administrator\Downloads\MentoraAI\Mentora\js\learning\evidence.js                              | JavaScript |         94 |         19 |          7 |        120 |
+| c:\Users\Administrator\Downloads\MentoraAI\Mentora\js\learning\graphs.js                                | JavaScript |         86 |         13 |          1 |        100 |
+| c:\Users\Administrator\Downloads\MentoraAI\Mentora\js\learning\history.js                               | JavaScript |        122 |         17 |          7 |        146 |
+| c:\Users\Administrator\Downloads\MentoraAI\Mentora\js\learning\index.js                                 | JavaScript |         16 |          5 |          3 |         24 |
+| c:\Users\Administrator\Downloads\MentoraAI\Mentora\js\learning\learner-model.js                         | JavaScript |         28 |          8 |          4 |         40 |
+| c:\Users\Administrator\Downloads\MentoraAI\Mentora\js\learning\learning-loop.js                         | JavaScript |         66 |          7 |          6 |         79 |
+| c:\Users\Administrator\Downloads\MentoraAI\Mentora\js\learning\learning-plan.js                         | JavaScript |         30 |          6 |          6 |         42 |
+| c:\Users\Administrator\Downloads\MentoraAI\Mentora\js\learning\learning-profile.js                      | JavaScript |         45 |         17 |          6 |         68 |
+| c:\Users\Administrator\Downloads\MentoraAI\Mentora\js\learning\mastery-engine.js                        | JavaScript |         43 |          9 |          3 |         55 |
+| c:\Users\Administrator\Downloads\MentoraAI\Mentora\js\learning\mastery.js                               | JavaScript |         55 |         23 |          8 |         86 |
+| c:\Users\Administrator\Downloads\MentoraAI\Mentora\js\learning\misconceptions.js                        | JavaScript |         54 |          7 |          6 |         67 |
+| c:\Users\Administrator\Downloads\MentoraAI\Mentora\js\learning\onboarding.js                            | JavaScript |         63 |         20 |          8 |         91 |
+| c:\Users\Administrator\Downloads\MentoraAI\Mentora\js\learning\recommendation-engine.js                 | JavaScript |        149 |         23 |         20 |        192 |
+| c:\Users\Administrator\Downloads\MentoraAI\Mentora\js\learning\recommendations.js                       | JavaScript |         44 |         13 |          7 |         64 |
+| c:\Users\Administrator\Downloads\MentoraAI\Mentora\js\learning\retention-engine.js                      | JavaScript |         88 |          9 |          9 |        106 |
+| c:\Users\Administrator\Downloads\MentoraAI\Mentora\js\learning\schema.js                                | JavaScript |        239 |         28 |         33 |        300 |
+| c:\Users\Administrator\Downloads\MentoraAI\Mentora\js\learning\sessions.js                              | JavaScript |         46 |          5 |          7 |         58 |
+| c:\Users\Administrator\Downloads\MentoraAI\Mentora\js\learning\student-model.js                         | JavaScript |         49 |          8 |          7 |         64 |
+| c:\Users\Administrator\Downloads\MentoraAI\Mentora\js\shell-polish.js                                   | JavaScript |        286 |         31 |         15 |        332 |
+| c:\Users\Administrator\Downloads\MentoraAI\Mentora\js\syllabus.js                                       | JavaScript |        129 |         10 |          7 |        146 |
+| c:\Users\Administrator\Downloads\MentoraAI\Mentora\js\texture.js                                        | JavaScript |         78 |         58 |         12 |        148 |
+| c:\Users\Administrator\Downloads\MentoraAI\Mentora\limits.js                                            | JavaScript |        256 |         10 |         13 |        279 |
+| c:\Users\Administrator\Downloads\MentoraAI\Mentora\login.html                                           | HTML       |        646 |          1 |         67 |        714 |
+| c:\Users\Administrator\Downloads\MentoraAI\Mentora\mobile\README.md                                     | Markdown   |         27 |          0 |          7 |         34 |
+| c:\Users\Administrator\Downloads\MentoraAI\Mentora\mobile\assets\curriculum\2026-27\cbse_09.json        | JSON       |        216 |          0 |          0 |        216 |
+| c:\Users\Administrator\Downloads\MentoraAI\Mentora\mobile\assets\curriculum\2026-27\cbse_10.json        | JSON       |        306 |          0 |          0 |        306 |
+| c:\Users\Administrator\Downloads\MentoraAI\Mentora\mobile\assets\curriculum\2026-27\cbse_11.json        | JSON       |        423 |          0 |          0 |        423 |
+| c:\Users\Administrator\Downloads\MentoraAI\Mentora\mobile\assets\curriculum\2026-27\cbse_12.json        | JSON       |         89 |          0 |          0 |         89 |
+| c:\Users\Administrator\Downloads\MentoraAI\Mentora\mobile\assets\curriculum\2026-27\jee_main_2026.json  | JSON       |        357 |          0 |          0 |        357 |
+| c:\Users\Administrator\Downloads\MentoraAI\Mentora\mobile\assets\curriculum\2026-27\maharashtra_09.json | JSON       |        123 |          0 |          1 |        124 |
+| c:\Users\Administrator\Downloads\MentoraAI\Mentora\mobile\assets\curriculum\2026-27\maharashtra_10.json | JSON       |         95 |          0 |          1 |         96 |
+| c:\Users\Administrator\Downloads\MentoraAI\Mentora\mobile\assets\curriculum\2026-27\maharashtra_11.json | JSON       |         99 |          0 |          1 |        100 |
+| c:\Users\Administrator\Downloads\MentoraAI\Mentora\mobile\assets\curriculum\2026-27\maharashtra_12.json | JSON       |        108 |          0 |          1 |        109 |
+| c:\Users\Administrator\Downloads\MentoraAI\Mentora\mobile\assets\curriculum\2026-27\neet_ug_2026.json   | JSON       |         66 |          0 |          0 |         66 |
+| c:\Users\Administrator\Downloads\MentoraAI\Mentora\mobile\assets\curriculum\index.json                  | JSON       |        118 |          0 |          1 |        119 |
+| c:\Users\Administrator\Downloads\MentoraAI\Mentora\mobile\lib\main.dart                                 | Dart       |         49 |          1 |          5 |         55 |
+| c:\Users\Administrator\Downloads\MentoraAI\Mentora\mobile\lib\screens\arena_landing_screen.dart         | Dart       |        101 |          0 |          3 |        104 |
+| c:\Users\Administrator\Downloads\MentoraAI\Mentora\mobile\lib\screens\battle_screen.dart                | Dart       |        105 |          1 |          4 |        110 |
+| c:\Users\Administrator\Downloads\MentoraAI\Mentora\mobile\lib\screens\chat_screen.dart                  | Dart       |         40 |          0 |          2 |         42 |
+| c:\Users\Administrator\Downloads\MentoraAI\Mentora\mobile\lib\screens\class_select_screen.dart          | Dart       |         42 |          0 |          2 |         44 |
+| c:\Users\Administrator\Downloads\MentoraAI\Mentora\mobile\lib\screens\home_screen.dart                  | Dart       |         66 |          0 |          3 |         69 |
+| c:\Users\Administrator\Downloads\MentoraAI\Mentora\mobile\lib\screens\profile_screen.dart               | Dart       |         31 |          0 |          2 |         33 |
+| c:\Users\Administrator\Downloads\MentoraAI\Mentora\mobile\lib\screens\study_screen.dart                 | Dart       |         18 |          0 |          2 |         20 |
+| c:\Users\Administrator\Downloads\MentoraAI\Mentora\mobile\lib\screens\subject_map_screen.dart           | Dart       |        141 |          3 |          5 |        149 |
+| c:\Users\Administrator\Downloads\MentoraAI\Mentora\mobile\lib\screens\subject_select_screen.dart        | Dart       |         41 |          0 |          2 |         43 |
+| c:\Users\Administrator\Downloads\MentoraAI\Mentora\mobile\lib\services\arena_api.dart                   | Dart       |         56 |          5 |          3 |         64 |
+| c:\Users\Administrator\Downloads\MentoraAI\Mentora\mobile\lib\services\arena_curriculum.dart            | Dart       |        461 |         15 |          9 |        485 |
+| c:\Users\Administrator\Downloads\MentoraAI\Mentora\mobile\lib\services\arena_progress.dart              | Dart       |        107 |          2 |          7 |        116 |
+| c:\Users\Administrator\Downloads\MentoraAI\Mentora\mobile\lib\theme\tokens.dart                         | Dart       |         37 |         11 |         11 |         59 |
+| c:\Users\Administrator\Downloads\MentoraAI\Mentora\mobile\lib\widgets\app_drawer.dart                   | Dart       |        231 |          4 |          4 |        239 |
+| c:\Users\Administrator\Downloads\MentoraAI\Mentora\mobile\lib\widgets\bottom_nav.dart                   | Dart       |         57 |          1 |          5 |         63 |
+| c:\Users\Administrator\Downloads\MentoraAI\Mentora\mobile\lib\widgets\chapter_node.dart                 | Dart       |         40 |          0 |          2 |         42 |
+| c:\Users\Administrator\Downloads\MentoraAI\Mentora\mobile\pubspec.yaml                                  | YAML       |         22 |          0 |          5 |         27 |
+| c:\Users\Administrator\Downloads\MentoraAI\Mentora\modules\admin.js                                     | JavaScript |        517 |         29 |         27 |        573 |
+| c:\Users\Administrator\Downloads\MentoraAI\Mentora\modules\analytics-engine.js                          | JavaScript |        141 |          7 |         25 |        173 |
+| c:\Users\Administrator\Downloads\MentoraAI\Mentora\modules\conversation-engine.js                       | JavaScript |        129 |          5 |         19 |        153 |
+| c:\Users\Administrator\Downloads\MentoraAI\Mentora\modules\memory-system.js                             | JavaScript |        135 |          5 |         14 |        154 |
+| c:\Users\Administrator\Downloads\MentoraAI\Mentora\modules\memory.js                                    | JavaScript |         67 |         12 |          8 |         87 |
+| c:\Users\Administrator\Downloads\MentoraAI\Mentora\modules\recommendation-engine.js                     | JavaScript |        130 |          7 |         22 |        159 |
+| c:\Users\Administrator\Downloads\MentoraAI\Mentora\modules\referral-system.js                           | JavaScript |         97 |          4 |         18 |        119 |
+| c:\Users\Administrator\Downloads\MentoraAI\Mentora\modules\student-model.js                             | JavaScript |        120 |          7 |         17 |        144 |
+| c:\Users\Administrator\Downloads\MentoraAI\Mentora\modules\track.js                                     | JavaScript |        119 |         14 |         15 |        148 |
+| c:\Users\Administrator\Downloads\MentoraAI\Mentora\nav.js                                               | JavaScript |         34 |          3 |          5 |         42 |
+| c:\Users\Administrator\Downloads\MentoraAI\Mentora\onboarding.html                                      | HTML       |        446 |          0 |         19 |        465 |
+| c:\Users\Administrator\Downloads\MentoraAI\Mentora\package-lock.json                                    | JSON       |      2,036 |          0 |          1 |      2,037 |
+| c:\Users\Administrator\Downloads\MentoraAI\Mentora\package.json                                         | JSON       |         26 |          0 |          1 |         27 |
+| c:\Users\Administrator\Downloads\MentoraAI\Mentora\planner-db.js                                        | JavaScript |        282 |         28 |         70 |        380 |
+| c:\Users\Administrator\Downloads\MentoraAI\Mentora\planner-onboarding.html                              | HTML       |        478 |          7 |         75 |        560 |
+| c:\Users\Administrator\Downloads\MentoraAI\Mentora\planner.html                                         | HTML       |        729 |          3 |         94 |        826 |
+| c:\Users\Administrator\Downloads\MentoraAI\Mentora\profile.html                                         | HTML       |        717 |          4 |         62 |        783 |
+| c:\Users\Administrator\Downloads\MentoraAI\Mentora\quiz.html                                            | HTML       |        802 |          6 |         62 |        870 |
+| c:\Users\Administrator\Downloads\MentoraAI\Mentora\referral.html                                        | HTML       |        269 |          0 |         23 |        292 |
+| c:\Users\Administrator\Downloads\MentoraAI\Mentora\review.html                                          | HTML       |         52 |          0 |          2 |         54 |
+| c:\Users\Administrator\Downloads\MentoraAI\Mentora\settings.html                                        | HTML       |        694 |          2 |         52 |        748 |
+| c:\Users\Administrator\Downloads\MentoraAI\Mentora\sidebar.html                                         | HTML       |         95 |         25 |         20 |        140 |
+| c:\Users\Administrator\Downloads\MentoraAI\Mentora\signup.html                                          | HTML       |        782 |          3 |         82 |        867 |
+| c:\Users\Administrator\Downloads\MentoraAI\Mentora\sitemap.xml                                          | XML        |         63 |          0 |          1 |         64 |
+| c:\Users\Administrator\Downloads\MentoraAI\Mentora\study-session.html                                   | HTML       |        229 |          2 |         32 |        263 |
+| c:\Users\Administrator\Downloads\MentoraAI\Mentora\study-session.js                                     | JavaScript |        351 |         18 |         32 |        401 |
+| c:\Users\Administrator\Downloads\MentoraAI\Mentora\subscription.html                                    | HTML       |        736 |          8 |         54 |        798 |
+| c:\Users\Administrator\Downloads\MentoraAI\Mentora\subscription.js                                      | JavaScript |        164 |         30 |         34 |        228 |
+| c:\Users\Administrator\Downloads\MentoraAI\Mentora\vercel.json                                          | JSON       |        128 |          0 |          0 |        128 |
+| c:\Users\Administrator\Downloads\MentoraAI\Mentora\verify-email.html                                    | HTML       |        272 |          0 |          1 |        273 |
+| c:\Users\Administrator\Downloads\MentoraAI\Mentora\xss.js                                               | JavaScript |          5 |          0 |          1 |          6 |
+| Total                                                                                                   |            |     33,069 |      1,700 |      2,788 |     37,557 |
++---------------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+

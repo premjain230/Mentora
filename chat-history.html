@@ -16,7 +16,7 @@
 </head>
 <body>
 <div class="wrap">
-  <a href="home.html" style="color:var(--text-secondary);text-decoration:none;">← Back to Chat</a>
+  <a id="backLink" href="home.html" style="color:var(--text-secondary);text-decoration:none;">← Back</a>
   <h1 style="font-size:22px;font-weight:700;margin:12px 0;">Chat History</h1>
   <div id="list"><div style="color:var(--text-muted);">Loading…</div></div>
 </div>
@@ -24,6 +24,22 @@
 import { auth, db } from "./firebase-config.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 import { collection, query, orderBy, getDocs } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+// Where to send the user back to. chat.html sets this before linking here, so
+// opening a chat from the Chat page returns to the Chat page rather than Home.
+const RETURN_KEY = "chat-history-return";
+function returnTarget(){
+  let target = "home.html";
+  try {
+    const saved = sessionStorage.getItem(RETURN_KEY);
+    if (saved === "chat.html" || saved === "home.html") target = saved;
+    sessionStorage.removeItem(RETURN_KEY);
+  } catch(e){}
+  return target;
+}
+const BACK = returnTarget();
+document.getElementById("backLink").href = BACK;
+
 onAuthStateChanged(auth, async (user)=>{
   if(!user){ location.href="login.html"; return; }
   const snap = await getDocs(query(collection(db,"users",user.uid,"chats"), orderBy("updatedAt","desc")));
@@ -37,7 +53,7 @@ onAuthStateChanged(auth, async (user)=>{
     const el=document.createElement("div");
     el.className="chat-card";
     el.innerHTML=`<div><div style="font-weight:600;">${title}</div><div class="muted">${date}</div></div><span style="color:var(--accent);">Open →</span>`;
-    el.onclick=()=> { try{ sessionStorage.setItem("learning-allied-open-chat", d.id); sessionStorage.setItem("aquila_open_chat", d.id);}catch(e){} location.href="home.html"; };
+    el.onclick=()=> { try{ sessionStorage.setItem("learning-allied-open-chat", d.id); sessionStorage.setItem("aquila_open_chat", d.id);}catch(e){} location.href=BACK; };
     list.appendChild(el);
   });
 });
