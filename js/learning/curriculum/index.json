@@ -81,9 +81,19 @@
       "academic_year": "2026-27",
       "curriculum_version": "2026.1",
       "official_source": "https://cbseacademic.nic.in/curriculum_2027.html",
-      "status": "unverified",
+      "status": "partially_verified",
       "file": "2026-27/cbse_10.json",
-      "note": "Class IX PDFs were fetched and applied; the Class X PDFs (Maths/Science/Social Science, SecPart1) were NOT fetched. The 40 chapters currently in curriculum-data.js are believed to be 2025-26 content and are unverified against 2026-27. Treat as suspect."
+      "pdfs_fetched": {
+        "Mathematics": "https://cbseacademic.nic.in/web_material/CurriculumMain27/SecPart1/Maths_SecP1X_2026-27.pdf",
+        "Science": "https://cbseacademic.nic.in/web_material/CurriculumMain27/SecPart1/Science_SecP1_2026-27.pdf",
+        "Social Science": "https://cbseacademic.nic.in/web_material/CurriculumMain27/SecPart1/SocialScience_SecP1X_2026-27.pdf"
+      },
+      "verified_against_pdf": {
+        "Mathematics": "CORRECTED — official 2026-27 has 14 chapters in 7 units (Number Systems, Algebra, Coordinate Geometry, Geometry, Trigonometry, Mensuration, Statistics and Probability). Data had 16: removed Constructions and Heights and Distances, neither of which appears in the official 2026-27 structure.",
+        "Science": "AMBIGUOUS — the 2026-27 X Science PDF is restructured into 5 thematic units rather than a numbered chapter list, and several chapters are now 'assessed only formatively' (Periodic Classification of Elements; Heredity and Evolution; Effects of Electric Current). Unit III Natural Phenomena appears to merge the old Light and Human Eye chapters, so the chapter count cannot be derived unambiguously. Data still holds 16 chapters; NOT changed pending a decision.",
+        "Social Science": "INCOMPLETE — official 2026-27 lists 22 chapters (History 5, Geography 7, Political Science 5, Economics 5). Data has only 8. Not yet expanded."
+      },
+      "note": "All three Class X PDFs are genuinely 2026-27 (unlike the Class IX Social Science PDF). Only the Mathematics correction has been applied so far."
     },
     {
       "curriculum_id": "cbse_2026_11",
@@ -92,9 +102,16 @@
       "academic_year": "2026-27",
       "curriculum_version": "2026.1",
       "official_source": "https://cbseacademic.nic.in/curriculum_2027.html",
-      "status": "subjects_verified",
+      "status": "pdfs_partly_stale",
       "file": "2026-27/cbse_11.json",
-      "note": "CBSE 11 electives verified (Physics, Chem, Bio, Maths, Applied Maths, English, Accountancy, Business, Economics, CS, IP, History, Geo, PolSci, Psychology, Sociology, PE etc.), units pending"
+      "note": "CBSE 11 electives verified (Physics, Chem, Bio, Maths, Applied Maths, English, Accountancy, Business, Economics, CS, IP, History, Geo, PolSci, Psychology, Sociology, PE etc.), units pending",
+      "pdf_year_audit_2026_10_03": {
+        "note": "16 SecPart2 PDFs were downloaded and their title pages checked. CBSE has NOT reissued every subject for 2026-27; several files served under the 2026-27 path still carry 2025-26 on their title page, so they cannot be used as 2026-27 sources.",
+        "genuinely_2026_27": ["Mathematics", "Applied Mathematics", "Biology", "Chemistry", "Computer Science", "Geography", "Informatics Practices", "Political Science"],
+        "stale_2025_26": ["Physics", "Accountancy", "Business Studies", "Economics", "History", "Physical Education", "Psychology", "Sociology"],
+        "impact": "Physics XI-XII is the highest-weighted subject for the JEE and NEET tracks, but its official PDF is still 2025-26, so Physics chapter lists cannot be verified against 2026-27 from CBSE at this time.",
+        "confirmed_2026_27_course_structures": "Chemistry XI = 9 units (Some Basic Concepts of Chemistry; Structure of Atom; Classification of Elements and Periodicity in Properties; Chemical Bonding and Molecular Structure; Chemical Thermodynamics; Equilibrium; Redox Reactions; Organic Chemistry: Some Basic Principles and Techniques; Hydrocarbons). Chemistry XII = 10 units (Solutions; Electrochemistry; Chemical Kinetics; d-and f-Block Elements; Coordination Compounds; Haloalkanes and Haloarenes; Alcohols, Phenols and Ethers; Aldehydes, Ketones and Carboxylic Acids; Amines; Biomolecules). Biology XI = 5 units I-V; Biology XII = 5 units VI-X."
+      }
     },
     {
       "curriculum_id": "cbse_2026_12",
