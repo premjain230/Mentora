@@ -54,10 +54,25 @@
       "academic_year": "2026-27",
       "curriculum_version": "2026.1",
       "official_source": "https://cbseacademic.nic.in/curriculum_2027.html",
-      "status": "subjects_verified",
+      "status": "partially_verified",
       "file": "2026-27/cbse_09.json",
       "subjects_verified": ["Mathematics", "Science", "Social Science", "Languages", "Mathematics at Advanced Level", "Science at Advanced Level"],
-      "note": "CBSE 2026-27 Class 9 new scheme verified — PDFs pending full unit/topic extraction"
+      "pdfs_fetched": {
+        "Mathematics": "https://cbseacademic.nic.in/web_material/CurriculumMain27/SecPart1/Maths_SecP1IX_2026-27.pdf",
+        "Science": "https://cbseacademic.nic.in/web_material/CurriculumMain27/SecPart1/ScienceSt_SecP1_2026-27.pdf",
+        "Social Science": "https://cbseacademic.nic.in/web_material/CurriculumMain27/SecPart1/SocialScience_SecP1IX_2026-27.pdf"
+      },
+      "verified_against_pdf": {
+        "Mathematics": "EXACT — 15/15 chapters, official order, 6 official units (Number System, Algebra, Coordinate Geometry, Geometry, Mensuration, Statistics and Probability)",
+        "Science": "CORRECTED — official 2026-27 has 12 chapters in 4 units, data had 13 (2025-26). Dropped: Improvement in Food Resources, Gravitation. Added: Reproduction. Renamed: Is Matter Around Us Pure -> Exploring Mixtures and their Separation; Work and Energy -> Work, Energy and Simple Machines; Natural Resources -> Earth as a System: Energy, Matter & Life.",
+        "Social Science": "NOT VERIFIED — the PDF served at the 2026-27 filename still contains CLASS IX (2025-26) content and says 'Course Structure will be provided shortly'. Re-fetch later; do not treat as 2026-27."
+      },
+      "note": "Science chapter ORDER was reconstructed from the official unit groupings (the PDF's own 'Chapter No.' column is inconsistent: it omits chapter 1 and its numbers do not align with document order). Order used = unit order I..IV, which is the only sequence consistent with both the unit table and the chapter topics. This matters because api/learning-event.js enforces in-order chapter defeat. Social Science and the three optional/new subjects below are still unverified in live data.",
+      "known_gaps": [
+        "Mathematics at Advanced Level and Science at Advanced Level are listed as real official 2026-27 Class IX subjects on the CBSE portal but are absent from curriculum-data.js",
+        "Computational Thinking & AI is a real official 2026-27 Class IX subject and is absent from curriculum-data.js",
+        "Social Science (8 chapters) is in curriculum-data.js but still carries 2025-26 content"
+      ]
     },
     {
       "curriculum_id": "cbse_2026_10",
@@ -66,9 +81,9 @@
       "academic_year": "2026-27",
       "curriculum_version": "2026.1",
       "official_source": "https://cbseacademic.nic.in/curriculum_2027.html",
-      "status": "subjects_verified",
+      "status": "unverified",
       "file": "2026-27/cbse_10.json",
-      "note": "CBSE 2026-27 Class 10 main subjects verified, units pending"
+      "note": "Class IX PDFs were fetched and applied; the Class X PDFs (Maths/Science/Social Science, SecPart1) were NOT fetched. The 40 chapters currently in curriculum-data.js are believed to be 2025-26 content and are unverified against 2026-27. Treat as suspect."
     },
     {
       "curriculum_id": "cbse_2026_11",

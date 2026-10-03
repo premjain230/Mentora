@@ -65,10 +65,19 @@ export function createDefaultProgress({ subjectKey, trackId, subject, classNum, 
 // Compute derived fields from chapters map + chapters order
 export function computeProgress(progress, chapters){
   const m = progress.chapters || {};
+  // Count only ids that are part of the CURRENT curriculum. A stored map can
+  // legitimately contain ids that are no longer served (e.g. Social Science was
+  // split out of cbse_10_science, or a peer client uploaded a wider set).
+  // Counting those made progressPct exceed 100 and could unlock the Final Boss
+  // locally while the server — which uses chapterOrder.length — still refused.
+  const inCurrent = new Set(chapters.map((c) => c.conceptId));
   let defeated = 0;
-  for(const id in m){ if(m[id].state===ArenaState.DEFEATED || m[id].state===ArenaState.MASTERED) defeated++; }
+  for(const ch of chapters){
+    const s = m[ch.conceptId]?.state;
+    if(s===ArenaState.DEFEATED || s===ArenaState.MASTERED) defeated++;
+  }
   const total = chapters.length;
-  const pct = total ? Math.round((defeated/total)*100) : 0;
+  const pct = total ? Math.min(100, Math.round((defeated/total)*100)) : 0;
   // currentChapterId = first AVAILABLE/IN_PROGRESS else next locked after last defeated
   let current = null;
   for(const ch of chapters){
@@ -84,7 +93,7 @@ export function computeProgress(progress, chapters){
     else current = chapters[0]?.conceptId || null;
   }
   const finalBossUnlocked = total>0 && defeated===total;
-  return { ...progress, defeated, total, progressPct: pct, currentChapterId: current, finalBossUnlocked };
+  return { ...progress, defeated, total, progressPct: pct, currentChapterId: current, finalBossUnlocked, _staleIds: Object.keys(m).filter((id) => !inCurrent.has(id)) };
 }
 
 // Validation: can start battle? (must be available/in_progress, prerequisites defeated)

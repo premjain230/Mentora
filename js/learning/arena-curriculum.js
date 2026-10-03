@@ -26,38 +26,79 @@ export const BOARD_CLASSES = Object.freeze({
   cbse: [9,10,11,12],
 });
 
-// Map concept subject field -> Arena display subject
-// For Maharashtra 9/10 the subjects are distinct and must be preserved verbatim
-function normalizeSubject(conceptSubject, tags){
-  const raw = String(conceptSubject||"");
-  const s = raw.toLowerCase();
-  // Preserve Maharashtra 9 distinct subjects verbatim (case-sensitive display)
-  if(s.includes("science & technology - part 1") || s.includes("science & technology — part 1")) return "Science & Technology - Part 1";
-  if(s.includes("science & technology - part 2") || s.includes("science & technology — part 2")) return "Science & Technology - Part 2";
-  if(s==="science & technology") return "Science & Technology";
-  if(s.includes("mathematics - part 1 (algebra)")) return "Mathematics - Part 1 (Algebra)";
-  if(s.includes("mathematics - part 2 (geometry)")) return "Mathematics - Part 2 (Geometry)";
-  if(s.includes("mathematics - part 1") || s.includes("mathematics — part 1") || s==="mathematics - part 1" || s==="mathematics — part 1" || raw==="Mathematics - Part 1") return "Mathematics - Part 1";
-  if(s.includes("mathematics - part 2") || s.includes("mathematics — part 2") || raw==="Mathematics - Part 2") return "Mathematics - Part 2";
-  if(s==="history") return "History";
-  if(s==="history and political science") return "History and Political Science";
-  if(s==="political science") return "Political Science";
-  if(s==="geography") return "Geography";
-  // Fallback for legacy generic subjects
-  if(s.includes("mathematics")||s.includes("math")) return "Mathematics";
-  if(s.includes("physics") || (Array.isArray(tags)&&tags.includes("physics"))) return "Physics";
-  if(s.includes("chemistry")|| tags?.includes("chemistry")) return "Chemistry";
-  if(s.includes("biology")|| tags?.includes("biology")) return "Biology";
-  if(s.includes("science")){
-    if(tags?.includes("physics")) return "Physics";
-    if(tags?.includes("chemistry")) return "Chemistry";
-    if(tags?.includes("biology")) return "Biology";
-    return "Science";
+// Map concept subject field -> Arena display subject.
+//
+// This used to be lossy substring matching, which silently merged three DISTINCT
+// CBSE subjects into other subjects and created a phantom one:
+//   "Social Science"      -> "Science"            (8 chapters folded into cbse_10_science)
+//   "Applied Mathematics" -> "Mathematics"        (elective became unreachable)
+//   "Computer Science"    -> "Science"/Physics/…  (injected into every CBSE-11 subject)
+// Now it is an explicit alias table plus an identity default, so an unknown
+// subject is surfaced verbatim instead of being guessed at. The Maharashtra
+// canonical names below are load-bearing: they form subjectKey segments
+// (maharashtra_9_science_technology_part_1), so they must not be renamed.
+//
+// Only punctuation variants (em/en dash, spacing, case) are aliased.
+const SUBJECT_ALIASES = new Map(Object.entries({
+  // Legacy punctuation variants of the Maharashtra canonical names.
+  "science & technology — part 1": "Science & Technology - Part 1",
+  "science & technology — part 2": "Science & Technology - Part 2",
+  "science & technology": "Science & Technology",
+  "mathematics - part 1 (algebra)": "Mathematics - Part 1 (Algebra)",
+  "mathematics - part 2 (geometry)": "Mathematics - Part 2 (Geometry)",
+  "mathematics — part 1": "Mathematics - Part 1",
+  "mathematics — part 2": "Mathematics - Part 2",
+  "mathematics - part 1": "Mathematics - Part 1",
+  "mathematics - part 2": "Mathematics - Part 2",
+  // Case-insensitive identity for the plain subjects.
+  "physics": "Physics",
+  "chemistry": "Chemistry",
+  "biology": "Biology",
+  "mathematics": "Mathematics",
+  "science": "Science",
+  "history": "History",
+  "political science": "Political Science",
+  "history and political science": "History and Political Science",
+  "geography": "Geography",
+  "social science": "Social Science",
+  "applied mathematics": "Applied Mathematics",
+  "computer science": "Computer Science",
+  "informatics practices": "Informatics Practices",
+  "english core": "English Core",
+  "accountancy": "Accountancy",
+  "business studies": "Business Studies",
+  "economics": "Economics",
+  "physical education": "Physical Education",
+  "psychology": "Psychology",
+  "sociology": "Sociology",
+}));
+
+export function normalizeSubject(conceptSubject){
+  const raw = String(conceptSubject||"").trim();
+  if(!raw) return "General";
+  const alias = SUBJECT_ALIASES.get(raw.toLowerCase());
+  if(alias) return alias;
+  // Preserve an already-canonical Maharashtra name that differs only by case.
+  for(const candidate of SUBJECT_ALIASES.values()){
+    if(candidate.toLowerCase()===raw.toLowerCase()) return candidate;
   }
-  return raw || "General";
+  return raw;
 }
 
-// Extract class from curriculumPath like "maharashtra.11..." or "cbse.12..."
+// NEET UG has only 3 placeholder concepts tagged `neet.ug.*` (see
+// js/learning/curriculum/index.json -> neet_ug_2026 "source_pending"). The NEET
+// UG syllabus is, in board terms, CBSE Class 11 + 12 Physics/Chemistry/Biology —
+// and the existing neet.* prerequisites already point at cbse.12.* — so NEET
+// falls back to those two classes for its three science subjects.
+//
+// This is an EXPLICIT, scoped fallback, deliberately different from the old
+// behaviour which let any core subject leak in by difficulty and produced 53
+// chapters of mixed Maharashtra/CBSE content. It is still content-thin: verify
+// against the official NEET UG 2026 PDF before treating it as authoritative.
+const NEET_FALLBACK_CLASSES = [11, 12];
+const NEET_SUBJECTS = new Set(["Physics", "Chemistry", "Biology"]);
+
+
 function extractClassAndBoard(path){
   // pattern: board.class.subject...
   const parts = String(path).split(".");
@@ -113,7 +154,7 @@ function getBoardSubjects(board, classNum){
     for(const p of (c.curriculumPaths||[])){
       const parsed = extractClassAndBoard(p);
       if(parsed && parsed.board===board && parsed.cls===classNum){
-        set.add(normalizeSubject(c.subject, c.tags));
+        set.add(normalizeSubject(c.subject));
       }
     }
   }
@@ -147,30 +188,33 @@ export function getChapters(trackId, subject, classNum=null){
   const subj = subject;
   let filtered = [];
   for(const c of CURRICULUM_CONCEPTS){
-    const normSubj = normalizeSubject(c.subject, c.tags);
-    // subject match (allow Science umbrella for Physics etc when data is sparse)
-    const subjectMatches = (normSubj===subj) || (subj==="Science" && ["Physics","Chemistry","Biology"].includes(normSubj)) || (normSubj==="Science" && ["Physics","Chemistry","Biology"].includes(subj));
-    if(!subjectMatches) continue;
-    // board/class filtering
+    const normSubj = normalizeSubject(c.subject);
+    // Subject must match exactly. The old "Science umbrella" allowance merged
+    // Physics/Chemistry/Biology into a single Science subject and injected
+    // Computer Science into every CBSE-11 science list.
+    if(normSubj!==subj) continue;
+    // board/class filtering — a concept belongs to a track ONLY if its
+    // curriculumPaths actually name that track.
     if(t==="jee"){
-      // JEE: include concepts with jee in path OR generic advanced math/physics
-      const hasJee = (c.curriculumPaths||[]).some(p=> p.startsWith("jee."));
-      const isCore = ["Mathematics","Physics","Chemistry"].includes(normSubj);
-      if(hasJee || (isCore && c.difficulty>=0.5)) filtered.push(c);
-      else if(isCore) filtered.push(c); // still include core for playable map even if not tagged jee — fallback
+      const hasTrack = (c.curriculumPaths||[]).some(p=> p.startsWith("jee."));
+      if(hasTrack) filtered.push(c);
     } else if(t==="neet"){
-      const hasNeet = (c.curriculumPaths||[]).some(p=> p.startsWith("neet."));
-      const isBioPhyChem = ["Biology","Physics","Chemistry"].includes(normSubj);
-      if(isBioPhyChem) filtered.push(c);
+      const hasTrack = (c.curriculumPaths||[]).some(p=> p.startsWith("neet."));
+      if(hasTrack){ filtered.push(c); continue; }
+      if(NEET_SUBJECTS.has(normSubj)){
+        const fromCBSESenior = (c.curriculumPaths||[]).some(p=>{
+          const parsed = extractClassAndBoard(p);
+          return parsed && parsed.board==="cbse" && NEET_FALLBACK_CLASSES.includes(parsed.cls);
+        });
+        if(fromCBSESenior) filtered.push(c);
+      }
     } else if(t==="maharashtra" || t==="cbse"){
-      if(classNum==null){ filtered.push(c); continue; }
+      if(classNum==null){ continue; }
       const hasBoardClass = (c.curriculumPaths||[]).some(p=>{
         const parsed = extractClassAndBoard(p);
         return parsed && parsed.board===t && parsed.cls===classNum;
       });
       if(hasBoardClass) filtered.push(c);
-    } else {
-      filtered.push(c);
     }
   }
   // Dedupe by conceptId
