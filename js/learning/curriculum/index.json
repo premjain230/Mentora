@@ -56,7 +56,14 @@
       "official_source": "https://cbseacademic.nic.in/curriculum_2027.html",
       "status": "partially_verified",
       "file": "2026-27/cbse_09.json",
-      "subjects_verified": ["Mathematics", "Science", "Social Science", "Languages", "Mathematics at Advanced Level", "Science at Advanced Level"],
+      "subjects_verified": [
+        "Mathematics",
+        "Science",
+        "Social Science",
+        "Languages",
+        "Mathematics at Advanced Level",
+        "Science at Advanced Level"
+      ],
       "pdfs_fetched": {
         "Mathematics": "https://cbseacademic.nic.in/web_material/CurriculumMain27/SecPart1/Maths_SecP1IX_2026-27.pdf",
         "Science": "https://cbseacademic.nic.in/web_material/CurriculumMain27/SecPart1/ScienceSt_SecP1_2026-27.pdf",
@@ -102,16 +109,31 @@
       "academic_year": "2026-27",
       "curriculum_version": "2026.1",
       "official_source": "https://cbseacademic.nic.in/curriculum_2027.html",
-      "status": "pdfs_partly_stale",
+      "status": "chapters_applied_from_official_pdfs",
       "file": "2026-27/cbse_11.json",
-      "note": "CBSE 11 electives verified (Physics, Chem, Bio, Maths, Applied Maths, English, Accountancy, Business, Economics, CS, IP, History, Geo, PolSci, Psychology, Sociology, PE etc.), units pending",
-      "pdf_year_audit_2026_10_03": {
-        "note": "16 SecPart2 PDFs were downloaded and their title pages checked. CBSE has NOT reissued every subject for 2026-27; several files served under the 2026-27 path still carry 2025-26 on their title page, so they cannot be used as 2026-27 sources.",
-        "genuinely_2026_27": ["Mathematics", "Applied Mathematics", "Biology", "Chemistry", "Computer Science", "Geography", "Informatics Practices", "Political Science"],
-        "stale_2025_26": ["Physics", "Accountancy", "Business Studies", "Economics", "History", "Physical Education", "Psychology", "Sociology"],
-        "impact": "Physics XI-XII is the highest-weighted subject for the JEE and NEET tracks, but its official PDF is still 2025-26, so Physics chapter lists cannot be verified against 2026-27 from CBSE at this time.",
-        "confirmed_2026_27_course_structures": "Chemistry XI = 9 units (Some Basic Concepts of Chemistry; Structure of Atom; Classification of Elements and Periodicity in Properties; Chemical Bonding and Molecular Structure; Chemical Thermodynamics; Equilibrium; Redox Reactions; Organic Chemistry: Some Basic Principles and Techniques; Hydrocarbons). Chemistry XII = 10 units (Solutions; Electrochemistry; Chemical Kinetics; d-and f-Block Elements; Coordination Compounds; Haloalkanes and Haloarenes; Alcohols, Phenols and Ethers; Aldehydes, Ketones and Carboxylic Acids; Amines; Biomolecules). Biology XI = 5 units I-V; Biology XII = 5 units VI-X."
-      }
+      "note": "Chapter names and unit membership transcribed from the official SecPart2 PDFs. Economics XI carries a 'CLASS - XI (2025-26)' label on its own course structure, so that subject is the one genuine mixed-year case.",
+      "correction_2026_10_03": "An earlier audit in this repo claimed 8 of the 16 SecPart2 PDFs were stale 2025-26. That was WRONG: it judged the year from each PDF's title page only. Re-checking the course-structure sections shows the content is 2026-27 throughout; only the cover labels are stale. Physics in particular carries an explicit 'Class XI - 2026-27 (Theory)' marker on its course structure.",
+      "verified_against_pdf": {
+        "Physics": "14 chapters XI / 14 XII - APPLIED",
+        "Mathematics": "14 chapters XI / 13 XII - APPLIED",
+        "Applied Mathematics": "7 units XI - APPLIED; XII units identified but not yet applied",
+        "Chemistry": "9 XI already correct - unchanged",
+        "Biology": "19 XI / 13 XII - APPLIED",
+        "Accountancy": "4 XI / 4 XII - APPLIED",
+        "Business Studies": "6 XI / 5 XII - APPLIED",
+        "Computer Science": "3 XI / 3 XII - APPLIED",
+        "Informatics Practices": "4 XI / 4 XII - APPLIED",
+        "Economics": "7 units XI - APPLIED; XII not yet applied",
+        "Geography": "5 XI / 9 XII - APPLIED"
+      },
+      "still_placeholder": [
+        "English Core",
+        "History",
+        "Political Science",
+        "Psychology",
+        "Sociology",
+        "Physical Education (all XI)"
+      ]
     },
     {
       "curriculum_id": "cbse_2026_12",
@@ -120,9 +142,20 @@
       "academic_year": "2026-27",
       "curriculum_version": "2026.1",
       "official_source": "https://cbseacademic.nic.in/curriculum_2027.html",
-      "status": "subjects_verified",
+      "status": "chapters_applied_from_official_pdfs",
       "file": "2026-27/cbse_12.json",
-      "note": "CBSE 12 electives verified, units pending"
+      "note": "CBSE 12 electives verified, units pending",
+      "verified_against_pdf": {
+        "Physics": "14 - APPLIED",
+        "Chemistry": "10 - APPLIED",
+        "Biology": "13 - APPLIED",
+        "Mathematics": "13 - APPLIED",
+        "Accountancy": "4 - APPLIED",
+        "Business Studies": "5 - APPLIED",
+        "Computer Science": "3 - APPLIED",
+        "Informatics Practices": "4 - APPLIED",
+        "Geography": "9 - APPLIED"
+      }
     },
     {
       "curriculum_id": "jee_main_2026",
