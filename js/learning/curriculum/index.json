@@ -21,9 +21,9 @@
       "academic_year": "2026-27",
       "curriculum_version": "2026.1",
       "official_source": "https://www.mahahsscboard.in/en/studentAndSyllabus/sscGeneral | https://books.ebalbharati.in/",
-      "status": "pending_verification",
+      "status": "not_verified_this_pass",
       "file": "2026-27/maharashtra_10.json",
-      "note": "SSC Class 10 official textbooks pending PDF extraction — subjects verified, chapters pending"
+      "note": "NOT verified. Balbharati / MSBSHSE official textbook contents were not fetched in this pass, so the chapter lists in curriculum-data.js remain unverified against the official source. No changes were made."
     },
     {
       "curriculum_id": "msb_2026_11",
@@ -32,9 +32,9 @@
       "academic_year": "2026-27",
       "curriculum_version": "2026.1",
       "official_source": "https://www.mahahsscboard.in/en/studentAndSyllabus/hscGeneral | https://books.ebalbharati.in/",
-      "status": "pending_verification",
+      "status": "not_verified_this_pass",
       "file": "2026-27/maharashtra_11.json",
-      "note": "HSC 11 streams (Science/Commerce/Arts) verified, chapter extraction pending"
+      "note": "NOT verified. Balbharati / MSBSHSE official textbook contents were not fetched in this pass, so the chapter lists in curriculum-data.js remain unverified against the official source. No changes were made."
     },
     {
       "curriculum_id": "msb_2026_12",
@@ -43,9 +43,9 @@
       "academic_year": "2026-27",
       "curriculum_version": "2026.1",
       "official_source": "https://www.mahahsscboard.in/en/studentAndSyllabus/hscGeneral | https://books.ebalbharati.in/",
-      "status": "pending_verification",
+      "status": "not_verified_this_pass",
       "file": "2026-27/maharashtra_12.json",
-      "note": "HSC 12 streams verified, chapter extraction pending"
+      "note": "NOT verified. Balbharati / MSBSHSE official textbook contents were not fetched in this pass, so the chapter lists in curriculum-data.js remain unverified against the official source. No changes were made."
     },
     {
       "curriculum_id": "cbse_2026_09",
@@ -124,16 +124,19 @@
         "Computer Science": "3 XI / 3 XII - APPLIED",
         "Informatics Practices": "4 XI / 4 XII - APPLIED",
         "Economics": "7 units XI - APPLIED; XII not yet applied",
-        "Geography": "5 XI / 9 XII - APPLIED"
+        "Geography": "5 XI / 9 XII - APPLIED",
+        "Political Science": "18 chapters XI (Indian Constitution at Work 10 + Political Theory 8) - APPLIED",
+        "Psychology": "8 units XI / 6 units XII - APPLIED",
+        "Sociology": "7 units XI / 11 units XII - APPLIED"
       },
       "still_placeholder": [
-        "English Core",
-        "History",
-        "Political Science",
-        "Psychology",
-        "Sociology",
-        "Physical Education (all XI)"
-      ]
+        "English Core XI",
+        "History XI",
+        "Physical Education XI",
+        "Political Science XII",
+        "Psychology/Sociology verified; PE titles truncated in the PDF text layer"
+      ],
+      "still_placeholder_reason": "English Core has no chapter structure at all - the 2026-27 document is a skills/competency syllabus (reading, writing, grammar, listening skills), not a chapter list. History's numbered items in the PDF are project themes, not chapters. Physical Education unit titles are cut off mid-phrase in the PDF text layer (e.g. 'Fundamentals of Kinesiology and'), so completing them would mean inventing the ending."
     },
     {
       "curriculum_id": "cbse_2026_12",
@@ -164,9 +167,9 @@
       "academic_year": "2026",
       "curriculum_version": "2026.1",
       "official_source": "https://cdnbbsr.s3waas.gov.in/s3f8e59f4b2fe7c5705bf878bbd494ccdf/uploads/2025/10/202510311323551056.pdf",
-      "status": "source_verified",
+      "status": "not_verified_this_pass",
       "file": "2026-27/jee_main_2026.json",
-      "note": "NTA JEE Main 2026 PDF verified, Unit→Topic extraction pending — do not use JEE Advanced"
+      "note": "NOT verified. The NTA JEE Main 2026 syllabus PDF was not fetched in this pass. No changes made."
     },
     {
       "curriculum_id": "neet_ug_2026",
@@ -175,9 +178,9 @@
       "academic_year": "2026",
       "curriculum_version": "2026.1",
       "official_source": "https://cdnbbsr.s3waas.gov.in/s37bc1ec1d9c3426357e69acd5bf320061/uploads/2026/01/20260102588210790.pdf (NEET 2025) | https://neet.nta.nic.in/documents/ for 2026 — 2026 PDF pending direct verification",
-      "status": "source_pending",
+      "status": "not_verified_this_pass",
       "file": "2026-27/neet_ug_2026.json",
-      "note": "NEET UG 2026 syllabus page verified, exact 2026 PDF not yet extracted — stop import until verified"
+      "note": "NOT verified. The NTA NEET UG 2026 syllabus PDF was not fetched in this pass. No changes made."
     }
   ]
 }
