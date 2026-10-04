@@ -48,6 +48,24 @@
   "redirects": [
     {
       "source": "/(.*)",
+      "has": [{ "type": "host", "value": "mentora.vercel.app" }],
+      "destination": "https://www.learningallied.world/$1",
+      "permanent": true
+    },
+    {
+      "source": "/(.*)",
+      "has": [{ "type": "host", "value": "mentora-ai.vercel.app" }],
+      "destination": "https://www.learningallied.world/$1",
+      "permanent": true
+    },
+    {
+      "source": "/(.*)",
+      "has": [{ "type": "host", "value": "mentora-lyart-nine.vercel.app" }],
+      "destination": "https://www.learningallied.world/$1",
+      "permanent": true
+    },
+    {
+      "source": "/(.*)",
       "has": [{ "type": "host", "value": "aquila-sand.vercel.app" }],
       "destination": "https://www.learningallied.world/$1",
       "permanent": true
