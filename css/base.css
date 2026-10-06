@@ -17,7 +17,70 @@ body {
 }
 
 img, svg, video { display: block; max-width: 100%; }
-img[src$="logo.png"] { aspect-ratio: 1 / 1; object-fit: cover; border-radius: 8px; }
+
+/* Theme-aware logo. The src attribute carries the white mark, because dark is
+   the default theme and the inline no-flash script sets .light-mode before
+   first paint. On the light theme, content: swaps in the black mark.
+   Keyed off src rather than a class so it covers every logo on every page
+   without each one having to agree on a class name. */
+img[src$="learningallied-white.svg"] {
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+  border-radius: 8px;
+  content: url("/learningallied-white.svg");
+}
+.light-mode img[src$="learningallied-white.svg"] { content: url("/learningallied-black.svg"); }
+
+/* ── Loading splash ───────────────────────────────────────────────
+   The branded boot screen: logo + sweep bar, on the page background.
+   Shared by every page that gates render behind auth/session resolve.
+
+   Two ways to drive it, so both the class-based and the inline-style
+   pages can use the same component:
+     body.auth-loading .ld-splash  -> display:flex   (arena/chat/home)
+     .ld-splash[style*="flex"]    -> already inline  (index/onboarding)
+
+   The logo src carries the white mark; the rule above swaps it to black
+   on the light theme, so the splash matches the header logo. */
+.ld-splash {
+  position: fixed; inset: 0; z-index: 100;
+  background: var(--bg-base);
+  display: none; align-items: center; justify-content: center;
+}
+body.auth-loading .ld-splash { display: flex; }
+
+.ld {
+  position: relative;
+  display: grid; place-items: center;
+}
+.ld img {
+  display: block;
+  height: clamp(44px, 11vw, 60px);
+  width: auto; max-width: 60vw;
+  animation: ldIn .6s cubic-bezier(.2, .7, .2, 1) both;
+}
+.ld-bar {
+  position: absolute; top: calc(100% + 28px); left: 50%; margin-left: -36px;
+  width: 72px; height: 2px; border-radius: 2px;
+  background: var(--border, #23262d);
+  overflow: hidden;
+  animation: ldFade .6s .2s cubic-bezier(.2, .7, .2, 1) both;
+}
+.ld-bar::after {
+  content: ""; position: absolute; inset: 0;
+  width: 40%; border-radius: 2px;
+  background: var(--accent, #4cb8ee);
+  animation: ldSweep 1.3s cubic-bezier(.65, 0, .35, 1) infinite;
+}
+@keyframes ldIn   { from { opacity: 0; transform: scale(.96); } }
+@keyframes ldFade { from { opacity: 0; } }
+@keyframes ldSweep { from { transform: translateX(-100%); } to { transform: translateX(250%); } }
+
+@media (prefers-reduced-motion: reduce) {
+  .ld img, .ld-bar { animation: none; }
+  .ld-bar::after { animation: none; transform: translateX(75%); }
+}
+
 button, input, select, textarea { font: inherit; color: inherit; }
 button { background: none; border: none; cursor: pointer; }
 a { color: var(--accent); text-decoration: none; transition: color var(--dur-fast) ease; }

@@ -21,7 +21,7 @@
 <link rel="stylesheet" href="/css/nav.css" />
 <style>
 :root {
- --bg: #070810;
+ --bg: #000000;
  --surface: #0f1117;
  --card: #13151f;
  --card2: #1a1d27;
@@ -63,10 +63,13 @@ body {
  -webkit-font-smoothing: antialiased;
 }
 .bg-layer {
- position: fixed; inset: 0; pointer-events: none; z-index: 0;
- background:
-  radial-gradient(ellipse 700px 500px at 50% 0%, rgba(0,212,255,0.07) 0%, transparent 60%),
-  radial-gradient(ellipse 600px 500px at 50% 100%, rgba(167,139,250,0.07) 0%, transparent 60%);
+  position: fixed; inset: 0; pointer-events: none; z-index: 0;
+  background: none;
+}
+.light-mode .bg-layer {
+  background:
+   radial-gradient(ellipse 700px 500px at 50% 0%, rgba(0,212,255,0.07) 0%, transparent 60%),
+   radial-gradient(ellipse 600px 500px at 50% 100%, rgba(167,139,250,0.07) 0%, transparent 60%);
 }
 .page {
  position: relative; z-index: 10;
@@ -178,7 +181,7 @@ body {
 <div class="mnav-overlay" id="mnavOverlay"></div>
 <nav class="mnav-panel" id="mnavPanel" aria-label="Site navigation">
  <div class="mnav-head">
-  <span class="mnav-brand"><img src="logo.png" alt="Learning Allied">Learning Allied</span>
+  <span class="mnav-brand"><img src="/learningallied-white.svg" alt="Learning Allied">Learning Allied</span>
   <button class="mnav-close" id="mnavClose" aria-label="Close menu">✕</button>
  </div>
  <div class="mnav-links">
@@ -192,7 +195,7 @@ body {
 </nav>
 <div class="bg-layer"></div>
 <div class="page">
- <a href="index.html" class="logo"><img src="logo.png" alt="Learning Allied" class="logo-img"><span class="logo-name">Learning Allied <span>AI</span></span></a>
+ <a href="index.html" class="logo"><img src="/learningallied-white.svg" alt="Learning Allied" class="logo-img"><span class="logo-name">Learning Allied <span>AI</span></span></a>
  <div class="card">
   <div class="icon-wrap">
    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>

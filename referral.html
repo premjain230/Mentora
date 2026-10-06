@@ -20,7 +20,7 @@
 <link rel="stylesheet" href="/css/nav.css" />
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-:root{--bg:#0a0b0f;--surface:#0f1117;--card:#1a1d27;--card2:#1e2130;--border:rgba(255,255,255,0.07);--border-hover:rgba(255,255,255,0.12);--text:#f0f0f8;--text-secondary:#8b8fa8;--text-muted:#4a4d62;--accent:#00d4ff;--accent2:#a78bfa;--accent3:#ff6b6b;--green:#22c55e;--amber:#f59e0b;--radius:12px;--font:'Sora',sans-serif;--mono:'Space Mono',monospace}
+:root{--bg:#000000;--surface:#0f1117;--card:#1a1d27;--card2:#1e2130;--border:rgba(255,255,255,0.07);--border-hover:rgba(255,255,255,0.12);--text:#f0f0f8;--text-secondary:#8b8fa8;--text-muted:#4a4d62;--accent:#00d4ff;--accent2:#a78bfa;--accent3:#ff6b6b;--green:#22c55e;--amber:#f59e0b;--radius:12px;--font:'Sora',sans-serif;--mono:'Space Mono',monospace}
 body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:100vh}
 .ref-container{max-width:720px;margin:0 auto;padding:24px 16px 64px}
 .ref-header{text-align:center;padding:32px 0 24px}
@@ -76,7 +76,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:1
 @media(max-width:480px){.stats-grid{grid-template-columns:repeat(3,1fr);gap:8px}.stat-card{padding:12px}.stat-card .value{font-size:20px}}
 @media(max-width:400px){.stats-grid{grid-template-columns:1fr 1fr}.stat-card .value{font-size:22px}}
 @media(prefers-color-scheme:light){:root{--bg:#f4f5f9;--surface:#ffffff;--card:#f0f1f6;--card2:#e8e9f0;--border:rgba(0,0,0,0.08);--text:#1a1a2e;--text-secondary:#6b6f8a;--text-muted:#a0a3b8}.share-btns button{color:var(--text-secondary)}}
-</style>
+</style>  
 </head>
 <body>
 <button class="mnav-btn" id="mnavBtn" aria-label="Open menu" aria-expanded="false">
@@ -85,7 +85,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:1
 <div class="mnav-overlay" id="mnavOverlay"></div>
 <nav class="mnav-panel" id="mnavPanel" aria-label="Site navigation">
  <div class="mnav-head">
-  <span class="mnav-brand"><img src="logo.png" alt="Learning Allied">Learning Allied</span>
+  <span class="mnav-brand"><img src="/learningallied-white.svg" alt="Learning Allied">Learning Allied</span>
   <button class="mnav-close" id="mnavClose" aria-label="Close menu">✕</button>
  </div>
  <div class="mnav-links">

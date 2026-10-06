@@ -16,196 +16,131 @@
 <title>Study Planner — Learning Allied</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%234f8cff'/><text x='16' y='22' text-anchor='middle' fill='white' font-size='18' font-weight='bold'>A</text></svg>">
 <meta name="referrer" content="no-referrer-when-downgrade">
-<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
 <link rel="stylesheet" href="/css/tokens.css" />
 <link rel="stylesheet" href="/css/base.css" />
 <link rel="stylesheet" href="/css/sidebar.css" />
 <link rel="stylesheet" href="/css/texture.css" />
 <script type="module" src="/js/texture.js"></script>
 <link rel="stylesheet" href="/css/shell.css" />
-<style>
-body { transition: background 0.35s ease, color 0.35s ease; }
+ <link rel="stylesheet" href="/css/premium.css" />
+ <style>
+/* Layout + page-specific pieces. Look & feel (surfaces, buttons, inputs, tokens) comes from /css/premium.css */
+.main{font-family:'Sora',system-ui,sans-serif;color:var(--pm-text)}
+.page-head,.tab-bar{width:100%;max-width:960px;margin:0 auto;padding-left:32px;padding-right:32px;box-sizing:border-box}
+.page-head{padding-top:36px;padding-bottom:20px}
+.page-head h1{margin:0;font-size:28px;font-weight:600;letter-spacing:-.035em}
+.page-head p{margin:6px 0 0;font-size:14px;color:var(--pm-text-2)}
+.tab-bar{display:flex;align-items:center;gap:4px;overflow-x:auto;flex-shrink:0;border-bottom:0!important;position:relative}
+.tab-bar::after{content:"";position:absolute;left:32px;right:32px;bottom:0;height:1px;background:var(--pm-border)}
+.tab-bar::-webkit-scrollbar{display:none}
+.tab{padding:10px 14px;cursor:pointer;user-select:none;white-space:nowrap;border-bottom:2px solid transparent;position:relative;z-index:1}
+.content{flex:1;overflow-y:auto;padding:28px 32px 72px}
+.content>*{max-width:960px;margin-left:auto;margin-right:auto}
+.content::-webkit-scrollbar{width:6px}.content::-webkit-scrollbar-thumb{background:var(--pm-border-strong);border-radius:6px}
+@keyframes rise{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.content>*{animation:rise .3s var(--pm-ease) both}
 
-.topbar-right { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px}
+.stat-card{padding:18px 20px;overflow:hidden}
+.stat-val{line-height:1.1;margin-top:8px}
+.stat-sub{font-size:13px;color:var(--pm-text-2);margin-top:4px}
+.stat-card.accent-cyan{--card-color:var(--pm-accent)}.stat-card.accent-cyan .stat-val{color:var(--pm-accent)}
+.stat-card.accent-purple{--card-color:#a78bfa}.stat-card.accent-amber{--card-color:var(--pm-warn)}.stat-card.accent-red{--card-color:var(--pm-bad)}
 
-.btn-outline { background: transparent; border: 1px solid var(--border); color: var(--text-secondary); }
-.btn-outline:hover { border-color: rgba(0,212,255,0.4); color: var(--accent); }
-.btn-accent { background: var(--accent); color: #06121a; }
-.btn-accent:hover { background: #33ddff; }
-.btn-teal { background: rgba(167,139,250,0.1); border: 1px solid rgba(167,139,250,0.25); color: var(--accent2); }
-.btn-teal:hover { background: rgba(167,139,250,0.2); }
-.btn-danger { background: rgba(255,107,107,0.15); border: 1px solid rgba(255,107,107,0.4); color: var(--accent3); font-family: var(--font-main); font-size: 12px; font-weight: 600; padding: 7px 14px; border-radius: 8px; cursor: pointer; transition: all 0.18s; white-space: nowrap; }
-.btn-danger:hover { background: rgba(255,107,107,0.3); border-color: rgba(255,107,107,0.6); }
-.btn-danger:disabled { opacity: 0.5; cursor: not-allowed; }
+.countdown-banner{padding:22px 24px;margin-bottom:20px;display:flex;align-items:center;gap:24px;flex-wrap:wrap}
+.countdown-days{font-size:52px;line-height:1}
+.countdown-info{flex:1;min-width:160px}
+.countdown-title{font-size:16px;font-weight:600;margin-bottom:4px}
+.countdown-sub{font-size:14px;color:var(--pm-text-2);line-height:1.5}
+.countdown-progress{display:flex;flex-direction:column;gap:6px;min-width:180px;flex:1}
+.cprog-label{display:flex;justify-content:space-between;font-size:12px;color:var(--pm-text-3)}
 
-.tab-bar { display: flex; align-items: center; gap: 4px; padding: 12px 28px 0; border-bottom: 1px solid var(--border); flex-shrink: 0; overflow-x: auto; -webkit-overflow-scrolling: touch; }
-.tab-bar::-webkit-scrollbar { display: none; }
-.tab { padding: 9px 16px; font-size: 13px; font-weight: 500; color: var(--text-muted); cursor: pointer; border-bottom: 2px solid transparent; transition: all 0.18s; user-select: none; white-space: nowrap; }
-.tab:hover { color: var(--text-secondary); }
-.tab.active { color: var(--text-primary); border-bottom-color: var(--accent); }
+.two-col{display:grid;grid-template-columns:1fr 320px;gap:24px}
+.section-title{margin-bottom:14px;display:flex;align-items:center;justify-content:space-between}
+.task-list{display:flex;flex-direction:column;gap:8px}
+.task-card{padding:14px 16px;display:flex;align-items:center;gap:14px}
+.task-card.completed{opacity:.5}.task-card.completed .task-topic{text-decoration:line-through;color:var(--pm-text-3)}
+.task-check{width:22px;height:22px;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;transition:all .16s}
+.task-check.done::after{content:"✓";font-size:12px;font-weight:700}
+.task-body{flex:1;min-width:0}
+.task-subject{font-weight:600;margin-bottom:2px}
+.task-topic{font-size:14px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.task-meta{display:flex;align-items:center;gap:8px;margin-top:5px;flex-wrap:wrap}
+.task-dur{font-size:12px;color:var(--pm-text-3);font-variant-numeric:tabular-nums}
+.task-type{font-size:11px;padding:2px 8px;border-radius:999px;font-weight:600;text-transform:capitalize}
+.task-type.learn{background:var(--pm-accent-soft);color:var(--pm-accent)}
+.task-type.revise{background:rgba(167,139,250,.14);color:#a78bfa}
+.task-type.practice{background:var(--pm-warn-soft);color:var(--pm-warn)}
+.task-type.test{background:var(--pm-bad-soft);color:var(--pm-bad)}
+.task-priority{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.task-priority.high{background:var(--pm-bad)}.task-priority.medium{background:var(--pm-warn)}.task-priority.low{background:var(--pm-text-3)}
+.task-actions{display:flex;gap:6px;flex-shrink:0}
+.task-btn{padding:6px 11px;font-size:12px;font-family:inherit;cursor:pointer;background:transparent;border:1px solid var(--pm-border-strong)}
 
-.content { flex: 1; overflow-y: auto; padding: 24px 28px; }
+.missed-alert{padding:14px 18px;display:flex;align-items:center;gap:14px;margin-bottom:20px;flex-wrap:wrap}
+.missed-alert-icon{font-size:20px;flex-shrink:0}
+.missed-alert-body{flex:1;min-width:160px}
+.missed-alert-title{font-size:14px;font-weight:600;margin-bottom:2px}
+.missed-alert-sub{font-size:13px;color:var(--pm-text-2)}
+.btn-replan,.btn-danger,.btn-sm{font-family:inherit;font-size:13px;font-weight:500;padding:8px 14px;cursor:pointer;white-space:nowrap;display:inline-flex;align-items:center;justify-content:center;gap:6px}
+.btn-sm{height:36px}
 
-.stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 20px; }
-.stat-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 18px 20px; position: relative; overflow: hidden; transition: border-color var(--dur-fast) var(--ease-out), transform var(--dur-fast) var(--ease-out), box-shadow var(--dur-fast) var(--ease-out); }
-.stat-card:hover { border-color: var(--border-strong); transform: translateY(-1px); box-shadow: var(--shadow-sm); }
-.stat-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: var(--card-color, var(--accent)); opacity: 0.5; }
-.stat-label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-muted); margin-bottom: 10px; }
-.stat-val { font-size: 28px; font-weight: 700; font-family: var(--font-mono); letter-spacing: -1px; }
-.stat-sub { font-size: 12px; color: var(--text-secondary); margin-top: 4px; }
-.stat-card.accent-cyan { --card-color: var(--accent); }
-.stat-card.accent-cyan .stat-val { color: var(--accent); }
-.stat-card.accent-purple { --card-color: var(--accent2); }
-.stat-card.accent-purple .stat-val { color: var(--accent2); }
-.stat-card.accent-amber { --card-color: var(--accent4); }
-.stat-card.accent-amber .stat-val { color: var(--accent4); }
-.stat-card.accent-red { --card-color: var(--accent3); }
-.stat-card.accent-red .stat-val { color: var(--accent3); }
+.subject-panel{padding:20px}
+.subject-row{display:flex;flex-direction:column;gap:16px}
+.subj-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:7px}
+.subj-name{font-size:14px;font-weight:500}.subj-pct{font-size:12px;color:var(--pm-text-3);font-variant-numeric:tabular-nums}
+.subj-fill{height:100%;border-radius:99px;transition:width .6s var(--pm-ease)}
+.milestone-list{display:flex;flex-direction:column;gap:10px}
+.milestone-item{padding:16px 18px;display:flex;gap:16px}
+.milestone-week{font-size:12px;padding:3px 9px;border-radius:6px;white-space:nowrap;height:fit-content}
+.milestone-goal{font-size:14px;font-weight:600;margin-bottom:6px}
+.milestone-checks{display:flex;flex-direction:column;gap:3px}
+.milestone-check{font-size:13px;color:var(--pm-text-2);display:flex;align-items:center;gap:7px}
+.milestone-check::before{content:"·";font-size:18px;line-height:1}
+.week-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:10px}
+.week-day{padding:12px 10px;min-height:160px}
+.week-day-label{font-weight:600;color:var(--pm-text-3);margin-bottom:10px;text-align:center}
+.week-session{background:var(--pm-accent-soft);border-radius:6px;padding:6px 8px;margin-bottom:5px;font-size:11px}
+.ws-subject{font-weight:600;color:var(--pm-accent);font-size:11px}.ws-topic{color:var(--pm-text-2);margin-top:2px;line-height:1.3}
+.week-session.revise{background:rgba(167,139,250,.12)}.week-session.revise .ws-subject{color:#a78bfa}
+.week-session.practice{background:var(--pm-warn-soft)}.week-session.practice .ws-subject{color:var(--pm-warn)}
+.week-session.test{background:var(--pm-bad-soft)}.week-session.test .ws-subject{color:var(--pm-bad)}
+.empty-state{text-align:center;padding:72px 20px}
+.empty-icon{font-size:40px;margin-bottom:16px}.empty-title{font-size:18px;font-weight:600;margin-bottom:8px}
+.empty-sub{font-size:14px;color:var(--pm-text-2);margin-bottom:24px;line-height:1.6;max-width:420px;margin-left:auto;margin-right:auto}
 
-.countdown-banner { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 20px 24px; margin-bottom: 20px; display: flex; align-items: center; gap: 20px; flex-wrap: wrap; box-shadow: var(--shadow-xs); }
-.countdown-days { font-size: 48px; font-weight: 700; font-family: var(--font-mono); color: var(--accent); letter-spacing: -2px; line-height: 1; }
-.countdown-info { flex: 1; min-width: 140px; }
-.countdown-title { font-size: 16px; font-weight: 600; margin-bottom: 4px; }
-.countdown-sub { font-size: 13px; color: var(--text-secondary); }
-.countdown-progress { display: flex; flex-direction: column; gap: 6px; min-width: 160px; flex: 1; }
-.cprog-label { display: flex; justify-content: space-between; font-size: 11px; color: var(--text-muted); }
-.cprog-bar { height: 5px; background: rgba(255,255,255,0.06); border-radius: 99px; }
-.cprog-fill { height: 100%; border-radius: 99px; background: linear-gradient(90deg, var(--accent), var(--accent2)); }
+.skeleton{animation:shimmer 1.4s infinite;border-radius:var(--pm-r)}
+@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+.toast{position:fixed;bottom:24px;left:50%;transform:translate(-50%,12px);padding:10px 16px;font-size:14px;z-index:999;opacity:0;pointer-events:none;max-width:calc(100vw - 32px);transition:opacity .2s,transform .2s var(--pm-ease)}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+.day-celebration{position:fixed;inset:0;z-index:1000;pointer-events:none;display:flex;align-items:center;justify-content:center}
+.celeb-pop{font-size:64px;opacity:0;animation:celebPop 2.6s var(--pm-ease) forwards}
+.day-celebration.out .celeb-pop{animation:celebOut .4s ease forwards}
+@keyframes celebPop{0%{opacity:0;transform:scale(.4) translateY(20px)}12%{opacity:1;transform:scale(1.2)}22%{transform:scale(1)}82%{opacity:1}100%{opacity:0;transform:scale(1.1) translateY(-10px)}}
+@keyframes celebOut{to{opacity:0;transform:scale(1.3)}}
+.modal-overlay{position:fixed;inset:0;backdrop-filter:blur(4px);z-index:200;display:flex;align-items:center;justify-content:center;padding:20px;opacity:0;pointer-events:none;transition:opacity .2s}
+.modal-overlay.show{opacity:1;pointer-events:all}
+.modal{padding:28px;width:100%;max-width:480px}
+.modal-title{font-size:18px;font-weight:600;margin-bottom:8px}
+.modal-sub{font-size:14px;color:var(--pm-text-2);line-height:1.6;margin-bottom:22px}
+.modal-actions{display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap}
+.modal-danger .modal-title{color:var(--pm-bad)}
+.delete-warning{background:var(--pm-bad-soft);border:1px solid color-mix(in srgb,var(--pm-bad) 25%,transparent);border-radius:10px;padding:12px 14px;font-size:13px;color:var(--pm-text-2);line-height:1.7;margin-bottom:20px}
+.delete-warning strong{color:var(--pm-bad);display:block;margin-bottom:4px}
+.delete-stat{display:inline-flex;background:var(--pm-bad-soft);border-radius:6px;padding:3px 10px;font-size:12px;color:var(--pm-bad);margin-top:8px}
 
-.two-col { display: grid; grid-template-columns: 1fr 320px; gap: 20px; }
-.section-title { font-size: 13px; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.7px; margin-bottom: 14px; display: flex; align-items: center; justify-content: space-between; }
-
-.task-list { display: flex; flex-direction: column; gap: 8px; }
-.task-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 14px 16px; display: flex; align-items: center; gap: 14px; transition: border-color var(--dur-fast) var(--ease-out), background var(--dur-fast) var(--ease-out); }
-.task-card:hover { border-color: var(--border-strong); background: var(--bg-card-hover); }
-.task-card.completed { opacity: 0.5; }
-.task-card.completed .task-topic { text-decoration: line-through; color: var(--text-muted); }
-.task-check { width: 22px; height: 22px; border-radius: 6px; border: 2px solid var(--border); display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; transition: all 0.18s; background: transparent; }
-.task-check:hover { border-color: var(--accent); }
-.task-check.done { background: var(--accent); border-color: var(--accent); }
-.task-check.done::after { content: "✓"; font-size: 12px; color: #06121a; font-weight: 700; }
-.task-body { flex: 1; min-width: 0; }
-.task-subject { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.6px; margin-bottom: 2px; }
-.task-topic { font-size: 14px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.task-meta { display: flex; align-items: center; gap: 8px; margin-top: 4px; flex-wrap: wrap; }
-.task-dur { font-size: 11px; color: var(--text-muted); font-family: var(--font-mono); }
-.task-type { font-size: 10px; padding: 2px 7px; border-radius: 20px; font-weight: 600; }
-.task-type.learn  { background: rgba(0,212,255,0.12); color: var(--accent); }
-.task-type.revise  { background: rgba(167,139,250,0.1); color: var(--accent2); }
-.task-type.practice { background: rgba(245,158,11,0.12); color: var(--accent4); }
-.task-type.test   { background: rgba(255,107,107,0.12); color: var(--accent3); }
-.task-priority { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
-.task-priority.high  { background: var(--accent3); }
-.task-priority.medium { background: var(--accent4); }
-.task-priority.low  { background: var(--text-muted); }
-.task-actions { display: flex; gap: 6px; flex-shrink: 0; }
-.task-btn { padding: 5px 10px; font-size: 11px; font-family: var(--font-main); border-radius: 6px; cursor: pointer; transition: all 0.15s; border: 1px solid var(--border); background: transparent; color: var(--text-muted); }
-.task-btn:hover { color: var(--text-primary); border-color: rgba(255,255,255,0.15); }
-.task-btn.skip:hover { color: var(--accent3); border-color: rgba(255,107,107,0.3); }
-
-.missed-alert { background: rgba(255,107,107,0.06); border: 1px solid rgba(255,107,107,0.2); border-radius: 14px; padding: 14px 18px; display: flex; align-items: center; gap: 14px; margin-bottom: 18px; flex-wrap: wrap; }
-.missed-alert-icon { font-size: 22px; flex-shrink: 0; }
-.missed-alert-body { flex: 1; min-width: 160px; }
-.missed-alert-title { font-size: 13px; font-weight: 600; color: var(--accent3); margin-bottom: 2px; }
-.missed-alert-sub { font-size: 12px; color: var(--text-secondary); }
-.btn-replan { padding: 7px 14px; font-size: 12px; font-family: var(--font-main); font-weight: 600; background: rgba(255,107,107,0.12); border: 1px solid rgba(255,107,107,0.3); color: var(--accent3); border-radius: 8px; cursor: pointer; transition: all 0.18s; white-space: nowrap; }
-.btn-replan:hover { background: rgba(255,107,107,0.2); }
-
-.subject-panel { background: var(--bg-card); border: 1px solid var(--border); border-radius: 16px; padding: 20px; }
-.subject-row { display: flex; flex-direction: column; gap: 14px; }
-.subj-head { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 6px; }
-.subj-name { font-size: 13px; font-weight: 500; }
-.subj-pct { font-size: 12px; color: var(--text-muted); font-family: var(--font-mono); }
-.subj-bar { height: 4px; background: rgba(255,255,255,0.06); border-radius: 99px; }
-.subj-fill { height: 100%; border-radius: 99px; transition: width 0.6s ease; }
-
-.milestone-list { display: flex; flex-direction: column; gap: 10px; }
-.milestone-item { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 14px 16px; display: flex; gap: 14px; }
-.milestone-week { font-size: 11px; font-family: var(--font-mono); color: var(--accent); background: rgba(0,212,255,0.08); padding: 3px 8px; border-radius: 6px; white-space: nowrap; height: fit-content; }
-.milestone-goal { font-size: 13.5px; font-weight: 500; margin-bottom: 6px; }
-.milestone-checks { display: flex; flex-direction: column; gap: 3px; }
-.milestone-check { font-size: 12px; color: var(--text-secondary); display: flex; align-items: center; gap: 7px; }
-.milestone-check::before { content: "·"; color: var(--accent); font-size: 16px; line-height: 1; }
-
-.week-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 10px; }
-.week-day { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 12px 10px; min-height: 160px; }
-.week-day-label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.6px; color: var(--text-muted); margin-bottom: 10px; text-align: center; }
-.week-day.today { border-color: rgba(0,212,255,0.3); }
-.week-day.today .week-day-label { color: var(--accent); }
-.week-session { background: rgba(0,212,255,0.08); border-radius: 6px; padding: 6px 8px; margin-bottom: 5px; font-size: 11px; }
-.week-session .ws-subject { font-weight: 600; color: var(--accent); font-size: 10px; text-transform: uppercase; }
-.week-session .ws-topic { color: var(--text-secondary); margin-top: 2px; line-height: 1.3; }
-.week-session.revise  { background: rgba(167,139,250,0.08); }
-.week-session.revise .ws-subject { color: var(--accent2); }
-.week-session.practice { background: rgba(245,158,11,0.08); }
-.week-session.practice .ws-subject { color: var(--accent4); }
-.week-session.test   { background: rgba(255,107,107,0.08); }
-.week-session.test .ws-subject { color: var(--accent3); }
-
-.empty-state { text-align: center; padding: 60px 20px; }
-.empty-icon { font-size: 48px; margin-bottom: 16px; }
-.empty-title { font-size: 18px; font-weight: 600; margin-bottom: 8px; }
-.empty-sub { font-size: 14px; color: var(--text-secondary); margin-bottom: 24px; line-height: 1.6; }
-
-.skeleton { background: linear-gradient(90deg, rgba(255,255,255,0.04) 25%, rgba(255,255,255,0.07) 50%, rgba(255,255,255,0.04) 75%); background-size: 200% 100%; animation: shimmer 1.4s infinite; border-radius: 8px; }
-@keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
-
-.toast { position: fixed; bottom: 28px; right: 28px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 12px 18px; font-size: 13px; z-index: 999; transform: translateY(20px); opacity: 0; transition: all 0.3s; pointer-events: none; max-width: 320px; }
-.toast.show { transform: translateY(0); opacity: 1; }
-.toast.success { border-color: rgba(0,212,255,0.35); color: var(--accent); }
-.toast.error  { border-color: rgba(255,107,107,0.4); color: var(--accent3); }
-
-.day-celebration { position: fixed; inset: 0; z-index: 1000; pointer-events: none; display: flex; align-items: center; justify-content: center; }
-.celeb-pop {
- font-size: 64px; opacity: 0; transform: scale(0.4);
- animation: celebPop 2.6s cubic-bezier(0.16,1,0.3,1) forwards;
- filter: drop-shadow(0 8px 30px rgba(0,212,255,0.35));
+@media (max-width:880px){
+ .page-head,.tab-bar{padding-left:16px;padding-right:16px}.page-head{padding-top:24px}
+ .tab-bar::after{left:16px;right:16px}
+ .content{padding:20px 16px 48px}
+ .two-col{grid-template-columns:1fr}.stats-row{grid-template-columns:repeat(2,1fr)}.week-grid{grid-template-columns:repeat(2,1fr)}
+ .model-selector{display:none}
 }
-.day-celebration.out .celeb-pop { animation: celebOut 0.4s ease forwards; }
-@keyframes celebPop {
- 0%  { opacity: 0; transform: scale(0.4) translateY(20px); }
- 12% { opacity: 1; transform: scale(1.25) translateY(0); }
- 22% { transform: scale(1); }
- 82% { opacity: 1; transform: scale(1); }
- 100% { opacity: 0; transform: scale(1.15) translateY(-10px); }
-}
-@keyframes celebOut { to { opacity: 0; transform: scale(1.3); } }
-@media (prefers-reduced-motion: reduce) {
- .celeb-pop { animation: none; opacity: 1; }
-}
-
-.modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); z-index: 200; display: flex; align-items: center; justify-content: center; padding: 20px; opacity: 0; pointer-events: none; transition: opacity 0.2s; }
-.modal-overlay.show { opacity: 1; pointer-events: all; }
-.modal { background: var(--bg-card); border: 1px solid var(--border); border-radius: 20px; padding: 28px; width: 100%; max-width: 480px; }
-.modal-title { font-size: 18px; font-weight: 700; margin-bottom: 8px; }
-.modal-sub { font-size: 13px; color: var(--text-secondary); line-height: 1.6; margin-bottom: 22px; }
-.modal-actions { display: flex; gap: 10px; justify-content: flex-end; flex-wrap: wrap; }
-.modal-danger .modal-title { color: var(--accent3); }
-.delete-warning { background: rgba(255,107,107,0.06); border: 1px solid rgba(255,107,107,0.18); border-radius: 10px; padding: 12px 14px; font-size: 12px; color: var(--text-secondary); line-height: 1.7; margin-bottom: 20px; }
-.delete-warning strong { color: var(--accent3); display: block; margin-bottom: 4px; }
-.delete-stat { display: inline-flex; align-items: center; gap: 6px; background: rgba(255,107,107,0.08); border: 1px solid rgba(255,107,107,0.15); border-radius: 6px; padding: 3px 10px; font-size: 12px; font-family: var(--font-mono); color: var(--accent3); margin-top: 8px; }
-
-@media (max-width: 880px) {
- .topbar { padding: 12px 14px; }
- .tab-bar { padding: 10px 14px 0; }
- .content { padding: 16px 14px 28px; }
- .two-col { grid-template-columns: 1fr; }
- .stats-row { grid-template-columns: repeat(2,1fr); }
- .week-grid { grid-template-columns: repeat(2,1fr); }
- .model-selector { display: none; }
-}
-@media (max-width: 520px) {
- .stats-row { grid-template-columns: repeat(2,1fr); }
- .stat-val { font-size: 22px; }
- .topbar-right .btn-sm:not(.btn-accent) { display: none; }
-}
-@keyframes rippleAnim{to{transform:scale(2);opacity:0;}}
+@media (max-width:520px){.stat-val{font-size:22px}.countdown-days{font-size:40px}.page-head h1{font-size:24px}}
 </style>
 </head>
 <body>
-<div class="ambient-orb orb-1" aria-hidden="true"></div>
-<div class="ambient-orb orb-2" aria-hidden="true"></div>
-
 <div id="sidebarMount"></div>
 <script type="module">
  import { mountSidebar } from "./js/components/sidebar.js";
@@ -215,26 +150,20 @@ body { transition: background 0.35s ease, color 0.35s ease; }
  initSyllabusUpload({ auth, db });
 </script>
 
-
-
 <div class="main">
  <div class="topbar" style="background:var(--bg-base);border-bottom:1px solid var(--border-subtle);">
   <div class="topbar-left">
    <button class="menu-btn" id="menuBtn" aria-label="Open menu">
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
    </button>
-   <div class="topbar-mobile-logo"><img src="logo.png" alt="Learning Allied" class="logo-img"><span class="logo-text">Learning Allied</span></div>
+   <div class="topbar-mobile-logo"><img src="/learningallied-white.svg" alt="Learning Allied" class="logo-img"><span class="logo-text">Learning Allied</span></div>
    <div style="display:none;" class="model-selector"><span class="model-dot"></span>Learning Allied</div>
    <div id="topbarGreeting" style="font-size:14px;font-weight:500;color:var(--text-secondary);margin-left:8px;">Hi, <span id="greetingName">there</span></div>
   </div>
   <div style="flex:1;display:flex;justify-content:center;max-width:480px;margin:0 16px;" class="topbar-center">
-   <div style="position:relative;width:100%;max-width:360px;">
-    <input id="topbarSearch" placeholder="search" style="width:100%;height:36px;background:var(--bg-card);border:1px solid var(--border);border-radius:999px;padding:0 36px 0 14px;font-size:13px;color:var(--text-primary);outline:none;" />
-    <svg style="position:absolute;right:10px;top:50%;transform:translateY(-50%);width:16px;height:16px;color:var(--text-muted);" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.35-4.35"/></svg>
-   </div>
   </div>
   <div style="display:flex;align-items:center;gap:12px;" class="topbar-right">
-   <button style="width:36px;height:36px;border-radius:999px;background:var(--bg-card);border:1px solid var(--border);display:grid;place-items:center;color:var(--text-muted);position:relative;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 8a6 6 0 0 1 12 0c0 7-6 11-6 11s-6-4-6-11"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg><span style="position:absolute;top:6px;right:7px;width:7px;height:7px;background:var(--green);border-radius:50%;border:1px solid var(--bg-card);"></span></button>
+   <button aria-label="Notifications" style="width:36px;height:36px;border-radius:999px;background:var(--bg-card);border:1px solid var(--border);display:grid;place-items:center;color:var(--text-muted);position:relative;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 8a6 6 0 0 1 12 0c0 7-6 11-6 11s-6-4-6-11"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg><span style="position:absolute;top:6px;right:7px;width:7px;height:7px;background:var(--green);border-radius:50%;border:1px solid var(--bg-card);"></span></button>
    <div style="display:flex;align-items:center;gap:8px;cursor:pointer;">
     <img id="topbarAvatar" src="" data-pending-avatar="1" alt="User" style="width:32px;height:32px;border-radius:50%;object-fit:cover;border:1px solid var(--border);" />
     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--text-muted);"><path d="m6 9 6 6 6-6"/></svg>
@@ -242,52 +171,51 @@ body { transition: background 0.35s ease, color 0.35s ease; }
   </div>
  </div>
 
- <div class="tab-bar">
-  <div class="tab active" data-tab="today" onclick="switchTabAndHighlight('today')">Today</div>
-  <div class="tab" data-tab="weekly" onclick="switchTabAndHighlight('weekly')">Weekly</div>
-  <div class="tab" data-tab="progress" onclick="switchTabAndHighlight('progress')">Progress</div>
-  <div class="tab" data-tab="milestones" onclick="switchTabAndHighlight('milestones')">Milestones</div>
+ <header class="page-head">
+  <h1>Study planner</h1>
+  <p>Your daily schedule, weekly roadmap and progress toward exam day.</p>
+ </header>
+
+ <div class="tab-bar" role="tablist">
+  <div class="tab active" role="tab" tabindex="0" data-tab="today" onclick="switchTabAndHighlight('today')">Today</div>
+  <div class="tab" role="tab" tabindex="0" data-tab="weekly" onclick="switchTabAndHighlight('weekly')">Weekly</div>
+  <div class="tab" role="tab" tabindex="0" data-tab="progress" onclick="switchTabAndHighlight('progress')">Progress</div>
+  <div class="tab" role="tab" tabindex="0" data-tab="milestones" onclick="switchTabAndHighlight('milestones')">Milestones</div>
  </div>
 
  <div class="content" id="mainContent"></div>
 </div>
 
-<!-- Replan Modal -->
 <div class="modal-overlay" id="replanModal">
- <div class="modal">
-  <div class="modal-title">🔄 Smart Replan</div>
+ <div class="modal" role="dialog" aria-modal="true" aria-labelledby="replanTitle">
+  <div class="modal-title" id="replanTitle">Smart replan</div>
   <div class="modal-sub" id="replanModalSub">You have missed tasks. Learning Allied will generate a catch-up schedule that prioritises what you missed without overloading your remaining days.</div>
   <div class="modal-actions">
    <button class="btn-sm btn-outline" onclick="closeReplanModal()">Cancel</button>
-   <button class="btn-sm btn-accent" id="confirmReplanBtn" onclick="executeReplan()">Generate Catch-up Plan</button>
+   <button class="btn-sm btn-accent" id="confirmReplanBtn" onclick="executeReplan()">Generate catch-up plan</button>
   </div>
  </div>
 </div>
 
-<!-- Delete Plan Modal -->
 <div class="modal-overlay" id="deletePlanModal">
- <div class="modal modal-danger">
-  <div class="modal-title">🗑️ Delete Study Plan</div>
+ <div class="modal modal-danger" role="dialog" aria-modal="true" aria-labelledby="delTitle">
+  <div class="modal-title" id="delTitle">Delete study plan</div>
   <div class="modal-sub">This will permanently remove your active plan and all its data from Learning Allied.</div>
   <div class="delete-warning">
-   <strong>⚠️ This action cannot be undone.</strong>
-   All scheduled sessions, weekly schedule, and milestone data will be permanently erased.
-   Your study streak and total hours logged will be preserved.
-   <br>
-   <span class="delete-stat" id="deleteTaskCount">0 tasks</span> will be deleted.
+   <strong>This action cannot be undone.</strong>
+   All scheduled sessions, weekly schedule, and milestone data will be permanently erased. Your study streak and total hours logged will be preserved.
+   <br><span class="delete-stat" id="deleteTaskCount">0 tasks</span> will be deleted.
   </div>
   <div class="modal-actions">
    <button class="btn-sm btn-outline" onclick="closeDeleteModal()">Cancel</button>
-   <button class="btn-danger" id="confirmDeleteBtn" onclick="executeDeletePlan()">Yes, Delete Plan</button>
+   <button class="btn-danger" id="confirmDeleteBtn" onclick="executeDeletePlan()">Yes, delete plan</button>
   </div>
  </div>
 </div>
 
-<div class="toast" id="toast"></div>
-
-<!-- Sidebar handled by js/components/sidebar.js mountSidebar() — removed duplicate listeners -->
-
-<script type="module">
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+  
+  <script type="module">
 import { auth } from "./firebase-config.js";
 import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 import {
@@ -309,7 +237,6 @@ onAuthStateChanged(auth, async (user) => {
 
  const name = user.displayName || user.email?.split("@")[0] || "Student";
  const first = (user.displayName || name).split(" ")[0];
- // Sidebar (home nav) uses #userName / #userAvatar — support both ids
  const nameEl = document.getElementById("userName") || document.getElementById("sidebarName");
  const avEl = document.getElementById("userAvatar") || document.getElementById("sidebarAvatar");
  const greetEl = document.getElementById("greetingName");
@@ -338,7 +265,6 @@ onAuthStateChanged(auth, async (user) => {
  const planEl = document.getElementById("userPlan");
  if (planEl) planEl.textContent = plan === "pro" ? "✨ Learning Allied Pro" : "Free Plan";
 
- // Ensure user doc exists (fallback if sign-up write failed)
  const userRef = doc(db, "users", user.uid);
  const userSnap = await getDoc(userRef);
  if (!userSnap.exists()) {
@@ -384,7 +310,7 @@ async function loadPlannerData() {
 
 window.switchTabAndHighlight = function(tab) {
  appState.currentTab = tab;
- document.querySelectorAll(".tab").forEach(t => t.classList.toggle("active", t.dataset.tab === tab));
+ document.querySelectorAll(".tab").forEach(t => { const on = t.dataset.tab === tab; t.classList.toggle("active", on); t.setAttribute("aria-selected", on); });
  const sidebarMap = { today:"nav-today", weekly:"nav-weekly", milestones:"nav-milestones", progress:"nav-progress" };
  ["nav-today","nav-weekly","nav-milestones","nav-progress"].forEach(id => { const el=document.getElementById(id); if(el) el.classList.remove("active"); });
  if (sidebarMap[tab]) { const el=document.getElementById(sidebarMap[tab]); if(el) el.classList.add("active"); }
@@ -392,6 +318,7 @@ window.switchTabAndHighlight = function(tab) {
  if (window.innerWidth <= 880) window.closeSidebar?.();
 };
 window.switchTab = window.switchTabAndHighlight;
+document.querySelectorAll(".tab").forEach(t => t.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); window.switchTabAndHighlight(t.dataset.tab); } }));
 
 function renderTab(tab) {
  if (!appState.plan) { renderNoPlan(); return; }
@@ -402,7 +329,7 @@ function renderTab(tab) {
 }
 
 function escText(str) { const d=document.createElement("div"); d.textContent=String(str||""); return d.innerHTML; }
-function subjectColor(idx) { return ["#00d4ff","#a78bfa","#f59e0b","#ff6b6b","#34d399","#60a5fa","#f472b6","#fb923c"][Math.max(0,idx)%8]; }
+function subjectColor(idx) { return ["#6b9bff","#a78bfa","#f5b74a","#ff7b7b","#34d399","#60a5fa","#f472b6","#fb923c"][Math.max(0,idx)%8]; }
 function daysUntil(dateStr) { return Math.max(0, Math.ceil((new Date(dateStr)-new Date())/(1000*60*60*24))); }
 function countMissedTasks(tasks) { const today=new Date().toISOString().split("T")[0]; return tasks.filter(t=>t.status==="pending"&&t.scheduledDate&&t.scheduledDate<today).length; }
 function getTodaysTasks(tasks) { const today=new Date().toISOString().split("T")[0]; const todayName=new Date().toLocaleDateString("en-US",{weekday:"long"}); return tasks.filter(t=>t.scheduledDate===today||(!t.scheduledDate&&t.day===todayName)); }
@@ -412,11 +339,11 @@ function getTotalHours(progress) { return ((progress?.totalMinutesStudied||0)/60
 function showSkeleton() {
  document.getElementById("mainContent").innerHTML = `
   <div class="stats-row">
-   ${Array(4).fill('<div class="stat-card"><div class="skeleton" style="height:16px;width:60%;margin-bottom:12px"></div><div class="skeleton" style="height:36px;width:50%"></div></div>').join("")}
+   ${Array(4).fill('<div class="stat-card"><div class="skeleton" style="height:14px;width:60%;margin-bottom:14px"></div><div class="skeleton" style="height:32px;width:50%"></div></div>').join("")}
   </div>
-  <div class="skeleton" style="height:100px;border-radius:16px;margin-bottom:24px"></div>
+  <div class="skeleton" style="height:100px;margin-bottom:24px"></div>
   <div style="display:flex;flex-direction:column;gap:10px">
-   ${Array(4).fill('<div class="skeleton" style="height:68px;border-radius:14px"></div>').join("")}
+   ${Array(4).fill('<div class="skeleton" style="height:68px"></div>').join("")}
   </div>`;
 }
 
@@ -426,7 +353,7 @@ function renderNoPlan() {
    <div class="empty-icon">📋</div>
    <div class="empty-title">No study plan yet</div>
    <div class="empty-sub">Let Learning Allied build a personalised daily schedule based on your exam, subjects, and available time.</div>
-   <button class="btn-sm btn-accent" onclick="window.location.href='/planner-onboarding.html'" style="padding:11px 24px;font-size:14px">✨ Create My Plan</button>
+   <button class="btn-sm btn-accent" onclick="window.location.href='/planner-onboarding.html'" style="padding:0 24px;height:42px;font-size:14px">Create my plan</button>
   </div>`;
 }
 
@@ -445,9 +372,9 @@ function renderToday() {
  statsEl.className = "stats-row";
  statsEl.innerHTML = `
   <div class="stat-card accent-cyan"><div class="stat-label">Completion</div><div class="stat-val">${completionRate}%</div><div class="stat-sub">${tasks.filter(t=>t.status==="completed").length} of ${tasks.length} tasks</div></div>
-  <div class="stat-card accent-purple"><div class="stat-label">Study Streak</div><div class="stat-val">${progress?.currentStreak||0}<span style="font-size:16px">🔥</span></div><div class="stat-sub">days in a row</div></div>
-  <div class="stat-card accent-amber"><div class="stat-label">Total Hours</div><div class="stat-val">${getTotalHours(progress)}</div><div class="stat-sub">hrs studied so far</div></div>
-  <div class="stat-card accent-red"><div class="stat-label">Days Left</div><div class="stat-val">${daysLeft}</div><div class="stat-sub">until ${escText(profile?.examType||"exam")}</div></div>`;
+  <div class="stat-card accent-purple"><div class="stat-label">Study streak</div><div class="stat-val">${progress?.currentStreak||0}<span style="font-size:16px"> 🔥</span></div><div class="stat-sub">days in a row</div></div>
+  <div class="stat-card accent-amber"><div class="stat-label">Total hours</div><div class="stat-val">${getTotalHours(progress)}</div><div class="stat-sub">hrs studied so far</div></div>
+  <div class="stat-card accent-red"><div class="stat-label">Days left</div><div class="stat-val">${daysLeft}</div><div class="stat-sub">until ${escText(profile?.examType||"exam")}</div></div>`;
  wrap.appendChild(statsEl);
 
  const banner = document.createElement("div");
@@ -476,7 +403,7 @@ function renderToday() {
     <div class="missed-alert-sub">Learning Allied can rebuild your schedule around what was missed.</div>
    </div>`;
   const replanBtn = document.createElement("button");
-  replanBtn.className = "btn-replan"; replanBtn.textContent = "🔄 Replan";
+  replanBtn.className = "btn-replan"; replanBtn.textContent = "Replan";
   replanBtn.addEventListener("click", openReplanModal);
   alert.appendChild(replanBtn);
   wrap.appendChild(alert);
@@ -488,12 +415,12 @@ function renderToday() {
  const left = document.createElement("div");
  const taskHeader = document.createElement("div");
  taskHeader.className = "section-title";
- taskHeader.innerHTML = "<span>Today's Sessions</span>";
+ taskHeader.innerHTML = "<span>Today's sessions</span>";
  left.appendChild(taskHeader);
 
  if (todayTasks.length === 0) {
   const emptyMsg = document.createElement("div");
-  emptyMsg.style.cssText = "text-align:center;padding:40px 20px;color:var(--text-muted);font-size:14px";
+  emptyMsg.style.cssText = "text-align:center;padding:40px 20px;color:var(--pm-text-3);font-size:14px";
   emptyMsg.textContent = "No sessions scheduled for today. Check the weekly tab or create a new plan.";
   left.appendChild(emptyMsg);
  } else {
@@ -505,7 +432,7 @@ function renderToday() {
  twoCol.appendChild(left);
 
  const right = document.createElement("div");
- right.innerHTML = '<div class="section-title">Subject Progress</div>';
+ right.innerHTML = '<div class="section-title">Subject progress</div>';
  const subjectPanel = document.createElement("div");
  subjectPanel.className = "subject-panel";
  const subjectRow = document.createElement("div");
@@ -542,8 +469,11 @@ function buildTaskCard(task) {
  const check = document.createElement("div");
  check.className = "task-check" + (task.status==="completed"?" done":"");
  check.setAttribute("role","checkbox");
+ check.setAttribute("tabindex","0");
+ check.setAttribute("aria-label","Mark "+task.topic+" complete");
  check.setAttribute("aria-checked", task.status==="completed");
  check.addEventListener("click", () => handleTaskComplete(task.taskId));
+ check.addEventListener("keydown", e => { if (e.key==="Enter"||e.key===" ") { e.preventDefault(); handleTaskComplete(task.taskId); } });
 
  const body = document.createElement("div");
  body.className = "task-body";
@@ -556,7 +486,7 @@ function buildTaskCard(task) {
  topic.className = "task-topic"; topic.textContent = task.topic;
  const meta = document.createElement("div");
  meta.className = "task-meta";
- meta.innerHTML = `<span class="task-dur">${task.durationMinutes}min</span><span class="task-type ${task.type||"learn"}">${task.type||"learn"}</span><div class="task-priority ${task.priority||"medium"}" title="${task.priority||"medium"} priority"></div>`;
+ meta.innerHTML = `<span class="task-dur">${task.durationMinutes} min</span><span class="task-type ${task.type||"learn"}">${task.type||"learn"}</span><div class="task-priority ${task.priority||"medium"}" title="${task.priority||"medium"} priority"></div>`;
  body.appendChild(subj); body.appendChild(topic); body.appendChild(meta);
 
  const actions = document.createElement("div");
@@ -582,14 +512,12 @@ async function handleTaskComplete(taskId) {
   if (card) { card.classList.add("completed"); const checkEl=card.querySelector(".task-check"); if(checkEl) checkEl.classList.add("done"); }
   appState.progress = await _getProgress();
 
-  if (newStreak>1) showToast(`✅ Task completed! ${newStreak}-day streak 🔥`,"success");
-  else showToast("✅ Task completed! Day 1 of a new streak","success");
+  if (newStreak>1) showToast(`Task completed · ${newStreak}-day streak 🔥`,"success");
+  else showToast("Task completed · Day 1 of a new streak","success");
 
   const todayDone = getTodaysTasks(appState.tasks).filter(t=>t.status==="completed").length;
   const todayTotal = getTodaysTasks(appState.tasks).length;
-  if (todayTotal>0 && todayDone===todayTotal) {
-   celebrateDayComplete();
-  }
+  if (todayTotal>0 && todayDone===todayTotal) celebrateDayComplete();
  } catch(err) { showToast("Could not update task.","error"); console.error(err); }
 }
 
@@ -598,7 +526,7 @@ function celebrateDayComplete() {
  r.className = "day-celebration";
  r.innerHTML = `<div class="celeb-pop">🎉</div>`;
  document.body.appendChild(r);
- showToast("🎉 All of today's tasks done — you crushed it!","success");
+ showToast("All of today's tasks done — you crushed it!","success");
  setTimeout(()=>{ r.classList.add("out"); }, 2600);
  setTimeout(()=>{ r.remove(); }, 3000);
 }
@@ -629,10 +557,10 @@ function renderWeekly() {
 
  for (const week of weeklyPlan) {
   const section = document.createElement("div");
-  section.style.marginBottom="28px";
+  section.style.marginBottom="32px";
   const header = document.createElement("div");
   header.className="section-title";
-  header.innerHTML=`<span>Week ${week.week} — ${week.theme||""}</span>`;
+  header.innerHTML=`<span>Week ${week.week}${week.theme?" — "+escText(week.theme):""}</span>`;
   section.appendChild(header);
   const grid = document.createElement("div");
   grid.className="week-grid";
@@ -642,7 +570,7 @@ function renderWeekly() {
    col.className = "week-day"+(day.day===today?" today":"");
    const dayLabel=document.createElement("div");
    dayLabel.className="week-day-label";
-   dayLabel.textContent=(day.day||"").slice(0,3).toUpperCase();
+   dayLabel.textContent=(day.day||"").slice(0,3);
    col.appendChild(dayLabel);
 
    for (const session of day.sessions||[]) {
@@ -672,15 +600,15 @@ function renderProgress() {
  statsEl.className="stats-row";
  statsEl.innerHTML=`
   <div class="stat-card accent-cyan"><div class="stat-label">Completed</div><div class="stat-val">${completed}</div><div class="stat-sub">tasks done</div></div>
-  <div class="stat-card accent-amber"><div class="stat-label">Hours Studied</div><div class="stat-val">${getTotalHours(progress)}</div><div class="stat-sub">total hrs</div></div>
-  <div class="stat-card accent-purple"><div class="stat-label">Streak</div><div class="stat-val">${progress?.currentStreak||0}🔥</div><div class="stat-sub">best: ${progress?.longestStreak||0} days</div></div>
-  <div class="stat-card"><div class="stat-label">Skipped</div><div class="stat-val" style="color:var(--text-secondary)">${skipped}</div><div class="stat-sub">${pending} pending</div></div>`;
+  <div class="stat-card accent-amber"><div class="stat-label">Hours studied</div><div class="stat-val">${getTotalHours(progress)}</div><div class="stat-sub">total hrs</div></div>
+  <div class="stat-card accent-purple"><div class="stat-label">Streak</div><div class="stat-val">${progress?.currentStreak||0}<span style="font-size:16px"> 🔥</span></div><div class="stat-sub">best: ${progress?.longestStreak||0} days</div></div>
+  <div class="stat-card"><div class="stat-label">Skipped</div><div class="stat-val" style="color:var(--pm-text-2)">${skipped}</div><div class="stat-sub">${pending} pending</div></div>`;
  wrap.appendChild(statsEl);
 
  const subjectHours=progress?.subjectHours||{};
  if (Object.keys(subjectHours).length>0) {
   const header=document.createElement("div");
-  header.className="section-title"; header.textContent="Hours by Subject"; wrap.appendChild(header);
+  header.className="section-title"; header.textContent="Hours by subject"; wrap.appendChild(header);
   const panel=document.createElement("div"); panel.className="subject-panel";
   const row=document.createElement("div"); row.className="subject-row";
   const maxHrs=Math.max(...Object.values(subjectHours));
@@ -706,7 +634,7 @@ function renderMilestones() {
  }
 
  const header=document.createElement("div");
- header.className="section-title"; header.textContent="Plan Milestones"; content.appendChild(header);
+ header.className="section-title"; header.textContent="Plan milestones"; content.appendChild(header);
  const list=document.createElement("div"); list.className="milestone-list";
 
  for (const m of milestones) {
@@ -739,12 +667,12 @@ window.executeReplan = async function() {
   if (!res.ok) { const err=await res.json().catch(()=>({})); throw new Error(err.error||"Replan failed."); }
   closeReplanModal();
   await logEvent("replan_generated",{missedCount:missedTasks.length});
-  showToast("✅ Catch-up plan generated! Check your weekly view.","success");
+  showToast("Catch-up plan generated. Check your weekly view.","success");
   await loadPlannerData();
  } catch(err) {
   showToast(err.message||"Could not generate catch-up plan.","error"); console.error(err);
  } finally {
-  btn.disabled=false; btn.textContent="Generate Catch-up Plan";
+  btn.disabled=false; btn.textContent="Generate catch-up plan";
  }
 };
 
@@ -765,11 +693,11 @@ window.executeDeletePlan = async function() {
   const _db2 = document.getElementById("deletePlanBtn"); if (_db2) _db2.style.display="none";
   const _rb2 = document.getElementById("replanBtn"); if (_rb2) _rb2.style.display="none";
   closeDeleteModal();
-  showToast("🗑️ Plan deleted successfully.","");
+  showToast("Plan deleted.","");
   setTimeout(()=>{window.location.href="/planner-onboarding.html";},1400);
  } catch(err) {
   showToast(err.message||"Could not delete plan.","error"); console.error(err);
-  btn.disabled=false; btn.textContent="Yes, Delete Plan";
+  btn.disabled=false; btn.textContent="Yes, delete plan";
  }
 };
 
@@ -781,45 +709,10 @@ function showToast(msg,type="") {
 </script>
 
 <script type="module">import { inject } from 'https://esm.sh/@vercel/analytics'; inject();</script>
-<script type="module">import { injectSpeedInsights } from 'https://esm.sh/@vercel/speed-insights'; injectSpeedInsights();
-/* ── Scroll progress bar ── */
-(function(){
- var bar = document.createElement('div');
- bar.className = 'scroll-progress';
- document.body.prepend(bar);
- var ticking = false;
- window.addEventListener('scroll', function(){
-  if(!ticking){ requestAnimationFrame(function(){
-   var h = document.documentElement.scrollHeight - window.innerHeight;
-   bar.style.width = h > 0 ? ((window.scrollY / h) * 100) + '%' : '0%';
-   ticking = false;
-  }); ticking = true; }
- });
-}());
-
-/* ── Ripple effect ── */
-(function(){
- var rm = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
- if(rm) return;
- document.querySelectorAll('.btn-primary, .btn-secondary, .btn-ghost-nav, .signout-btn, .new-chat-btn, .upgrade-nav-btn, .send-btn').forEach(function(btn){
-  btn.addEventListener('click', function(e){
-   var rp = document.createElement('span');
-   var r = btn.getBoundingClientRect();
-   var s = Math.max(r.width, r.height);
-   rp.style.cssText = 'position:absolute;top:'+(e.clientY-r.top-s/2)+'px;left:'+(e.clientX-r.left-s/2)+'px;width:'+s+'px;height:'+s+'px;border-radius:50%;background:rgba(255,255,255,0.15);transform:scale(0);animation:rippleAnim .5s ease-out;pointer-events:none;z-index:0;';
-   btn.style.position = 'relative';
-   btn.style.overflow = 'hidden';
-   btn.appendChild(rp);
-   setTimeout(function(){ rp.remove(); }, 600);
-  });
- });
-}());
-</script>
+<script type="module">import { injectSpeedInsights } from 'https://esm.sh/@vercel/speed-insights'; injectSpeedInsights();</script>
 <script type="application/ld+json">
 {"@context":"https://schema.org","@type":"WebPage","name":"Study Planner - Learning Allied","description":"Plan your JEE, NEET & Board exam preparation with Learning Allied's intelligent study planner.","url":"https://www.learningallied.world/planner","breadcrumb":{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://www.learningallied.world/"},{"@type":"ListItem","position":2,"name":"Study Planner","item":"https://www.learningallied.world/planner"}]}}
 </script>
 <script type="module" src="./js/avatar-sync.js"></script>
 </body>
 </html>
-
-

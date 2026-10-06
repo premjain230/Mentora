@@ -34,10 +34,8 @@ body { width: 100%; height: 100vh; height: 100dvh; height: var(--app-height, 100
 
   /* The sidebar is a floating card (fixed, inset 12px, rounded), so .main must
      clear it. This MUST be padding, not margin: with margin the 12px gutter
-     between the card and .main exposes the page background layers (body::before
-     glow, ambient orbs, texture layer) as a bright seam down the page. Padding
-     keeps the content offset identical but lets .main's own background span the
-     full viewport, so the gutter disappears. */
+     between the card and .main would expose whatever paints behind .main
+     instead of .main's own background spanning the full viewport. */
   padding-left: calc(var(--sidebar-w) + 24px);
 
 }
@@ -55,6 +53,13 @@ body { width: 100%; height: 100vh; height: 100dvh; height: var(--app-height, 100
 }
 
 /* Ambient background */
+
+/* The blurred accent orbs are a dark-theme-only decoration and are now removed,
+   so .main paints flat black. Scoped with :not(.light-mode) because the light
+   theme renders the same orbs. */
+:root:not(.light-mode) .ambient-orb {
+  display: none;
+}
 
 .ambient-orb {
 
@@ -80,7 +85,15 @@ body { width: 100%; height: 100vh; height: 100dvh; height: var(--app-height, 100
 
 @keyframes orbFloat2 { 0%, 100% { transform: translate(0, 0); } 33% { transform: translate(-20px, 15px); } 66% { transform: translate(40px, -30px); } }
 
+/* Dark theme: no glow wash, the page stays plain black. The gradients are kept
+   for the light theme, which still renders them. */
 body::before {
+
+  content: none;
+
+}
+
+.light-mode body::before {
 
   content: '';
 
@@ -207,8 +220,6 @@ body::before {
 .topbar-left { display: flex; align-items: center; gap: var(--space-3); min-width: 0; flex-shrink: 1; overflow: hidden; }
 
 .topbar-greeting { flex-shrink: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 14px; font-weight: 500; color: var(--text-secondary); margin-left: 8px; }
-
-.topbar-search-wrap { position: relative; width: 100%; max-width: 360px; }
 
 .topbar-right { display: flex; align-items: center; gap: var(--space-3); flex-shrink: 0; }
 

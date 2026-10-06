@@ -35,7 +35,7 @@ export let currentUser = null;
 // Await firebaseReady to avoid race where auth is null at import time (P0-1)
 firebaseReady.then(() => {
   if (!auth) {
-    document.body.innerHTML = `<div style="display:flex;align-items:center;justify-content:center;height:100vh;background:#0d0e16;color:#f0f0f8;font-family:'Sora',sans-serif;padding:24px;text-align:center;"><div><h1 style="font-size:20px;margin-bottom:12px;">Unable to connect</h1><p style="color:#888;font-size:14px;">Firebase configuration is unavailable. Please check your environment settings and try again.</p></div></div>`;
+    document.body.innerHTML = `<div style="display:flex;align-items:center;justify-content:center;height:100vh;background:#000000;color:#f0f0f8;font-family:'Sora',sans-serif;padding:24px;text-align:center;"><div><h1 style="font-size:20px;margin-bottom:12px;">Unable to connect</h1><p style="color:#888;font-size:14px;">Firebase configuration is unavailable. Please check your environment settings and try again.</p></div></div>`;
     return;
   }
   onAuthStateChanged(auth, async (user) => {
@@ -133,20 +133,6 @@ function populateUserCard(user) {
   if (topAv) {
     if (user.photoURL) topAv.src = user.photoURL;
     topAv.alt = name;
-  }
-  // Topbar search → send to chat
-  const topSearch = document.getElementById("topbarSearch");
-  if (topSearch && !topSearch.dataset.wired) {
-    topSearch.dataset.wired = "1";
-    topSearch.addEventListener("keydown", (e) => {
-      if (e.key === "Enter") {
-        const q = topSearch.value.trim();
-        if (!q) return;
-        const isChat = window.location.pathname.endsWith("chat") || window.location.pathname.endsWith("chat.html") || new URLSearchParams(window.location.search).get("mode")==="chat";
-        if (isChat) { const inp=document.getElementById("chatInput"); if(inp){ inp.value=q; inp.dispatchEvent(new Event("input")); import("./chat.js").then(m=>m.sendMessage()); } }
-        else { try{ sessionStorage.setItem("learning-allied-pending-prompt", q); sessionStorage.setItem("aquila_pending_prompt", q);}catch(e){} window.location.href = pageUrl("/chat"); }
-      }
-    });
   }
 
   // Fetch plan from Firestore; create user doc if missing

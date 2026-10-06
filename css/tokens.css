@@ -2,27 +2,32 @@
 :root {
   color-scheme: dark;
 
-  /* Surfaces — refined premium dark */
-  --bg-base: #080a0f;
-  --bg-base-soft: #0c0e14;
-  /* Translucent variant used by large surfaces (.main, .chat-area, topbars) so the
-     ambient texture in css/texture.css can read through. Keep text contrast in
-     mind when changing this: lower alpha = more visible texture, less contrast. */
-  --bg-base-veil: rgba(8, 10, 15, 0.72);
-  --bg-sidebar: #0e1016;
-  --bg-sidebar-hover: #13151d;
-  --bg-card: #151821;
-  --bg-card-hover: #1a1d2a;
-  --bg-elevated: #1e2230;
-  --bg-input: #1d2132;
-  --bg-input-hover: #242a3d;
+  /* Surfaces — page / card / raised, with a small even step between each.
+     Deliberately NOT pure #000: cards need something to sit on, or they read as
+     floating in a hole. Steps are 2.1 and 3.5 CIE L*, which is the smallest
+     step that still reads as a separate plane at 1x. Matches css/auth.css so
+     login/signup and the app share one palette. */
+  --bg-base: #09090b;
+  /* Opaque — large surfaces (.main, .chat-area, topbars) paint this directly so
+     no ambient layer (glows, orbs, texture) can tint the page. */
+  --bg-base-veil: #09090b;
+  --bg-sidebar: #0e1013;
+  --bg-sidebar-hover: #15181d;
+  --bg-card: #0e1013;
+  --bg-card-hover: #15181d;
+  --bg-elevated: #15181d;
+  /* Fields sit at the "raised" step so they separate from the card they sit on;
+     inputs read as wells because the border + inset shadow do that work. */
+  --bg-input: #15181d;
+  --bg-input-hover: #1d2027;
   --bg-hover: rgba(255, 255, 255, 0.035);
   --bg-active: rgba(0, 212, 255, 0.08);
 
-  /* Lines — hairline, premium */
-  --border: rgba(255, 255, 255, 0.06);
-  --border-subtle: rgba(255, 255, 255, 0.04);
-  --border-strong: rgba(255, 255, 255, 0.10);
+  /* Lines — hairline, quiet. Solid steps off --border rather than white alpha,
+     so a border never picks up a colour cast from what sits behind it. */
+  --border: #23262d;
+  --border-subtle: #1b1e24;
+  --border-strong: #2b2f38;
   --border-hover: rgba(0, 212, 255, 0.35);
   --border-active: rgba(0, 212, 255, 0.45);
 
@@ -39,21 +44,21 @@
   --green-soft: rgba(16, 185, 129, 0.10);
   --amber: #f59e0b;
 
-  /* Optional page-level tokens */
-  --glass: rgba(21, 24, 33, 0.78);
-  --glass-strong: rgba(14, 16, 22, 0.88);
+  /* Optional page-level tokens. The rgb() triples track --bg-elevated and
+     --bg-card so glass never reads as a different colour from the surfaces. */
+  --glass: rgba(21, 24, 29, 0.78);
+  --glass-strong: rgba(14, 16, 19, 0.88);
   --card-shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 8px 24px rgba(0, 0, 0, 0.28);
   --card-shadow-hover: 0 4px 12px rgba(0, 0, 0, 0.35), 0 12px 32px rgba(0, 0, 0, 0.25);
-  --personality-bg: rgba(21, 24, 33, 0.6);
+  --personality-bg: rgba(21, 24, 29, 0.6);
   --theme-icon: #fbbf24;
 
   /* Legacy marketing aliases (index/admin) */
   --blue: #0ea5e9;
   --violet: #8b7cf7;
   --spark: #f59e0b;
-  --navy: #080a0f;
-  --line: rgba(255, 255, 255, 0.06);
-  --surface: #151821;
+  --line: #23262d;
+  --surface: #0e1013;
 
   /* Text — refined contrast (WCAG AA, not harsh) */
   --text-primary: #eef0f7;
@@ -123,9 +128,9 @@
   --content-wide: 1100px;
 
   /* Ambient texture (css/texture.css). --texture-veil is the master strength;
-     the rest are per-layer. It reads through --bg-base-veil on .main, so only
-     ~28% of it actually lands on screen — hence the fairly high default.
-     Lower this first if the texture is too strong. */
+     the rest are per-layer. The dark theme no longer paints a texture (see the
+     "Dark theme" block in texture.css), so these now only drive the light
+     theme's .cracked-earth layer. Lower this first if it is too strong. */
   --texture-veil: 0.5;
   --texture-island: 0.65;
   --texture-island-t: 0.5;
@@ -145,8 +150,8 @@
 .light-mode {
   color-scheme: light;
 
-  --bg-base: #f7f8fb;
-  --bg-base-veil: rgba(247, 248, 251, 0.78);
+  --bg-base: #fafafb;
+  --bg-base-veil: rgba(250, 250, 251, 0.78);
   --bg-base-soft: #f1f2f6;
   --bg-sidebar: #eef0f4;
   --bg-sidebar-hover: #e6e8ee;
@@ -158,9 +163,9 @@
   --bg-hover: rgba(0, 0, 0, 0.03);
   --bg-active: rgba(14, 165, 233, 0.06);
 
-  --border: rgba(0, 0, 0, 0.06);
-  --border-subtle: rgba(0, 0, 0, 0.035);
-  --border-strong: rgba(0, 0, 0, 0.10);
+  --border: #e4e6eb;
+  --border-subtle: #eef0f3;
+  --border-strong: #d5d8de;
   --border-hover: rgba(14, 165, 233, 0.35);
 
   --accent-soft: rgba(14, 165, 233, 0.08);
@@ -168,8 +173,6 @@
   --accent2-soft: rgba(139, 124, 247, 0.08);
   --green-soft: rgba(16, 185, 129, 0.08);
 
-  --navy: #080a0f;
-  --line: rgba(0, 0, 0, 0.06);
   --surface: #ffffff;
 
   --text-primary: #0f172a;

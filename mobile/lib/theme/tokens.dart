@@ -4,19 +4,20 @@
 import 'package:flutter/material.dart';
 
 class LearningAlliedTokens {
-  // Surfaces — refined premium dark (web --bg-base #080a0f, --bg-card #151821)
-  static const bgBase = Color(0xFF080A0F);
-  static const bgBaseSoft = Color(0xFF0C0E14);
-  static const bgSidebar = Color(0xFF0E1016);
-  static const bgCard = Color(0xFF151821);
-  static const bgCardHover = Color(0xFF1A1D2A);
-  static const bgElevated = Color(0xFF1E2230);
-  static const bgInput = Color(0xFF1D2132);
+  // Surfaces — page / card / raised, small even steps between each. Mirrors
+  // css/tokens.css + css/auth.css: keep the three in sync.
+  static const bgBase = Color(0xFF09090B);
+  static const bgSidebar = Color(0xFF0E1013);
+  static const bgCard = Color(0xFF0E1013);
+  static const bgCardHover = Color(0xFF15181D);
+  static const bgElevated = Color(0xFF15181D);
+  static const bgInput = Color(0xFF15181D);
+  static const bgInputHover = Color(0xFF1D2027);
 
-  // Lines — hairline, premium
-  static const border = Color(0x0FFFFFFF); // rgba(255,255,255,0.06) — use withOpacity
-  static const borderSubtle = Color(0x0AFFFFFF);
-  static const borderStrong = Color(0x1AFFFFFF);
+  // Lines — hairline, quiet. Solid steps off the surface ramp (was white alpha).
+  static const border = Color(0xFF23262D);
+  static const borderSubtle = Color(0xFF1B1E24);
+  static const borderStrong = Color(0xFF2B2F38);
 
   // Brand accents
   static const accent = Color(0xFF0EA5E9);

@@ -28,14 +28,15 @@
 <style>
   *{box-sizing:border-box;margin:0;padding:0}
   :root{
-    --bg:#0b0d16; --surface:#10131f; --surface2:#151a2b; --line:rgba(255,255,255,.07);
+    --bg:#000000; --surface:#10131f; --surface2:#151a2b; --line:rgba(255,255,255,.07);
     --text:#f1f2f8; --muted:#9aa0b5; --muted2:#5c6276; --blue:#4f8cff; --violet:#9b7bff; --spark:#f5b95c;
     --font:'Sora',-apple-system,sans-serif; --mono:'Space Mono',ui-monospace,monospace;
   }
   .light-mode{ --bg:#f5f6fa; --surface:#ffffff; --surface2:#eef0f6; --line:rgba(0,0,0,.09); --text:#14162b; --muted:#555b70; --muted2:#8b90a5; }
   html{scroll-behavior:smooth}
   body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:16px;line-height:1.75;-webkit-font-smoothing:antialiased}
-  body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;background:radial-gradient(700px 420px at 12% -6%,rgba(79,140,255,.09),transparent 60%),radial-gradient(600px 400px at 88% 4%,rgba(155,123,255,.07),transparent 55%)}
+  body::before{content:none}
+  .light-mode body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;background:radial-gradient(700px 420px at 12% -6%,rgba(79,140,255,.09),transparent 60%),radial-gradient(600px 400px at 88% 4%,rgba(155,123,255,.07),transparent 55%)}
   .wrap{position:relative;z-index:1;max-width:780px;margin:0 auto;padding:0 22px}
   header.site{padding:26px 0 0}
   .topnav{display:flex;align-items:center;justify-content:space-between;gap:14px}
@@ -108,7 +109,7 @@
   "publisher": {
     "@type": "Organization",
     "name": "Learning Allied",
-    "logo": { "@type": "ImageObject", "url": "https://www.learningallied.world/logo.png" }
+    "logo": { "@type": "ImageObject", "url": "https://www.learningallied.world/learningallied-white.svg" }
   },
   "mainEntityOfPage": {
     "@type": "WebPage",
@@ -190,7 +191,7 @@
 <div class="mnav-overlay" id="mnavOverlay"></div>
 <nav class="mnav-panel" id="mnavPanel" aria-label="Site navigation">
   <div class="mnav-head">
-    <span class="mnav-brand"><img src="/logo.png" alt="Learning Allied">Learning Allied</span>
+    <span class="mnav-brand"><img src="/learningallied-white.svg" alt="Learning Allied">Learning Allied</span>
     <button class="mnav-close" id="mnavClose" aria-label="Close menu">✕</button>
   </div>
   <div class="mnav-links">
@@ -210,7 +211,7 @@
   <div class="wrap">
     <div class="topnav">
       <a class="logo" href="/" aria-label="Learning Allied home">
-        <img src="/logo.png" alt="Learning Allied logo" />
+        <img src="/learningallied-white.svg" alt="Learning Allied logo" />
         <span>Learning Allied</span>
       </a>
       <a href="/quiz.html" style="font-size:13.5px;color:var(--muted);text-decoration:none">Practice quizzes →</a>

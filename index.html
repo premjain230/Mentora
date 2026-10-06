@@ -15,23 +15,23 @@
 <meta property="og:description" content="A Socratic AI tutor, spaced review and active recall, built to help you remember what you study." />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://www.learningallied.world/" />
-<meta property="og:image" content="https://www.learningallied.world/logo.png" />
+<meta property="og:image" content="https://www.learningallied.world/learningallied-white.svg" />
 <meta property="og:image:width" content="512" />
 <meta property="og:image:height" content="512" />
 <meta name="twitter:card" content="summary_large_image" />
-<meta name="twitter:image" content="https://www.learningallied.world/logo.png" />
+<meta name="twitter:image" content="https://www.learningallied.world/learningallied-white.svg" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" />
 <link rel="stylesheet" href="/css/tokens.css" />
 <link rel="stylesheet" href="/css/base.css" />
 <link rel="stylesheet" href="/css/nav.css" />
-<link rel="icon" type="image/png" href="logo.png" />
-<link rel="shortcut icon" href="favicon.ico" />
+<link rel="icon" type="image/svg+xml" href="/learningallied-white.svg" />
+<link rel="shortcut icon" href="/favicon.ico" />
 <style>
 /* Theme tokens (prefixed so they never collide with /css/tokens.css) */
 :root{
-  --la-bg:#0a0a0b; --la-surface:#111113; --la-surface-2:#17171a;
+  --la-bg:#000000; --la-surface:#111113; --la-surface-2:#17171a;
   --la-line:rgba(255,255,255,.09); --la-line-strong:rgba(255,255,255,.16);
   --la-text:#f4f4f5; --la-muted:#a1a1aa; --la-faint:#71717a;
   --la-accent:#6b95ff; --la-accent-ink:#0a0a0b; --la-accent-soft:rgba(107,149,255,.14);
@@ -173,10 +173,10 @@ img{display:block;max-width:100%}
 </style>
 </head>
 <body>
-<div id="authLoading" style="position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;background:var(--la-bg);color:var(--la-muted);font-size:13px;">
-  <div style="display:flex;flex-direction:column;align-items:center;gap:14px;">
-    <div style="width:28px;height:28px;border:2px solid var(--la-line-strong);border-top-color:var(--la-accent);border-radius:50%;animation:spin .8s linear infinite;"></div>
-    Loading Learning Allied…
+<div id="authLoading" class="ld-splash" style="display:flex;z-index:9999;" role="status" aria-label="Loading Learning Allied">
+  <div class="ld">
+    <img src="/learningallied-white.svg" alt="" width="60" height="60" decoding="async" fetchpriority="high" />
+    <div class="ld-bar"></div>
   </div>
 </div>
 <script type="module">
@@ -203,7 +203,7 @@ try {
 <div class="mnav-overlay" id="mnavOverlay"></div>
 <nav class="mnav-panel" id="mnavPanel" aria-label="Site navigation">
   <div class="mnav-head">
-    <span class="mnav-brand"><img src="logo.png" alt="">Learning Allied</span>
+    <span class="mnav-brand"><img src="/learningallied-white.svg" alt="">Learning Allied</span>
     <button class="mnav-close" id="mnavClose" aria-label="Close menu">✕</button>
   </div>
   <div class="mnav-links">
@@ -221,7 +221,7 @@ try {
 <header>
   <nav class="navbar" aria-label="Main navigation">
     <a class="logo" href="/" aria-label="Learning Allied home">
-      <img src="logo.png" alt="" class="logo-img" width="28" height="28">
+      <img src="/learningallied-white.svg" alt="" class="logo-img" width="28" height="28">
       <span>Learning Allied</span>
     </a>
     <div class="nav-links">
@@ -343,7 +343,7 @@ try {
   <div class="wrap">
     <div class="footer-grid">
       <div class="footer-brand">
-        <a class="logo" href="/" aria-label="Learning Allied home"><img src="logo.png" alt="" class="logo-img" width="28" height="28"><span>Learning Allied</span></a>
+        <a class="logo" href="/" aria-label="Learning Allied home"><img src="/learningallied-white.svg" alt="" class="logo-img" width="28" height="28"><span>Learning Allied</span></a>
         <p>An AI study partner for JEE, NEET and Board exam students.</p>
       </div>
       <div class="footer-col"><h4>Product</h4><a href="#features">How it works</a><a href="#exams">Exam support</a><a href="signup.html">Get started</a><a href="login.html">Log in</a></div>
@@ -390,7 +390,7 @@ document.documentElement.classList.add('js');
 <script type="module" src="./modules/track.js"></script>
 <script src="nav.js" defer></script>
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"Organization","name":"Learning Allied","url":"https://www.learningallied.world","logo":"https://www.learningallied.world/logo.png","description":"AI study partner for JEE, NEET and Board exam students."}
+{"@context":"https://schema.org","@type":"Organization","name":"Learning Allied","url":"https://www.learningallied.world","logo":"https://www.learningallied.world/learningallied-white.svg","description":"AI study partner for JEE, NEET and Board exam students."}
 </script>
 </body>
 </html>

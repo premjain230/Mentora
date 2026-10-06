@@ -16,95 +16,56 @@
 <title>Take Quiz · Learning Allied</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%234f8cff'/><text x='16' y='22' text-anchor='middle' fill='white' font-size='18' font-weight='bold'>A</text></svg>">
 <meta name="referrer" content="no-referrer-when-downgrade">
-<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
 <link rel="stylesheet" href="/css/tokens.css" />
 <link rel="stylesheet" href="/css/base.css" />
 <link rel="stylesheet" href="/css/nav.css" />
+<link rel="stylesheet" href="/css/premium.css" />
 <style>
-body{min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:32px 16px;transition:background 0.35s ease,color 0.35s ease;}
-.wrap{width:100%;max-width:680px;}
-.topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;}
-.logo{display:flex;align-items:center;gap:10px;}
-.logo-img{height:34px;width:auto;display:block}
-.logo-icon{width:34px;height:34px;background:linear-gradient(135deg,var(--accent),var(--accent2));border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:17px;}
-.logo-text{font-size:17px;font-weight:700;}
-.logo-text span{color:var(--accent2);}
-.back-link{font-size:13px;color:var(--text-secondary);text-decoration:none;display:flex;align-items:center;gap:6px;}
-.back-link:hover{color:var(--text-primary);}
+/* Layout only. Look & feel comes from /css/premium.css */
+body{min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:28px 16px 64px;font-family:'Sora',system-ui,sans-serif;color:var(--pm-text);-webkit-font-smoothing:antialiased}
+.wrap{width:100%;max-width:640px}
+@keyframes rise{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.panel{animation:rise .3s var(--pm-ease) both}
+.topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:36px}
+.logo{display:flex;align-items:center;gap:10px}
+.logo-img{height:30px;width:auto;display:block}
+.logo-text{font-size:16px;font-weight:600;letter-spacing:-.01em}
+.back-link{font-size:14px;text-decoration:none;display:flex;align-items:center;gap:6px;transition:color .16s}
 
-/* Setup form */
-.panel{background:var(--bg-card);border:1px solid var(--border);border-radius:16px;padding:24px;}
-.panel h2{font-size:18px;font-weight:700;margin-bottom:6px;}
-.panel p.sub{font-size:13px;color:var(--text-secondary);margin-bottom:20px;}
-.field{margin-bottom:14px;}
-.field label{font-size:12px;font-weight:600;color:var(--text-secondary);display:block;margin-bottom:6px;text-transform:uppercase;letter-spacing:0.5px;}
-.field input,.field select{
- width:100%;background:var(--bg-input);border:1px solid var(--border);border-radius:10px;
- padding:11px 14px;color:var(--text-primary);font-family:var(--font-main);font-size:14px;outline:none;
- transition:border-color .2s;
-}
-.field input:focus,.field select:focus{border-color:var(--border-hover);}
-.row2{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
-.btn{
- background:var(--accent);color:#fff;border:none;border-radius:10px;padding:12px 20px;
- font-family:var(--font-main);font-size:14px;font-weight:600;cursor:pointer;transition:all .18s;
-}
-.btn:hover{background:#7b73ff;transform:translateY(-1px);}
-.btn.secondary{background:transparent;border:1px solid var(--border);color:var(--text-secondary);}
-.btn.secondary:hover{color:var(--text-primary);border-color:var(--border-hover);}
-.btn:disabled{opacity:.5;cursor:not-allowed;transform:none;}
-.ai-badge{display:inline-block;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;margin-left:8px;vertical-align:middle;letter-spacing:0.3px;}
-.mode-toggle{display:flex;gap:0;margin-bottom:20px;background:var(--bg-input);border-radius:10px;overflow:hidden;border:1px solid var(--border);}
-.mode-btn{flex:1;padding:10px 16px;font-family:var(--font-main);font-size:13px;font-weight:500;border:none;cursor:pointer;transition:all .15s;color:var(--text-secondary);background:transparent;}
-.mode-btn.active{background:var(--accent);color:#16122b;font-weight:600;}
-.mode-btn:first-child{border-radius:9px 0 0 9px;}
-.mode-btn:last-child{border-radius:0 9px 9px 0;}
-.mode-btn:hover:not(.active){background:rgba(255,255,255,0.04);}
-.ai-setup{animation:fadeIn .3s ease;}
-@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
-.answer-mode-toggle{display:flex;align-items:center;gap:10px;margin-bottom:14px;padding:8px 12px;background:var(--bg-input);border-radius:8px;font-size:12px;color:var(--text-secondary);}
-.answer-mode-toggle label{display:flex;align-items:center;gap:6px;cursor:pointer;}
-.answer-mode-toggle input[type="radio"]{accent-color:var(--accent);}
-.answer-textarea{width:100%;background:var(--bg-input);border:1px solid var(--border);border-radius:10px;padding:12px 14px;color:var(--text-primary);font-family:var(--font-main);font-size:14px;outline:none;min-height:80px;resize:vertical;transition:border-color .2s;}
-.answer-textarea:focus{border-color:var(--border-hover);}
-.feedback-box{margin-top:14px;padding:14px 16px;border-radius:10px;font-size:13px;line-height:1.6;animation:fadeIn .25s ease;}
-.feedback-box.correct{background:rgba(0,212,170,0.08);border:1px solid rgba(0,212,170,0.25);color:#00d4aa;}
-.feedback-box.partial{background:rgba(255,209,102,0.08);border:1px solid rgba(255,209,102,0.25);color:var(--accent4);}
-.feedback-box.incorrect{background:rgba(255,107,107,0.08);border:1px solid rgba(255,107,107,0.25);color:var(--accent3);}
-.feedback-box .fb-label{font-weight:600;font-size:12px;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;}
-.fb-detail{margin-top:6px;font-size:12px;opacity:0.85;}
-
-/* Question card */
-.q-meta{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;font-size:12px;color:var(--text-muted);font-family:var(--font-mono);}
-.progress-track{height:6px;background:rgba(255,255,255,0.06);border-radius:4px;overflow:hidden;margin-bottom:20px;}
-.progress-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:4px;transition:width .3s;}
-.q-text{font-size:16px;font-weight:600;line-height:1.6;margin-bottom:18px;}
-.options{display:flex;flex-direction:column;gap:10px;}
-.option{
- background:var(--bg-input);border:1px solid var(--border);border-radius:10px;padding:12px 16px;
- font-size:14px;cursor:pointer;transition:all .15s;display:flex;align-items:center;gap:10px;
-}
-.option:hover{border-color:var(--border-hover);}
-.option.selected{border-color:var(--accent);background:rgba(108,99,255,0.1);}
-.option .key{
- width:24px;height:24px;border-radius:6px;background:rgba(255,255,255,0.05);display:flex;align-items:center;justify-content:center;
- font-family:var(--font-mono);font-size:12px;font-weight:700;flex-shrink:0;color:var(--text-secondary);
-}
-.option.selected .key{background:var(--accent);color:#fff;}
-.nav-row{display:flex;justify-content:space-between;margin-top:22px;gap:10px;}
-
-/* Result */
-.result-icon{font-size:48px;text-align:center;margin-bottom:8px;}
-.result-score{font-family:var(--font-mono);font-size:40px;font-weight:700;text-align:center;color:var(--accent2);}
-.result-sub{text-align:center;color:var(--text-secondary);font-size:13px;margin-top:4px;margin-bottom:20px;}
-.result-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:22px;}
-.rstat{background:var(--bg-input);border:1px solid var(--border);border-radius:10px;padding:12px;text-align:center;}
-.rstat .v{font-family:var(--font-mono);font-size:18px;font-weight:700;}
-.rstat .l{font-size:11px;color:var(--text-muted);margin-top:2px;}
-.saving{font-size:12px;color:var(--text-muted);text-align:center;margin-top:10px;}
-
-@media(max-width:480px){.row2{grid-template-columns:1fr;}.result-stats{grid-template-columns:1fr;}.topbar{padding-right:52px;}}
-@keyframes rippleAnim{to{transform:scale(2);opacity:0;}}
+.panel h2{margin:0 0 6px}
+.panel p.sub{font-size:14px;color:var(--pm-text-2);margin:0 0 24px;line-height:1.55}
+.field{margin-bottom:16px}
+.field label{display:block;margin-bottom:7px}
+.field input,.field select{width:100%;padding:0 14px;font-family:inherit;outline:none}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:42px;padding:0 20px;font-family:inherit;font-size:14px;cursor:pointer;text-decoration:none}
+.ai-badge{display:inline-block;font-size:11px;padding:2px 8px;border-radius:999px;margin-left:6px;vertical-align:middle}
+.mode-toggle{display:flex;margin-bottom:24px}
+.mode-btn{flex:1;padding:9px 14px;font-family:inherit;font-weight:500;border:0;cursor:pointer;background:transparent}
+.ai-setup{animation:rise .25s var(--pm-ease)}
+.answer-mode-toggle{display:flex;align-items:center;gap:14px;margin-bottom:16px;padding:9px 14px;font-size:13px;color:var(--pm-text-2);flex-wrap:wrap}
+.answer-mode-toggle label{display:flex;align-items:center;gap:6px;cursor:pointer}
+.answer-mode-toggle input[type="radio"]{accent-color:var(--pm-accent)}
+.answer-textarea{width:100%;padding:12px 14px;font-family:inherit;min-height:96px;resize:vertical}
+.feedback-box{margin-top:16px;padding:14px 16px;line-height:1.6;animation:rise .25s var(--pm-ease)}
+.fb-label{font-weight:600;margin-bottom:4px}
+.q-meta{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;gap:8px}
+.progress-track{overflow:hidden;margin-bottom:28px}
+.progress-fill{height:100%;transition:width .3s var(--pm-ease)}
+.q-text{margin-bottom:20px}
+.options{display:flex;flex-direction:column;gap:10px}
+.option{padding:13px 16px;font-size:14px;cursor:pointer;display:flex;align-items:center;gap:12px;width:100%;text-align:left;font-family:inherit}
+.option .key{width:26px;height:26px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;flex-shrink:0}
+.nav-row{display:flex;justify-content:space-between;margin-top:24px;gap:10px}
+.result-icon{font-size:44px;text-align:center;margin-bottom:8px}
+.result-score{text-align:center;line-height:1.1}
+.result-sub{text-align:center;color:var(--pm-text-2);font-size:14px;margin:6px 0 24px}
+.result-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:24px}
+.rstat{padding:14px;text-align:center}
+.rstat .l{font-size:13px;color:var(--pm-text-3);margin-top:2px}
+.saving{font-size:13px;color:var(--pm-text-3);text-align:center;margin-top:14px}
+@media(max-width:480px){.row2{grid-template-columns:1fr}.result-stats{grid-template-columns:1fr}.topbar{padding-right:52px}.panel{padding:22px!important}.btn{height:44px}}
 </style>
 </head>
 <body>
@@ -114,7 +75,7 @@ body{min-height:100vh;display:flex;flex-direction:column;align-items:center;padd
 <div class="mnav-overlay" id="mnavOverlay"></div>
 <nav class="mnav-panel" id="mnavPanel" aria-label="Site navigation">
  <div class="mnav-head">
-  <span class="mnav-brand"><img src="logo.png" alt="Learning Allied">Learning Allied</span>
+  <span class="mnav-brand"><img src="/learningallied-white.svg" alt="Learning Allied">Learning Allied</span>
   <button class="mnav-close" id="mnavClose" aria-label="Close menu">✕</button>
  </div>
  <div class="mnav-links">
@@ -132,106 +93,68 @@ body{min-height:100vh;display:flex;flex-direction:column;align-items:center;padd
   <a href="settings.html">Settings</a>
  </div>
 </nav>
-<div class="ambient-orb orb-1" aria-hidden="true"></div>
-<div class="ambient-orb orb-2" aria-hidden="true"></div>
 <div class="wrap">
  <div class="topbar">
-  <div class="logo"><img src="logo.png" alt="Learning Allied" class="logo-img"><span class="logo-text">Learning Allied</span></div>
+  <div class="logo"><img src="/learningallied-white.svg" alt="Learning Allied" class="logo-img"><span class="logo-text">Learning Allied</span></div>
   <a href="home.html" class="back-link">← Back to chat</a>
  </div>
 
- <!-- ── Step 1: Setup ─────────────────────────────────────────────── -->
  <div class="panel" id="setupPanel">
-  <h2>Take a Quiz</h2>
-  <p class="sub">Choose Standard (local questions) or AI-powered adaptive quiz.</p>
+  <h2>Take a quiz</h2>
+  <p class="sub">Choose a standard quiz from the built-in bank, or an AI adaptive quiz that adjusts to how you're doing.</p>
 
-  <div class="mode-toggle">
-   <button class="mode-btn active" id="modeStandard" onclick="setQuizMode('standard')">Standard</button>
-   <button class="mode-btn" id="modeAI" onclick="setQuizMode('ai')">AI Adaptive <span class="ai-badge">AI</span></button>
+  <div class="mode-toggle" role="tablist">
+   <button class="mode-btn active" id="modeStandard" role="tab" onclick="setQuizMode('standard')">Standard</button>
+   <button class="mode-btn" id="modeAI" role="tab" onclick="setQuizMode('ai')">AI adaptive <span class="ai-badge">AI</span></button>
   </div>
 
   <div id="standardSetup">
    <div class="row2">
-    <div class="field">
-     <label>Subject</label>
-     <select id="subjectSelect"></select>
-    </div>
-    <div class="field">
-     <label>Topic</label>
-     <select id="topicSelect"></select>
-    </div>
+    <div class="field"><label for="subjectSelect">Subject</label><select id="subjectSelect"></select></div>
+    <div class="field"><label for="topicSelect">Topic</label><select id="topicSelect"></select></div>
    </div>
    <div class="field">
-    <label>Number of Questions</label>
-    <select id="countSelect">
-     <option value="5">5</option>
-     <option value="10" selected>10</option>
-     <option value="15">15</option>
-    </select>
+    <label for="countSelect">Number of questions</label>
+    <select id="countSelect"><option value="5">5</option><option value="10" selected>10</option><option value="15">15</option></select>
    </div>
-   <button class="btn" id="startBtn" style="width:100%;margin-top:6px;">Start Quiz</button>
+   <button class="btn" id="startBtn" style="width:100%;margin-top:8px;">Start quiz</button>
   </div>
 
   <div id="aiSetup" style="display:none;" class="ai-setup">
-   <div class="field">
-    <label>Your Name</label>
-    <input type="text" id="aiName" placeholder="e.g. Aarav" />
-   </div>
-   <div class="field">
-    <label>What are you studying?</label>
-    <input type="text" id="aiSubject" placeholder="e.g. Physics, JEE, NEET, Class 10 Maths" />
-   </div>
-   <div class="field">
-    <label>Specific topics to focus on (optional)</label>
-    <input type="text" id="aiTopic" placeholder="e.g. Kinematics, Chemical Bonding, Trigonometry" />
-   </div>
+   <div class="field"><label for="aiName">Your name</label><input type="text" id="aiName" placeholder="e.g. Aarav" /></div>
+   <div class="field"><label for="aiSubject">What are you studying?</label><input type="text" id="aiSubject" placeholder="e.g. Physics, JEE, NEET, Class 10 Maths" /></div>
+   <div class="field"><label for="aiTopic">Specific topics to focus on (optional)</label><input type="text" id="aiTopic" placeholder="e.g. Kinematics, Chemical Bonding, Trigonometry" /></div>
    <div class="row2">
-    <div class="field">
-     <label>Difficulty</label>
-     <select id="aiDifficulty">
-      <option value="easy">Easy</option>
-      <option value="medium" selected>Medium</option>
-      <option value="hard">Hard</option>
-     </select>
-    </div>
-    <div class="field">
-     <label>Number of Questions</label>
-     <select id="aiCount">
-      <option value="5">5</option>
-      <option value="10" selected>10</option>
-      <option value="15">15</option>
-     </select>
-    </div>
+    <div class="field"><label for="aiDifficulty">Difficulty</label><select id="aiDifficulty"><option value="easy">Easy</option><option value="medium" selected>Medium</option><option value="hard">Hard</option></select></div>
+    <div class="field"><label for="aiCount">Number of questions</label><select id="aiCount"><option value="5">5</option><option value="10" selected>10</option><option value="15">15</option></select></div>
    </div>
-   <button class="btn" id="startAIBtn" style="width:100%;margin-top:6px;">✨ Start AI Quiz</button>
+   <button class="btn" id="startAIBtn" style="width:100%;margin-top:8px;">Start AI quiz</button>
   </div>
  </div>
 
- <!-- ── Step 2: Question ─────────────────────────────────────────── -->
  <div class="panel" id="quizPanel" style="display:none;">
   <div class="q-meta">
    <span id="qCounter">Question 1 / 10</span>
    <span id="qTopicLabel">Subject · Topic</span>
-   <span id="aiIndicator" style="display:none;font-size:10px;padding:2px 8px;border-radius:20px;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;font-weight:600;">AI</span>
+   <span id="aiIndicator" style="display:none;font-size:11px;padding:2px 8px;border-radius:999px;">AI</span>
   </div>
   <div class="progress-track"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
   <div class="answer-mode-toggle" id="answerModeRow" style="display:none;">
-   <span style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;color:var(--text-muted);">Answer mode:</span>
-   <label><input type="radio" name="ansMode" value="mcq" checked onchange="toggleAnswerMode('mcq')"> Multiple Choice</label>
-   <label><input type="radio" name="ansMode" value="written" onchange="toggleAnswerMode('written')"> Type Answer</label>
+   <span style="font-weight:500;color:var(--pm-text-3);">Answer mode</span>
+   <label><input type="radio" name="ansMode" value="mcq" checked onchange="toggleAnswerMode('mcq')"> Multiple choice</label>
+   <label><input type="radio" name="ansMode" value="written" onchange="toggleAnswerMode('written')"> Type answer</label>
   </div>
   <div class="q-text" id="qText"></div>
   <div class="options" id="optionsList"></div>
-  <textarea class="answer-textarea" id="answerInput" style="display:none;" placeholder="Type your answer here…"></textarea>
+  <textarea class="answer-textarea" id="answerInput" aria-label="Your answer" style="display:none;" placeholder="Type your answer here…"></textarea>
   <div class="feedback-box" id="feedbackBox" style="display:none;"></div>
   <div class="nav-row">
    <button class="btn secondary" id="quitBtn">Quit</button>
-   <button class="btn" id="submitBtn" disabled>Submit Answer</button>
+   <button class="btn" id="submitBtn" disabled>Submit answer</button>
    <button class="btn" id="nextBtn" style="display:none;">Next →</button>
   </div>
  </div>
 
- <!-- ── Step 3: Result ───────────────────────────────────────────── -->
  <div class="panel" id="resultPanel" style="display:none;">
   <div class="result-icon" id="resultEmoji">🎉</div>
   <div class="result-score" id="resultScore">0%</div>
@@ -243,7 +166,7 @@ body{min-height:100vh;display:flex;flex-direction:column;align-items:center;padd
   </div>
   <div class="row2">
    <button class="btn secondary" id="retakeBtn">Retake</button>
-     <a class="btn" href="arena.html" style="text-align:center;text-decoration:none;">Open Arena</a>
+   <a class="btn" href="arena.html">Open Arena</a>
   </div>
   <div class="saving" id="savingMsg">Saving attempt…</div>
  </div>
@@ -272,9 +195,6 @@ async function groqHeaders() {
  return { "Content-Type": "application/json", ...(token ? { Authorization: `Bearer ${token}` } : {}) };
 }
 
-/* ─────────────────────────────────────────────────────────────────────
- * LOCAL QUESTION BANK
- * ─────────────────────────────────────────────────────────────────── */
 const BANK = {
  Physics: {
   Kinematics: [
@@ -376,7 +296,6 @@ const BANK = {
  },
 };
 
-/* ── DOM refs ────────────────────────────────────────────────────*/
 const setupPanel  = document.getElementById("setupPanel");
 const quizPanel  = document.getElementById("quizPanel");
 const resultPanel = document.getElementById("resultPanel");
@@ -399,7 +318,6 @@ function populateTopics() {
 subjectSelect.onchange = populateTopics;
 populateTopics();
 
-/* ── Quiz state ──────────────────────────────────────────────────*/
 let questions = [];
 let current = 0;
 let selectedIdx = null;
@@ -408,7 +326,6 @@ let answers = [];
 let subject = "", topic = "";
 let quizMode = "standard";
 
-/* ── Mode toggle ─────────────────────────────────────────────────*/
 window.setQuizMode = function(mode) {
  quizMode = mode;
  document.getElementById("modeStandard").classList.toggle("active", mode === "standard");
@@ -428,7 +345,6 @@ window.selectOption = function(i, el) {
  }
 };
 
-/* ── Answer mode toggle (MCQ vs Written) ────────────────────────*/
 window.toggleAnswerMode = function(mode) {
  const opts = document.getElementById("optionsList");
  const input = document.getElementById("answerInput");
@@ -458,7 +374,6 @@ function checkAnswerReady() {
 
 document.getElementById("answerInput").oninput = checkAnswerReady;
 
-/* ── Start Standard Quiz ─────────────────────────────────────────*/
 document.getElementById("startBtn").onclick = () => {
  document.getElementById("startBtn").disabled = true;
  subject = subjectSelect.value;
@@ -473,10 +388,9 @@ document.getElementById("startBtn").onclick = () => {
  showQuiz();
 };
 
-/* ── Start AI Quiz ───────────────────────────────────────────────*/
 document.getElementById("startAIBtn").onclick = async () => {
  document.getElementById("startAIBtn").disabled = true;
- document.getElementById("startAIBtn").textContent = "⏳ Generating first question…";
+ document.getElementById("startAIBtn").textContent = "Generating first question…";
  subject = document.getElementById("aiSubject").value.trim() || "General Studies";
  topic = document.getElementById("aiTopic").value.trim() || "";
  const count = parseInt(document.getElementById("aiCount").value, 10);
@@ -493,12 +407,9 @@ document.getElementById("startAIBtn").onclick = async () => {
 };
 
 async function loadAIQuestion() {
- const name = document.getElementById("aiName").value.trim() || "Student";
+const name = document.getElementById("aiName").value.trim() || "Student";
  const difficulty = document.getElementById("aiDifficulty").value;
- const prevResults = answers.map(a => ({
-  correct: a.isCorrect,
-  topic: a.topic
- }));
+ const prevResults = answers.map(a => ({ correct: a.isCorrect, topic: a.topic }));
  const isLastAttemptCorrect = answers.length > 0 ? answers[answers.length-1].isCorrect : null;
 
  let adjustDifficulty = difficulty;
@@ -529,22 +440,12 @@ async function loadAIQuestion() {
   const res = await fetch(API_ENDPOINT, {
    method: "POST",
    headers: await groqHeaders(),
-   body: JSON.stringify({
-    model: MODEL,
-    messages: [{ role: "user", content: prompt }],
-    temperature: 0.7,
-    max_tokens: 500,
-   }),
+   body: JSON.stringify({ model: MODEL, messages: [{ role: "user", content: prompt }], temperature: 0.7, max_tokens: 500 }),
   });
   const data = await res.json();
   const text = data.choices?.[0]?.message?.content || "";
   const parsed = JSON.parse(text.replace(/```json|```/g, "").trim());
-  questions[current] = {
-   q: parsed.q,
-   options: parsed.options,
-   answer: parsed.answer,
-   explanation: parsed.explanation || "",
-  };
+  questions[current] = { q: parsed.q, options: parsed.options, answer: parsed.answer, explanation: parsed.explanation || "" };
  } catch (err) {
   console.error("AI question generation error:", err);
   questions[current] = {
@@ -555,7 +456,7 @@ async function loadAIQuestion() {
   };
  }
  document.getElementById("startAIBtn").disabled = false;
- document.getElementById("startAIBtn").textContent = "✨ Start AI Quiz";
+ document.getElementById("startAIBtn").textContent = "Start AI quiz";
  renderAIQuestion();
 }
 
@@ -569,7 +470,7 @@ function renderAIQuestion() {
  document.getElementById("qText").textContent = q.q;
  document.getElementById("submitBtn").disabled = true;
  document.getElementById("nextBtn").style.display = "none";
- document.getElementById("submitBtn").style.display = "inline";
+ document.getElementById("submitBtn").style.display = "inline-flex";
  document.getElementById("feedbackBox").style.display = "none";
 
  const optsEl = document.getElementById("optionsList");
@@ -579,7 +480,8 @@ function renderAIQuestion() {
  document.querySelector('input[name="ansMode"][value="mcq"]').checked = true;
 
  q.options.forEach((opt, i) => {
-  const div = document.createElement("div");
+  const div = document.createElement("button");
+  div.type = "button";
   div.className = "option";
   const label = opt.replace(/^[A-D][\)\.]\s*/, "");
   div.innerHTML = `<span class="key">${opt.charAt(0)}</span><span>${label}</span>`;
@@ -612,17 +514,16 @@ document.getElementById("submitBtn").onclick = async () => {
   showFeedback(isCorrect, "", q.explanation);
   const evType = isCorrect? "question_correct":"question_incorrect";
   emitQuizEvent(evType, { questionId: `q_${current}`, payload:{ correct: isCorrect, mode:"mcq", hintCount:0 } });
-  emitQuizEvent("question_answered", { questionId: `q_${current}`, payload:{ correct: isCorrect, mode:"mcq" } });
+  emitQuizEvent("", { questionId: `q_${current}`, payload:{ correct: isCorrect, mode:"mcq" } });
  }
 
  document.getElementById("submitBtn").style.display = "none";
- document.getElementById("nextBtn").style.display = "inline";
+ document.getElementById("nextBtn").style.display = "inline-flex";
  document.querySelectorAll("#optionsList .option").forEach(o => {
   o.style.pointerEvents = "none";
-  if (o.querySelector(".key")?.textContent === q.answer) {
-   o.style.borderColor = "var(--accent)";
-   o.style.background = "rgba(0,212,255,0.1)";
-  }
+  const isRight = o.querySelector(".key")?.textContent === q.answer;
+  if (isRight) o.classList.add("correct");
+  else if (o.classList.contains("selected")) o.classList.add("wrong");
  });
 };
 
@@ -644,12 +545,7 @@ Be generous with partial credit — if the student shows understanding, mark it 
   const res = await fetch(API_ENDPOINT, {
    method: "POST",
    headers: await groqHeaders(),
-   body: JSON.stringify({
-    model: MODEL,
-    messages: [{ role: "user", content: prompt }],
-    temperature: 0.3,
-    max_tokens: 200,
-   }),
+   body: JSON.stringify({ model: MODEL, messages: [{ role: "user", content: prompt }], temperature: 0.3, max_tokens: 200 }),
   });
   const data = await res.json();
   return data.choices?.[0]?.message?.content || "INCORRECT: Could not evaluate.";
@@ -666,13 +562,13 @@ function showFeedback(isCorrect, evalDetail, explanation) {
  const safeExpl = escapeHtml(explanation);
  if (typeof isCorrect === "string" && isCorrect === "partial") {
   box.className = "feedback-box partial";
-  box.innerHTML = `<div class="fb-label">⚠ Partially Correct</div>${safeDetail}`;
+  box.innerHTML = `<div class="fb-label">Partially correct</div>${safeDetail}`;
  } else if (isCorrect) {
   box.className = "feedback-box correct";
-  box.innerHTML = `<div class="fb-label">✓ Correct!</div>${safeDetail || safeExpl}`;
+  box.innerHTML = `<div class="fb-label">Correct</div>${safeDetail || safeExpl}`;
  } else {
   box.className = "feedback-box incorrect";
-  box.innerHTML = `<div class="fb-label">✗ Incorrect</div>${safeDetail || safeExpl}`;
+  box.innerHTML = `<div class="fb-label">Incorrect</div>${safeDetail || safeExpl}`;
  }
 }
 
@@ -692,7 +588,7 @@ document.getElementById("nextBtn").onclick = () => {
   if (quizMode === "ai" && !questions[current]) {
    document.getElementById("nextBtn").style.display = "none";
    document.getElementById("submitBtn").style.display = "none";
-   document.getElementById("qText").textContent = "⏳ Generating next question…";
+   document.getElementById("qText").textContent = "Generating next question…";
    loadAIQuestion();
   } else {
    if (quizMode === "ai") renderAIQuestion();
@@ -704,9 +600,7 @@ document.getElementById("nextBtn").onclick = () => {
 };
 
 document.getElementById("quitBtn").onclick = () => {
- if (confirm("Quit this quiz? Your progress won't be saved.")) {
-  location.reload();
- }
+ if (confirm("Quit this quiz? Your progress won't be saved.")) location.reload();
 };
 
 document.getElementById("retakeBtn").onclick = () => {
@@ -715,10 +609,9 @@ document.getElementById("retakeBtn").onclick = () => {
  current = 0; correctCount = 0; answers = []; questions = [];
  document.getElementById("startBtn").disabled = false;
  document.getElementById("startAIBtn").disabled = false;
- document.getElementById("startAIBtn").textContent = "✨ Start AI Quiz";
+ document.getElementById("startAIBtn").textContent = "Start AI quiz";
 };
 
-/* ── Shared rendering ───────────────────────────────────────────*/
 function showQuiz() {
  setupPanel.style.display = "none";
  quizPanel.style.display = "block";
@@ -729,7 +622,7 @@ function renderStandardQuestion() {
  selectedIdx = null;
  document.getElementById("aiIndicator").style.display = "none";
  document.getElementById("answerModeRow").style.display = "none";
- document.getElementById("nextBtn").style.display = "inline";
+ document.getElementById("nextBtn").style.display = "inline-flex";
  document.getElementById("submitBtn").style.display = "none";
  document.getElementById("feedbackBox").style.display = "none";
 
@@ -746,7 +639,8 @@ function renderStandardQuestion() {
  optsEl.style.display = "flex";
  document.getElementById("answerInput").style.display = "none";
  q.options.forEach((opt, i) => {
-  const div = document.createElement("div");
+  const div = document.createElement("button");
+  div.type = "button";
   div.className = "option";
   div.innerHTML = `<span class="key">${String.fromCharCode(65 + i)}</span><span>${opt}</span>`;
   div.onclick = () => selectOption(i, div);
@@ -754,7 +648,6 @@ function renderStandardQuestion() {
  });
 }
 
-/* ── Results ────────────────────────────────────────────────────*/
 async function finishQuiz() {
  quizPanel.style.display = "none";
  resultPanel.style.display = "block";
@@ -772,7 +665,6 @@ async function finishQuiz() {
  document.getElementById("rTotal").textContent = total;
 
  const savingEl = document.getElementById("savingMsg");
- // Emit observed evidence for the whole quiz (legacy quizAttempts preserved)
  try{ emitQuizEvent("quiz_completed", { payload:{ correct: correctCount, totalQ: total, incorrect, accuracy: total? correctCount/total : 0, mode: quizMode } }); }catch{}
  try {
   if (!currentUser) throw new Error("Not signed in");
@@ -789,11 +681,11 @@ async function finishQuiz() {
    mode: quizMode,
    takenAt: serverTimestamp(),
   });
-  savingEl.textContent = "✅ Saved — visible on your dashboard";
-  window.AquaTrack?.track("quiz_completed", { subject, topic, score, total });
+  savingEl.textContent = "Saved — visible on your dashboard";
+  window.AquaTrack?.track("quiz_completed", { subject, topic, score: correctCount, total });
  } catch (err) {
   console.error(err);
-  savingEl.textContent = "⚠️ Could not save attempt: " + err.message;
+  savingEl.textContent = "Could not save attempt: " + err.message;
  }
 }
 
@@ -819,51 +711,12 @@ function shuffle(arr) {
 }
 </script>
 <script type="module" src="./js/avatar-sync.js"></script>
-
-<!-- Vercel Web Analytics -->
 <script type="module">import { inject } from 'https://esm.sh/@vercel/analytics'; inject();</script>
-<!-- Growth Agent: first-party analytics -->
 <script type="module" src="./modules/track.js"></script>
-<!-- Vercel Speed Insights -->
-<script type="module">import { injectSpeedInsights } from 'https://esm.sh/@vercel/speed-insights'; injectSpeedInsights();
-/* ── Scroll progress bar ── */
-(function(){
- var bar = document.createElement('div');
- bar.className = 'scroll-progress';
- document.body.prepend(bar);
- var ticking = false;
- window.addEventListener('scroll', function(){
-  if(!ticking){ requestAnimationFrame(function(){
-   var h = document.documentElement.scrollHeight - window.innerHeight;
-   bar.style.width = h > 0 ? ((window.scrollY / h) * 100) + '%' : '0%';
-   ticking = false;
-  }); ticking = true; }
- });
-}());
-
-/* ── Ripple effect ── */
-(function(){
- var rm = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
- if(rm) return;
- document.querySelectorAll('.btn-primary, .btn-secondary, .btn-ghost-nav, .signout-btn, .new-chat-btn, .upgrade-nav-btn, .send-btn').forEach(function(btn){
-  btn.addEventListener('click', function(e){
-   var rp = document.createElement('span');
-   var r = btn.getBoundingClientRect();
-   var s = Math.max(r.width, r.height);
-   rp.style.cssText = 'position:absolute;top:'+(e.clientY-r.top-s/2)+'px;left:'+(e.clientX-r.left-s/2)+'px;width:'+s+'px;height:'+s+'px;border-radius:50%;background:rgba(255,255,255,0.15);transform:scale(0);animation:rippleAnim .5s ease-out;pointer-events:none;z-index:0;';
-   btn.style.position = 'relative';
-   btn.style.overflow = 'hidden';
-   btn.appendChild(rp);
-   setTimeout(function(){ rp.remove(); }, 600);
-  });
- });
-}());
-</script>
+<script type="module">import { injectSpeedInsights } from 'https://esm.sh/@vercel/speed-insights'; injectSpeedInsights();</script>
 <script type="application/ld+json">
 {"@context":"https://schema.org","@type":"WebPage","name":"Take Quiz - Learning Allied","description":"AI-generated quizzes for JEE, NEET & Board exam preparation.","url":"https://www.learningallied.world/quiz","breadcrumb":{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://www.learningallied.world/"},{"@type":"ListItem","position":2,"name":"Quiz","item":"https://www.learningallied.world/quiz"}]}}
 </script>
 <script src="nav.js" defer></script>
 </body>
 </html>
-
-
