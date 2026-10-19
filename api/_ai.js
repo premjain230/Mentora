@@ -6,7 +6,10 @@
 
 const MODEL = process.env.GROQ_MODEL || "openai/gpt-oss-120b";
 
-async function groqComplete({ messages, json = false, temperature = 0.6, maxTokens = 3000 }) {
+// `model` is an optional per-call override used for the model-availability
+// fallback chain (see api/groq-proxy.js). Omitting it keeps the existing
+// GROQ_MODEL behaviour, so existing callers are unaffected.
+async function groqComplete({ messages, json = false, temperature = 0.6, maxTokens = 3000, model }) {
   const apiKey = process.env.GROQ_API_KEY;
   if (!apiKey) {
     throw Object.assign(new Error("GROQ_API_KEY is not configured."), { statusCode: 500 });
@@ -18,7 +21,7 @@ async function groqComplete({ messages, json = false, temperature = 0.6, maxToke
       Authorization: `Bearer ${apiKey}`,
     },
     body: JSON.stringify({
-      model: MODEL,
+      model: model || MODEL,
       messages,
       temperature,
       max_tokens: maxTokens,

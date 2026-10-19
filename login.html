@@ -37,7 +37,9 @@
 <p class="ft in" style="--i:7">New to Learning Allied? <a class="l" href="signup.html">Create an account</a></p>
 </main>
 <script src="auth-ui.js" defer></script>
-<script type="module">import { inject } from "https://esm.sh/@vercel/analytics"; inject();</script>
-<script type="module">import { injectSpeedInsights } from "https://esm.sh/@vercel/speed-insights"; injectSpeedInsights();</script>
+<script type="module">
+import { initAnalytics } from "./js/vercel-analytics.js";
+initAnalytics();
+</script>
 </body>
 </html>

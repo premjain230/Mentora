@@ -708,8 +708,10 @@ function showToast(msg,type="") {
 }
 </script>
 
-<script type="module">import { inject } from 'https://esm.sh/@vercel/analytics'; inject();</script>
-<script type="module">import { injectSpeedInsights } from 'https://esm.sh/@vercel/speed-insights'; injectSpeedInsights();</script>
+<script type="module">
+import { initAnalytics } from "./js/vercel-analytics.js";
+initAnalytics();
+</script>
 <script type="application/ld+json">
 {"@context":"https://schema.org","@type":"WebPage","name":"Study Planner - Learning Allied","description":"Plan your JEE, NEET & Board exam preparation with Learning Allied's intelligent study planner.","url":"https://www.learningallied.world/planner","breadcrumb":{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://www.learningallied.world/"},{"@type":"ListItem","position":2,"name":"Study Planner","item":"https://www.learningallied.world/planner"}]}}
 </script>

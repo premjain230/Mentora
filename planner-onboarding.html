@@ -546,12 +546,14 @@ function showToast(msg, isError = false) {
 }
 </script>
  <!-- Vercel Web Analytics -->
- <script type="module">import { inject } from 'https://esm.sh/@vercel/analytics'; inject();</script>
- <!-- Growth Agent: first-party analytics -->
+ <script type="module">
+import { initAnalytics } from "./js/vercel-analytics.js";
+initAnalytics();
+</script>
+<!-- Growth Agent: first-party analytics -->
  <script type="module" src="./modules/track.js"></script>
  <!-- Vercel Speed Insights -->
- <script type="module">import { injectSpeedInsights } from 'https://esm.sh/@vercel/speed-insights'; injectSpeedInsights();</script>
-<script type="application/ld+json">
+ <script type="application/ld+json">
 {"@context":"https://schema.org","@type":"WebPage","name":"Set Up Study Plan - Learning Allied","description":"Set up your personalized AI study plan for JEE, NEET or Board exams.","url":"https://www.learningallied.world/planner-onboarding","breadcrumb":{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://www.learningallied.world/"},{"@type":"ListItem","position":2,"name":"Plan Setup","item":"https://www.learningallied.world/planner-onboarding"}]}}
 </script>
 <script src="nav.js" defer></script>

@@ -53,7 +53,9 @@
 </main>
 <script>(function(){var m=location.search.match(/[?&]ref=([^&]+)/);if(m)try{sessionStorage.setItem("learning-allied-ref",m[1]);sessionStorage.setItem("aquila_ref",m[1])}catch(e){}})();</script>
 <script src="auth-ui.js" defer></script>
-<script type="module">import { inject } from "https://esm.sh/@vercel/analytics"; inject();</script>
-<script type="module">import { injectSpeedInsights } from "https://esm.sh/@vercel/speed-insights"; injectSpeedInsights();</script>
+<script type="module">
+import { initAnalytics } from "./js/vercel-analytics.js";
+initAnalytics();
+</script>
 </body>
 </html>
