@@ -1,7 +1,33 @@
 const { applyCors, rateLimit, readJsonBody, sendError } = require("./_shared");
 const { verifyIdToken } = require("./_admin");
+const { handler: learnHub } = require("./_learn-hub");
 
+// api/study-session is also the mount point for the AI Learning Hub.
+//
+// Vercel turns every non-underscore file in /api into its own serverless
+// function, and the Hobby plan caps a deployment at 12. Rather than delete a
+// real feature or merge code into an unrelated endpoint, the Learning Hub is
+// mounted here on a route parameter:
+//
+//   /api/study-session                 -> the original AI study session (unchanged)
+//   /api/study-session?route=learn-hub -> the Learning Hub lesson planner + reviewer
+//
+// vercel.json rewrites the friendly /api/learn-hub path onto the second form, so
+// the public URL is unchanged. Both live behind the same authentication, and the
+// Learning Hub keeps its own implementation in api/_learn-hub.js.
 module.exports = async function handler(req, res) {
+  let route = "";
+  try {
+    route = String(req.query?.route || new URL(req.url || "/", "http://x").searchParams.get("route") || "");
+  } catch (_) {
+    route = "";
+  }
+  if (route === "learn-hub") return learnHub(req, res);
+
+  return studySession(req, res);
+};
+
+async function studySession(req, res) {
   if (!applyCors(req, res, ["POST", "OPTIONS"])) return;
 
   if (req.method !== "POST") {

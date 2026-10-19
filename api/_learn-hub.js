@@ -476,7 +476,15 @@ function planSummary(plan) {
 }
 
 /* ── Handler ─────────────────────────────────────────────────────────────────── */
-module.exports = async function handler(req, res) {
+// ai/learn-hub — AI Learning Hub lesson planning and answer review.
+//
+// NOTE ON THE FILENAME: this file starts with an underscore on purpose. Vercel
+// serves every non-underscore file in /api as its own serverless function, and
+// the Hobby plan caps a deployment at 12 functions. Keeping this as a module and
+// mounting it behind /api/study-session?route=learn-hub (see api/study-session.js
+// and the rewrite in vercel.json) keeps the project inside that limit without
+// merging any code with any other endpoint.
+async function handler(req, res) {
   if (!applyCors(req, res, ["POST", "OPTIONS"])) return;
 
   if (req.method !== "POST") {
@@ -618,3 +626,5 @@ module.exports = async function handler(req, res) {
     return sendError(req, res, err, action === "plan" ? "The lesson could not be prepared right now. Please retry." : "The review could not be completed right now. Please retry.");
   }
 };
+
+module.exports = { handler };

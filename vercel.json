@@ -37,6 +37,10 @@
     {
       "source": "/api/arena",
       "destination": "/api/learning-event?route=arena"
+    },
+    {
+      "source": "/api/learn-hub",
+      "destination": "/api/study-session?route=learn-hub"
     }
   ],
   "crons": [
