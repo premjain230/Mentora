@@ -100,6 +100,7 @@ function text(v, max) {
 
 /* ── Lesson plan normalisation ───────────────────────────────────────────────── */
 const MIN_PAGE_LINES = 7;
+const MAX_PAGES = 5;
 const MAX_PAGE_LINES = 10;
 
 /**
@@ -111,7 +112,7 @@ function normalizePlan(raw, topic) {
   const o = raw && typeof raw === "object" ? raw : {};
 
   // ── pages: each page is a titled block of 7-10 short lines ──
-  const rawPages = Array.isArray(o.pages) ? o.pages.slice(0, 8) : [];
+  const rawPages = Array.isArray(o.pages) ? o.pages.slice(0, MAX_PAGES) : [];
   const pages = [];
   for (const p of rawPages) {
     if (!p || typeof p !== "object") continue;
@@ -225,6 +226,7 @@ const SYSTEM_PLAN = [
   "RULES:",
   "1. Cover only what belongs to the stated chapter. Never invent chapters, papers or marks weightings.",
   "2. Each page must have a short title and 7 to 10 lines. One line = one idea, one or two sentences at most. Write for a student reading on a phone.",
+  "2b. Write AT MOST 5 pages and EXACTLY 5 quiz questions. Be brief. Do not restate the chapter in several places; every line must earn its token.",
   "3. Build the pages in order: what it is, the key idea, how it works step by step, examples, terminology/formulae, and a quick check on understanding.",
   "4. Every quiz question must have exactly 4 options and exactly one correct answer.",
   "5. Distractors must be plausible mistakes a real student would make — never filler, never 'all of the above', never 'none of these'. Do not make the correct option obviously longer or the only technical-sounding one.",
@@ -291,7 +293,7 @@ Adjust depth, examples and question style to the board/class/exam in the context
     .filter(Boolean)
     .join("\n");
 
-  return { messages: [{ role: "system", content: system }, { role: "user", content: user }], temperature: 0.5, maxTokens: 4200 };
+  return { messages: [{ role: "system", content: system }, { role: "user", content: user }], temperature: 0.5, maxTokens: 2400 };
 }
 
 function buildReviewMessages(topic, attempts) {
@@ -343,7 +345,7 @@ Only include a what_went_wrong entry for a question the learner actually got wro
     "</QUIZ_ATTEMPT>",
   ].join("\n");
 
-  return { messages: [{ role: "system", content: system }, { role: "user", content: user }], temperature: 0.3, maxTokens: 4000 };
+  return { messages: [{ role: "system", content: system }, { role: "user", content: user }], temperature: 0.3, maxTokens: 2000 };
 }
 
 /* ── Request validation ──────────────────────────────────────────────────────── */
@@ -445,24 +447,59 @@ async function writeCachedPlan(conceptId, plan) {
   }
 }
 
-/* ── Groq call with the same model-fallback habit as api/groq-proxy.js ───────── */
-const FALLBACK_MODELS = ["openai/gpt-oss-20b", "qwen/qwen3.6-27b"];
+/* ── Groq call: bounded in models, tokens and wall-clock time ───────────────
+ * A 502 from the platform means the function was killed for running too long.
+ * The previous version could make up to SIX sequential Groq calls for a single
+ * chapter (3 models x 2 attempts) at 4200 output tokens each, which does not
+ * fit the budget. It is now bounded on three axes:
+ *   - one primary model plus ONE fallback, and only for model-gone errors
+ *   - a small output budget, plus reasoning_effort:"low" so the reasoning model
+ *     does not spend the whole budget thinking out loud
+ *   - a wall-clock deadline: once it passes, stop trying and answer cleanly
+ */
+const FALLBACK_MODELS = ["openai/gpt-oss-20b"];
+const CALL_BUDGET_MS = 12000;
 
-async function askJson(messages, { temperature, maxTokens }) {
+function overBudget(startedAt) {
+  return Date.now() - startedAt > CALL_BUDGET_MS;
+}
+
+async function askJson(messages, { temperature, maxTokens }, startedAt = Date.now()) {
   const primary = process.env.GROQ_MODEL || undefined;
   const candidates = [...new Set([primary, ...FALLBACK_MODELS].filter(Boolean))];
   let lastErr = null;
 
   for (const model of candidates) {
+    const remaining = CALL_BUDGET_MS - (Date.now() - startedAt);
+    if (remaining <= 500) {
+      console.warn(`[learn-hub] ${CALL_BUDGET_MS}ms budget spent; stopping model attempts.`);
+      break;
+    }
     try {
-      const raw = await groqComplete({ messages, json: true, temperature, maxTokens, model });
+      const raw = await groqComplete({
+        messages,
+        json: true,
+        temperature,
+        maxTokens,
+        model,
+        // gpt-oss models support this; harmless for models that ignore it.
+        extra: { reasoning_effort: "low" },
+        // Cancel the request when the deadline passes. Without this the budget is
+        // only checked BETWEEN calls, so one slow provider plus the retry could
+        // still run past the platform limit and be killed (the 502 we saw).
+        signal: AbortSignal.timeout(remaining),
+      });
       return parseJson(raw);
     } catch (err) {
       lastErr = err;
       const msg = String((err && err.message) || "");
+      if (/abort|timed? ?out/i.test(msg)) {
+        console.warn("[learn-hub] provider call hit the deadline.");
+        break;
+      }
       const modelGone = /does not exist|do not have access|decommissioned|deprecat|404/i.test(msg);
       if (!modelGone) break;
-      console.warn(`[learn-hub] model ${model} unavailable; trying fallback.`);
+      console.warn(`[learn-hub] model ${model} unavailable; trying one fallback.`);
     }
   }
   throw lastErr || new Error("AI unavailable");
@@ -516,6 +553,8 @@ async function handler(req, res) {
   const { topic, error } = resolveTopic(body);
   if (error) return res.status(400).json({ error });
 
+  const startedAt = Date.now();
+
   try {
     // Checked here, after validation, so a malformed request never reveals
     // anything about the server's configuration.
@@ -532,32 +571,73 @@ async function handler(req, res) {
 
     if (action === "plan") {
       if (planIsUsable(cached)) {
+        res.setHeader("X-LearnHub", "cache");
         return res.status(200).json({ plan: cached, conceptId: topic.conceptId, cached: true });
       }
 
       const spec = buildPlanMessages(topic);
-      const plan = normalizePlan(await askJson(spec.messages, spec), topic);
+      let plan = null;
+      let firstErr = null;
+      try {
+        plan = normalizePlan(await askJson(spec.messages, spec, startedAt), topic);
+      } catch (e) {
+        firstErr = e;
+        console.warn("[learn-hub] first plan attempt failed:", e && e.message ? e.message : e);
+      }
+      // true once ANY call returned parseable JSON — i.e. the provider was fine
+      // and the problem is the CONTENT failing the structural checks below.
+      let sawContent = !!plan;
 
       if (!planIsUsable(plan)) {
-        // Too thin to teach from. Try once more with a stricter nudge rather than
-        // showing a half-empty lesson, then give up honestly.
-        const retrySpec = buildPlanMessages(topic);
-        retrySpec.messages[1].content +=
-          "\n\nIMPORTANT: that attempt was incomplete. Return at least 3 pages with 7-10 lines each, and between 5 and 7 complete quiz questions with exactly 4 options and a 0-based answer index.";
+        // Too thin to teach from, usually because the answer was cut short. Try
+        // ONCE more with a stricter "be brief" nudge — but only if there is
+        // budget left, because overrunning the platform timeout is worse than
+        // answering with a clean retryable error.
         let second = null;
-        try {
-          second = normalizePlan(await askJson(retrySpec.messages, retrySpec), topic);
-        } catch (e) {
-          console.warn("[learn-hub] plan retry failed:", e && e.message ? e.message : e);
+        let secondErr = null;
+        if (!overBudget(startedAt)) {
+          const retrySpec = buildPlanMessages(topic);
+          retrySpec.messages[1].content +=
+            "\n\nIMPORTANT: that attempt was incomplete. Return at least 3 pages with 7-10 lines each, and between 5 and 7 complete quiz questions with exactly 4 options and a 0-based answer index.";
+          try {
+            second = normalizePlan(await askJson(retrySpec.messages, retrySpec, startedAt), topic);
+            sawContent = true;
+          } catch (e) {
+            secondErr = e;
+            console.warn("[learn-hub] plan retry failed:", e && e.message ? e.message : e);
+          }
+          if (planIsUsable(second)) {
+            await writeCachedPlan(topic.conceptId, second);
+            res.setHeader("X-LearnHub", "retry");
+            return res.status(200).json({ plan: second, conceptId: topic.conceptId, cached: false });
+          }
         }
-        if (!planIsUsable(second)) {
-          return res.status(502).json({ error: "The lesson for this chapter could not be prepared yet. Please retry." });
-        }
-        await writeCachedPlan(topic.conceptId, second);
-        return res.status(200).json({ plan: second, conceptId: topic.conceptId, cached: false });
+
+        // 503 (not 502) with a real body: the learner sees an honest, retryable
+        // message and a Retry button instead of a bare gateway error.
+        //
+        // Two different failures deserve two different messages, because they
+        // mean different things to the learner:
+        //   - the provider never returned usable JSON  -> transient, retry
+        //   - it answered, but the lesson failed the
+        //     structural checks (fewer than 5 questions,
+        //     duplicate options, ...)                 -> this chapter, retry later
+        const providerDown = !sawContent;
+        const took = Date.now() - startedAt;
+        console.warn(`[learn-hub] plan unusable after ${took}ms`,
+          providerDown
+            ? `provider down: ${(firstErr && firstErr.message) || firstErr}`
+            : `content failed validation${secondErr ? ` (retry: ${secondErr.message})` : ""}`);
+        res.setHeader("X-LearnHub", `plan-failed-${took}ms`);
+        return res.status(503).json({
+          error: providerDown
+            ? "This chapter is taking longer than expected to prepare. Please retry in a moment."
+            : "The lesson for this chapter could not be prepared yet. Please retry.",
+        });
       }
 
       await writeCachedPlan(topic.conceptId, plan);
+      res.setHeader("X-LearnHub", "generated");
       return res.status(200).json({ plan, conceptId: topic.conceptId, cached: false });
     }
 
@@ -600,10 +680,11 @@ async function handler(req, res) {
 
     topic.planSummary = planSummary(cached);
     const spec = buildReviewMessages(topic, { quiz: attempts });
-    const review = normalizeReview(await askJson(spec.messages, spec));
+    const review = normalizeReview(await askJson(spec.messages, spec, startedAt));
 
     if (!review.final_explanation && !review.verdict) {
-      return res.status(502).json({ error: "The review could not be completed. Please retry." });
+      console.warn(`[learn-hub] review unusable after ${Date.now() - startedAt}ms`);
+      return res.status(503).json({ error: "The review is taking longer than expected. Please retry in a moment." });
     }
 
     // Correctness is always recomputed on the server from the real plan.
@@ -622,7 +703,7 @@ async function handler(req, res) {
       verified: correctCount === attempts.length,
     });
   } catch (err) {
-    console.error("[learn-hub]", err);
+    console.error(`[learn-hub] ${Date.now() - startedAt}ms:`, err && err.message ? err.message : err);
     return sendError(req, res, err, action === "plan" ? "The lesson could not be prepared right now. Please retry." : "The review could not be completed right now. Please retry.");
   }
 };
