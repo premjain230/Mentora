@@ -45,12 +45,13 @@ const CONCEPT_ID_MAX = 120;
  * Tracks the hub is allowed to teach. `namespaces` are the curriculum namespaces a
  * conceptId must live under, so a tampered request cannot relabel one board's
  * chapter as another. These mirror the namespaces actually present in
- * js/learning/curriculum-data.js (verified: 580 concepts, no others).
+ * js/learning/curriculum-data.js (verified: 590 concepts, no others).
  *
- * NOTE ON HONESTY: `jee_advanced` intentionally resolves to the JEE Main namespace.
- * There is no Advanced-specific data in curriculum-data.js yet, so the hub plans
- * against the shared JEE Main foundation chapters and the UI labels that limitation
- * explicitly instead of inventing an Advanced syllabus.
+ * NOTE ON HONESTY: `jee_advanced` serves the JEE Main foundation chapters plus
+ * a small set of Advanced-only chapters (fluid mechanics, thermal physics,
+ * solid state, surface chemistry, hydrogen, s-block, isolation of metals,
+ * environmental chemistry, polymers, chemistry in everyday life). It does not
+ * attempt to reproduce the full Advanced syllabus; the UI labels the scope.
  */
 const TRACKS = {
   maharashtra: {
@@ -64,7 +65,7 @@ const TRACKS = {
     namespaces: { 9: "cbse.9.", 10: "cbse.10.", 11: "cbse.11.", 12: "cbse.12." },
   },
   jee_main: { label: "JEE Main", grades: false, namespaces: { "": "jee.main." } },
-  jee_advanced: { label: "JEE Advanced", grades: false, namespaces: { "": "jee.main." } },
+  jee_advanced: { label: "JEE Advanced", grades: false, namespaces: { "": "jee.advanced.", "main": "jee.main." } },
   neet: { label: "NEET", grades: false, namespaces: { "": "neet.ug.", "cbse11": "cbse.11.", "cbse12": "cbse.12." } },
 };
 

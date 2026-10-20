@@ -647,6 +647,33 @@ export const CURRICULUM_CONCEPTS = [
   createConceptV1({ conceptId:"cbse.12.sociology.change_and_development_in_industrial_society", subject:"Sociology", topic:"Sociology", name:"Change and Development in Industrial Society", difficulty:0.45, prerequisites:["cbse.12.sociology.change_and_development_in_rural_society"], relatedConcepts:[], tags:["cbse","12","sociology"], curriculumPaths:["cbse.12.sociology.change_and_development_in_industrial_society"] }),
   createConceptV1({ conceptId:"cbse.12.sociology.social_movements", subject:"Sociology", topic:"Sociology", name:"Social Movements", difficulty:0.50, prerequisites:["cbse.12.sociology.change_and_development_in_industrial_society"], relatedConcepts:[], tags:["cbse","12","sociology"], curriculumPaths:["cbse.12.sociology.social_movements"] }),
 
+  /* ── JEE (Advanced) ────────────────────────────────────────────────────────────
+   * Verified against the official IIT Roorkee syllabus for JEE (Advanced) 2026:
+   *   https://jeeadv.ac.in/documents/jee-advanced-2026-syllabus.pdf
+   *
+   * JEE Advanced is a superset of JEE Main plus Advanced-only topics. The JEE Main
+   * foundation chapters (jee.main.*) cover most of the syllabus; the concepts below
+   * are the Advanced-only units not already present as JEE Main chapters.
+   *
+   *   Physics    Fluid Mechanics; Thermal Physics (Carnot, blackbody radiation)
+   *   Chemistry  Solid State; Surface Chemistry; Hydrogen; s-Block Elements;
+   *              Isolation of Metals; Environmental Chemistry; Polymers;
+   *              Chemistry in Everyday Life
+   *
+   * ConceptIds are never renamed, because renaming one restarts a learner's
+   * progress.
+   */
+  createConceptV1({ conceptId:"jee.advanced.physics.fluid_mechanics", subject:"Physics", topic:"Physics", name:"Fluid Mechanics", difficulty:0.60, prerequisites:["jee.main.physics.properties_solids_liquids"], relatedConcepts:[], tags:["jee","advanced","physics","fluid_mechanics"], curriculumPaths:["jee.advanced.physics.fluid_mechanics"] }),
+  createConceptV1({ conceptId:"jee.advanced.physics.advanced_thermal_physics", subject:"Physics", topic:"Physics", name:"Thermal Physics", difficulty:0.65, prerequisites:["jee.main.physics.thermodynamics"], relatedConcepts:[], tags:["jee","advanced","physics","thermal_physics"], curriculumPaths:["jee.advanced.physics.advanced_thermal_physics"] }),
+  createConceptV1({ conceptId:"jee.advanced.chemistry.solid_state", subject:"Chemistry", topic:"Chemistry", name:"Solid State", difficulty:0.55, prerequisites:["jee.main.chemistry.classification_periodicity"], relatedConcepts:[], tags:["jee","advanced","chemistry","solid_state"], curriculumPaths:["jee.advanced.chemistry.solid_state"] }),
+  createConceptV1({ conceptId:"jee.advanced.chemistry.surface_chemistry", subject:"Chemistry", topic:"Chemistry", name:"Surface Chemistry", difficulty:0.60, prerequisites:["jee.main.chemistry.classification_periodicity"], relatedConcepts:[], tags:["jee","advanced","chemistry","surface_chemistry"], curriculumPaths:["jee.advanced.chemistry.surface_chemistry"] }),
+  createConceptV1({ conceptId:"jee.advanced.chemistry.hydrogen", subject:"Chemistry", topic:"Chemistry", name:"Hydrogen", difficulty:0.50, prerequisites:["jee.main.chemistry.some_basic_concepts"], relatedConcepts:[], tags:["jee","advanced","chemistry","hydrogen"], curriculumPaths:["jee.advanced.chemistry.hydrogen"] }),
+  createConceptV1({ conceptId:"jee.advanced.chemistry.s_block_elements", subject:"Chemistry", topic:"Chemistry", name:"s-Block Elements", difficulty:0.55, prerequisites:["jee.main.chemistry.classification_periodicity"], relatedConcepts:[], tags:["jee","advanced","chemistry","s_block_elements"], curriculumPaths:["jee.advanced.chemistry.s_block_elements"] }),
+  createConceptV1({ conceptId:"jee.advanced.chemistry.isolation_of_metals", subject:"Chemistry", topic:"Chemistry", name:"Isolation of Metals", difficulty:0.60, prerequisites:["jee.main.chemistry.classification_periodicity"], relatedConcepts:[], tags:["jee","advanced","chemistry","isolation_of_metals"], curriculumPaths:["jee.advanced.chemistry.isolation_of_metals"] }),
+  createConceptV1({ conceptId:"jee.advanced.chemistry.environmental_chemistry", subject:"Chemistry", topic:"Chemistry", name:"Environmental Chemistry", difficulty:0.50, prerequisites:[], relatedConcepts:[], tags:["jee","advanced","chemistry","environmental_chemistry"], curriculumPaths:["jee.advanced.chemistry.environmental_chemistry"] }),
+  createConceptV1({ conceptId:"jee.advanced.chemistry.polymers", subject:"Chemistry", topic:"Chemistry", name:"Polymers", difficulty:0.55, prerequisites:["jee.main.chemistry.organic_oxygen"], relatedConcepts:[], tags:["jee","advanced","chemistry","polymers"], curriculumPaths:["jee.advanced.chemistry.polymers"] }),
+  createConceptV1({ conceptId:"jee.advanced.chemistry.chemistry_in_everyday_life", subject:"Chemistry", topic:"Chemistry", name:"Chemistry in Everyday Life", difficulty:0.45, prerequisites:[], relatedConcepts:[], tags:["jee","advanced","chemistry","chemistry_in_everyday_life"], curriculumPaths:["jee.advanced.chemistry.chemistry_in_everyday_life"] }),
+  
   /* ── NEET (UG) ───────────────────────────────────────────────────────────────
    * Verified against the official NTA syllabus for NEET (UG) 2026:
    *   https://www.nta.ac.in/Download/Notice/Notice_20260108180635.pdf

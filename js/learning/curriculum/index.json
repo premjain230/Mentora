@@ -184,6 +184,19 @@
       "verified_on": "2026-10-19",
       "file": "2026-27/neet_ug_2026.json",
       "note": "Verified. The official 18-page NTA/NMC PDF was downloaded and parsed. It prescribes 20 Physics, 20 Chemistry and 10 Biology units. Coverage in js/learning/curriculum-data.js: all 10 Biology units and 19/20 Physics units and 17/20 Chemistry units are served by the existing CBSE Class 11/12 science chapters; the remaining four units are real neet.ug.* concepts (Experimental Skills; P-Block Elements; Purification and Characterisation of Organic Compounds; Principles Related to Practical Chemistry). Topics deliberately NOT in the official NEET syllabus and absent from our data: States of Matter, Hydrogen, s-Block Elements, Environmental Chemistry, Solid State, Surface Chemistry, Metallurgy/Isolation of Elements, Polymers, Chemistry in Everyday Life."
+    },
+    {
+      "curriculum_id": "jee_advanced_2026",
+      "board_or_exam": "jee_advanced",
+      "class_or_level": "jee_advanced",
+      "academic_year": "2026",
+      "curriculum_version": "2026.1",
+      "official_source": "https://jeeadv.ac.in/documents/jee-advanced-2026-syllabus.pdf",
+      "landing_page": "https://jeeadv.ac.in/",
+      "status": "partially_verified",
+      "verified_on": "2026-10-19",
+      "file": "2026-27/jee_advanced_2026.json",
+      "note": "Partially verified. JEE Advanced (IIT Roorkee, 2026) is a superset of JEE Main plus Advanced-only topics. The JEE Main foundation chapters are served from the existing jee.main.* data. The official JEE Advanced 2026 PDF prescribes units including fluid mechanics/surface tension/viscosity/Bernoulli, waves (Doppler, beats), thermal physics (Carnot, blackbody radiation), solid state, surface chemistry, hydrogen, s-block, isolation of metals, environmental chemistry, polymers and chemistry in everyday life. js/learning/curriculum-data.js adds 10 jee.advanced.* concepts covering the Advanced-only units not already present as JEE Main chapters (fluid mechanics, thermal physics, solid state, surface chemistry, hydrogen, s-block, isolation of metals, environmental chemistry, polymers, chemistry in everyday life). JEE Advanced Mathematics mirrors JEE Main Mathematics and needs no separate entries."
     }
   ]
 }

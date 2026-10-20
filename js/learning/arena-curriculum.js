@@ -192,7 +192,7 @@ function getBoardSubjects(board, classNum){
  * Core: build ordered chapter list for (track, subject, class)
  * Returns chapters sorted topologically by prerequisites (syllabus order)
  */
-export function getChapters(trackId, subject, classNum=null){
+export function getChapters(trackId, subject, classNum=null, hubTrackId=null){
   const t = String(trackId).toLowerCase();
   const subj = subject;
   let filtered = [];
@@ -206,7 +206,9 @@ export function getChapters(trackId, subject, classNum=null){
     // curriculumPaths actually name that track.
     if(t==="jee"){
       const hasTrack = (c.curriculumPaths||[]).some(p=> p.startsWith("jee."));
-      if(hasTrack) filtered.push(c);
+      if(!hasTrack) continue;
+      if(hubTrackId==="jee_main" && c.conceptId.startsWith("jee.advanced.")) continue;
+      filtered.push(c);
     } else if(t==="neet"){
       const hasTrack = (c.curriculumPaths||[]).some(p=> p.startsWith("neet."));
       if(hasTrack){ filtered.push(c); continue; }

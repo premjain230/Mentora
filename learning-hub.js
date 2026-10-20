@@ -78,15 +78,16 @@ const HUB_TRACKS = [
     id: "jee_advanced",
     label: "JEE Advanced",
     short: "JEE Advanced",
-    sub: "JEE Main foundation",
+    sub: "Main + Advanced-only units",
     dotRgb: "8, 145, 178",
     icon: "math",
     grades: false,
     curriculumTrack: "jee",
     notice:
-      "<b>Partial coverage.</b> Our dataset has no JEE Advanced-specific chapters yet, so this list shows " +
-      "the JEE Main chapters that form the Advanced foundation. Advanced-only chapters are <b>not</b> listed " +
-      "and this is <b>not</b> the complete Advanced syllabus.",
+      "<b>Coverage:</b> JEE Advanced covers the JEE Main foundation chapters plus Advanced-only units " +
+      "(fluid mechanics, thermal physics, solid state, surface chemistry, hydrogen, s-block, " +
+      "isolation of metals, environmental chemistry, polymers, chemistry in everyday life). " +
+      "It is not the complete Advanced syllabus.",
   },
   {
     id: "neet",
@@ -211,7 +212,7 @@ function subjectsFor(trk, classNum) {
 }
 
 function chaptersFor(trk, subject, classNum) {
-  return trk.grades ? getChapters(trk.curriculumTrack, subject, classNum) : getChapters(trk.curriculumTrack, subject);
+  return trk.grades ? getChapters(trk.curriculumTrack, subject, classNum, trk.id) : getChapters(trk.curriculumTrack, subject, null, trk.id);
 }
 
 /** Flat chapter list for the whole track, used by search and counts. */
