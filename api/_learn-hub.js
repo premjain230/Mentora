@@ -45,7 +45,7 @@ const CONCEPT_ID_MAX = 120;
  * Tracks the hub is allowed to teach. `namespaces` are the curriculum namespaces a
  * conceptId must live under, so a tampered request cannot relabel one board's
  * chapter as another. These mirror the namespaces actually present in
- * js/learning/curriculum-data.js (verified: 579 concepts, no others).
+ * js/learning/curriculum-data.js (verified: 580 concepts, no others).
  *
  * NOTE ON HONESTY: `jee_advanced` intentionally resolves to the JEE Main namespace.
  * There is no Advanced-specific data in curriculum-data.js yet, so the hub plans

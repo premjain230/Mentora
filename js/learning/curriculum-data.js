@@ -647,9 +647,36 @@ export const CURRICULUM_CONCEPTS = [
   createConceptV1({ conceptId:"cbse.12.sociology.change_and_development_in_industrial_society", subject:"Sociology", topic:"Sociology", name:"Change and Development in Industrial Society", difficulty:0.45, prerequisites:["cbse.12.sociology.change_and_development_in_rural_society"], relatedConcepts:[], tags:["cbse","12","sociology"], curriculumPaths:["cbse.12.sociology.change_and_development_in_industrial_society"] }),
   createConceptV1({ conceptId:"cbse.12.sociology.social_movements", subject:"Sociology", topic:"Sociology", name:"Social Movements", difficulty:0.50, prerequisites:["cbse.12.sociology.change_and_development_in_industrial_society"], relatedConcepts:[], tags:["cbse","12","sociology"], curriculumPaths:["cbse.12.sociology.social_movements"] }),
 
-  createConceptV1({ conceptId:"neet.ug.physics.physics_unit_1", subject:"Physics", topic:"Physics", name:"Physics - Unit 1", difficulty:0.45, prerequisites:["cbse.12.physics.electric_charges_and_fields"], relatedConcepts:[], tags:["neet_ug","neet_ug","physics"], curriculumPaths:["neet.ug.physics.physics_unit_1"] }),
-  createConceptV1({ conceptId:"neet.ug.chemistry.chemistry_unit_1", subject:"Chemistry", topic:"Chemistry", name:"Chemistry - Unit 1", difficulty:0.50, prerequisites:["cbse.12.chemistry.solutions"], relatedConcepts:[], tags:["neet_ug","neet_ug","chemistry"], curriculumPaths:["neet.ug.chemistry.chemistry_unit_1"] }),
-  createConceptV1({ conceptId:"neet.ug.biology.biology_unit_1", subject:"Biology", topic:"Biology", name:"Biology - Unit 1", difficulty:0.45, prerequisites:["cbse.12.biology.sexual_reproduction_in_flowering_plants"], relatedConcepts:[], tags:["neet_ug","neet_ug","biology"], curriculumPaths:["neet.ug.biology.biology_unit_1"] }),
+  /* ── NEET (UG) ───────────────────────────────────────────────────────────────
+   * Verified against the official NTA syllabus for NEET (UG) 2026:
+   *   https://www.nta.ac.in/Download/Notice/Notice_20260108180635.pdf
+   *   (NMC/UGMEB File No. U-14023/19/NEET(UGExam)/UGMEB, published 8 Jan 2026)
+   *
+   * That document prescribes 20 Physics units, 20 Chemistry units and 10 Biology
+   * units. Every unit except the four below is already covered chapter-for-chapter
+   * by the CBSE Class 11/12 data in this file, which is what `arena-curriculum.js`
+   * serves as the NEET fallback. These four are therefore the ONLY concepts the
+   * NEET track owns outright:
+   *
+   *   Physics   Unit 20  Experimental Skills
+   *   Chemistry Unit 10  P-Block Elements
+   *   Chemistry Unit 13  Purification and Characterisation of Organic Compounds
+   *   Chemistry Unit 20  Principles Related to Practical Chemistry
+   *
+   * NEET Biology needs no entry of its own: all 10 official units map onto the 32
+   * CBSE Class 11/12 Biology chapters already present, so a Biology concept here
+   * would only duplicate them. The earlier "Biology - Unit 1" placeholder that
+   * used to sit here has been removed for that reason — it carried no syllabus
+   * content and appeared at the top of the Biology list.
+   *
+   * ConceptIds are never renamed, because renaming one restarts a learner's
+   * progress. The two ids below kept their original names (`physics_unit_1`,
+   * `chemistry_unit_1`) for exactly that reason; only the content was corrected.
+   */
+  createConceptV1({ conceptId:"neet.ug.physics.physics_unit_1", subject:"Physics", topic:"Physics", name:"Experimental Skills", difficulty:0.40, prerequisites:["cbse.11.physics.units_and_measurements"], relatedConcepts:[], tags:["neet","ug","physics","experimental_skills"], curriculumPaths:["neet.ug.physics.physics_unit_1"] }),
+  createConceptV1({ conceptId:"neet.ug.chemistry.chemistry_unit_1", subject:"Chemistry", topic:"Chemistry", name:"P-Block Elements", difficulty:0.55, prerequisites:["cbse.11.chemistry.classification_of_elements_and_periodicity_in_properties"], relatedConcepts:[], tags:["neet","ug","chemistry","p_block_elements"], curriculumPaths:["neet.ug.chemistry.chemistry_unit_1"] }),
+  createConceptV1({ conceptId:"neet.ug.chemistry.purification_and_characterisation_of_organic_compounds", subject:"Chemistry", topic:"Chemistry", name:"Purification and Characterisation of Organic Compounds", difficulty:0.50, prerequisites:["cbse.11.chemistry.organic_chemistry_some_basic_principles_and_techniques"], relatedConcepts:[], tags:["neet","ug","chemistry","purification_characterisation"], curriculumPaths:["neet.ug.chemistry.purification_and_characterisation_of_organic_compounds"] }),
+  createConceptV1({ conceptId:"neet.ug.chemistry.principles_related_to_practical_chemistry", subject:"Chemistry", topic:"Chemistry", name:"Principles Related to Practical Chemistry", difficulty:0.45, prerequisites:["cbse.11.chemistry.some_basic_concepts_of_chemistry"], relatedConcepts:[], tags:["neet","ug","chemistry","practical_chemistry"], curriculumPaths:["neet.ug.chemistry.principles_related_to_practical_chemistry"] }),
 ];
 
 // Alias map for backward compatibility with old IDs (mathematics_algebra etc)

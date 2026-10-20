@@ -177,10 +177,13 @@
       "class_or_level": "neet_ug",
       "academic_year": "2026",
       "curriculum_version": "2026.1",
-      "official_source": "https://cdnbbsr.s3waas.gov.in/s37bc1ec1d9c3426357e69acd5bf320061/uploads/2026/01/20260102588210790.pdf (NEET 2025) | https://neet.nta.nic.in/documents/ for 2026 — 2026 PDF pending direct verification",
-      "status": "not_verified_this_pass",
+      "official_source": "https://www.nta.ac.in/Download/Notice/Notice_20260108180635.pdf",
+      "official_source_title": "Syllabus for NEET (UG) 2026 — NMC/UGMEB File No. U-14023/19/NEET(UGExam)/UGMEB, published 8 January 2026",
+      "landing_page": "https://neet.nta.nic.in/document/syllabus-for-neet-ug-2026-examination/",
+      "status": "verified_against_official_pdf",
+      "verified_on": "2026-10-19",
       "file": "2026-27/neet_ug_2026.json",
-      "note": "NOT verified. The NTA NEET UG 2026 syllabus PDF was not fetched in this pass. No changes made."
+      "note": "Verified. The official 18-page NTA/NMC PDF was downloaded and parsed. It prescribes 20 Physics, 20 Chemistry and 10 Biology units. Coverage in js/learning/curriculum-data.js: all 10 Biology units and 19/20 Physics units and 17/20 Chemistry units are served by the existing CBSE Class 11/12 science chapters; the remaining four units are real neet.ug.* concepts (Experimental Skills; P-Block Elements; Purification and Characterisation of Organic Compounds; Principles Related to Practical Chemistry). Topics deliberately NOT in the official NEET syllabus and absent from our data: States of Matter, Hydrogen, s-Block Elements, Environmental Chemistry, Solid State, Surface Chemistry, Metallurgy/Isolation of Elements, Polymers, Chemistry in Everyday Life."
     }
   ]
 }

@@ -85,16 +85,25 @@ export function normalizeSubject(conceptSubject){
   return raw;
 }
 
-// NEET UG has only 3 placeholder concepts tagged `neet.ug.*` (see
-// js/learning/curriculum/index.json -> neet_ug_2026 "source_pending"). The NEET
-// UG syllabus is, in board terms, CBSE Class 11 + 12 Physics/Chemistry/Biology —
-// and the existing neet.* prerequisites already point at cbse.12.* — so NEET
-// falls back to those two classes for its three science subjects.
+// NEET UG syllabus source of truth: the NMC/NTA document
+//   https://www.nta.ac.in/Download/Notice/Notice_20260108180635.pdf
+// ("Syllabus for NEET (UG) 2026", NMC/UGMEB File No. U-14023/19/NEET(UGExam)/UGMEB,
+// published 8 January 2026). It prescribes 20 Physics units, 20 Chemistry units
+// and 10 Biology units.
 //
+// That maps onto the curriculum data as follows:
+//   - all 20 Physics units except "Experimental Skills"  -> CBSE Class 11 + 12
+//   - all 20 Chemistry units except three                -> CBSE Class 11 + 12
+//   - all 10 Biology units                               -> CBSE Class 11 + 12
+// The four exceptions are real `neet.ug.*` concepts of their own (see
+// js/learning/curriculum-data.js), and they are what `curriculumPaths` selects
+// before the fallback below is consulted.
+//
+// So NEET = those four NEET-owned units + the CBSE Class 11/12 science chapters.
 // This is an EXPLICIT, scoped fallback, deliberately different from the old
 // behaviour which let any core subject leak in by difficulty and produced 53
-// chapters of mixed Maharashtra/CBSE content. It is still content-thin: verify
-// against the official NEET UG 2026 PDF before treating it as authoritative.
+// chapters of mixed Maharashtra/CBSE content. Verified against the official PDF
+// on 19 October 2026.
 const NEET_FALLBACK_CLASSES = [11, 12];
 const NEET_SUBJECTS = new Set(["Physics", "Chemistry", "Biology"]);
 

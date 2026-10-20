@@ -98,9 +98,13 @@ const HUB_TRACKS = [
     grades: false,
     curriculumTrack: "neet",
     notice:
-      "<b>Partial coverage.</b> NEET chapters are served from the CBSE Class 11–12 Physics, Chemistry and " +
-      "Biology chapters, which is our explicit fallback — only 3 unit-level NEET placeholders exist in the " +
-      "dataset and the official NEET UG syllabus has not been verified against it yet.",
+      "<b>Coverage verified.</b> Checked against the official NTA/NMC syllabus for NEET (UG) 2026 " +
+      "(published 8 January 2026): 20 Physics units, 20 Chemistry units and 10 Biology units. Chapters are " +
+      "served from the CBSE Class 11–12 science syllabus, which is what NEET is examined on, plus 4 " +
+      "NEET-specific units the CBSE data does not carry (Experimental Skills; P-Block Elements; " +
+      "Purification and Characterisation of Organic Compounds; Principles Related to Practical Chemistry). " +
+      "Topics such as Solid State, Surface Chemistry, Polymers and Chemistry in Everyday Life are " +
+      "<b>deliberately not offered</b> — they are not in the current NEET syllabus.",
   },
 ];
 
