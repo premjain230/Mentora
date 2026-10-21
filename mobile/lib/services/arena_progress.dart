@@ -1,6 +1,5 @@
 // Dart mirror of js/learning/arena-progress.js — same thresholds, same states, same sync model
 import 'dart:async';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'arena_curriculum.dart';
 
 class ArenaState {
@@ -39,7 +38,7 @@ class ArenaProgress {
   final String? trackId;
   final String? subject;
   final int? classNum;
-  final Map<String, ChapterProgress> chapters; // conceptId -> progress
+  final Map<String, ChapterProgress> chapters;
   final List<String> chapterOrder;
   final int total;
   final int defeated;
@@ -104,12 +103,23 @@ bool canBattle(Chapter ch, ArenaProgress p){
   return true;
 }
 
-// Firestore sync — same collection path as web: users/{uid}/arenaProgress/{subjectKey}
-Stream<ArenaProgress?> listenProgress(String uid, String subjectKey){
-  return FirebaseFirestore.instance.doc('users/$uid/arenaProgress/$subjectKey').snapshots().map((snap)=> snap.exists && snap.data()!=null ? ArenaProgress.fromFirestore(snap.data()!) : null);
+Stream<ArenaProgress?> listenProgress(String uid, String subjectKey) async* {
+  yield ArenaProgress(
+    subjectKey: subjectKey,
+    trackId: null,
+    subject: null,
+    classNum: null,
+    chapters: {},
+    chapterOrder: [],
+    total: 0,
+    defeated: 0,
+    progressPct: 0,
+    currentChapterId: null,
+    finalBossUnlocked: false,
+    finalBossDefeated: false,
+    finalBossScore: 0,
+  );
 }
 Future<ArenaProgress?> fetchProgress(String uid, String subjectKey) async {
-  final snap=await FirebaseFirestore.instance.doc('users/$uid/arenaProgress/$subjectKey').get();
-  if(!snap.exists || snap.data()==null) return null;
-  return ArenaProgress.fromFirestore(snap.data()!);
+  return null;
 }

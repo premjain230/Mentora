@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import '../theme/design_tokens.dart';
 import '../theme/app_theme.dart';
 import '../widgets/app_components.dart';
@@ -15,10 +13,6 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   String _greetingName = 'there';
-  String _userEmail = '';
-  int _chats = 0;
-  int _streak = 0;
-  int _topics = 0;
   bool _loading = true;
 
   @override
@@ -28,38 +22,12 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> _loadUser() async {
-    final user = FirebaseAuth.instance.currentUser;
-    if (user == null) {
+    await Future.delayed(const Duration(milliseconds: 300));
+    if (mounted) {
       setState(() {
-        _greetingName = 'there';
-        _userEmail = '';
+        _greetingName = 'Student';
         _loading = false;
       });
-      return;
-    }
-    setState(() {
-      _greetingName = (user.displayName ?? user.email?.split('@').first ?? 'there');
-      _userEmail = user.email ?? '';
-    });
-
-    // Load stats from Firestore
-    try {
-      final userRef = FirebaseFirestore.instance.doc('users/${user.uid}');
-      final snap = await userRef.get();
-      if (snap.exists && snap.data() != null) {
-        final data = snap.data()!;
-        setState(() {
-          _streak = (data['streak'] ?? 0) as int;
-          _topics = (data['topics'] as List?)?.length ?? 0;
-        });
-      }
-      final chatsSnap = await FirebaseFirestore.instance.collection('users/${user.uid}/chats').get();
-      setState(() {
-        _chats = chatsSnap.size;
-        _loading = false;
-      });
-    } catch (e) {
-      setState(() => _loading = false);
     }
   }
 
@@ -91,7 +59,6 @@ class _HomeScreenState extends State<HomeScreen> {
           : ListView(
               padding: const EdgeInsets.all(LATokens.space4),
               children: [
-                // Greeting hero
                 Container(
                   padding: const EdgeInsets.all(LATokens.space5),
                   decoration: BoxDecoration(
@@ -128,21 +95,19 @@ class _HomeScreenState extends State<HomeScreen> {
                         ],
                       ),
                       const SizedBox(height: LATokens.space4),
-                      // Stats row
                       Row(
                         children: [
-                          _statChip('Chats', _chats.toString(), Icons.chat_bubble_rounded),
+                          _statChip('Chats', '0', Icons.chat_bubble_rounded),
                           const SizedBox(width: LATokens.space2),
-                          _statChip('Streak', '$_streak days', Icons.local_fire_department_rounded, color: LATokens.amber),
+                          _statChip('Streak', '0 days', Icons.local_fire_department_rounded, color: LATokens.amber),
                           const SizedBox(width: LATokens.space2),
-                          _statChip('Topics', _topics.toString(), Icons.school_rounded),
+                          _statChip('Topics', '0', Icons.school_rounded),
                         ],
                       ),
                     ],
                   ),
                 ),
                 const SizedBox(height: LATokens.space4),
-                // Suggestions
                 const Text('Quick actions', style: TextStyle(fontWeight: FontWeight.w700, color: LATokens.textPrimary)),
                 const SizedBox(height: LATokens.space2),
                 GridView.count(
@@ -160,7 +125,6 @@ class _HomeScreenState extends State<HomeScreen> {
                   ],
                 ),
                 const SizedBox(height: LATokens.space4),
-                // Continue learning
                 const Text('Continue learning', style: TextStyle(fontWeight: FontWeight.w700, color: LATokens.textPrimary)),
                 const SizedBox(height: LATokens.space2),
                 Container(

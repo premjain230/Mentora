@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:provider/provider.dart';
 import '../theme/app_theme.dart';
 import '../theme/design_tokens.dart';
@@ -43,39 +41,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Future<void> _load() async {
-    final user = FirebaseAuth.instance.currentUser;
     final tp = context.read<ThemeProvider>();
     await tp.load();
     if (mounted) {
       setState(() {
-        _name = user?.displayName ?? user?.email?.split('@').first ?? 'Student';
-        _email = user?.email ?? '–';
-        _photoUrl = user?.photoURL ?? '';
+        _name = 'Student';
+        _email = '–';
+        _photoUrl = '';
         _isLight = tp.isLight;
         _loading = false;
       });
-      _loadUserStats(user?.uid);
-    }
-  }
-
-  Future<void> _loadUserStats(String? uid) async {
-    if (uid == null) return;
-    try {
-      final snap = await FirebaseFirestore.instance.doc('users/$uid').get();
-      if (snap.exists && snap.data() != null) {
-        final data = snap.data()!;
-        final chatsSnap = await FirebaseFirestore.instance.collection('users/$uid/chats').get();
-        setState(() {
-          _chats = chatsSnap.size;
-          _streak = (data['streak'] ?? 0) as int;
-          _topics = (data['topics'] as List?)?.length ?? 0;
-          _personality = data['personality'] ?? 'mentor';
-          _letter = data['futureMeLetter'] ?? '';
-          _letterDate = data['futureMeLetterDate'] ?? '';
-        });
-      }
-    } catch (e) {
-      // ignore
     }
   }
 
@@ -87,15 +62,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
   void _selectPersonality(String id) {
     setState(() => _personality = id);
     LAToast.show(context, 'Personality saved: ${_personalities.firstWhere((p) => p['id'] == id)['name']}');
-    _savePersonality(id);
-  }
-
-  Future<void> _savePersonality(String id) async {
-    final user = FirebaseAuth.instance.currentUser;
-    if (user == null) return;
-    try {
-      await FirebaseFirestore.instance.doc('users/${user.uid}').set({'personality': id, 'updatedAt': FieldValue.serverTimestamp()}, SetOptions(merge: true));
-    } catch (_) {}
   }
 
   void _generateLetter() {
@@ -105,19 +71,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
       _letterDate = '${now.month}/${now.day}/${now.year}';
     });
     LAToast.show(context, 'Your letter is ready');
-    _saveLetter(_letter, _letterDate);
-  }
-
-  Future<void> _saveLetter(String letter, String date) async {
-    final user = FirebaseAuth.instance.currentUser;
-    if (user == null) return;
-    try {
-      await FirebaseFirestore.instance.doc('users/${user.uid}').set({
-        'futureMeLetter': letter,
-        'futureMeLetterDate': date,
-        'updatedAt': FieldValue.serverTimestamp(),
-      }, SetOptions(merge: true));
-    } catch (_) {}
   }
 
   @override

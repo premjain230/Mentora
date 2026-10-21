@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import '../theme/design_tokens.dart';
@@ -18,10 +17,7 @@ class _ChatScreenState extends State<ChatScreen> {
   final List<Map<String, dynamic>> _messages = [];
   final TextEditingController _controller = TextEditingController();
   bool _sending = false;
-  bool _searchEnabled = false;
   bool _showWelcome = true;
-  double _scrollPercent = 0;
-  String _scrollDirection = 'down';
 
   @override
   void initState() {
@@ -53,16 +49,10 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   Future<void> _callGroqProxy(String text) async {
-    final user = FirebaseAuth.instance.currentUser;
-    String? token;
-    if (user != null) token = await user.getIdToken();
     try {
       final resp = await http.post(
         Uri.parse('https://www.learningallied.world/api/groq-proxy'),
-        headers: {
-          'Content-Type': 'application/json',
-          if (token != null) 'Authorization': 'Bearer $token',
-        },
+        headers: {'Content-Type': 'application/json'},
         body: jsonEncode({
           'model': 'openai/gpt-oss-120b',
           'messages': [
@@ -112,11 +102,7 @@ class _ChatScreenState extends State<ChatScreen> {
         actions: [
           IconButton(icon: const Icon(Icons.history_rounded, size: 20), onPressed: () {}),
           const SizedBox(width: LATokens.space1),
-          CircleAvatar(
-            radius: 16,
-            backgroundColor: LATokens.accent,
-            child: const Text('U', style: TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.w700)),
-          ),
+          CircleAvatar(radius: 16, backgroundColor: LATokens.accent, child: const Text('U', style: TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.w700))),
           const SizedBox(width: LATokens.space1),
         ],
       ),

@@ -5,7 +5,6 @@ import '../services/arena_api.dart';
 import '../widgets/app_drawer.dart';
 import '../widgets/chapter_node.dart';
 import 'battle_screen.dart';
-
 class SubjectMapScreen extends StatefulWidget {
   final ArenaTrack track; final int? classNum; final String subject;
   const SubjectMapScreen({super.key, required this.track, required this.classNum, required this.subject});

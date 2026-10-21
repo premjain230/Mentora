@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import '../theme/design_tokens.dart';
 import '../screens/arena_landing_screen.dart';
 import '../screens/profile_screen.dart';
@@ -13,9 +12,8 @@ class AppDrawer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final user = FirebaseAuth.instance.currentUser;
-    final _userName = user?.displayName ?? user?.email?.split('@').first ?? 'Guest';
-    final _userPhotoUrl = user?.photoURL ?? '';
+    final _userName = 'Student';
+    final _userPhotoUrl = '';
     final dark = Theme.of(context).brightness == Brightness.dark;
     return Drawer(
       backgroundColor: dark ? LATokens.bgSidebar : LATokens.lightBgSidebar,
@@ -161,7 +159,6 @@ class AppDrawer extends StatelessWidget {
                         IconButton(
                           icon: const Icon(Icons.logout_rounded, size: 16, color: LATokens.textMuted),
                           onPressed: () async {
-                            await FirebaseAuth.instance.signOut();
                             if (context.mounted) Navigator.pop(context);
                           },
                         ),

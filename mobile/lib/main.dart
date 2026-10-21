@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
-import 'firebase_options.dart';
 import 'theme/app_theme.dart';
 import 'theme/design_tokens.dart';
 import 'screens/home_screen.dart';
@@ -15,7 +13,6 @@ import 'widgets/bottom_nav.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(options: firebaseOptions);
   runApp(const LearningAlliedApp());
 }
 

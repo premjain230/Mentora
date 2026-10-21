@@ -1,22 +1,13 @@
 // Arena API client — server-authoritative, same endpoint as web (/api/arena)
-// Uses Firebase ID token for auth. Never trusts client for defeat/unlock.
 
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'package:firebase_auth/firebase_auth.dart';
 
 class ArenaApi {
-  // Serve the host that answers directly. The old aquila-sand.vercel.app host
-  // redirected to the apex domain, which itself 308-redirects to www, adding
-  // two hops to every request. localhost fallback handled by caller.
   static const baseUrl = 'https://www.learningallied.world';
   static Future<Map<String, String>> _headers() async {
-    final user=FirebaseAuth.instance.currentUser;
-    String? token;
-    if(user!=null) token=await user.getIdToken();
     return {
       'Content-Type':'application/json',
-      if(token!=null) 'Authorization':'Bearer $token',
     };
   }
   static Future<Map<String,dynamic>> initProgress({
@@ -24,7 +15,7 @@ class ArenaApi {
     required String trackId,
     required String subject,
     int? classNum,
-    required List<Map<String,dynamic>> chapters, // [{conceptId, prerequisites}]
+    required List<Map<String,dynamic>> chapters,
   }) async {
     final h=await _headers();
     final r=await http.post(Uri.parse('$baseUrl/api/arena'), headers:h, body: jsonEncode({
