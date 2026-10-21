@@ -1,143 +1,117 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import '../theme/design_tokens.dart';
 import '../screens/arena_landing_screen.dart';
+import '../screens/profile_screen.dart';
+import '../screens/learning_hub_screen.dart';
+import '../screens/study_session_screen.dart';
 
 class AppDrawer extends StatelessWidget {
-  final String activeRoute; // 'arena', 'home', etc
+  final String activeRoute;
+
   const AppDrawer({super.key, this.activeRoute = 'arena'});
 
   @override
   Widget build(BuildContext context) {
     final user = FirebaseAuth.instance.currentUser;
+    final _userName = user?.displayName ?? user?.email?.split('@').first ?? 'Guest';
+    final _userPhotoUrl = user?.photoURL ?? '';
+    final dark = Theme.of(context).brightness == Brightness.dark;
     return Drawer(
-      backgroundColor: const Color(0xFF0E1016),
+      backgroundColor: dark ? LATokens.bgSidebar : LATokens.lightBgSidebar,
       width: 280,
       child: SafeArea(
         child: Column(
           children: [
             // Header
             Padding(
-              padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
+              padding: const EdgeInsets.fromLTRB(LATokens.space4, LATokens.space3, LATokens.space3, LATokens.space3),
               child: Row(
                 children: [
                   Container(
-                    width: 36,
-                    height: 36,
+                    width: LATokens.radiusLg.toDouble() + 4,
+                    height: LATokens.radiusLg.toDouble() + 4,
                     decoration: BoxDecoration(
                       gradient: const LinearGradient(colors: [Color(0xFF4F8CFF), Color(0xFF8B5CF6)]),
-                      borderRadius: BorderRadius.circular(10),
+                      borderRadius: BorderRadius.circular(LATokens.radiusMd),
                     ),
                     child: const Center(child: Text('A', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w800))),
                   ),
-                  const SizedBox(width: 10),
+                  const SizedBox(width: LATokens.space2),
                   const Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('Learning Allied', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w700, fontSize: 15)),
-                        Text('Arena', style: TextStyle(color: Colors.white38, fontSize: 11)),
+                        Text('Learning Allied', style: TextStyle(color: LATokens.textPrimary, fontWeight: FontWeight.w700, fontSize: 15)),
+                        Text('Arena', style: TextStyle(color: LATokens.textMuted, fontSize: 11)),
                       ],
                     ),
                   ),
                   IconButton(
-                    icon: const Icon(Icons.close, size: 18, color: Colors.white54),
+                    icon: const Icon(Icons.close, size: 18, color: LATokens.textMuted),
                     onPressed: () => Navigator.pop(context),
                   ),
                 ],
               ),
             ),
-            const Divider(color: Colors.white10, height: 1),
+            const Divider(color: LATokens.borderSubtle, height: 1),
             // Nav
             Expanded(
               child: ListView(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+                padding: const EdgeInsets.symmetric(horizontal: LATokens.space1, vertical: LATokens.space1),
                 children: [
                   const Padding(
-                    padding: EdgeInsets.fromLTRB(12, 12, 12, 4),
-                    child: Text('MAIN', style: TextStyle(color: Colors.white38, fontSize: 11, fontWeight: FontWeight.w700, letterSpacing: 0.8)),
+                    padding: EdgeInsets.fromLTRB(LATokens.space3, LATokens.space3, LATokens.space3, LATokens.space1),
+                    child: Text('MAIN', style: TextStyle(color: LATokens.textMuted, fontSize: LATokens.fsXs, fontWeight: FontWeight.w700, letterSpacing: 0.8)),
                   ),
-                  _navItem(
-                    context,
-                    icon: Icons.home_rounded,
-                    label: 'Home',
-                    active: activeRoute == 'home',
-                    onTap: () {
-                      Navigator.pop(context);
-                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Home — coming soon, use Arena for now')));
-                    },
-                  ),
-                  _navItem(
-                    context,
-                    icon: Icons.sports_esports_rounded,
-                    label: 'Arena',
-                    active: activeRoute == 'arena',
-                    trailing: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
-                      decoration: BoxDecoration(color: const Color(0xFF0EA5E9).withOpacity(0.16), borderRadius: BorderRadius.circular(20)),
-                      child: const Text('⚔', style: TextStyle(fontSize: 10)),
-                    ),
-                    onTap: () {
-                      Navigator.pop(context);
-                      // if not already on arena, push
-                      if (activeRoute != 'arena') {
-                        Navigator.pushAndRemoveUntil(
-                          context,
-                          MaterialPageRoute(builder: (_) => const ArenaLandingScreen()),
-                          (_) => false,
-                        );
-                      }
-                    },
-                  ),
-                  _navItem(
-                    context,
-                    icon: Icons.chat_bubble_rounded,
-                    label: 'Chat',
-                    active: false,
-                    onTap: () {
-                      Navigator.pop(context);
-                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Chat — open web app for chat')));
-                    },
-                  ),
-                  _navItem(
-                    context,
-                    icon: Icons.bolt_rounded,
-                    label: 'Study Session',
-                    active: false,
-                    badge: 'New',
-                    onTap: () {
-                      Navigator.pop(context);
-                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Study Session — coming to mobile')));
-                    },
-                  ),
-                  _navItem(
-                    context,
-                    icon: Icons.calendar_month_rounded,
-                    label: 'Study Planner',
-                    active: false,
-                    onTap: () {
-                      Navigator.pop(context);
-                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Planner — web only')));
-                    },
-                  ),
+                  _navItem(context, icon: Icons.home_rounded, label: 'Home', active: activeRoute == 'home', onTap: () {
+                    Navigator.pop(context);
+                    // Pop to root then replace with home shell - handled by parent
+                  }),
+                  _navItem(context, icon: Icons.menu_book_rounded, label: 'Study', active: activeRoute == 'study', onTap: () {
+                    Navigator.pop(context);
+                  }),
+                  _navItem(context, icon: Icons.chat_bubble_rounded, label: 'Chat', active: activeRoute == 'chat', onTap: () {
+                    Navigator.pop(context);
+                  }),
+                  _navItem(context, icon: Icons.sports_esports_rounded, label: 'Arena', active: activeRoute == 'arena', trailing: const Text('⚔', style: TextStyle(fontSize: 10)), onTap: () {
+                    Navigator.pop(context);
+                    if (activeRoute != 'arena') {
+                      Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (_) => const ArenaLandingScreen()), (_) => false);
+                    }
+                  }),
+                  _navItem(context, icon: Icons.school_rounded, label: 'Learning Hub', active: activeRoute == 'learning_hub', onTap: () {
+                    Navigator.pop(context);
+                    Navigator.push(context, MaterialPageRoute(builder: (_) => const LearningHubScreen()));
+                  }),
+                  _navItem(context, icon: Icons.play_circle_rounded, label: 'Study Session', active: activeRoute == 'study_session', badge: 'New', onTap: () {
+                    Navigator.pop(context);
+                    Navigator.push(context, MaterialPageRoute(builder: (_) => const StudySessionScreen()));
+                  }),
                   const Padding(
-                    padding: EdgeInsets.fromLTRB(12, 16, 12, 4),
-                    child: Text('ACCOUNT', style: TextStyle(color: Colors.white38, fontSize: 11, fontWeight: FontWeight.w700, letterSpacing: 0.8)),
+                    padding: EdgeInsets.fromLTRB(LATokens.space3, LATokens.space4, LATokens.space3, LATokens.space1),
+                    child: Text('ACCOUNT', style: TextStyle(color: LATokens.textMuted, fontSize: LATokens.fsXs, fontWeight: FontWeight.w700, letterSpacing: 0.8)),
                   ),
-                  _navItem(context, icon: Icons.person_rounded, label: 'Profile', onTap: () { Navigator.pop(context); }),
-                  _navItem(context, icon: Icons.settings_rounded, label: 'Settings', onTap: () { Navigator.pop(context); }),
+                  _navItem(context, icon: Icons.person_rounded, label: 'Profile', onTap: () {
+                    Navigator.pop(context);
+                    Navigator.push(context, MaterialPageRoute(builder: (_) => const ProfileScreen()));
+                  }),
+                  _navItem(context, icon: Icons.settings_rounded, label: 'Settings', onTap: () {
+                    Navigator.pop(context);
+                  }),
                 ],
               ),
             ),
             // Bottom card + user
             Padding(
-              padding: const EdgeInsets.all(12),
+              padding: const EdgeInsets.all(LATokens.space3),
               child: Column(
                 children: [
                   Container(
-                    padding: const EdgeInsets.all(12),
+                    padding: const EdgeInsets.all(LATokens.space3),
                     decoration: BoxDecoration(
                       gradient: const LinearGradient(colors: [Color(0xFF0F172A), Color(0xFF1E293B)]),
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(LATokens.radiusMd),
                       border: Border.all(color: Colors.white10),
                     ),
                     child: Row(
@@ -145,47 +119,47 @@ class AppDrawer extends StatelessWidget {
                         Container(
                           width: 32,
                           height: 32,
-                          decoration: BoxDecoration(color: const Color(0xFF10B981).withOpacity(0.14), borderRadius: BorderRadius.circular(8)),
+                          decoration: BoxDecoration(color: LATokens.green.withOpacity(0.14), borderRadius: BorderRadius.circular(LATokens.radiusSm)),
                           child: const Icon(Icons.menu_book_rounded, size: 16, color: Color(0xFF10B981)),
                         ),
-                        const SizedBox(width: 10),
+                        const SizedBox(width: LATokens.space2),
                         const Expanded(
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text('Syllabus', style: TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.w600)),
-                              Text('Upload personalises plan', style: TextStyle(color: Colors.white38, fontSize: 10)),
+                              Text('Syllabus', style: TextStyle(color: LATokens.textPrimary, fontSize: LATokens.fsXs, fontWeight: FontWeight.w600)),
+                              Text('Upload personalises plan', style: TextStyle(color: LATokens.textMuted, fontSize: LATokens.fsXs)),
                             ],
                           ),
                         ),
-                        const Icon(Icons.arrow_forward, size: 14, color: Colors.white38),
+                        const Icon(Icons.arrow_forward, size: 14, color: LATokens.textMuted),
                       ],
                     ),
                   ),
-                  const SizedBox(height: 12),
+                  const SizedBox(height: LATokens.space3),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-                    decoration: BoxDecoration(color: Colors.white.withOpacity(0.04), borderRadius: BorderRadius.circular(12)),
+                    padding: const EdgeInsets.symmetric(horizontal: LATokens.space2, vertical: LATokens.space2),
+                    decoration: BoxDecoration(color: Colors.white.withOpacity(0.04), borderRadius: BorderRadius.circular(LATokens.radiusMd)),
                     child: Row(
                       children: [
-                        CircleAvatar(
+                  CircleAvatar(
                           radius: 16,
-                          backgroundColor: const Color(0xFF0EA5E9),
-                          backgroundImage: user?.photoURL != null ? NetworkImage(user!.photoURL!) : null,
-                          child: user?.photoURL == null ? Text((user?.displayName ?? user?.email ?? 'G')[0].toUpperCase(), style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w700, fontSize: 12)) : null,
+                          backgroundColor: LATokens.accent,
+                          backgroundImage: _userPhotoUrl.isNotEmpty ? NetworkImage(_userPhotoUrl) : null,
+                          child: _userPhotoUrl.isEmpty ? Text(_userName[0].toUpperCase(), style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w700, fontSize: 12)) : null,
                         ),
-                        const SizedBox(width: 10),
+                        const SizedBox(width: LATokens.space2),
                         Expanded(
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(user?.displayName ?? user?.email ?? 'Guest', maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.w600)),
-                              const Text('Free Plan', style: TextStyle(color: Colors.white38, fontSize: 10)),
+                              Text(_userName, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(color: LATokens.textPrimary, fontSize: LATokens.fsSm, fontWeight: FontWeight.w600)),
+                              const Text('Free Plan', style: TextStyle(color: LATokens.textMuted, fontSize: LATokens.fsXs)),
                             ],
                           ),
                         ),
                         IconButton(
-                          icon: const Icon(Icons.logout_rounded, size: 16, color: Colors.white38),
+                          icon: const Icon(Icons.logout_rounded, size: 16, color: LATokens.textMuted),
                           onPressed: () async {
                             await FirebaseAuth.instance.signOut();
                             if (context.mounted) Navigator.pop(context);
@@ -208,26 +182,36 @@ class AppDrawer extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 1),
       child: Material(
-        color: active ? const Color(0xFF2563EB) : Colors.transparent,
-        borderRadius: BorderRadius.circular(10),
+        color: active ? LATokens.accent.withOpacity(0.16) : Colors.transparent,
+        borderRadius: BorderRadius.circular(LATokens.radiusMd),
         child: InkWell(
-          borderRadius: BorderRadius.circular(10),
+          borderRadius: BorderRadius.circular(LATokens.radiusMd),
           onTap: onTap,
           child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+            padding: const EdgeInsets.symmetric(horizontal: LATokens.space3, vertical: LATokens.space2),
             child: Row(
               children: [
-                Icon(icon, size: 18, color: active ? Colors.white : Colors.white54),
-                const SizedBox(width: 10),
-                Text(label, style: TextStyle(color: active ? Colors.white : Colors.white70, fontSize: 13, fontWeight: active ? FontWeight.w600 : FontWeight.w500)),
+                Container(
+                  width: 36,
+                  height: 36,
+                  decoration: BoxDecoration(
+                    color: active ? LATokens.accent : (darkMode(context) ? LATokens.bgElevated : LATokens.lightBgCardHover),
+                    borderRadius: BorderRadius.circular(LATokens.radiusSm),
+                  ),
+                  child: Icon(icon, size: 18, color: active ? Colors.white : (darkMode(context) ? LATokens.textSecondary : LATokens.lightTextSecondary)),
+                ),
+                const SizedBox(width: LATokens.space3),
+                Expanded(
+                  child: Text(label, style: TextStyle(color: active ? LATokens.accent : (darkMode(context) ? LATokens.textPrimary : LATokens.lightTextPrimary), fontSize: LATokens.fsSm, fontWeight: active ? FontWeight.w600 : FontWeight.w500)),
+                ),
                 const Spacer(),
                 if (badge != null)
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
-                    decoration: BoxDecoration(color: const Color(0xFF10B981).withOpacity(0.12), borderRadius: BorderRadius.circular(20)),
-                    child: Text(badge, style: const TextStyle(color: Color(0xFF10B981), fontSize: 10, fontWeight: FontWeight.w700)),
+                    decoration: BoxDecoration(color: LATokens.green.withOpacity(0.12), borderRadius: BorderRadius.circular(LATokens.radiusFull)),
+                    child: Text(badge, style: const TextStyle(color: LATokens.green, fontSize: LATokens.fsXs, fontWeight: FontWeight.w700)),
                   ),
-                if (trailing != null) ...[const SizedBox(width: 6), trailing],
+                if (trailing != null) ...[const SizedBox(width: LATokens.space1), trailing],
               ],
             ),
           ),
@@ -235,4 +219,6 @@ class AppDrawer extends StatelessWidget {
       ),
     );
   }
+
+  bool darkMode(BuildContext context) => Theme.of(context).brightness == Brightness.dark;
 }

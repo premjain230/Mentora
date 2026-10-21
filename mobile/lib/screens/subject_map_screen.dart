@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import '../services/arena_curriculum.dart';
 import '../services/arena_progress.dart';
 import '../services/arena_api.dart';
@@ -29,8 +28,8 @@ class _SubjectMapScreenState extends State<SubjectMapScreen> {
   Future<void> _init() async {
     setState(()=> loading=true);
     try{
-      final uid=FirebaseAuth.instance.currentUser?.uid;
-      if(uid==null) throw Exception('Not signed in');
+      final uid = 'demo-user';
+      if(uid.isEmpty) throw Exception('Not signed in');
       // server init (authoritative)
       final j=await ArenaApi.initProgress(subjectKey: subjectKey, trackId: widget.track.id, subject: widget.subject, classNum: widget.classNum, chapters: chapters.map((c)=> {'conceptId':c.conceptId,'prerequisites':c.prerequisites}).toList());
       if(mounted) setState(()=> progress=ArenaProgress.fromFirestore(Map<String,dynamic>.from(j['progress']??j)));
@@ -38,8 +37,8 @@ class _SubjectMapScreenState extends State<SubjectMapScreen> {
       setState(()=> error=e.toString());
     } finally{ if(mounted) setState(()=> loading=false); }
     // listen for cross-platform sync
-    final uid=FirebaseAuth.instance.currentUser?.uid;
-    if(uid!=null){
+    final uid = 'demo-user';
+    if(uid.isNotEmpty){
       listenProgress(uid, subjectKey).listen((p){ if(p!=null && mounted) setState(()=> progress=p); });
     }
   }

@@ -815,3 +815,20 @@ String toSubjectKey(String trackId, String subject, int? classNum){
   }
   return '${t}_$s';
 }
+
+// ── JEE Advanced-only concepts (verified against official IIT Roorkee syllabus) ──
+// These are NOT in JEE Main — they are the Advanced-only topics.
+// Source: https://jeeadv.ac.in/documents/jee-advanced-2026-syllabus.pdf
+final List<Chapter> jeeAdvancedConcepts = [
+  Chapter(conceptId:'jee.advanced.physics.fluid_mechanics', name:'Fluid Mechanics', topic:'Physics', subject:'Physics', difficulty:0.60, difficultyLabel:'Advanced', prerequisites:[], curriculumPaths:['jee.advanced.physics.fluid_mechanics']),
+  Chapter(conceptId:'jee.advanced.physics.advanced_thermal_physics', name:'Thermal Physics', topic:'Physics', subject:'Physics', difficulty:0.65, difficultyLabel:'Advanced', prerequisites:[], curriculumPaths:['jee.advanced.physics.advanced_thermal_physics']),
+  Chapter(conceptId:'jee.advanced.chemistry.solid_state', name:'Solid State', topic:'Chemistry', subject:'Chemistry', difficulty:0.55, difficultyLabel:'Advanced', prerequisites:[], curriculumPaths:['jee.advanced.chemistry.solid_state']),
+  Chapter(conceptId:'jee.advanced.chemistry.surface_chemistry', name:'Surface Chemistry', topic:'Chemistry', subject:'Chemistry', difficulty:0.60, difficultyLabel:'Advanced', prerequisites:[], curriculumPaths:['jee.advanced.chemistry.surface_chemistry']),
+  Chapter(conceptId:'jee.advanced.chemistry.hydrogen', name:'Hydrogen', topic:'Chemistry', subject:'Chemistry', difficulty:0.50, difficultyLabel:'Advanced', prerequisites:[], curriculumPaths:['jee.advanced.chemistry.hydrogen']),
+  Chapter(conceptId:'jee.advanced.chemistry.s_block_elements', name:'s-Block Elements', topic:'Chemistry', subject:'Chemistry', difficulty:0.55, difficultyLabel:'Advanced', prerequisites:[], curriculumPaths:['jee.advanced.chemistry.s_block_elements']),
+  Chapter(conceptId:'jee.advanced.chemistry.isolation_of_metals', name:'Isolation of Metals', topic:'Chemistry', subject:'Chemistry', difficulty:0.60, difficultyLabel:'Advanced', prerequisites:[], curriculumPaths:['jee.advanced.chemistry.isolation_of_metals']),
+  Chapter(conceptId:'jee.advanced.chemistry.environmental_chemistry', name:'Environmental Chemistry', topic:'Chemistry', subject:'Chemistry', difficulty:0.50, difficultyLabel:'Advanced', prerequisites:[], curriculumPaths:['jee.advanced.chemistry.environmental_chemistry']),
+  Chapter(conceptId:'jee.advanced.chemistry.polymers', name:'Polymers', topic:'Chemistry', subject:'Chemistry', difficulty:0.55, difficultyLabel:'Advanced', prerequisites:[], curriculumPaths:['jee.advanced.chemistry.polymers']),
+  Chapter(conceptId:'jee.advanced.chemistry.chemistry_in_everyday_life', name:'Chemistry in Everyday Life', topic:'Chemistry', subject:'Chemistry', difficulty:0.45, difficultyLabel:'Advanced', prerequisites:[], curriculumPaths:['jee.advanced.chemistry.chemistry_in_everyday_life']),
+];
+

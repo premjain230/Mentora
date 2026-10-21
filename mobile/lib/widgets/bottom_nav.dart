@@ -1,17 +1,28 @@
 import 'package:flutter/material.dart';
-import '../theme/tokens.dart';
+import '../theme/design_tokens.dart';
 
 class LearningAlliedBottomNav extends StatelessWidget {
   final int currentIndex;
   final ValueChanged<int> onTap;
+
   const LearningAlliedBottomNav({super.key, required this.currentIndex, required this.onTap});
+
+  // Website sidebar nav items translated to mobile bottom nav
+  static const List<Map<String, dynamic>> _items = [
+    {'icon': Icons.home_rounded, 'label': 'Home', 'route': 'home'},
+    {'icon': Icons.menu_book_rounded, 'label': 'Study', 'route': 'study'},
+    {'icon': Icons.chat_bubble_rounded, 'label': 'Chat', 'route': 'chat'},
+    {'icon': Icons.sports_esports_rounded, 'label': 'Arena', 'route': 'arena'},
+    {'icon': Icons.person_rounded, 'label': 'Profile', 'route': 'profile'},
+  ];
 
   @override
   Widget build(BuildContext context) {
+    final dark = Theme.of(context).brightness == Brightness.dark;
     return Container(
       decoration: BoxDecoration(
-        color: LearningAlliedTokens.bgSidebar,
-        border: Border(top: BorderSide(color: Colors.white.withOpacity(0.06))),
+        color: dark ? LATokens.bgSidebar : LATokens.lightBgSidebar,
+        border: Border(top: BorderSide(color: dark ? LATokens.border : LATokens.lightBorder)),
         boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.35), blurRadius: 12, offset: const Offset(0, -2))],
       ),
       child: SafeArea(
@@ -19,13 +30,11 @@ class LearningAlliedBottomNav extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 6),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              _item(context, 0, Icons.home_rounded, 'Home', currentIndex == 0),
-              _item(context, 1, Icons.menu_book_rounded, 'Study', currentIndex == 1),
-              _item(context, 2, Icons.chat_bubble_rounded, 'Chat', currentIndex == 2),
-              _item(context, 3, Icons.sports_esports_rounded, 'Arena', currentIndex == 3),
-              _item(context, 4, Icons.person_rounded, 'Profile', currentIndex == 4),
-            ],
+            children: List.generate(_items.length, (i) {
+              final item = _items[i];
+              final active = currentIndex == i;
+              return _item(context, i, item['icon'], item['label'], active);
+            }),
           ),
         ),
       ),
@@ -33,23 +42,24 @@ class LearningAlliedBottomNav extends StatelessWidget {
   }
 
   Widget _item(BuildContext context, int index, IconData icon, String label, bool active) {
+    final dark = Theme.of(context).brightness == Brightness.dark;
     return Expanded(
       child: InkWell(
-        borderRadius: BorderRadius.circular(LearningAlliedTokens.radiusMd),
+        borderRadius: BorderRadius.circular(LATokens.radiusMd),
         onTap: () => onTap(index),
         child: Container(
           padding: const EdgeInsets.symmetric(vertical: 6),
           decoration: BoxDecoration(
-            color: active ? LearningAlliedTokens.accent.withOpacity(0.12) : Colors.transparent,
-            borderRadius: BorderRadius.circular(LearningAlliedTokens.radiusMd),
-            border: Border.all(color: active ? LearningAlliedTokens.accent.withOpacity(0.25) : Colors.transparent),
+            color: active ? LATokens.accent.withOpacity(0.12) : Colors.transparent,
+            borderRadius: BorderRadius.circular(LATokens.radiusMd),
+            border: Border.all(color: active ? LATokens.accent.withOpacity(0.25) : Colors.transparent),
           ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(icon, size: 22, color: active ? LearningAlliedTokens.accent : LearningAlliedTokens.textMuted),
+              Icon(icon, size: 22, color: active ? LATokens.accent : (dark ? LATokens.textMuted : LATokens.lightTextMuted)),
               const SizedBox(height: 2),
-              Text(label, style: TextStyle(fontSize: 11, fontWeight: active ? FontWeight.w600 : FontWeight.w500, color: active ? LearningAlliedTokens.accent : LearningAlliedTokens.textMuted, fontFamily: LearningAlliedTokens.fontMain)),
+              Text(label, style: TextStyle(fontSize: 11, fontWeight: active ? FontWeight.w600 : FontWeight.w500, color: active ? LATokens.accent : (dark ? LATokens.textMuted : LATokens.lightTextMuted), fontFamily: LATokens.fontMain)),
             ],
           ),
         ),
@@ -58,5 +68,4 @@ class LearningAlliedBottomNav extends StatelessWidget {
   }
 }
 
-// Alias for backward compat
 typedef AquilaBottomNav = LearningAlliedBottomNav;

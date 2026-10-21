@@ -72,7 +72,7 @@ class _BattleScreenState extends State<BattleScreen> {
           const Spacer(),
           SizedBox(width: double.infinity, child: FilledButton(
             onPressed: !answered? null: () async {
-              if(idx < total-1){ setState(()=> { idx++; selected=null; answered=false; }); }
+              if(idx < total-1){ setState(() { idx++; selected=null; answered=false; }); }
               else {
                 final score= correct/total;
                 try{
@@ -102,7 +102,7 @@ class _BattleScreenState extends State<BattleScreen> {
   }
   void _select(int i){
     if(answered) return;
-    setState(()=> { selected=i; answered=true; });
+    setState(() { selected=i; answered=true; });
     final letter=String.fromCharCode(65+i);
     if(letter==qs[idx]['answer']) correct++;
   }

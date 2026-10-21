@@ -10,7 +10,7 @@ class ArenaApi {
   // redirected to the apex domain, which itself 308-redirects to www, adding
   // two hops to every request. localhost fallback handled by caller.
   static const baseUrl = 'https://www.learningallied.world';
-  static Future<Map<String,dynamic>> _headers() async {
+  static Future<Map<String, String>> _headers() async {
     final user=FirebaseAuth.instance.currentUser;
     String? token;
     if(user!=null) token=await user.getIdToken();
