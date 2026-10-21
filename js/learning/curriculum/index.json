@@ -167,9 +167,10 @@
       "academic_year": "2026",
       "curriculum_version": "2026.1",
       "official_source": "https://cdnbbsr.s3waas.gov.in/s3f8e59f4b2fe7c5705bf878bbd494ccdf/uploads/2025/10/202510311323551056.pdf",
-      "status": "not_verified_this_pass",
+      "status": "verified_against_official_pdf",
+      "verified_on": "2026-10-19",
       "file": "2026-27/jee_main_2026.json",
-      "note": "NOT verified. The NTA JEE Main 2026 syllabus PDF was not fetched in this pass. No changes made."
+      "note": "Verified. Downloaded and parsed the official NTA JEE Main Paper 1 syllabus PDF (Oct 2025). Coverage matches exactly: Physics 20/20 units, Chemistry 20/20 units (Physical 8, Inorganic 3, Organic 9), Mathematics 14/14 units. All 54 jee.main.* concepts correspond 1:1 to official syllabus units."
     },
     {
       "curriculum_id": "neet_ug_2026",
