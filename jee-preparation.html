@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>JEE Main &amp; Advanced Preparation — Free Study Hub | Learning Allied</title>
+<meta name="description" content="Prepare for JEE Main and JEE Advanced with free practice quizzes, AI tutoring, study plans and chapter-wise resources from Learning Allied. Designed for Class 11 and 12 aspirants." />
+<meta name="robots" content="index, follow" />
+<meta name="color-scheme" content="dark light" />
+<meta name="theme-color" content="#0a0a0b" media="(prefers-color-scheme: dark)" />
+<meta name="theme-color" content="#fafaf9" media="(prefers-color-scheme: light)" />
+<link rel="canonical" href="https://www.learningallied.world/jee-preparation" />
+<meta property="og:title" content="JEE Main &amp; Advanced Preparation — Learning Allied" />
+<meta property="og:description" content="Free JEE practice quizzes, AI tutoring, study plans and chapter-wise resources for Main and Advanced aspirants." />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://www.learningallied.world/jee-preparation" />
+<meta property="og:image" content="https://www.learningallied.world/learningallied-white.svg" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="https://www.learningallied.world/learningallied-white.svg" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="/css/tokens.css" />
+<link rel="stylesheet" href="/css/base.css" />
+<link rel="stylesheet" href="/css/nav.css" />
+<link rel="icon" type="image/svg+xml" href="/learningallied-white.svg" />
+<link rel="shortcut icon" href="/favicon.ico" />
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; -webkit-text-size-adjust: 100% }
+body { background: var(--bg-base); color: var(--text-primary); font-family: var(--font-main); line-height: 1.6; -webkit-font-smoothing: antialiased; overflow-x: hidden; min-height: 100vh }
+a { color: var(--accent); text-decoration: none }
+img { display: block; max-width: 100% }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 4px }
+.wrap { max-width: 1160px; margin: 0 auto; padding: 0 24px }
+.header { background: var(--bg-base); border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 30; }
+.header .wrap { display: flex; align-items: center; justify-content: space-between; height: 56px; padding: 0 }
+.header .logo { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 16px; letter-spacing: -0.01em; color: var(--text-primary) }
+.header .logo img { width: 28px; height: 28px; border-radius: 6px }
+.nav-links { display: flex; gap: 28px; font-size: 14px; color: var(--text-secondary) }
+.nav-links a { transition: color 0.2s }
+.nav-links a:hover { color: var(--text-primary) }
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: var(--space-2); min-height: 44px; padding: 0 var(--space-4); border-radius: var(--radius-md); font-family: var(--font-main); font-size: var(--fs-sm); font-weight: 550; letter-spacing: -0.01em; cursor: pointer; transition: background var(--dur-fast) var(--ease-out); white-space: nowrap }
+.btn-primary { background: var(--text-primary); color: var(--bg-base); border: 1px solid var(--text-primary); font-weight: 600 }
+.btn-primary:hover { filter: brightness(1.08); transform: translateY(-1px); }
+.btn-secondary { background: var(--bg-card); border: 1px solid var(--border-strong); color: var(--text-primary) }
+.btn-secondary:hover { background: var(--bg-card-hover); border-color: var(--border-strong); transform: translateY(-1px); }
+.hero { padding: 100px 0 80px }
+.hero h1 { font-family: var(--font-display); font-size: clamp(32px, 5vw, 56px); line-height: 1.1; letter-spacing: -0.03em; font-weight: 700; color: var(--text-primary); margin-bottom: 20px }
+.hero p { font-size: 18px; color: var(--text-secondary); max-width: 600px; line-height: 1.6; margin-bottom: 28px }
+.hero-ctas { display: flex; flex-wrap: wrap; gap: 12px }
+.section { padding: 96px 0 }
+.section h2 { font-family: var(--font-display); font-size: clamp(28px, 4vw, 40px); line-height: 1.15; letter-spacing: -0.02em; font-weight: 700; color: var(--text-primary); margin-bottom: 16px }
+.section p { font-size: 16px; color: var(--text-secondary); max-width: 700px; line-height: 1.65; margin-bottom: 40px }
+.feature-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px }
+.feature-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 28px; transition: border-color 0.2s, transform 0.2s }
+.feature-card:hover { border-color: var(--border-strong); transform: translateY(-2px) }
+.feature-card h3 { font-family: var(--font-display); font-size: 18px; font-weight: 700; margin-bottom: 10px; color: var(--text-primary) }
+.feature-card p { font-size: 14px; color: var(--text-secondary); line-height: 1.6; margin-bottom: 12px }
+.topic-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px }
+.topic-item { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 18px 20px }
+.topic-item h4 { font-size: 15px; font-weight: 600; color: var(--text-primary); margin-bottom: 6px }
+.topic-item ul { list-style: none; padding: 0; margin: 0 }
+.topic-item li { font-size: 13px; color: var(--text-secondary); line-height: 1.7; margin-bottom: 6px }
+.cta-section { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-xl); padding: 60px 40px; text-align: center }
+.cta-section h2 { font-family: var(--font-display); font-size: clamp(28px, 4vw, 40px); font-weight: 700; color: var(--text-primary); margin-bottom: 16px }
+.cta-section p { font-size: 17px; color: var(--text-secondary); max-width: 600px; margin: 0 auto 28px; line-height: 1.6 }
+footer.site-footer { border-top: 1px solid var(--border); padding: 56px 0 36px; margin-top: 80px }
+.footer-grid { display: grid; grid-template-columns: 1.6fr 1fr 1fr 1fr; gap: 36px; margin-bottom: 44px }
+.footer-brand p { color: var(--text-secondary); font-size: 14px; max-width: 280px; margin-top: 12px }
+.footer-col h4 { font-size: 13px; font-weight: 600; margin-bottom: 14px; color: var(--text-primary) }
+.footer-col a { display: block; font-size: 14px; color: var(--text-secondary); margin-bottom: 10px; transition: color 0.2s }
+.footer-col a:hover { color: var(--text-primary) }
+.footer-bottom { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 10px; padding-top: 24px; border-top: 1px solid var(--border); font-size: 13px; color: var(--text-faint) }
+@media (max-width: 800px) { .footer-grid { grid-template-columns: 1fr 1fr; } .footer-brand { grid-column: 1 / -1; } }
+@media (max-width: 640px) { .hero { padding: 80px 0 60px } .section { padding: 72px 0 } .cta-section { padding: 48px 24px } }
+</style>
+</head>
+<body>
+<header class="header">
+  <div class="wrap">
+    <a class="logo" href="/" aria-label="Learning Allied home">
+      <img src="/learningallied-white.svg" alt="Learning Allied" width="28" height="28">
+      <span>Learning Allied</span>
+    </a>
+    <nav class="nav-links">
+      <a href="#features">Features</a>
+      <a href="#subjects">Subjects</a>
+      <a href="#topics">Topics</a>
+      <a class="btn btn-primary" href="signup.html">Start free</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <section class="hero">
+    <div class="wrap">
+      <h1>JEE Main &amp; Advanced Preparation</h1>
+      <p>Free chapter-wise practice quizzes, AI tutoring and study plans for JEE Main and Advanced aspirants. Build your syllabus plan, practise with AI-generated questions and track your mastery across Physics, Chemistry and Mathematics.</p>
+      <div class="hero-ctas">
+        <a class="btn btn-primary" href="signup.html">Start preparing free</a>
+        <a class="btn btn-secondary" href="#features">See how it works</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="features">
+    <div class="wrap">
+      <h2>How Learning Allied helps JEE aspirants</h2>
+      <p>Learning Allied combines AI tutoring with spaced repetition and active recall to help you retain concepts longer and practise smarter.</p>
+      <div class="feature-grid">
+        <div class="feature-card">
+          <h3>Chapter-wise quizzes</h3>
+          <p>Practise JEE Main and Advanced chapters with AI-generated multiple-choice questions. Get instant feedback and explanations for every answer.</p>
+        </div>
+        <div class="feature-card">
+          <h3>Study planner</h3>
+          <div>Build a weekly study plan tied to your syllabus. Track which chapters you’ve mastered and which need revision.</div>
+        </div>
+        <div class="feature-card">
+          <h3>AI tutor</h3>
+          <p>Ask conceptual questions in plain language and get Socratic explanations that help you work out answers yourself.</p>
+        </div>
+        <div class="feature-card">
+          <h3>Mastery tracking</h3>
+          <p>See your confidence level per chapter and topic. Know exactly what to revise before mock tests.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="subjects">
+    <div class="wrap">
+      <h2>Subjects covered</h2>
+      <p>JEE Main and Advanced test three subjects equally. Our question bank and study tools cover all three with chapter-level granularity.</p>
+      <div class="feature-grid">
+        <div class="feature-card">
+          <h3>Physics</h3>
+          <p>Mechanics, thermodynamics, electromagnetism, optics, modern physics and more — with chapter-wise practice questions.</p>
+        </div>
+        <div class="feature-card">
+          <h3>Chemistry</h3>
+          <p>Physical, inorganic and organic chemistry chapters including stoichiometry, equilibrium, coordination compounds and organic reactions.</p>
+        </div>
+        <div class="feature-card">
+          <h3>Mathematics</h3>
+          <p>Algebra, calculus, coordinate geometry, trigonometry, vectors and 3D geometry — practise numericals and concept questions.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="topics">
+    <div class="wrap">
+      <h2>JEE chapters you can practise</h2>
+      <p>Below is a representative list of chapters from the JEE Main and Advanced syllabus. Use the planner to schedule chapters across your preparation timeline.</p>
+      <div class="topic-list">
+        <div class="topic-item">
+          <h4>Physics</h4>
+          <ul>
+            <li>Units &amp; Measurements</li>
+            <li>Kinematics</li>
+            <li>Laws of Motion</li>
+            <li>Work, Energy &amp; Power</li>
+            <li>Rotational Motion</li>
+            <li>Gravitation</li>
+            <li>Properties of Solids &amp; Liquids</li>
+            <li>Thermodynamics</li>
+            <li>Kinetic Theory of Gases</li>
+            <li>Oscillations &amp; Waves</li>
+            <li>Electrostatics</li>
+            <li>Current Electricity</li>
+            <li>Magnetism &amp; EMI</li>
+            <li>Alternating Current</li>
+            <li>Electromagnetic Waves</li>
+            <li>Optics</li>
+            <li>Modern Physics</li>
+          </ul>
+        </div>
+        <div class="topic-item">
+          <h4>Chemistry</h4>
+          <ul>
+            <li>Some Basic Concepts</li>
+            <li>Structure of Atom</li>
+            <li>Chemical Bonding</li>
+            <li>Chemical Thermodynamics</li>
+            <li>Equilibrium</li>
+            <li>Redox &amp; Electrochemistry</li>
+            <li>Chemical Kinetics</li>
+            <li>Solutions</li>
+            <li>Surface Chemistry</li>
+            <li>Classification of Elements</li>
+            <li>p-Block Elements</li>
+            <li>d- &amp; f-Block Elements</li>
+            <li>Coordination Compounds</li>
+            <li>Organic Chemistry Basics</li>
+            <li>Hydrocarbons</li>
+            <li>Alcohols, Phenols &amp; Ethers</li>
+            <li>Aldehydes, Ketones &amp; Acids</li>
+            <li>Amines &amp; Biomolecules</li>
+            <li>Practical Chemistry</li>
+          </ul>
+        </div>
+        <div class="topic-item">
+          <h4>Mathematics</h4>
+          <ul>
+            <li>Sets, Relations &amp; Functions</li>
+            <li>Complex Numbers</li>
+            <li>Matrices &amp; Determinants</li>
+            <li>Permutations &amp; Combinations</li>
+            <li>Binomial Theorem</li>
+            <li>Sequence &amp; Series</li>
+            <li>Limits, Continuity &amp; Differentiability</li>
+            <li>Integral Calculus</li>
+            <li>Differential Equations</li>
+            <li>Coordinate Geometry</li>
+            <li>Three Dimensional Geometry</li>
+            <li>Vector Algebra</li>
+            <li>Statistics &amp; Probability</li>
+            <li>Trigonometry</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="cta-section">
+    <div class="wrap">
+      <h2>Ready to start your JEE prep?</h2>
+      <p>Create a free account, build your study plan and take your first chapter quiz in under a minute.</p>
+      <div class="hero-ctas" style="justify-content:center">
+        <a class="btn btn-primary" href="signup.html">Create free account</a>
+        <a class="btn btn-secondary" href="quiz.html">Try a practice quiz</a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <a class="logo" href="/" aria-label="Learning Allied home"><img src="/learningallied-white.svg" alt="Learning Allied" class="logo-img" width="28" height="28"><span>Learning Allied</span></a>
+        <p>AI study partner for JEE, NEET and Board exam students.</p>
+      </div>
+      <div class="footer-col"><h4>Product</h4><a href="#features">How it works</a><a href="#exams">Exam support</a><a href="signup.html">Get started</a><a href="login.html">Log in</a></div>
+      <div class="footer-col"><h4>Resources</h4><a href="#faq">FAQ</a><a href="/blog/how-to-make-a-jee-study-plan">JEE study guide</a></div>
+      <div class="footer-col"><h4>Connect</h4><a href="https://x.com/itzprem109" rel="noopener">X</a><a href="https://discord.gg/vDvrJhUzud" rel="noopener">Discord</a></div>
+    </div>
+    <div class="footer-bottom"><span>&copy; 2026 Learning Allied. All rights reserved.</span></div>
+  </div>
+</footer>
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"WebPage","name":"JEE Main &amp; Advanced Preparation — Learning Allied","description":"Free JEE practice quizzes, AI tutoring, study plans and chapter-wise resources for Main and Advanced aspirants.","url":"https://www.learningallied.world/jee-preparation","breadcrumb":{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://www.learningallied.world/"},{"@type":"ListItem","position":2,"name":"JEE Preparation","item":"https://www.learningallied.world/jee-preparation"}]}}</script>
+</body>
+</html>

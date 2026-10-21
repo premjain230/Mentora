@@ -19,57 +19,33 @@
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://www.learningallied.world/beyond-marks</loc>
-    <lastmod>2026-07-09</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://www.learningallied.world/planner</loc>
-    <lastmod>2026-07-09</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://www.learningallied.world/quiz</loc>
-    <lastmod>2026-07-09</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
     <loc>https://www.learningallied.world/blog/how-to-make-a-jee-study-plan</loc>
     <lastmod>2026-08-13</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://www.learningallied.world/subscription</loc>
-    <lastmod>2026-07-09</lastmod>
+    <loc>https://www.learningallied.world/jee-preparation</loc>
+    <lastmod>2026-10-21</lastmod>
     <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://www.learningallied.world/login</loc>
-    <lastmod>2026-07-09</lastmod>
+    <loc>https://www.learningallied.world/neet-preparation</loc>
+    <lastmod>2026-10-21</lastmod>
     <changefreq>monthly</changefreq>
-    <priority>0.5</priority>
+    <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://www.learningallied.world/signup</loc>
-    <lastmod>2026-07-09</lastmod>
+    <loc>https://www.learningallied.world/maharashtra-board</loc>
+    <lastmod>2026-10-21</lastmod>
     <changefreq>monthly</changefreq>
-    <priority>0.5</priority>
+    <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://www.learningallied.world/verify-email</loc>
-    <lastmod>2026-07-09</lastmod>
+    <loc>https://www.learningallied.world/cbse-board</loc>
+    <lastmod>2026-10-21</lastmod>
     <changefreq>monthly</changefreq>
-    <priority>0.3</priority>
-  </url>
-  <url>
-    <loc>https://www.learningallied.world/arena</loc>
-    <lastmod>2026-09-26</lastmod>
-    <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
 </urlset>

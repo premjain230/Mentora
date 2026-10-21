@@ -1,11 +1,24 @@
 User-agent: *
 Allow: /
+
+# Disallow auth-gated and private pages
 Disallow: /home
 Disallow: /planner-onboarding
+Disallow: /planner
 Disallow: /profile
 Disallow: /settings
 Disallow: /admin
 Disallow: /api/
 Disallow: /sidebar.html
+Disallow: /quiz.html
+Disallow: /arena.html
+Disallow: /study-session.html
+Disallow: /referral.html
+Disallow: /review.html
+
+# Allow public landing pages
+Allow: /about
+Allow: /founder
+Allow: /blog/
 
 Sitemap: https://www.learningallied.world/sitemap.xml
