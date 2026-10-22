@@ -459,7 +459,7 @@ async function writeCachedPlan(conceptId, plan) {
  *   - a wall-clock deadline: once it passes, stop trying and answer cleanly
  */
 const FALLBACK_MODELS = ["openai/gpt-oss-20b"];
-const CALL_BUDGET_MS = 12000;
+const CALL_BUDGET_MS = 25000;
 
 function overBudget(startedAt) {
   return Date.now() - startedAt > CALL_BUDGET_MS;
@@ -499,8 +499,12 @@ async function askJson(messages, { temperature, maxTokens }, startedAt = Date.no
         break;
       }
       const modelGone = /does not exist|do not have access|decommissioned|deprecat|404/i.test(msg);
-      if (!modelGone) break;
-      console.warn(`[learn-hub] model ${model} unavailable; trying one fallback.`);
+      if (modelGone) {
+        console.warn(`[learn-hub] model ${model} unavailable; trying one fallback.`);
+        continue;
+      }
+      // Any other provider error — try the fallback model if budget allows.
+      continue;
     }
   }
   throw lastErr || new Error("AI unavailable");

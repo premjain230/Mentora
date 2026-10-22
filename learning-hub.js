@@ -357,8 +357,6 @@ async function callApi(body) {
 
   const targets = [...new Set([`/${ENDPOINT.replace(/^\//, "")}`, apiUrl(ENDPOINT)])];
 
-  // "We never reached the function at all" is a different problem from "the
-  // function answered with an error", and they need different messages.
   let unreachableDetail = null;
   let answered = null;
 
@@ -378,6 +376,22 @@ async function callApi(body) {
       const err = new Error(data.error || `Request failed (${res.status}). Please try again.`);
       err.status = res.status;
       answered = err;
+      // 503 is transient ("try again later") — retry once against the same host
+      // before giving up, so a momentary provider hiccup self-heals.
+      if (res.status === 503) {
+        await new Promise((r) => setTimeout(r, 1500));
+        try {
+          const res2 = await fetch(url, init);
+          let data2 = {};
+          try { data2 = await res2.json(); } catch {}
+          if (res2.ok) return data2;
+          const err2 = new Error(data2.error || `Request failed (${res2.status}). Please try again.`);
+          err2.status = res2.status;
+          answered = err2;
+        } catch (e) {
+          unreachableDetail = e && e.message ? e.message : String(e);
+        }
+      }
       break;
     } catch (e) {
       unreachableDetail = e && e.message ? e.message : String(e);
