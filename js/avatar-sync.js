@@ -1,6 +1,27 @@
 // Unified avatar & greeting — gmail pic everywhere (topbar + sidebar), no pravatar drift
 import { auth } from "../firebase-config.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { db } from "../firebase-config.js";
+
+async function loadPlan(user){
+  try{
+    const snap = await getDoc(doc(db, "users", user.uid));
+    if(snap.exists()){
+      const plan = snap.data().plan;
+      const planEl = document.getElementById("userPlan");
+      const badgeEl = document.getElementById("planBadge");
+      const label = (plan || "free").charAt(0).toUpperCase() + (plan || "free").slice(1) + " plan";
+      if(planEl) planEl.textContent = label;
+      if(badgeEl){
+        if(plan === "pro"){ badgeEl.style.display = ""; }
+        else { badgeEl.style.display = "none"; }
+      }
+    }
+  }catch(e){
+    console.warn("[avatar-sync] could not load plan:", e);
+  }
+}
 
 function applyAvatar(user){
   const name = user?.displayName || user?.email?.split("@")[0] || "Student";
@@ -67,18 +88,19 @@ if(auth){
     if(!user) return;
     // wait for DOM
     if(document.readyState === "loading"){
-      document.addEventListener("DOMContentLoaded", ()=> applyAvatar(user));
+      document.addEventListener("DOMContentLoaded", ()=>{ applyAvatar(user); loadPlan(user); });
     } else {
       applyAvatar(user);
+      loadPlan(user);
     }
     // also handle late DOM (topbar may be injected later)
-    setTimeout(()=> applyAvatar(user), 400);
+    setTimeout(()=>{ applyAvatar(user); loadPlan(user); }, 400);
   });
 }
 // Also try immediate for already signed-in (firebase may have cached user)
 try{
   const u = auth?.currentUser;
-  if(u) applyAvatar(u);
+  if(u){ applyAvatar(u); loadPlan(u); }
 }catch{}
 
 // Fix any leftover pravatar URLs

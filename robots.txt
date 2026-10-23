@@ -1,20 +1,9 @@
 User-agent: *
 Allow: /
 
-# Disallow auth-gated and private pages
-Disallow: /home
-Disallow: /planner-onboarding
-Disallow: /planner
-Disallow: /profile
-Disallow: /settings
-Disallow: /admin
+# Disallow non-HTML and internal-only paths (noindex pages are crawlable so Googlebot can read their noindex tag)
 Disallow: /api/
 Disallow: /sidebar.html
-Disallow: /quiz.html
-Disallow: /arena.html
-Disallow: /study-session.html
-Disallow: /referral.html
-Disallow: /review.html
 
 # Allow public landing pages
 Allow: /about
