@@ -6,18 +6,18 @@
    ========================================================================== */
 
 :root {
-  --lh-bg: #0b0d12;
-  --lh-surface: #11141b;
-  --lh-raised: #161a23;
-  --lh-hover: rgba(255, 255, 255, 0.045);
-  --lh-border: rgba(255, 255, 255, 0.08);
-  --lh-border-strong: rgba(255, 255, 255, 0.16);
-  --lh-text: #e8eaf0;
-  --lh-text-2: #a4abbb;
-  --lh-text-3: #727a8c;
-  --lh-accent: #4cc2ff;
-  --lh-accent-ink: #04202e;
-  --lh-accent-soft: rgba(76, 194, 255, 0.12);
+  --lh-bg: #000000;
+  --lh-surface: #0a0a0a;
+  --lh-raised: #141414;
+  --lh-hover: rgba(255, 255, 255, 0.06);
+  --lh-border: #222222;
+  --lh-border-strong: #333333;
+  --lh-text: #f5f5f5;
+  --lh-text-2: #a8a8a8;
+  --lh-text-3: #737373;
+  --lh-accent: #ff8a1f;
+  --lh-accent-ink: #1a0f00;
+  --lh-accent-soft: rgba(255, 138, 31, 0.14);
   --lh-ok: #4ade80;
   --lh-ok-soft: rgba(74, 222, 128, 0.12);
   --lh-warn: #fbbf24;
@@ -25,26 +25,26 @@
   --lh-bad: #f87171;
   --lh-bad-soft: rgba(248, 113, 113, 0.12);
   --lh-focus: 0 0 0 2px var(--lh-bg), 0 0 0 4px var(--lh-accent);
-  --lh-radius: 10px;
+  --lh-radius: 20px;
   --lh-topbar-h: 64px;
   --lh-font: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
-  --lh-font-head: "Sora", "Inter", system-ui, sans-serif;
+  --lh-font-head: "Space Grotesk", "Inter", system-ui, sans-serif;
   --lh-read: 66ch;
 }
 
 html.light-mode {
-  --lh-bg: #f6f7f9;
+  --lh-bg: #f4f4f4;
   --lh-surface: #ffffff;
   --lh-raised: #ffffff;
-  --lh-hover: rgba(15, 23, 42, 0.04);
-  --lh-border: rgba(15, 23, 42, 0.1);
-  --lh-border-strong: rgba(15, 23, 42, 0.22);
-  --lh-text: #12151c;
-  --lh-text-2: #444c5c;
-  --lh-text-3: #6b7385;
-  --lh-accent: #0369a1;
+  --lh-hover: rgba(0, 0, 0, 0.05);
+  --lh-border: #e3e3e3;
+  --lh-border-strong: #cfcfcf;
+  --lh-text: #0a0a0a;
+  --lh-text-2: #4a4a4a;
+  --lh-text-3: #8a8a8a;
+  --lh-accent: #ea6a00;
   --lh-accent-ink: #ffffff;
-  --lh-accent-soft: rgba(3, 105, 161, 0.09);
+  --lh-accent-soft: rgba(234, 106, 0, 0.10);
   --lh-ok: #15803d;
   --lh-ok-soft: rgba(21, 128, 61, 0.1);
   --lh-warn: #a16207;
@@ -350,3 +350,13 @@ html.light-mode .lh-board-icon, html.light-mode .lh-sub-ico { background: rgba(v
   .lh-ch-go { display: none; }
   .lh-continue { flex-direction: column; align-items: flex-start; }
 }
+
+/* ---------- Orbit theme overrides (keep last) ---------- */
+.lh-btn { border-radius: 999px; min-height: 42px; }
+.lh-btn--primary { background: var(--pill-bg, #fff); color: var(--pill-fg, #000); }
+.lh-btn--primary:hover:not(:disabled) { filter: brightness(0.9); }
+.lh-ghost-btn, .lh-chip, .lh-pick-crumb { border-radius: 999px; }
+.lh-card, .lh-quiz, .lh-learn, .lh-final, .lh-score, .lh-continue,
+.lh-pick .lh-chapters { border-radius: 24px; }
+.lh-option, .lh-wrong, .lh-alert, .lh-formula { border-radius: 16px; }
+.lh-hero-title, .lh-h2, .lh-title { letter-spacing: -0.03em; }

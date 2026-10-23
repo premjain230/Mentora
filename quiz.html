@@ -15,7 +15,7 @@
 <meta property="og:url" content="https://www.learningallied.world/quiz" />
 <meta name="twitter:card" content="summary_large_image" />
 <title>Take Quiz · Learning Allied</title>
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%234f8cff'/><text x='16' y='22' text-anchor='middle' fill='white' font-size='18' font-weight='bold'>A</text></svg>">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%23000000'/><text x='16' y='22' text-anchor='middle' fill='white' font-size='18' font-weight='bold'>A</text></svg>">
 <meta name="referrer" content="no-referrer-when-downgrade">
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
 <link rel="stylesheet" href="/css/tokens.css" />
@@ -24,21 +24,21 @@
 <link rel="stylesheet" href="/css/premium.css" />
 <style>
 /* Layout only. Look & feel comes from /css/premium.css */
-body{min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:28px 16px 64px;font-family:'Sora',system-ui,sans-serif;color:var(--pm-text);-webkit-font-smoothing:antialiased}
+body{min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:28px 16px 64px;font-family:var(--font-display);color:var(--pm-text);-webkit-font-smoothing:antialiased}
 .wrap{width:100%;max-width:640px}
 @keyframes rise{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
 .panel{animation:rise .3s var(--pm-ease) both}
 .topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:36px}
 .logo{display:flex;align-items:center;gap:10px}
 .logo-img{height:30px;width:auto;display:block}
-.logo-text{font-size:16px;font-weight:600;letter-spacing:-.01em}
+.logo-text{font-size:16px;font-weight:600;letter-spacing:-0.03em}
 .back-link{font-size:14px;text-decoration:none;display:flex;align-items:center;gap:6px;transition:color .16s}
 
 .panel h2{margin:0 0 6px}
 .panel p.sub{font-size:14px;color:var(--pm-text-2);margin:0 0 24px;line-height:1.55}
 .field{margin-bottom:16px}
 .field label{display:block;margin-bottom:7px}
-.field input,.field select{width:100%;padding:0 14px;font-family:inherit;outline:none}
+.field input,.field select{width:100%;padding:0 14px;font-family:inherit;outline:none;border-radius:var(--radius-md)}
 .row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:42px;padding:0 20px;font-family:inherit;font-size:14px;cursor:pointer;text-decoration:none}
 .ai-badge{display:inline-block;font-size:11px;padding:2px 8px;border-radius:999px;margin-left:6px;vertical-align:middle}
@@ -57,7 +57,7 @@ body{min-height:100vh;display:flex;flex-direction:column;align-items:center;padd
 .q-text{margin-bottom:20px}
 .options{display:flex;flex-direction:column;gap:10px}
 .option{padding:13px 16px;font-size:14px;cursor:pointer;display:flex;align-items:center;gap:12px;width:100%;text-align:left;font-family:inherit}
-.option .key{width:26px;height:26px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;flex-shrink:0}
+.option .key{width:26px;height:26px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;flex-shrink:0;border-radius:var(--radius-md)}
 .nav-row{display:flex;justify-content:space-between;margin-top:24px;gap:10px}
 .result-icon{font-size:44px;text-align:center;margin-bottom:8px}
 .result-score{text-align:center;line-height:1.1}
@@ -66,7 +66,7 @@ body{min-height:100vh;display:flex;flex-direction:column;align-items:center;padd
 .rstat{padding:14px;text-align:center}
 .rstat .l{font-size:13px;color:var(--pm-text-3);margin-top:2px}
 .saving{font-size:13px;color:var(--pm-text-3);text-align:center;margin-top:14px}
-@media(max-width:480px){.row2{grid-template-columns:1fr}.result-stats{grid-template-columns:1fr}.topbar{padding-right:52px}.panel{padding:22px!important}.btn{height:44px}}
+@media(max-width:480px){.row2{grid-template-columns:1fr}.result-stats{grid-template-columns:1fr}.topbar{padding-right:52px}.panel{padding:22px!important}.btn{height:44px;border-radius:999px}}
 </style>
 </head>
 <body>
@@ -95,10 +95,14 @@ body{min-height:100vh;display:flex;flex-direction:column;align-items:center;padd
  </div>
 </nav>
 <div class="wrap">
- <div class="topbar">
+<div class="topbar">
   <div class="logo"><img src="/learningallied-white.svg" alt="Learning Allied" class="logo-img"><span class="logo-text">Learning Allied</span></div>
   <a href="home.html" class="back-link">← Back to chat</a>
- </div>
+  <div style="display:flex;align-items:center;gap:8px;cursor:pointer;">
+   <img id="topbarAvatar" src="" data-pending-avatar="1" alt="User" style="width:32px;height:32px;border-radius:50%;object-fit:cover;border:1px solid var(--border);" />
+   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--text-muted);"><path d="m6 9 6 6 6-6"/></svg>
+  </div>
+</div>
 
  <div class="panel" id="setupPanel">
   <h2>Take a quiz</h2>

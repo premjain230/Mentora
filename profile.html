@@ -27,29 +27,29 @@
 <style>
 /* ───────── Profile design tokens (scoped; dark is default, light via html.light-mode) ───────── */
 .profile-page{
-  --p-surface:#0f0f11; --p-surface-2:#16161a; --p-inset:#0b0b0d;
-  --p-border:rgba(255,255,255,.08); --p-border-strong:rgba(255,255,255,.16);
-  --p-text:#f2f2f3; --p-text-2:#a1a1aa; --p-text-3:#71717a;
-  --p-accent:#6b9bff; --p-accent-soft:rgba(107,155,255,.12);
-  --p-inv-bg:#f2f2f3; --p-inv-fg:#0a0a0b;            /* primary button / inverse surfaces */
+  --p-surface:#0a0a0a; --p-surface-2:#141414; --p-inset:#070707;
+  --p-border:#222222; --p-border-strong:#333333;
+  --p-text:#f5f5f5; --p-text-2:#a8a8a8; --p-text-3:#737373;
+  --p-accent:#ff8a1f; --p-accent-soft:rgba(255,138,31,.14);
+  --p-inv-bg:#ffffff; --p-inv-fg:#000000;            /* primary button / inverse surfaces */
   --p-danger:#ff7b7b;
-  --p-shadow:0 1px 0 rgba(255,255,255,.03) inset, 0 1px 2px rgba(0,0,0,.4);
-  --p-radius:12px; --p-radius-sm:8px; --p-ease:cubic-bezier(.2,.7,.2,1); --p-dur:.16s;
+  --p-shadow:none;
+  --p-radius:24px; --p-radius-sm:14px; --p-ease:cubic-bezier(.2,.7,.2,1); --p-dur:.16s;
 }
 html.light-mode .profile-page{
-  --p-surface:#ffffff; --p-surface-2:#f6f6f7; --p-inset:#fafafa;
-  --p-border:#e6e6e9; --p-border-strong:#cfcfd5;
-  --p-text:#0a0a0b; --p-text-2:#52525b; --p-text-3:#71717a;
-  --p-accent:#2f5fe0; --p-accent-soft:rgba(47,95,224,.08);
-  --p-inv-bg:#0a0a0b; --p-inv-fg:#fafafa;
+  --p-surface:#ffffff; --p-surface-2:#f1f1f1; --p-inset:#f6f6f6;
+  --p-border:#e3e3e3; --p-border-strong:#cfcfcf;
+  --p-text:#0a0a0a; --p-text-2:#4a4a4a; --p-text-3:#8a8a8a;
+  --p-accent:#ea6a00; --p-accent-soft:rgba(234,106,0,.10);
+  --p-inv-bg:#0a0a0a; --p-inv-fg:#ffffff;
   --p-danger:#c62828;
-  --p-shadow:0 1px 2px rgba(10,10,11,.05);
+  --p-shadow:none;
 }
 
 .content-area{flex:1;overflow-y:auto;padding:48px 32px 72px}
 .content-area::-webkit-scrollbar{width:6px}
 .content-area::-webkit-scrollbar-thumb{background:var(--p-border-strong,#444);border-radius:6px}
-.profile-page{font-family:'Sora',system-ui,sans-serif;color:var(--p-text);max-width:680px;margin:0 auto;display:flex;flex-direction:column;gap:40px;-webkit-font-smoothing:antialiased}
+.profile-page{font-family:var(--font-main);color:var(--p-text);max-width:680px;margin:0 auto;display:flex;flex-direction:column;gap:40px;-webkit-font-smoothing:antialiased}
 .profile-page *{box-sizing:border-box}
 .profile-page button{font-family:inherit}
 .profile-page :focus-visible{outline:2px solid var(--p-accent);outline-offset:2px}

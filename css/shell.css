@@ -57,7 +57,7 @@ body { width: 100%; height: 100vh; height: 100dvh; height: var(--app-height, 100
 /* The blurred accent orbs are a dark-theme-only decoration and are now removed,
    so .main paints flat black. Scoped with :not(.light-mode) because the light
    theme renders the same orbs. */
-:root:not(.light-mode) .ambient-orb {
+.ambient-orb {
   display: none;
 }
 
@@ -93,26 +93,6 @@ body::before {
 
 }
 
-.light-mode body::before {
-
-  content: '';
-
-  position: fixed;
-
-  inset: 0;
-
-  z-index: 0;
-
-  pointer-events: none;
-
-  background:
-
-    radial-gradient(640px 420px at 14% -6%, rgba(0, 212, 255, 0.07), transparent 62%),
-
-    radial-gradient(560px 420px at 92% 6%, rgba(167, 139, 250, 0.06), transparent 60%);
-
-}
-
 /* Scroll progress */
 
 .scroll-progress {
@@ -127,7 +107,7 @@ body::before {
 
   z-index: 999;
 
-  background: linear-gradient(90deg, var(--accent), var(--accent2));
+  background: var(--accent);
 
   width: 0%;
 
@@ -235,7 +215,7 @@ body::before {
 
   width: 44px; height: 44px;
 
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-full);
 
   border: 1px solid var(--border);
 
@@ -307,7 +287,7 @@ body::before {
 
   border: 1px solid var(--border);
 
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-full);
 
   padding: 7px 13px;
 
@@ -323,7 +303,7 @@ body::before {
 
 }
 
-.model-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 8px var(--accent); flex-shrink: 0; }
+.model-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--accent); flex-shrink: 0; }
 
 /* Mobile safe areas & keyboard handling */
 

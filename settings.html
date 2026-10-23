@@ -15,7 +15,7 @@
 <meta name="keywords" content="Learning Allied settings, theme settings, app preferences, student account settings" />
 <link rel="canonical" href="https://www.learningallied.world/settings" />
 <title>Settings · Learning Allied</title>
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%234f8cff'/><text x='16' y='22' text-anchor='middle' fill='white' font-size='18' font-weight='bold'>A</text></svg>">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%23000000'/><text x='16' y='22' text-anchor='middle' fill='white' font-size='18' font-weight='bold'>A</text></svg>">
 <meta name="referrer" content="no-referrer-when-downgrade">
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
 <link rel="stylesheet" href="/css/tokens.css" />
@@ -148,15 +148,16 @@
  .nav-section::-webkit-scrollbar { width: 4px; }
  .nav-section::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
 
- @media (max-width: 880px) {
+@media (max-width: 880px) {
   .content-area { padding: 22px 14px 32px; }
- }
- @media (max-width: 520px) {
+}
+@media (max-width: 520px) {
+  .content-area { padding: 16px 12px 24px; }
   .btn-row { flex-direction: column; }
   .modal-actions { flex-direction: column-reverse; }
   .danger-zone { flex-direction: column; align-items: flex-start; }
   .topbar-mobile-logo span.full { display: none; }
- }
+}
 @keyframes rippleAnim{to{transform:scale(2);opacity:0;}}
 </style>
 </head>
@@ -709,5 +710,6 @@ initAnalytics();
 <script type="module" src="./js/avatar-sync.js"></script>
 </body>
 </html>
+
 
 

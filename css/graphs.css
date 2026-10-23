@@ -1,11 +1,11 @@
 /* Learning Allied graphs — theme-aware, flat, no glow. Loads after tokens + home.css. */
-.aq-graph-card,.aq-radial,.aq-bar-list,.aq-timeline,.aq-vol{--g-track:color-mix(in srgb,var(--text-primary) 8%,transparent);--g-hi:var(--accent);--g-mid:#d19a2e;--g-low:#d9534f;--mono:'Space Mono',ui-monospace,monospace}
-.aq-graph-card{background:var(--bg-card);border:1px solid var(--border);border-radius:12px;padding:20px;position:relative;transition:border-color .15s,transform .15s}
+.aq-graph-card,.aq-radial,.aq-bar-list,.aq-timeline,.aq-vol{--g-track:color-mix(in srgb,var(--text-primary) 8%,transparent);--g-hi:var(--accent);--g-mid:#e8b04a;--g-low:#d9534f;--mono:var(--font-mono)}
+.aq-graph-card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-xl);padding:20px;position:relative;transition:border-color .15s,transform .15s}
 .aq-graph-card:hover{border-color:var(--border-strong)}
 .aq-radial-wrap{display:flex;gap:20px;align-items:center}
 .aq-radial{--p:0;--c:var(--accent);flex:none;width:92px;height:92px;border-radius:50%;background:conic-gradient(var(--c) calc(var(--p)*1%),var(--g-track) 0);display:grid;place-items:center;position:relative;animation:aq-in .5s cubic-bezier(.2,.7,.2,1)}
 .aq-radial:after{content:"";position:absolute;inset:8px;background:var(--bg-card);border-radius:50%}
-.aq-radial span{position:relative;z-index:1;font:600 20px Sora,sans-serif;letter-spacing:-.02em;color:var(--text-primary)}
+.aq-radial span{position:relative;z-index:1;font:700 20px var(--font-display);letter-spacing:-.03em;color:var(--text-primary)}
 .aq-stat-title{font-size:14px;font-weight:600;color:var(--text-primary)}
 .aq-stat-sub{font-size:12px;color:var(--text-muted);margin-top:2px}
 .aq-bar-track{height:6px;background:var(--g-track);border-radius:6px;overflow:hidden}

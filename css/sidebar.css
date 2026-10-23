@@ -1,292 +1,186 @@
-/* Learning Allied — sidebar
-   =========================
-   All sidebar styling lives here. shell.css owns the page shell (body layout,
-   topbar, ambient background, scroll bar, toast) and does NOT style the sidebar.
-
-   Loaded by every page that shows a sidebar — both the pages that mount it via
-   js/components/sidebar.js and the ones that still inline their own copy.
-   Markup: sidebar.html
-
-   Design notes
-   - Strictly monochrome: only --text-*, --bg-* and --border* tokens are used,
-     so dark and light themes both work with no colour anywhere.
-   - Every nav item is "icon tile + label". The tile is quiet at rest and
-     inverts (solid white-on-black / black-on-white) when active, with a rail
-     on the left edge.
-   - Scrollbar: slim grey pill that thickens and darkens on hover.
+/* Learning Allied — sidebar (Orbit theme)
+   =======================================
+   Floating rounded panel, pill nav items, no icon tiles.
+   Active item = filled dark pill + hairline. Subscription = white pill.
+   Same markup and ids as sidebar.html — no HTML changes needed.
+   Depends on tokens from theme-orbit.css (falls back gracefully without it).
 */
 
 .sidebar {
   --sb-ease: cubic-bezier(0.22, 1, 0.36, 1);
-  --sb-tile: 32px;
-
   width: var(--sidebar-w);
   min-width: var(--sidebar-w);
   background: var(--bg-sidebar);
-
   display: flex;
   flex-direction: column;
-
   position: fixed;
   top: 12px;
   left: 12px;
-
   height: calc(100vh - 24px);
   height: calc(100dvh - 24px);
   height: calc(var(--app-height, 100dvh) - 24px);
   max-height: var(--app-height, 100dvh);
-
   overflow: hidden;
   margin: 0;
   box-sizing: border-box;
-
   border: 1px solid var(--border);
-  border-radius: 24px;
-  box-shadow:
-    0 24px 48px -12px rgba(0, 0, 0, 0.35),
-    0 2px 8px rgba(0, 0, 0, 0.12),
-    inset 0 1px 0 rgba(255, 255, 255, 0.04);
-
+  border-radius: 28px;
+  box-shadow: 0 30px 60px -24px rgba(0, 0, 0, 0.7);
   z-index: 30;
-  transition:
-    background var(--dur-med) ease,
-    border-color var(--dur-med) ease,
-    box-shadow var(--dur-med) ease;
-}
-
-/* Soft neutral glow in the top corner so the sidebar isn't a flat slab */
-.sidebar::before {
-  content: "";
-  position: absolute;
-  inset: 0 0 auto 0;
-  height: 180px;
-  background: radial-gradient(220px 120px at 20% 0%, var(--bg-hover), transparent 70%);
-  opacity: 1;
-  pointer-events: none;
+  transition: background var(--dur-med) ease, border-color var(--dur-med) ease;
 }
 .sidebar > * { position: relative; }
 
-/* ── Logo ─────────────────────────────────────────────────── */
+/* ── Logo: centred mark on top, wordmark hidden ───────────── */
 .logo-area {
-  padding: var(--space-4) var(--space-4) var(--space-3);
+  padding: 22px 16px 14px;
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: var(--space-2);
+  justify-content: center;
 }
-.logo { display: flex; align-items: center; gap: 10px; text-decoration: none; color: inherit; min-width: 0; }
-.logo-icon { width: 32px; height: 32px; border-radius: var(--radius-md); flex-shrink: 0; display: grid; place-items: center; background: var(--text-primary); color: var(--bg-sidebar); }
-.logo-icon svg { width: 18px; height: 18px; }
-.logo-img { height: 32px; width: auto; display: block; }
-.logo-text { font-size: var(--fs-lg); font-weight: 700; color: var(--text-primary); letter-spacing: -0.4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.logo-text span { color: var(--text-secondary); }
+.logo { display: flex; align-items: center; justify-content: center; text-decoration: none; color: inherit; }
+.logo-img { height: 34px; width: auto; display: block; }
+.logo-text { display: none; }
 
 .sidebar-close {
   display: none;
-  width: 44px; height: 44px;
-  border-radius: 12px;
+  position: absolute; right: 12px; top: 12px;
+  width: 40px; height: 40px;
+  border-radius: 999px;
   border: 1px solid var(--border);
-  background: var(--bg-hover);
+  background: transparent;
   color: var(--text-secondary);
   align-items: center; justify-content: center;
   cursor: pointer;
-  flex-shrink: 0;
 }
-.sidebar-close svg { transition: transform 0.35s var(--sb-ease); }
 .sidebar-close:hover { color: var(--text-primary); border-color: var(--text-muted); }
-.sidebar-close:hover svg { transform: rotate(90deg); }
 
-/* Shared focus ring */
 .nav-item:focus-visible,
 .upgrade-nav-btn:focus-visible,
 .signout-btn:focus-visible,
 .sidebar-close:focus-visible { outline: 2px solid var(--text-primary); outline-offset: 2px; }
 
-/* ── Nav ──────────────────────────────────────────────────── */
+/* ── Nav list ─────────────────────────────────────────────── */
 .nav-section {
   flex: 1;
   overflow-y: auto;
   overflow-x: hidden;
-  padding: var(--space-1) var(--space-3) var(--space-3);
+  padding: 4px 12px 12px;
   min-height: 0;
   -webkit-overflow-scrolling: touch;
   overscroll-behavior: contain;
-  scroll-behavior: smooth;
-
-  /* Firefox */
   scrollbar-width: thin;
   scrollbar-color: var(--border-strong) transparent;
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 14px, #000 calc(100% - 14px), transparent 100%);
+  mask-image: linear-gradient(to bottom, transparent 0, #000 14px, #000 calc(100% - 14px), transparent 100%);
+}
+.nav-section:not([data-scrollable="true"]) { -webkit-mask-image: none; mask-image: none; }
+.nav-section::-webkit-scrollbar { width: 6px; }
+.nav-section::-webkit-scrollbar-track { background: transparent; margin: 10px 0; }
+.nav-section::-webkit-scrollbar-thumb { border-radius: 999px; background: var(--border-strong); }
+.nav-section::-webkit-scrollbar-button { display: none; }
 
-  /* Fade the list out where it meets the footer when scrollable. Mask, not an
-     overlay, so it never intercepts clicks. */
-  -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 var(--scroll-fade, 14px), #000 calc(100% - var(--scroll-fade, 14px)), transparent 100%);
-  mask-image: linear-gradient(to bottom, transparent 0, #000 var(--scroll-fade, 14px), #000 calc(100% - var(--scroll-fade, 14px)), transparent 100%);
-}
-/* sidebar.js sets data-scrollable; no fade on a short list */
-.nav-section:not([data-scrollable="true"]) {
-  -webkit-mask-image: none;
-  mask-image: none;
-}
-
-/* Slim grey pill scrollbar: thin at rest, thicker on hover */
-.nav-section::-webkit-scrollbar { width: 8px; }
-.nav-section::-webkit-scrollbar-track {
-  background: transparent;
-  margin: 10px 0;
-}
-.nav-section::-webkit-scrollbar-thumb {
-  min-height: 40px;
-  border-radius: 999px;
-  background-color: var(--border-strong);
-  border: 2px solid transparent;           /* thin look at rest */
-  background-clip: padding-box;
-  transition: border-width 0.2s ease;
-}
-.nav-section:hover::-webkit-scrollbar-thumb { border-width: 1px; }
-.nav-section::-webkit-scrollbar-thumb:hover {
-  background-color: var(--text-muted);
-}
-.nav-section::-webkit-scrollbar-corner { background: transparent; }
-.nav-section::-webkit-scrollbar-button { display: none; height: 0; width: 0; }
-
-/* Section labels: sentence case with a hairline trailing rule */
+/* Section label: quiet text, no trailing rule */
 .nav-label {
-  display: flex; align-items: center; gap: 10px;
-  padding: 14px 10px 6px;
+  padding: 16px 14px 6px;
   font-size: 11.5px;
   font-weight: 600;
-  letter-spacing: 0.01em;
   color: var(--text-muted);
 }
-.nav-label::after {
-  content: "";
-  flex: 1;
-  height: 1px;
-  background: linear-gradient(90deg, var(--border), transparent);
-}
-.nav-label:first-child { padding-top: 6px; }
+.nav-label:first-child { padding-top: 4px; }
 
-/* ── Nav item ─────────────────────────────────────────────── */
+/* ── Nav item: icon + label, pill highlight ───────────────── */
 .nav-item {
   position: relative;
-  display: flex; align-items: center; gap: 12px;
-  padding: 6px 10px 6px 6px;
-  margin: 2px 0;
-  min-height: 44px;
+  display: flex; align-items: center; gap: 14px;
+  padding: 0 14px;
+  margin: 3px 0;
+  min-height: 46px;
   width: 100%;
   box-sizing: border-box;
-  border-radius: 14px;
+  border-radius: 999px;
   border: 1px solid transparent;
-  color: var(--text-muted);
-  font-size: 13.5px;
+  color: var(--text-secondary);
+  font-size: 14px;
   font-weight: 500;
-  letter-spacing: -0.01em;
-  text-align: left;
+  letter-spacing: -0.005em;
   text-decoration: none;
   cursor: pointer;
   transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease, transform 0.15s var(--sb-ease);
 }
 .nav-text { flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-/* The icon tile */
 .nav-icon {
-  width: var(--sb-tile); height: var(--sb-tile);
+  width: 22px; height: 22px;
   flex-shrink: 0;
   display: inline-grid; place-items: center;
-  border-radius: 10px;
-  background: var(--bg-hover);
-  color: var(--text-secondary);
-  transition: background 0.25s ease, color 0.25s ease, transform 0.35s var(--sb-ease);
+  background: none;
+  color: inherit;
 }
-.nav-icon svg { width: 18px; height: 18px; flex-shrink: 0; }
+.nav-icon svg { width: 21px; height: 21px; }
 
-.nav-item:hover { background: var(--bg-sidebar-hover); color: var(--text-primary); border-color: var(--text-muted); }
-.nav-item:hover .nav-icon { transform: rotate(90deg); color: var(--text-primary); }
+.nav-item:hover { background: var(--bg-sidebar-hover); color: var(--text-primary); }
 .nav-item:active { transform: scale(0.98); }
 
-/* Active: soft wash, glowing rail, filled gradient tile */
 .nav-item.active {
-  background: linear-gradient(90deg, var(--bg-hover), transparent 95%);
+  background: var(--bg-hover);
+  border-color: var(--border-strong);
   color: var(--text-primary);
   font-weight: 600;
-  box-shadow: none;
-}
-.nav-item.active::before {
-  content: "";
-  position: absolute;
-  left: -12px; top: 10px; bottom: 10px;
-  width: 4px;
-  border-radius: 0 4px 4px 0;
-  background: var(--text-primary);
-}
-.nav-item.active .nav-icon,
-.nav-item.active:hover .nav-icon {
-  background: var(--text-primary);
-  color: var(--bg-sidebar);
 }
 
 /* ── Badges ───────────────────────────────────────────────── */
 .nav-badge {
   margin-left: auto;
   font-size: 10px;
-  font-weight: 600;
+  font-weight: 700;
   line-height: 1;
   padding: 4px 8px;
-  border-radius: var(--radius-full);
-  background: var(--bg-hover);
+  border-radius: 999px;
+  background: transparent;
   border: 1px solid var(--border-strong);
   color: var(--text-secondary);
 }
-.nav-badge:empty { display: none; }         /* #reviewBadge is empty until home.js fills it */
+.nav-badge:empty { display: none; }
 .nav-item.active .nav-badge { color: var(--text-primary); }
 
-/* ── Subscription ─────────────────────────────────────────── */
+/* ── Subscription: the white pill, like the "Post" button ──── */
 .upgrade-nav-btn {
-  position: relative;
-  display: flex; align-items: center; gap: 12px;
-  margin: var(--space-3) 0 var(--space-1);
-  padding: 8px 12px 8px 8px;
-  border-radius: 16px;
-  border: 1px solid var(--border-strong);
-  background: var(--bg-hover);
-  color: var(--text-primary);
+  display: flex; align-items: center; justify-content: center; gap: 12px;
+  margin: 18px 0 4px;
+  padding: 0 18px;
+  min-height: 52px;
+  border-radius: 999px;
+  border: 0;
+  background: var(--pill-bg, #fff);
+  color: var(--pill-fg, #000);
   text-decoration: none;
   cursor: pointer;
-  transition: transform 0.15s var(--sb-ease), border-color 0.2s ease, background 0.2s ease;
+  transition: transform 0.15s var(--sb-ease), opacity 0.2s ease;
 }
-.upgrade-nav-btn .nav-icon {
-  transition: transform 0.35s var(--sb-ease);
-  background: var(--text-primary);
-  color: var(--bg-sidebar);
-}
+.upgrade-nav-btn .nav-icon { background: none; color: inherit; }
 .upgrade-text { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
-.upgrade-title { font-size: 13.5px; font-weight: 700; letter-spacing: -0.01em; line-height: 1.1; }
-.upgrade-sub { font-size: 11px; color: var(--text-muted); line-height: 1.1; }
-.upgrade-nav-btn:hover { border-color: var(--text-muted); background: var(--bg-sidebar-hover); }
-.upgrade-nav-btn:hover .nav-icon { transform: rotate(90deg); }
+.upgrade-title { font-size: 13.5px; font-weight: 700; letter-spacing: 0.01em; line-height: 1.1; }
+.upgrade-sub { font-size: 11px; opacity: 0.6; line-height: 1.1; }
+.upgrade-nav-btn:hover { opacity: 0.88; }
 .upgrade-nav-btn:active { transform: scale(0.98); }
-.upgrade-nav-btn.active { border-color: var(--text-primary); }
+.upgrade-nav-btn.active { box-shadow: 0 0 0 2px var(--bg-sidebar), 0 0 0 3px var(--text-primary); }
 
-/* ── Footer (user + sign out) ─────────────────────────────── */
-.sidebar-bottom {
-  margin-top: auto;
-  padding: var(--space-3);
-  border-top: 1px solid var(--border);
-}
+/* ── Footer: user card ────────────────────────────────────── */
+.sidebar-bottom { margin-top: auto; padding: 12px; }
 .user-card {
   display: flex; align-items: center; gap: 10px;
-  padding: 8px;
-  border-radius: 16px;
-  background: var(--bg-hover);
+  padding: 10px;
+  border-radius: 22px;
+  background: var(--bg-card);
   border: 1px solid var(--border);
-  transition: border-color 0.2s ease;
 }
-.user-card:hover { border-color: var(--border-strong); }
 .avatar {
-  width: 36px; height: 36px; flex-shrink: 0;
-  border-radius: 12px;
-  background: var(--text-primary);
-  color: var(--bg-sidebar);
+  width: 40px; height: 40px; flex-shrink: 0;
+  border-radius: 50%;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-strong);
+  color: var(--text-primary);
   display: grid; place-items: center;
   font-size: var(--fs-sm); font-weight: 700;
   overflow: hidden;
@@ -294,42 +188,37 @@
 .avatar img { width: 100%; height: 100%; object-fit: cover; }
 .user-info { min-width: 0; flex: 1; }
 .user-meta { min-width: 0; flex: 1; }
-.user-name { font-size: 13px; font-weight: 600; color: var(--text-primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.user-name { font-size: 13.5px; font-weight: 700; color: var(--text-primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .user-plan { font-size: 11.5px; color: var(--text-muted); }
+
+/* Pro badge: flame accent, flat */
 .plan-badge {
   display: none;
-  font-size: 10.5px;
+  font-size: 10px;
   font-weight: 700;
-  letter-spacing: -0.2px;
   padding: 2px 8px;
   border-radius: 999px;
-  color: #fff;
-  background: linear-gradient(135deg, #f59e0b 0%, #d97706 50%, #b45309 100%);
-  box-shadow: 0 0 10px rgba(245, 158, 11, 0.45);
-  border: 1px solid rgba(255, 255, 255, 0.25);
+  color: var(--accent, #ff8a1f);
+  background: var(--accent-soft, rgba(255, 138, 31, 0.14));
+  border: 1px solid rgba(255, 138, 31, 0.45);
   white-space: nowrap;
 }
 .signout-btn {
-  width: 36px; height: 36px; flex-shrink: 0;
+  width: 34px; height: 34px; flex-shrink: 0;
   display: grid; place-items: center;
-  padding: 0;
-  border: 0;
-  border-radius: 10px;
+  padding: 0; border: 0; border-radius: 50%;
   background: transparent;
   color: var(--text-muted);
   cursor: pointer;
-  transition: color 0.2s ease, background 0.2s ease, transform 0.35s var(--sb-ease);
+  transition: color 0.2s ease, background 0.2s ease;
 }
 .signout-btn:hover { color: var(--text-primary); background: var(--bg-sidebar-hover); }
-.signout-btn:hover svg { transform: rotate(90deg); }
-.signout-btn svg { transition: transform 0.35s var(--sb-ease); }
-.signout-btn:active { transform: scale(0.94); }
 
 /* ── Mobile drawer ────────────────────────────────────────── */
 .sidebar-overlay {
   display: none;
   position: fixed; inset: 0;
-  background: rgba(0, 0, 0, 0.55);
+  background: rgba(0, 0, 0, 0.7);
   -webkit-backdrop-filter: blur(3px);
   backdrop-filter: blur(3px);
   z-index: 25;
@@ -346,7 +235,7 @@
     width: min(290px, calc(100vw - 44px));
     min-width: min(290px, calc(100vw - 44px));
     margin-left: calc(-1 * min(290px, calc(100vw - 44px)));
-    border-radius: 0 24px 24px 0;
+    border-radius: 0 28px 28px 0;
     box-shadow: none;
     padding-top: env(safe-area-inset-top);
     padding-bottom: env(safe-area-inset-bottom);
@@ -355,14 +244,25 @@
   .sidebar.open { margin-left: 0; box-shadow: var(--shadow-lg); }
   .sidebar-close { display: flex; }
   .sidebar-overlay { display: block; }
-  .nav-item.active::before { left: -12px; }
+  .logo-area { justify-content: flex-start; }
 }
-@media (max-width: 480px) {
-  .sidebar { --sidebar-w: 290px; }
-}
+@media (max-width: 480px) { .sidebar { --sidebar-w: 290px; } }
 
 @media (prefers-reduced-motion: reduce) {
-  .sidebar *,
-  .sidebar *::before { transition: none !important; animation: none !important; }
-  .nav-section { scroll-behavior: auto; }
+  .sidebar *, .sidebar *::before { transition: none !important; animation: none !important; }
+}
+
+
+
+
+
+
+
+
+
+
+/* Topbar avatar (an <img>, so the ring is a gradient border) */
+
+@media (prefers-reduced-motion: reduce) {
+  * { animation: none !important; transition: none !important; }
 }

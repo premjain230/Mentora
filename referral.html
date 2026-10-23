@@ -13,7 +13,7 @@
 <meta property="og:type" content="website"/>
 <meta property="og:url" content="https://www.learningallied.world/referral"/>
 <title>Refer & Earn — Learning Allied</title>
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%234f8cff'/><text x='16' y='22' text-anchor='middle' fill='white' font-size='18' font-weight='bold'>A</text></svg>">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%23000000'/><text x='16' y='22' text-anchor='middle' fill='white' font-size='18' font-weight='bold'>A</text></svg>">
 <meta name="referrer" content="no-referrer-when-downgrade">
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet"/>
 <link rel="stylesheet" href="/css/tokens.css" />
@@ -21,63 +21,64 @@
 <link rel="stylesheet" href="/css/nav.css" />
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-:root{--bg:#000000;--surface:#0f1117;--card:#1a1d27;--card2:#1e2130;--border:rgba(255,255,255,0.07);--border-hover:rgba(255,255,255,0.12);--text:#f0f0f8;--text-secondary:#8b8fa8;--text-muted:#4a4d62;--accent:#00d4ff;--accent2:#a78bfa;--accent3:#ff6b6b;--green:#22c55e;--amber:#f59e0b;--radius:12px;--font:'Sora',sans-serif;--mono:'Space Mono',monospace}
-body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:100vh}
+:root{--ref-bg:#000000;--ref-surface:#0a0a0a;--ref-card:#0a0a0a;--ref-border:#222222;--ref-border-strong:#333333;--ref-text:#f5f5f5;--ref-text-secondary:#a8a8a8;--ref-text-muted:#737373;--ref-accent:#ff8a1f;--ref-accent-soft:rgba(255,138,31,0.14);--ref-green:#10b981;--ref-amber:#f59e0b;--ref-radius:24px;--ref-font:'Space Grotesk',Inter,sans-serif;--ref-mono:'JetBrains Mono','Space Mono',monospace}
+.light-mode{--ref-bg:#f4f4f4;--ref-surface:#ffffff;--ref-card:#ffffff;--ref-border:#e3e3e3;--ref-border-strong:#cfcfcf;--ref-text:#0a0a0a;--ref-text-secondary:#4a4a4a;--ref-text-muted:#8a8a8a;--ref-accent:#ea6a00;--ref-accent-soft:rgba(234,106,0,0.10);--ref-green:#0f9d6b;--ref-amber:#b7791f}
+body{background:var(--ref-bg);color:var(--ref-text);font-family:var(--ref-font);min-height:100vh}
 .ref-container{max-width:720px;margin:0 auto;padding:24px 16px 64px}
 .ref-header{text-align:center;padding:32px 0 24px}
-.ref-header h1{font-size:28px;font-weight:800;letter-spacing:-0.5px;margin-bottom:6px}
-.ref-header p{color:var(--text-secondary);font-size:14px;line-height:1.5}
-.share-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:24px;margin-bottom:20px}
-.share-label{font-size:12px;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;font-weight:600}
+.ref-header h1{font-size:28px;font-weight:700;letter-spacing:-0.03em;margin-bottom:6px}
+.ref-header p{color:var(--ref-text-secondary);font-size:14px;line-height:1.5}
+.share-card{background:var(--ref-card);border:1px solid var(--ref-border);border-radius:var(--ref-radius);padding:24px;margin-bottom:20px}
+.share-label{font-size:12px;color:var(--ref-text-muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;font-weight:600}
 .share-link-wrap{display:flex;gap:8px;margin-bottom:12px}
-.share-link-wrap input{flex:1;background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:12px 14px;color:var(--text);font-family:var(--mono);font-size:13px;outline:none}
-.share-link-wrap input:focus{border-color:var(--accent)}
-.share-link-wrap button{background:var(--accent);border:none;border-radius:var(--radius);padding:12px 20px;color:#050505;font-weight:600;font-size:13px;font-family:var(--font);cursor:pointer;transition:all 0.15s;white-space:nowrap}
-.share-link-wrap button:hover{background:#33ddff;transform:translateY(-1px)}
+.share-link-wrap input{flex:1;background:var(--ref-surface);border:1px solid var(--ref-border);border-radius:var(--radius-md);padding:12px 14px;color:var(--ref-text);font-family:var(--ref-mono);font-size:13px;outline:none}
+.share-link-wrap input:focus{border-color:var(--ref-accent)}
+.share-link-wrap button{background:var(--pill-bg,#ffffff);border:none;border-radius:999px;padding:12px 20px;color:var(--pill-fg,#000000);font-weight:600;font-size:13px;font-family:var(--ref-font);cursor:pointer;transition:opacity 0.15s;white-space:nowrap}
+.share-link-wrap button:hover{opacity:0.88}
 .share-link-wrap button:active{transform:translateY(0)}
 .share-btns{display:flex;gap:8px;flex-wrap:wrap}
-.share-btns button{flex:1;min-width:100px;padding:10px;border-radius:var(--radius);border:1px solid var(--border);background:var(--card);color:var(--text-secondary);font-size:12px;font-weight:500;font-family:var(--font);cursor:pointer;transition:all 0.15s;display:flex;align-items:center;justify-content:center;gap:6px}
-.share-btns button:hover{border-color:var(--border-hover);color:var(--text);background:var(--card2)}
+.share-btns button{flex:1;min-width:100px;padding:10px;border-radius:999px;border:1px solid var(--ref-border);background:var(--ref-surface);color:var(--ref-text-secondary);font-size:12px;font-weight:500;font-family:var(--ref-font);cursor:pointer;transition:all 0.15s;display:flex;align-items:center;justify-content:center;gap:6px}
+.share-btns button:hover{border-color:var(--ref-border-strong);color:var(--ref-text);background:var(--ref-surface)}
 .stats-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px}
-.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px;text-align:center}
-.stat-card .value{font-size:28px;font-weight:800;letter-spacing:-0.5px;margin-bottom:2px}
-.stat-card .label{font-size:11px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;font-weight:500}
-.tier-progress{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:24px;margin-bottom:20px}
+.stat-card{background:var(--ref-card);border:1px solid var(--ref-border);border-radius:var(--ref-radius);padding:16px;text-align:center}
+.stat-card .value{font-size:28px;font-weight:700;letter-spacing:-0.03em;margin-bottom:2px}
+.stat-card .label{font-size:11px;color:var(--ref-text-muted);text-transform:uppercase;letter-spacing:0.5px;font-weight:500}
+.tier-progress{background:var(--ref-card);border:1px solid var(--ref-border);border-radius:var(--ref-radius);padding:24px;margin-bottom:20px}
 .tier-progress h3{font-size:16px;font-weight:600;margin-bottom:16px}
-.tier-bar{height:8px;background:var(--card);border-radius:10px;overflow:hidden;margin-bottom:10px}
-.tier-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:10px;transition:width 0.5s cubic-bezier(0.16,1,0.3,1)}
-.tier-info{display:flex;justify-content:space-between;font-size:12px;color:var(--text-secondary)}
-.tier-next{color:var(--accent);font-weight:600}
-.badges-section{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:24px;margin-bottom:20px}
+.tier-bar{height:8px;background:var(--ref-surface);border-radius:999px;overflow:hidden;margin-bottom:10px}
+.tier-fill{height:100%;background:linear-gradient(90deg,var(--ref-accent),var(--ref-accent));border-radius:999px;transition:width 0.5s cubic-bezier(0.16,1,0.3,1)}
+.tier-info{display:flex;justify-content:space-between;font-size:12px;color:var(--ref-text-secondary)}
+.tier-next{color:var(--ref-accent);font-weight:600}
+.badges-section{background:var(--ref-card);border:1px solid var(--ref-border);border-radius:var(--ref-radius);padding:24px;margin-bottom:20px}
 .badges-section h3{font-size:16px;font-weight:600;margin-bottom:16px}
 .badges-grid{display:flex;gap:12px;flex-wrap:wrap}
-.badge-item{display:flex;flex-direction:column;align-items:center;gap:4px;padding:16px 12px;background:var(--card);border:1px solid var(--border);border-radius:var(--radius);min-width:80px;transition:all 0.15s;opacity:0.3;filter:grayscale(1)}
-.badge-item.unlocked{opacity:1;filter:none;border-color:rgba(0,212,255,0.3)}
+.badge-item{display:flex;flex-direction:column;align-items:center;gap:4px;padding:16px 12px;background:var(--ref-card);border:1px solid var(--ref-border);border-radius:var(--ref-radius);min-width:80px;transition:all 0.15s;opacity:0.3;filter:grayscale(1)}
+.badge-item.unlocked{opacity:1;filter:none;border-color:color-mix(in srgb, var(--ref-accent) 30%, transparent)}
 .badge-icon{font-size:28px}
-.badge-name{font-size:10px;color:var(--text-muted);text-align:center;font-weight:500}
-.badge-item.unlocked .badge-name{color:var(--text)}
-.referrals-list{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:24px;margin-bottom:20px}
+.badge-name{font-size:10px;color:var(--ref-text-muted);text-align:center;font-weight:500}
+.badge-item.unlocked .badge-name{color:var(--ref-text)}
+.referrals-list{background:var(--ref-card);border:1px solid var(--ref-border);border-radius:var(--ref-radius);padding:24px;margin-bottom:20px}
 .referrals-list h3{font-size:16px;font-weight:600;margin-bottom:12px}
-.referral-row{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border);font-size:13px}
+.referral-row{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--ref-border);font-size:13px}
 .referral-row:last-child{border-bottom:none}
-.ref-status{padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600}
-.ref-status.pending{background:rgba(245,158,11,0.12);color:var(--amber)}
-.ref-status.rewarded{background:rgba(34,197,94,0.12);color:var(--green)}
-.empty-state{text-align:center;padding:24px;color:var(--text-muted);font-size:13px}
-.perks-list{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:24px;margin-bottom:20px}
-.perk-item{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border);font-size:13px}
+.ref-status{padding:3px 10px;border-radius:999px;font-size:11px;font-weight:600}
+.ref-status.pending{background:color-mix(in srgb, var(--ref-amber) 12%, transparent);color:var(--ref-amber)}
+.ref-status.rewarded{background:color-mix(in srgb, var(--ref-green) 12%, transparent);color:var(--ref-green)}
+.empty-state{text-align:center;padding:24px;color:var(--ref-text-muted);font-size:13px}
+.perks-list{background:var(--ref-card);border:1px solid var(--ref-border);border-radius:var(--ref-radius);padding:24px;margin-bottom:20px}
+.perk-item{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--ref-border);font-size:13px}
 .perk-item:last-child{border-bottom:none}
-.perk-check{color:var(--green);font-weight:700}
+.perk-check{color:var(--ref-green);font-weight:700}
 .perk-icon{font-size:18px}.perk-info{flex:1}.perk-info strong{display:block;margin-bottom:2px}
-.perk-req{font-size:11px;color:var(--text-muted)}
-.back-link{display:inline-flex;align-items:center;gap:6px;color:var(--text-muted);text-decoration:none;font-size:13px;margin-bottom:16px;transition:color 0.15s}
-.back-link:hover{color:var(--text)}
-.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--card);border:1px solid rgba(0,212,255,0.3);border-radius:var(--radius);padding:12px 20px;font-size:13px;color:var(--accent);z-index:999;opacity:0;transition:opacity 0.3s}
+.perk-req{font-size:11px;color:var(--ref-text-muted)}
+.back-link{display:inline-flex;align-items:center;gap:6px;color:var(--ref-text-muted);text-decoration:none;font-size:13px;margin-bottom:16px;transition:color 0.15s}
+.back-link:hover{color:var(--ref-text)}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--ref-card);border:1px solid color-mix(in srgb, var(--ref-accent) 30%, transparent);border-radius:999px;padding:12px 20px;font-size:13px;color:var(--ref-accent);z-index:999;opacity:0;transition:opacity 0.3s}
 .toast.show{opacity:1}
 @media(max-width:480px){.stats-grid{grid-template-columns:repeat(3,1fr);gap:8px}.stat-card{padding:12px}.stat-card .value{font-size:20px}}
 @media(max-width:400px){.stats-grid{grid-template-columns:1fr 1fr}.stat-card .value{font-size:22px}}
-@media(prefers-color-scheme:light){:root{--bg:#f4f5f9;--surface:#ffffff;--card:#f0f1f6;--card2:#e8e9f0;--border:rgba(0,0,0,0.08);--text:#1a1a2e;--text-secondary:#6b6f8a;--text-muted:#a0a3b8}.share-btns button{color:var(--text-secondary)}}
-</style>  
+@media(prefers-color-scheme:light){:root{--ref-bg:#f4f5f9;--ref-surface:#ffffff;--ref-card:#ffffff;--ref-border:rgba(0,0,0,0.08);--ref-text:#1a1a2e;--ref-text-secondary:#6b6f8a;--ref-text-muted:#a0a3b8}.share-btns button{color:var(--ref-text-secondary)}}
+</style>
 </head>
 <body>
 <button class="mnav-btn" id="mnavBtn" aria-label="Open menu" aria-expanded="false">
@@ -104,7 +105,28 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:1
   <a href="settings.html">Settings</a>
  </div>
 </nav>
-<div class="ref-container">
+
+<main class="main">
+  <div class="topbar" style="background:var(--bg-base);border-bottom:1px solid var(--border-subtle);">
+    <div class="topbar-left">
+      <button class="menu-btn" id="menuBtn" aria-label="Open menu">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      </button>
+      <div class="topbar-mobile-logo"><img src="/learningallied-white.svg" alt="Learning Allied" class="logo-img"><span class="logo-text">Learning Allied</span></div>
+      <div style="display:none;" class="model-selector"><span class="model-dot"></span>Learning Allied</div>
+      <div id="topbarGreeting" style="font-size:14px;font-weight:500;color:var(--text-secondary);margin-left:8px;">Hi, <span id="greetingName">there</span></div>
+    </div>
+    <div style="flex:1;display:flex;justify-content:center;max-width:480px;margin:0 16px;" class="topbar-center"></div>
+    <div style="display:flex;align-items:center;gap:12px;" class="topbar-right">
+      <button style="width:36px;height:36px;border-radius:999px;background:var(--bg-card);border:1px solid var(--border);display:grid;place-items:center;color:var(--text-muted);position:relative;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 8a6 6 0 0 1 12 0c0 7-6 11-6 11s-6-4-6-11"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg><span style="position:absolute;top:6px;right:7px;width:7px;height:7px;background:var(--green);border-radius:50%;border:1px solid var(--bg-card);"></span></button>
+      <div style="display:flex;align-items:center;gap:8px;cursor:pointer;">
+        <img id="topbarAvatar" src="" data-pending-avatar="1" alt="User" style="width:32px;height:32px;border-radius:50%;object-fit:cover;border:1px solid var(--border);" />
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--text-muted);"><path d="m6 9 6 6 6-6"/></svg>
+      </div>
+    </div>
+  </div>
+
+  <div class="ref-container">
  <a href="home.html" class="back-link">&larr; Back to Dashboard</a>
  <div class="ref-header">
   <h1>Refer & Earn</h1>
@@ -117,6 +139,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:1
   <a href="login.html" style="display:inline-block;padding:12px 28px;background:var(--accent);color:#050505;border-radius:var(--radius);text-decoration:none;font-weight:600">Sign In</a>
  </div>
 </div>
+</main>
 <div id="toast" class="toast"></div>
 
 <script type="module">
@@ -288,5 +311,7 @@ onAuthStateChanged(auth, user => {
 window.addEventListener('beforeunload', stopDashboardRefresh);
 </script>
 <script src="nav.js" defer></script>
+<script type="module" src="/js/pro-ring.js"></script>
 </body>
 </html>
+
