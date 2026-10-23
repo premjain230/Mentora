@@ -1,41 +1,48 @@
-// Learning Allied — Firebase client config endpoint.
-// Serves Firebase client-side configuration (API key, auth domain, project ID, etc.).
-// These values are meant to be public — they identify the Firebase project,
-// not secret credentials.
-//
-// Usage (client):
-//   const response = await fetch("/api/firebase-config");
-//   const config = await response.json();
-//   // Pass config to initializeApp()
-//
-// Env overrides (Vercel):
-//   FIREBASE_API_KEY, FIREBASE_APP_ID, FIREBASE_AUTH_DOMAIN,
-//   FIREBASE_MESSAGING_SENDER_ID, FIREBASE_PROJECT_ID, FIREBASE_STORAGE_BUCKET
+const { applyCors } = require("./_shared");
 
-export default async function handler(req, res) {
+const DEFAULTS = {
+  authDomain: "mentora-c6dca.firebaseapp.com",
+  projectId: "mentora-c6dca",
+  storageBucket: "mentora-c6dca.firebasestorage.app",
+  messagingSenderId: "",
+  appId: "",
+  measurementId: "",
+};
+
+module.exports = async function handler(req, res) {
+  if (!applyCors(req, res, ["GET", "OPTIONS"])) return;
+
   if (req.method !== "GET") {
-    return res.status(405).json({ error: "Method not allowed" });
+    res.setHeader("Allow", "GET, OPTIONS");
+    return res.status(405).json({ error: "Method not allowed." });
   }
 
-  try {
-    const config = {
-      apiKey: process.env.FIREBASE_API_KEY,
-      appId: process.env.FIREBASE_APP_ID,
-      authDomain: process.env.FIREBASE_AUTH_DOMAIN,
-      messagingSenderId: process.env.FIREBASE_MESSAGING_SENDER_ID,
-      projectId: process.env.FIREBASE_PROJECT_ID,
-      storageBucket: process.env.FIREBASE_STORAGE_BUCKET,
-    };
-
-    // Validate required fields are present
-    if (!config.apiKey || !config.projectId || !config.authDomain) {
-      console.error("Firebase config missing required fields:", config);
-      return res.status(500).json({ error: "Firebase configuration incomplete" });
+  const fullConfig = process.env.FIREBASE_CONFIG;
+  if (fullConfig) {
+    try {
+      const parsed = JSON.parse(fullConfig);
+      return res.status(200).json(parsed);
+    } catch (e) {
+      console.error("FIREBASE_CONFIG env var contains invalid JSON:", e.message);
     }
-
-    return res.status(200).json(config);
-  } catch (err) {
-    console.error("Firebase config error:", err);
-    return res.status(500).json({ error: "Server error" });
   }
-}
+
+  const config = {
+    apiKey: process.env.FIREBASE_API_KEY || "",
+    authDomain: process.env.FIREBASE_AUTH_DOMAIN || DEFAULTS.authDomain,
+    projectId: process.env.FIREBASE_PROJECT_ID || DEFAULTS.projectId,
+    storageBucket: process.env.FIREBASE_STORAGE_BUCKET || DEFAULTS.storageBucket,
+    messagingSenderId: process.env.FIREBASE_MESSAGING_SENDER_ID || DEFAULTS.messagingSenderId,
+    appId: process.env.FIREBASE_APP_ID || DEFAULTS.appId,
+    measurementId: process.env.FIREBASE_MEASUREMENT_ID || DEFAULTS.measurementId,
+  };
+
+  if (!config.apiKey) {
+    return res.status(500).json({
+      error: "Firebase configuration is incomplete.",
+      hint: "Set FIREBASE_API_KEY (and optionally FIREBASE_CONFIG as full JSON) in Vercel Environment Variables.",
+    });
+  }
+
+  res.status(200).json(config);
+};
