@@ -275,8 +275,8 @@ textarea.field { padding: var(--space-3) var(--space-4); min-height: 96px; resiz
 .u-hide-sm { }
 @media (max-width: 640px) { .u-hide-sm { display: none !important; } }
 
-/* Navbar profile picture — blue-purple gradient area */
-#topbarAvatar {
+/* Navbar profile picture — blue-purple gradient when Pro plan */
+html[data-plan="pro"] #topbarAvatar {
   border-radius: 50% !important;
   background: conic-gradient(from var(--ring-a, 0deg), #4f8cff, #9b7bff, #4f8cff);
   animation: ring-spin 6s linear infinite;
