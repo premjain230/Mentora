@@ -5,13 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 <title>Learning Allied — AI Study Partner for JEE, NEET & Board Exams</title>
 <meta name="description" content="Learning Allied is an AI study partner for Indian students preparing for JEE, NEET and Board exams. AI tutor, spaced review, active recall, chapter-wise practice quizzes and personalized study plans." />
-<meta name="keywords" content="Learning Allied, AI study partner, JEE preparation, NEET preparation, Board exam help, AI tutor, study planner, JEE Main, JEE Advanced, NEET UG, Maharashtra Board, CBSE Board, AI learning, spaced repetition, active recall, study plans, practice quizzes" />
 <meta name="author" content="Prem Jain" />
 <meta name="publisher" content="Learning Allied" />
 <meta name="robots" content="index, follow, max-image-preview:large" />
-<meta name="language" content="English" />
-<meta name="geo.country" content="IN" />
-<meta name="geo.placename" content="India" />
 <meta name="color-scheme" content="dark light" />
 <meta name="theme-color" content="#0a0a0b" media="(prefers-color-scheme: dark)" />
 <meta name="theme-color" content="#fafaf9" media="(prefers-color-scheme: light)" />
@@ -20,13 +16,14 @@
 <meta property="og:description" content="Learning Allied is an AI study partner for Indian students preparing for JEE, NEET and Board exams. AI tutor, spaced review, active recall, chapter-wise practice quizzes and personalized study plans." />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://www.learningallied.world/" />
+<!-- TODO: replace this SVG with a 1200x630 PNG/JPG. Most social platforms ignore SVG og:images. -->
 <meta property="og:image" content="https://www.learningallied.world/learningallied-white.svg" />
 <meta property="og:image:width" content="512" />
 <meta property="og:image:height" content="512" />
 <meta property="og:image:alt" content="Learning Allied Logo" />
 <meta property="og:site_name" content="Learning Allied" />
 <meta property="og:locale" content="en_IN" />
-<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:card" content="summary" />
 <meta name="twitter:title" content="Learning Allied — AI Study Partner for JEE, NEET & Board Exams" />
 <meta name="twitter:description" content="Learning Allied is an AI study partner for Indian students preparing for JEE, NEET and Board exams." />
 <meta name="twitter:image" content="https://www.learningallied.world/learningallied-white.svg" />
@@ -66,14 +63,18 @@ img{display:block;max-width:100%}
 .wrap{max-width:1160px;margin:0 auto;padding:0 24px}
 @keyframes spin{to{transform:rotate(360deg)}}
 
+/* Skip link */
+.skip-link{position:fixed;top:10px;left:10px;z-index:10000;padding:10px 16px;border-radius:var(--la-r-sm);background:var(--la-text);color:var(--la-bg);font:600 13px/1 var(--la-font);transform:translateY(-160%);transition:transform .2s}
+.skip-link:focus-visible{transform:none}
+
 /* Buttons */
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;font:600 14px/1 var(--la-font);padding:12px 20px;border-radius:var(--la-r-sm);border:1px solid transparent;cursor:pointer;transition:background .2s,border-color .2s,transform .2s}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;font:600 14px/1 var(--la-font);padding:12px 20px;border-radius:var(--la-r-sm);border:1px solid transparent;cursor:pointer;transition:background .2s,border-color .2s,transform .2s,filter .2s}
 .btn-primary{background:var(--la-accent);color:var(--la-accent-ink)}
 .btn-primary:hover{filter:brightness(1.08);transform:translateY(-1px)}
 .btn-secondary{background:transparent;color:var(--la-text);border-color:var(--la-line-strong)}
 .btn-secondary:hover{background:var(--la-surface-2)}
 .btn-lg{padding:15px 26px;font-size:15px}
-.btn-quiet{font:500 14px var(--la-font);color:var(--la-muted);padding:10px 14px;border-radius:var(--la-r-sm)}
+.btn-quiet{font:500 14px var(--la-font);color:var(--la-muted);padding:10px 14px;border-radius:var(--la-r-sm);transition:color .2s}
 .btn-quiet:hover{color:var(--la-text)}
 
 /* Navbar */
@@ -81,7 +82,7 @@ img{display:block;max-width:100%}
 .navbar.scrolled{background:color-mix(in srgb,var(--la-bg) 82%,transparent);border-color:var(--la-line);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px)}
 .logo{display:flex;align-items:center;gap:10px;font-weight:600;font-size:16px;letter-spacing:-.01em}
 .logo-img{height:28px;width:auto}
-.nav-links{display:flex;gap:28px;font-size:14px;color:var(--la-muted)}
+.nav-links{display:flex;gap:24px;font-size:14px;color:var(--la-muted)}
 .nav-links a{transition:color .2s}
 .nav-links a:hover{color:var(--la-text)}
 .nav-actions{display:flex;align-items:center;gap:6px}
@@ -148,6 +149,21 @@ img{display:block;max-width:100%}
 .link:hover{text-decoration:underline;text-underline-offset:3px}
 @media(max-width:760px){.split{grid-template-columns:1fr}.panel{padding:26px}}
 
+/* Exam guide links (real internal links for visitors and Google) */
+.guide-links{border-top:1px solid var(--la-line)}
+.guide-links a{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:13px 0;border-bottom:1px solid var(--la-line);font-size:15px;font-weight:500;color:var(--la-text);transition:color .2s}
+.guide-links a svg{width:16px;height:16px;flex-shrink:0;color:var(--la-faint);transition:color .2s,transform .2s}
+.guide-links a:hover{color:var(--la-accent)}
+.guide-links a:hover svg{color:var(--la-accent);transform:translateX(3px)}
+
+/* Who's behind it */
+.founder{display:flex;align-items:center;justify-content:space-between;gap:28px 40px;flex-wrap:wrap}
+.founder-copy{max-width:560px}
+.founder-copy h2{font-size:clamp(24px,3vw,32px);line-height:1.15;letter-spacing:-.03em;font-weight:700;margin-bottom:10px}
+.founder-copy p{color:var(--la-muted);font-size:16px}
+.founder .hero-ctas{flex-shrink:0}
+@media(max-width:640px){.founder .hero-ctas,.founder .hero-ctas .btn{width:100%}}
+
 /* FAQ */
 .faq-list{max-width:760px;border-top:1px solid var(--la-line)}
 .faq-item{border-bottom:1px solid var(--la-line)}
@@ -167,14 +183,14 @@ img{display:block;max-width:100%}
 
 /* Footer */
 .site-footer{border-top:1px solid var(--la-line);padding:56px 0 36px;margin-top:104px}
-.footer-grid{display:grid;grid-template-columns:1.6fr 1fr 1fr 1fr;gap:36px;margin-bottom:44px}
+.footer-grid{display:grid;grid-template-columns:1.5fr repeat(4,1fr);gap:36px;margin-bottom:44px}
 .footer-brand p{color:var(--la-muted);font-size:14px;max-width:280px;margin-top:12px}
 .footer-col h4{font-size:13px;font-weight:600;margin-bottom:14px}
 .footer-col a{display:block;font-size:14px;color:var(--la-muted);margin-bottom:10px;transition:color .2s}
 .footer-col a:hover{color:var(--la-text)}
 .footer-bottom{display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;padding-top:24px;border-top:1px solid var(--la-line);font-size:13px;color:var(--la-faint)}
-@media(max-width:800px){.footer-grid{grid-template-columns:1fr 1fr}.footer-brand{grid-column:1/-1}}
-@media(max-width:520px){.footer-grid{grid-template-columns:1fr}}
+@media(max-width:900px){.footer-grid{grid-template-columns:1fr 1fr 1fr}.footer-brand{grid-column:1/-1}}
+@media(max-width:560px){.footer-grid{grid-template-columns:1fr 1fr}}
 
 /* Reveal: content stays visible without JS */
 .js .reveal{opacity:0;transform:translateY(16px);transition:opacity .6s,transform .6s cubic-bezier(.16,1,.3,1)}
@@ -186,6 +202,8 @@ img{display:block;max-width:100%}
 </style>
 </head>
 <body>
+<a class="skip-link" href="#main">Skip to content</a>
+
 <div id="authLoading" class="ld-splash" style="display:flex;z-index:9999;" role="status" aria-label="Loading Learning Allied">
   <div class="ld">
     <img src="/learningallied-white.svg" alt="" width="60" height="60" decoding="async" fetchpriority="high" />
@@ -216,7 +234,7 @@ try {
 <div class="mnav-overlay" id="mnavOverlay"></div>
 <nav class="mnav-panel" id="mnavPanel" aria-label="Site navigation">
   <div class="mnav-head">
-    <span class="mnav-brand"><img src="/learningallied-white.svg" alt="Learning Allied logo" loading="lazy">Learning Allied</span>
+    <span class="mnav-brand"><img src="/learningallied-white.svg" alt="" loading="lazy">Learning Allied</span>
     <button class="mnav-close" id="mnavClose" aria-label="Close menu">✕</button>
   </div>
   <div class="mnav-links">
@@ -224,6 +242,9 @@ try {
     <a href="#features">How it works</a>
     <a href="#exams">Exam support</a>
     <a href="#faq">FAQ</a>
+    <div class="mnav-label">Company</div>
+    <a href="/about">About Learning Allied</a>
+    <a href="/founder">Meet the founder</a>
     <div class="mnav-label">Get started</div>
     <a class="mnav-cta" href="signup.html">Start learning free</a>
     <a class="mnav-ghost" href="login.html">Log in</a>
@@ -234,13 +255,15 @@ try {
 <header>
   <nav class="navbar" aria-label="Main navigation">
     <a class="logo" href="/" aria-label="Learning Allied home">
-      <img src="/learningallied-white.svg" alt="Learning Allied logo" class="logo-img" width="28" height="28">
+      <img src="/learningallied-white.svg" alt="" class="logo-img" width="28" height="28">
       <span>Learning Allied</span>
     </a>
     <div class="nav-links">
       <a href="#features">How it works</a>
       <a href="#exams">Exam support</a>
       <a href="#faq">FAQ</a>
+      <a href="/about">About</a>
+      <a href="/founder">Founder</a>
     </div>
     <div class="nav-actions">
       <a class="btn-quiet" href="login.html">Log in</a>
@@ -249,7 +272,7 @@ try {
   </nav>
 </header>
 
-<main>
+<main id="main">
   <section class="hero" aria-labelledby="hero-heading">
     <div class="wrap hero-grid">
       <div>
@@ -286,7 +309,8 @@ try {
   <section class="section" id="features" aria-labelledby="features-heading" style="padding-top:56px">
     <div class="wrap">
       <div class="section-head reveal">
-        <h2 id="science"><span id="features-heading">Built around how memory actually works</span></h2>
+        <span id="science"></span>
+        <h2 id="features-heading">Built around how memory actually works</h2>
         <p>Reading a chapter again feels productive, but it's a weak way to learn. Learning Allied uses methods with decades of research behind them.</p>
       </div>
       <div class="cap-list">
@@ -311,6 +335,31 @@ try {
           <h3>Study plan and quizzes</h3>
           <p>Turn your syllabus into a schedule, then test yourself as you go. Your progress feeds back into what you review next.</p>
           <a class="link" href="signup.html">Create a free account</a>
+        </div>
+        <div class="panel reveal">
+          <h3>Exam preparation guides</h3>
+          <p>Start with the guide for the exam you're sitting.</p>
+          <nav class="guide-links" aria-label="Exam preparation guides">
+            <a href="/jee-preparation">JEE preparation<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></a>
+            <a href="/neet-preparation">NEET preparation<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></a>
+            <a href="/maharashtra-board">Maharashtra Board<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></a>
+            <a href="/cbse-board">CBSE Board<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></a>
+          </nav>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="about" aria-labelledby="about-heading" style="padding-top:24px;padding-bottom:40px">
+    <div class="wrap">
+      <div class="panel founder reveal">
+        <div class="founder-copy">
+          <h2 id="about-heading">Who's behind Learning Allied</h2>
+          <p>Learning Allied is built by Prem Jain, a student entrepreneur. Read what the product is for and who is building it.</p>
+        </div>
+        <div class="hero-ctas">
+          <a class="btn btn-primary" href="/about">About Learning Allied</a>
+          <a class="btn btn-secondary" href="/founder">Meet the founder</a>
         </div>
       </div>
     </div>
@@ -354,16 +403,17 @@ try {
 
 <footer class="site-footer">
   <div class="wrap">
-<div class="footer-grid">
+    <div class="footer-grid">
       <div class="footer-brand">
-        <a class="logo" href="/" aria-label="Learning Allied home"><img src="/learningallied-white.svg" alt="Learning Allied logo" class="logo-img" loading="lazy" width="28" height="28"><span>Learning Allied</span></a>
+        <a class="logo" href="/" aria-label="Learning Allied home"><img src="/learningallied-white.svg" alt="" class="logo-img" loading="lazy" width="28" height="28"><span>Learning Allied</span></a>
         <p>AI study partner for JEE, NEET and Board exam students.</p>
       </div>
       <div class="footer-col"><h4>Product</h4><a href="#features">How it works</a><a href="#exams">Exam support</a><a href="/signup">Get started</a><a href="/login">Log in</a></div>
+      <div class="footer-col"><h4>Company</h4><a href="/about">About Learning Allied</a><a href="/founder">Meet the founder</a></div>
       <div class="footer-col"><h4>Resources</h4><a href="#faq">FAQ</a><a href="/blog/how-to-make-a-jee-study-plan">JEE study guide</a><a href="/jee-preparation">JEE prep</a><a href="/neet-preparation">NEET prep</a><a href="/maharashtra-board">Maharashtra Board</a><a href="/cbse-board">CBSE Board</a></div>
       <div class="footer-col"><h4>Connect</h4><a href="https://x.com/itzprem109" rel="noopener">X</a>
         <a href="https://discord.gg/vDvrJhUzud" rel="noopener">Discord</a>
-      <a href="https://x.com/itzprem109" rel="noopener">TeenFounders</a>
+        <a href="https://x.com/itzprem109" rel="noopener">TeenFounders</a>
       </div>
     </div>
     <div class="footer-bottom"><span>&copy; 2026 Learning Allied. All rights reserved.</span></div>
@@ -402,17 +452,79 @@ document.documentElement.classList.add('js');
 </script>
 <script type="module" src="./modules/track.js"></script>
 <script src="nav.js" defer></script>
+
+<!-- Structured data: one connected graph. The Person @id must match the one used on /founder. -->
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"Organization","name":"Learning Allied","url":"https://www.learningallied.world","logo":"https://www.learningallied.world/learningallied-white.svg","description":"AI study partner for JEE, NEET and Board exam students.","founder":{"@id":"https://www.learningallied.world/founder#person"},"sameAs":["https://x.com/itzprem109","https://github.com/premjain230/Mentora","https://discord.gg/vDvrJhUzud"]}
-</script>
-<script type="application/ld+json">
-{"@context":"https://schema.org","@type":"Person","@id":"https://www.learningallied.world/founder#person","name":"Prem Jain","url":"https://www.learningallied.world/founder","jobTitle":"Founder","worksFor":{"@id":"https://www.learningallied.world/#organization"},"sameAs":["https://x.com/itzprem109","https://github.com/premjain230"]}
-</script>
-<script type="application/ld+json">
-{"@context":"https://schema.org","@type":"WebSite","name":"Learning Allied","url":"https://www.learningallied.world/","description":"AI study partner for JEE, NEET and Board exam students.","potentialAction":{"@type":"SearchAction","target":"https://www.learningallied.world/#search?search_term_string={search_term_string}","query-input":"required name=search_term_string"},"inLanguage":"en-IN","isPartOf":{"@type":"WebSite","url":"https://www.learningallied.world/"}}
-</script>
-<script type="application/ld+json">
-{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://www.learningallied.world/"}]}
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": "https://www.learningallied.world/#organization",
+      "name": "Learning Allied",
+      "url": "https://www.learningallied.world/",
+      "logo": "https://www.learningallied.world/learningallied-white.svg",
+      "description": "AI study partner for JEE, NEET and Board exam students.",
+      "founder": { "@id": "https://www.learningallied.world/founder#person" },
+      "sameAs": [
+        "https://x.com/itzprem109",
+        "https://github.com/premjain230/Mentora",
+        "https://discord.gg/vDvrJhUzud"
+      ]
+    },
+    {
+      "@type": "Person",
+      "@id": "https://www.learningallied.world/founder#person",
+      "name": "Prem Jain",
+      "url": "https://www.learningallied.world/founder",
+      "jobTitle": "Founder",
+      "worksFor": { "@id": "https://www.learningallied.world/#organization" },
+      "sameAs": [
+        "https://x.com/itzprem109",
+        "https://github.com/premjain230"
+      ]
+    },
+    {
+      "@type": "WebSite",
+      "@id": "https://www.learningallied.world/#website",
+      "name": "Learning Allied",
+      "url": "https://www.learningallied.world/",
+      "description": "AI study partner for JEE, NEET and Board exam students.",
+      "inLanguage": "en-IN",
+      "publisher": { "@id": "https://www.learningallied.world/#organization" }
+    },
+    {
+      "@type": "WebPage",
+      "@id": "https://www.learningallied.world/#webpage",
+      "url": "https://www.learningallied.world/",
+      "name": "Learning Allied — AI Study Partner for JEE, NEET & Board Exams",
+      "isPartOf": { "@id": "https://www.learningallied.world/#website" },
+      "about": { "@id": "https://www.learningallied.world/#organization" },
+      "inLanguage": "en-IN"
+    },
+    {
+      "@type": "FAQPage",
+      "@id": "https://www.learningallied.world/#faq",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "Is Learning Allied free to start?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Yes. You can start chatting, build a study plan and join the community at no cost. No card is needed to begin." }
+        },
+        {
+          "@type": "Question",
+          "name": "Does it replace my teacher?",
+          "acceptedAnswer": { "@type": "Answer", "text": "No. Think of it as a study partner that's available between classes. Always check important facts against your textbooks and coursework." }
+        },
+        {
+          "@type": "Question",
+          "name": "Can I use it on my phone?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Yes. It works in any modern browser on desktop or mobile, and there is an Android app you can download from this page." }
+        }
+      ]
+    }
+  ]
+}
 </script>
 </body>
 </html>
