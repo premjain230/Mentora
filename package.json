@@ -8,7 +8,7 @@
   },
     "scripts": {
         "build": "echo \"No build step required for vanilla HTML\"",
-        "test": "echo \"No tests specified\""
+        "test": "node test_regression.js"
     },
     "keywords": [
         "ai",

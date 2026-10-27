@@ -267,8 +267,11 @@ onAuthStateChanged(auth, async (user) => {
  }
 
  const plan = await getUserPlan(user.uid, user);
+ const isPro = plan === "pro";
  const planEl = document.getElementById("userPlan");
- if (planEl) planEl.textContent = plan === "pro" ? "✨ Learning Allied Pro" : "Free Plan";
+ if (planEl) planEl.textContent = isPro ? "✨ Learning Allied Pro" : "Free Plan";
+ const badgeEl = document.getElementById("planBadge");
+ if (badgeEl) badgeEl.style.display = isPro ? "" : "none";
 
  const userRef = doc(db, "users", user.uid);
  const userSnap = await getDoc(userRef);

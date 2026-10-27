@@ -25,6 +25,7 @@ import {
 
 import "./modules/track.js";
 import { apiFetch, pageUrl, applyCleanUrlLinks } from "./api-base.js";
+import { getUserPlan } from "./subscription.js";
 
 applyCleanUrlLinks();
 
@@ -135,22 +136,16 @@ function populateUserCard(user) {
     topAv.alt = name;
   }
 
-  // Fetch plan from Firestore; create user doc if missing
-  getDoc(doc(db, "users", user.uid)).then((snap) => {
-    if (!snap.exists()) {
-      setDoc(doc(db, "users", user.uid), {
-        uid: user.uid,
-        displayName: user.displayName || "",
-        email: user.email || "",
-        photoURL: user.photoURL || "",
-        exam: "",
-        createdAt: serverTimestamp(),
-        plan: "free",
-      }).catch(() => {});
-    }
+  // Fetch plan robustly (honors Pro flags, expiry, custom claims, referrals)
+  getUserPlan(user.uid, user).then((plan) => {
+    const isPro = plan === "pro";
     if (planEl) {
-      const plan = snap.exists() ? (snap.data().plan || "free") : "free";
-      planEl.textContent = plan === "pro" ? "Pro Plan ✨" : "Free Plan";
+      planEl.textContent = isPro ? "Learning Allied Pro" : "Free Plan";
+    }
+    // Update planBadge element in sidebar
+    const badgeEl = document.getElementById("planBadge") || document.querySelector(".plan-badge");
+    if (badgeEl) {
+      badgeEl.style.display = isPro ? "" : "none";
     }
   }).catch(() => {});
 }

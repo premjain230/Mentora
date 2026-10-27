@@ -184,3 +184,41 @@ function wireInteractions(mount) {
   window.openSidebar = openSidebar;
   window.closeSidebar = closeSidebar;
 }
+
+/**
+ * Populates the sidebar user card with the signed-in user's name, avatar, and plan.
+ * Call this after mountSidebar() resolves, once you have auth user + plan data.
+ *
+ * @param {object} user  - Firebase Auth user object
+ * @param {string} plan  - "free" | "pro"
+ * @param {HTMLElement|null} container - The sidebarMount element (or document if null)
+ */
+export function populateSidebarUser(user, plan, container) {
+  const root = container || document;
+  const nameEl = root.querySelector('#userName');
+  const planEl = root.querySelector('#userPlan');
+  const avatarEl = root.querySelector('#userAvatar');
+  const badgeEl = root.querySelector('#planBadge');
+
+  const displayName = user.displayName || user.email?.split('@')[0] || 'Guest';
+  if (nameEl) nameEl.textContent = displayName;
+
+  if (planEl) planEl.textContent = plan === 'pro' ? '✨ Pro' : 'Free Plan';
+
+  if (avatarEl) {
+    if (user.photoURL) {
+      avatarEl.innerHTML = `<img src="${escAttr(user.photoURL)}" alt="${escAttr(displayName)}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;" />`;
+    } else {
+      avatarEl.textContent = displayName.charAt(0).toUpperCase();
+    }
+  }
+
+  // Show the Pro badge only for Pro users
+  if (badgeEl) {
+    badgeEl.style.display = plan === 'pro' ? '' : 'none';
+  }
+}
+
+function escAttr(v) {
+  return String(v).replace(/[&<>"'`]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;','`':'&#96;'}[c]));
+}

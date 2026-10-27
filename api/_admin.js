@@ -236,22 +236,40 @@ function normalizePlanServer(raw) {
 
 function isProUserDataServer(data) {
   if (!data) return false;
+
+  // 1. Admin emails are always pro on server (belt & suspenders)
+  if (data.email && isAdminEmail(data.email)) return true;
+  if (data.role === "admin" || data.isAdmin === true) return true;
+
+  // 2. Check if subscription is expired (if expiry date exists and is in the past)
+  const proExpiresAt = data.subscriptionExpiresAt || data.proExpiresAt || data.proUntil || data.referralRewards?.proExpiresAt;
+  if (proExpiresAt) {
+    const exp = new Date(proExpiresAt);
+    if (!isNaN(exp.getTime()) && exp.getTime() <= Date.now()) {
+      return false; // Expired — fall back to free plan
+    }
+  }
+
+  // 3. Active Pro indicators
   if (normalizePlanServer(data.plan) === "pro") return true;
+  if (normalizePlanServer(data.tier) === "pro" || normalizePlanServer(data.subscriptionTier) === "pro") return true;
   if (data.isPro === true || data.pro === true || data.isPremium === true) return true;
   if (data.subscriptionStatus === "active" || data.subscriptionStatus === "pro") return true;
+  if (data.subscription?.status === "active" || normalizePlanServer(data.subscription?.plan) === "pro") return true;
+
+  // 4. Referral rewards (verified not expired above)
   const proDays = Number(data.referralRewards?.proDays) || 0;
-  const proExpiresAt = data.referralRewards?.proExpiresAt || data.proExpiresAt || data.subscriptionExpiresAt || data.proUntil;
   if (proDays > 0) {
     if (!proExpiresAt) return true;
     const exp = new Date(proExpiresAt);
     if (!isNaN(exp.getTime()) && exp.getTime() > Date.now()) return true;
   }
+
   if (proExpiresAt) {
     const exp = new Date(proExpiresAt);
     if (!isNaN(exp.getTime()) && exp.getTime() > Date.now()) return true;
   }
-  // Admin emails are always pro on server (belt & suspenders)
-  if (data.email && isAdminEmail(data.email)) return true;
+
   return false;
 }
 

@@ -110,8 +110,8 @@ function ensureModal() {
         <li class="aum-perk"><span class="aum-perk-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></span>Unlimited Study Planner</li>
         <li class="aum-perk"><span class="aum-perk-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></span>Priority AI responses</li>
       </ul>
-      <a href="subscription.html" class="aum-cta">✨ Request Pro Access — Free</a>
-      <div class="aum-secondary">Limits reset every 24 hours. <a href="subscription.html">View your usage →</a></div>
+      <a href="/subscription" class="aum-cta">✨ Request Pro Access — Free</a>
+      <div class="aum-secondary">Limits reset every 24 hours. <a href="/subscription">View your usage →</a></div>
     </div>
   `;
   document.body.appendChild(modal);
@@ -245,6 +245,13 @@ export function showLimitModal(result = {}) {
     limit: result.limit == null ? 20 : Number(result.limit),
     uid: result.uid || window.__learningAlliedUid || window.__aquila_uid || "",
   };
+  // Do not lock or show modal for Pro users (server 429 should not reach Pro users,
+  // but guard against races or misconfiguration)
+  if (res.plan === "pro" || res.limit === Infinity) {
+    clearLimitLock(res.uid, res.type);
+    setChatDisabled(false);
+    return;
+  }
   // persist the lock immediately — even if the client never called preCheckLimit, the server 429 is authoritative
   try { if (res.uid) setLimitLock(res.uid, res.type); } catch {}
   setChatDisabled(true);

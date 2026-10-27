@@ -182,13 +182,62 @@ module.exports = async function handler(req, res) {
       const allRefs2 = await getRefs();
       const totalRefs = allRefs2.filter(r => r.referrerId === refData.referrerId && (r.status === "verified" || r.status === "rewarded")).length + 1;
       const tier = REWARD_TIERS.filter(t => totalRefs >= t.minRefs).pop() || REWARD_TIERS[0];
+      const nowIso = new Date().toISOString();
       await firestore("PATCH", `/referrals/${referralId}?updateMask.fieldPaths=status&updateMask.fieldPaths=verifiedAt`, {
-        fields: { status: { stringValue: "rewarded" }, verifiedAt: { timestampValue: new Date().toISOString() } },
+        fields: { status: { stringValue: "rewarded" }, verifiedAt: { timestampValue: nowIso } },
       });
+
+      // 1. Reward the referred new user (welcome bonus)
       await firestore("PATCH", `/users/${refData.referredId}?updateMask.fieldPaths=referralRewards.bonusChats`, {
         fields: { referralRewards: { mapValue: { fields: { bonusChats: { integerValue: 3 } } } } },
       });
-      return res.json({ status: "rewarded", tier: tier.level, badge: tier.badge });
+
+      // 2. Reward the referrer (earned tier rewards)
+      const referrerUser = await getUserDoc(`users/${refData.referrerId}`);
+      const prevRewards = referrerUser?.referralRewards || {};
+      const newBonusChats = Math.max(Number(prevRewards.bonusChats) || 0, tier.bonusChats || 0);
+      const newProDays = Math.max(Number(prevRewards.proDays) || 0, tier.proDays || 0);
+      const newQuizDays = Math.max(Number(prevRewards.premiumQuizDays) || 0, tier.quizDays || 0);
+      const newBadge = tier.badge || prevRewards.badge || null;
+
+      const refFields = {
+        bonusChats: { integerValue: newBonusChats },
+        proDays: { integerValue: newProDays },
+        premiumQuizDays: { integerValue: newQuizDays },
+        totalRewardedReferrals: { integerValue: totalRefs },
+      };
+
+      if (newBadge) {
+        refFields.badge = { stringValue: newBadge };
+      }
+
+      if (newProDays > 0) {
+        const proExpiresAt = new Date(Date.now() + newProDays * 86400000).toISOString();
+        refFields.proExpiresAt = { timestampValue: proExpiresAt };
+      }
+
+      const referrerUpdateMask = [
+        "updateMask.fieldPaths=referralRewards",
+        ...(newProDays > 0 ? ["updateMask.fieldPaths=plan", "updateMask.fieldPaths=isPro"] : [])
+      ].join("&");
+
+      const referrerPatchBody = {
+        fields: {
+          referralRewards: { mapValue: { fields: refFields } },
+          ...(newProDays > 0 ? {
+            plan: { stringValue: "pro" },
+            isPro: { booleanValue: true },
+          } : {})
+        }
+      };
+
+      try {
+        await firestore("PATCH", `/users/${refData.referrerId}?${referrerUpdateMask}`, referrerPatchBody);
+      } catch (patchErr) {
+        console.error("[referral verify] Failed to patch referrer rewards:", patchErr);
+      }
+
+      return res.json({ status: "rewarded", tier: tier.level, badge: tier.badge, referrerBonusChats: newBonusChats, referrerProDays: newProDays });
     }
 
     if (req.method === "GET" && path === "dashboard") {

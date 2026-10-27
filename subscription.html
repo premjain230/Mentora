@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <script>(function(){try{var v=localStorage.getItem('learning-allied-theme')||localStorage.getItem('aquila-theme');document.documentElement.className=v==='dark'?'':'light-mode'}catch(e){document.documentElement.className=''}})();</script>
 <head>
@@ -352,202 +352,7 @@ body { font-family: var(--font-main); -webkit-font-smoothing: antialiased; }
 <div class="ambient-orb orb-1" aria-hidden="true"></div>
 <div class="ambient-orb orb-2" aria-hidden="true"></div>
 
-<div class="sidebar-overlay" id="sidebarOverlay"></div>
-
-<aside class="sidebar" id="sidebar">
- <div class="logo-area">
-  <a href="index.html" class="logo">
-   <img src="/learningallied-white.svg" alt="Learning Allied" class="logo-img">
-   <span class="logo-text">Learning Allied</span>
-  </a>
-  <button class="sidebar-close" id="sidebarClose" aria-label="Close menu">
-   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-  </button>
- </div>
- <button class="new-chat-btn" id="newChatBtn">
-  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-  New Chat
- </button>
- <nav class="nav-section" id="navSection">
-  <div class="nav-label">Main</div>
-  <a href="home.html" class="nav-item">
-   <span class="nav-icon"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg></span>
-   Home
-   <span class="nav-badge" style="background:rgba(0,212,255,0.15);color:var(--accent)" id="reviewBadge"></span>
-  </a>
-  <a href="chat.html" class="nav-item">
-   <span class="nav-icon"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg></span>
-   Chat
-  </a>
-  <a href="arena.html" class="nav-item">
-   <span class="nav-icon" style="color:#0ea5e9"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 17.5L3 6V3h3l11.5 11.5"/><path d="M13 19l6-6"/><path d="M16 8a2 2 0 1 0 0 0"/></svg></span>
-   Arena
-  </a>
-  <a href="study-session.html" class="nav-item">
-   <span class="nav-icon"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/></svg></span>
-   Study Session
-   <span class="nav-badge green">New</span>
-  </a>
-  <a href="planner.html" class="nav-item">
-   <span class="nav-icon"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M3 10h18M8 2v4M16 2v4"/></svg></span>
-   Study Planner
-  </a>
-  <div class="nav-label">Community</div>
-  <div class="nav-group">
-   <div class="nav-group-toggle nav-item" onclick="toggleNavGroup(this)">
-    <span class="nav-icon"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></span>
-    Community
-    <span class="nav-group-chevron">▼</span>
-   </div>
-   <div class="nav-group-children open">
-    <a href="beyond-marks.html" class="nav-item nav-group-item">
-     Beyond Marks
-     <span class="nav-badge purple">New</span>
-    </a>
-   </div>
-  </div>
-
-  <div class="nav-label">Account</div>
-  <a href="referral.html" class="nav-item">
-   <span class="nav-icon" style="color:var(--green)">
-    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-   </span>
-   Refer & Earn
-  </a>
-  <a href="subscription.html" class="upgrade-nav-btn active">
-   <span class="nav-icon" style="color:var(--accent2)">
-    <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-   </span>
-   Subscription
-  </a>
-  <a href="profile.html" class="nav-item">
-   <span class="nav-icon"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span>
-   Profile
-  </a>
-  <a href="settings.html" class="nav-item">
-   <span class="nav-icon"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.6 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.6a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></span>
-   Settings
-  </a>
- </nav>
- <!-- Compact real syllabus + AIConsole — low height -->
- <div style="padding:8px 10px 0;">
-  <div id="syllabusCard" style="background:linear-gradient(135deg, #0f172a 0%, #1e293b 100%);border:1px solid var(--border);border-radius:10px;padding:10px 12px;display:flex;align-items:center;gap:10px;min-height:52px;">
-   <div style="width:32px;height:32px;border-radius:8px;background:rgba(16,185,129,0.14);display:grid;place-items:center;flex-shrink:0;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="1.7"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
-   <div style="flex:1;min-width:0;">
-    <div style="font-size:11px;font-weight:600;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" id="syllabusLabel">Upload syllabus</div>
-    <div style="font-size:10px;color:rgba(255,255,255,0.55);" id="syllabusSub">JPG, PNG, PDF — personalises plan</div>
-   </div>
-   <input type="file" id="syllabusFile" accept=".jpg,.jpeg,.png,.pdf" hidden />
-   <button id="syllabusUploadBtn" style="background:#10b981;color:#fff;border:none;border-radius:999px;padding:6px 12px;font-size:11px;font-weight:600;cursor:pointer;flex-shrink:0;">Upload</button>
-  </div>
-  <div id="syllabusProgress" style="display:none;margin-top:6px;font-size:10px;color:var(--text-muted);"></div>
- </div>
- <div style="padding:8px 10px;">
-  <div style="background:linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);border:1px solid var(--border);border-radius:10px;padding:10px 12px;display:flex;align-items:center;gap:10px;min-height:52px;position:relative;overflow:hidden;">
-   <div style="position:absolute;inset:0;background:radial-gradient(200px 80px at 85% 100%, rgba(37,99,235,0.18), transparent 60%);pointer-events:none;"></div>
-   <div style="width:32px;height:32px;border-radius:8px;background:rgba(37,99,235,0.15);display:grid;place-items:center;flex-shrink:0;position:relative;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#60a5fa" stroke-width="1.7"><path d="M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8z"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="M4.93 4.93l1.41 1.41"/><path d="M17.66 17.66l1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="M6.34 17.66l-1.41 1.41"/><path d="M19.07 4.93l-1.41 1.41"/></svg></div>
-   <div style="flex:1;min-width:0;position:relative;">
-    <div style="font-size:11px;font-weight:700;color:#fff;">AIConsole</div>
-    <div style="font-size:10px;color:rgba(255,255,255,0.55);">Study assistant</div>
-   </div>
-   <button onclick="window.location.href='chat.html'" style="background:#2563eb;color:#fff;border:none;border-radius:999px;padding:6px 12px;font-size:11px;font-weight:600;cursor:pointer;flex-shrink:0;position:relative;">Ask</button>
-  </div>
- </div>
- <div class="sidebar-bottom">
-  <button class="signout-btn" id="signOutBtn">Sign out</button>
-  <div class="user-card">
-   <div class="avatar" id="userAvatar">G</div>
-   <div class="user-info">
-    <div class="user-name" id="userName">Guest</div>
-    <div class="user-plan" id="userPlan">Free Plan</div>
-   </div>
-  </div>
- </div>
-</aside>
-
-<!-- Real syllabus upload — stores metadata in Firestore, no fake showpiece -->
-<script type="module">
-import { auth, db } from "./firebase-config.js";
-import { collection, doc, setDoc, getDocs, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-import { emitLearningEvent } from "./js/learning/evidence.js";
-const btn = document.getElementById("syllabusUploadBtn");
-const input = document.getElementById("syllabusFile");
-const prog = document.getElementById("syllabusProgress");
-const label = document.getElementById("syllabusLabel");
-const sub = document.getElementById("syllabusSub");
-function toast(msg){ const t=document.createElement("div"); t.textContent=msg; t.style.cssText="position:fixed;bottom:16px;left:50%;transform:translateX(-50%);background:#0f172a;color:#fff;border:1px solid var(--border);padding:8px 14px;border-radius:999px;font-size:12px;z-index:9999;"; document.body.appendChild(t); setTimeout(()=>t.remove(),2500); }
-if(btn && input){
- btn.addEventListener("click", ()=> input.click());
- // also clicking card triggers upload (except button)
- document.getElementById("syllabusCard")?.addEventListener("click", (e)=>{ if(e.target===btn||e.target===input) return; input.click(); });
- input.addEventListener("change", async ()=>{
-  const f = input.files?.[0];
-  if(!f) return;
-  const allowed = ["application/pdf","image/jpeg","image/png","image/jpg"];
-  if(!allowed.includes(f.type) && !f.name.match(/\.(pdf|jpe?g|png)$/i)){ toast("Only JPG, PNG, PDF"); input.value=""; return; }
-  if(f.size>8*1024*1024){ toast("Max 8MB"); input.value=""; return; }
-  const user = auth?.currentUser;
-  if(!user){ toast("Please sign in to upload your syllabus"); return; }
-  try { await user.getIdToken(true); } catch(e) { console.warn("Token refresh failed", e); }
-  if(prog){ prog.style.display="block"; prog.textContent = `Uploading ${f.name}…`; }
-  btn.disabled=true; btn.textContent="…";
-  try{
-   // Light parse: read first 4k as text snippet for personalisation (client-side)
-   let snippet = "";
-   try{
-    if(f.type==="application/pdf"){
-     snippet = `[PDF ${f.name} ${Math.round(f.size/1024)}KB] — will personalise after server parse`;
-    } else {
-     snippet = await new Promise(res=>{
-      const r=new FileReader(); r.onload=()=>res(String(r.result).slice(0,3000)); r.onerror=()=>res(""); r.readAsText(f.slice(0,8192));
-     });
-     if(!snippet) snippet = `[Image ${f.name}]`;
-    }
-   }catch{ snippet=""; }
-   const id = Date.now().toString(36)+Math.random().toString(36).slice(2,6);
-   const ref = doc(collection(db, "users", user.uid, "syllabus"), id);
-   await setDoc(ref, { fileName:f.name, fileType:f.type||"unknown", fileSize:f.size, snippet: snippet.slice(0,4000), uploadedAt: serverTimestamp(), status:"ready" });
-   // Mirror to learning profile for personalisation
-   try{
-    const profRef = doc(db, "users", user.uid, "learning", "profile");
-    const { getDoc } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
-    const s = await getDoc(profRef);
-    const cur = s.exists()? s.data(): {};
-    await setDoc(profRef, { syllabus:{ fileName:f.name, uploadedAt: new Date().toISOString(), status:"ready" }, onboardingComplete: cur.onboardingComplete ?? false, updatedAt: serverTimestamp() }, { merge:true });
-   }catch{}
-   try{ await emitLearningEvent(db, user.uid, "syllabus_uploaded", { source:"syllabus", subject:"syllabus", topic:f.name, payload:{ fileName:f.name, fileType:f.type, fileSize:f.size } }); }catch{}
-   if(label) label.textContent = f.name.slice(0,28);
-   if(sub) sub.textContent = "Personalised ✓";
-   if(prog) prog.textContent = "Saved — personalising your plan";
-   toast("Syllabus saved — personalising ✓");
-   // Refresh hub subtitle if on home
-   setTimeout(()=>{ prog.style.display="none"; }, 2500);
-  }catch(e){
-   console.error("Syllabus upload error:", e);
-   let msg = e.message || "Unknown error";
-   if(msg.includes("Missing or insufficient permissions") || msg.includes("permission")){
-    msg = "We couldn't upload your syllabus. Please check your connection and try signing in again.";
-    try { await auth.currentUser?.getIdToken(true); } catch {}
-   } else if(msg.includes("network") || msg.includes("offline")){
-    msg = "No internet connection. Please check your connection and try again.";
-   }
-   if(prog) prog.textContent = msg;
-   toast(msg);
-  } finally { btn.disabled=false; btn.textContent="Upload"; input.value=""; }
- });
- // Show existing syllabus name on load
- auth?.onAuthStateChanged?.(async (u)=>{
-  if(!u) return;
-  try{
-   const snap= await getDocs(collection(db, "users", u.uid, "syllabus"));
-   if(!snap.empty){
-    const d=snap.docs.sort((a,b)=> (b.data().uploadedAt?.toMillis?.()||0)-(a.data().uploadedAt?.toMillis?.()||0))[0]?.data();
-    if(d?.fileName && label){ label.textContent=d.fileName.slice(0,28); if(sub) sub.textContent="Personalising • tap to update"; }
-   }
-  }catch{}
- });
-}
-</script>
+<div id="sidebarMount"></div>
 
 <main class="main">
  <div class="topbar" style="background:var(--bg-base);border-bottom:1px solid var(--border-subtle);">
@@ -583,25 +388,6 @@ if(btn && input){
 <div class="sub-toast" id="subToast"></div>
 
 <script>
- /* ── Mobile sidebar ── */
- const sidebar    = document.getElementById('sidebar');
- const sidebarOverlay = document.getElementById('sidebarOverlay');
- const menuBtn    = document.getElementById('menuBtn');
- const sidebarCloseBtn= document.getElementById('sidebarClose');
- function openSidebar() { sidebar.classList.add('open'); sidebarOverlay.classList.add('open'); menuBtn.setAttribute('aria-expanded', 'true'); document.body.style.overflow = 'hidden'; }
- function closeSidebar() { sidebar.classList.remove('open'); sidebarOverlay.classList.remove('open'); menuBtn.setAttribute('aria-expanded', 'false'); document.body.style.overflow = ''; }
- menuBtn.addEventListener('click', openSidebar);
- sidebarCloseBtn.addEventListener('click', closeSidebar);
- sidebarOverlay.addEventListener('click', closeSidebar);
- document.querySelectorAll('.nav-item:not(.nav-group-toggle)').forEach((link) => {
-  link.addEventListener('click', () => { if (window.innerWidth <= 880) closeSidebar(); });
- });
- function toggleNavGroup(el) {
-  el.classList.toggle('open');
-  const children = el.nextElementSibling;
-  if (children) children.classList.toggle('open');
- }
-
  /* ── Toast ── */
  function showToast(msg, isError = false) {
   const t = document.getElementById('subToast');
@@ -660,6 +446,7 @@ if(btn && input){
 </script>
 
 <script type="module">
+ import { mountSidebar, populateSidebarUser } from './js/components/sidebar.js';
  import { auth, db } from './firebase-config.js';
  import { onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
  import { onUserReady, getUserPlan, getUsage, requestProAccess, PLANS } from './subscription.js';
@@ -683,6 +470,9 @@ if(btn && input){
  }
 
  function renderPage({ user, plan, usage }) {
+  // Populate shared sidebar user card
+  const _sbMount = document.getElementById('sidebarMount');
+  try { populateSidebarUser(user, plan, _sbMount); } catch(e) {}
   const limits = PLANS[plan];
   const isPro = plan === 'pro';
 
@@ -840,6 +630,17 @@ if(btn && input){
    </div>
   `;
  }
+
+ // ── Mount shared sidebar ──
+ mountSidebar('/subscription').then(sidebarEl => {
+  if (!sidebarEl) return;
+  const signOutBtn = sidebarEl.querySelector('#signOutBtn');
+  if (signOutBtn) {
+   signOutBtn.addEventListener('click', () => {
+    signOut(auth).then(() => { window.location.href = '/login'; }).catch(console.error);
+   });
+  }
+ }).catch(() => {});
 
  // Auth + data load — v2 null-safe + try/catch (fixes #720 + hard-refresh cache)
  onAuthStateChanged(auth, async (user) => {

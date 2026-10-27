@@ -69,19 +69,46 @@ async function ensureUsageDoc(uid) {
   return data;
 }
 
-// ─── Robust plan detection (fixes: "Pro" vs "pro", legacy flags, referral proDays) ──
+// ─── Robust plan detection (fixes: "Pro" vs "pro", legacy flags, referral proDays, expiry) ──
 function normalizePlan(raw) {
   const p = String(raw || "").trim().toLowerCase();
   if (p === "pro" || p === "premium" || p === "paid" || p === "unlimited" || p === "lifetime") return "pro";
   return "free";
 }
 
-function isProUserData(data) {
+/** Check if any subscription expiry date attached to the user has passed. */
+function isSubscriptionExpired(data) {
   if (!data) return false;
+  const expiresAt = data.subscriptionExpiresAt || data.proExpiresAt || data.proUntil || data.referralRewards?.proExpiresAt;
+  if (!expiresAt) return false;
+  const exp = new Date(expiresAt);
+  // Expired if valid date and in the past
+  return !isNaN(exp.getTime()) && exp.getTime() <= Date.now();
+}
+
+export function isProUserData(data) {
+  if (!data) return false;
+
+  // 1. If explicit expiry date is in the past, user has expired (fall back to free)
+  if (isSubscriptionExpired(data)) {
+    return false;
+  }
+
+  // 2. Admins are always Pro
+  if (data.role === "admin" || data.isAdmin === true) return true;
+
+  // 3. Plan string matches
   if (normalizePlan(data.plan) === "pro") return true;
+  if (normalizePlan(data.tier) === "pro" || normalizePlan(data.subscriptionTier) === "pro") return true;
+
+  // 4. Boolean Pro flags
   if (data.isPro === true || data.pro === true || data.isPremium === true) return true;
+
+  // 5. Subscription status
   if (data.subscriptionStatus === "active" || data.subscriptionStatus === "pro") return true;
-  // Referral-earned pro days (with optional expiry)
+  if (data.subscription?.status === "active" || normalizePlan(data.subscription?.plan) === "pro") return true;
+
+  // 6. Referral-earned pro days (with optional expiry)
   const proDays = Number(data.referralRewards?.proDays) || 0;
   const proExpiresAt = data.referralRewards?.proExpiresAt || data.proExpiresAt || data.subscriptionExpiresAt || data.proUntil;
   if (proDays > 0) {
@@ -89,26 +116,47 @@ function isProUserData(data) {
     const exp = new Date(proExpiresAt);
     if (!isNaN(exp.getTime()) && exp.getTime() > Date.now()) return true;
   }
+
+  // 7. Active until future date
   if (proExpiresAt) {
     const exp = new Date(proExpiresAt);
     if (!isNaN(exp.getTime()) && exp.getTime() > Date.now()) return true;
   }
+
   return false;
 }
 
 // ─── Get user plan ────────────────────────────────────────────────────────────
 
 export async function getUserPlan(uid, user = null) {
+  // 1. First check Firebase Auth custom claims if user object is available (fastest, authoritative)
+  const u = user || auth?.currentUser;
+  if (u && typeof u.getIdTokenResult === "function") {
+    try {
+      const tokenResult = await u.getIdTokenResult();
+      if (tokenResult?.claims?.pro === true || tokenResult?.claims?.admin === true || tokenResult?.claims?.role === "admin") {
+        return "pro";
+      }
+    } catch {}
+  }
+
   if (!db) return "free";
   const ref = doc(db, "users", uid);
-  const snap = await getDoc(ref);
+  let snap;
+  try {
+    snap = await getDoc(ref);
+  } catch (err) {
+    console.warn("[getUserPlan] getDoc failed:", err);
+    return "free";
+  }
+
   if (!snap.exists()) {
     // Auto-create user doc if missing (fallback for sign-up failures)
     const data = {
       uid,
-      email: user?.email || "",
-      displayName: user?.displayName || "",
-      photoURL: user?.photoURL || "",
+      email: u?.email || "",
+      displayName: u?.displayName || "",
+      photoURL: u?.photoURL || "",
       exam: "",
       createdAt: serverTimestamp(),
       plan: "free",
@@ -116,6 +164,7 @@ export async function getUserPlan(uid, user = null) {
     await setDoc(ref, data).catch(() => {});
     return "free";
   }
+
   const data = snap.data();
   if (isProUserData(data)) return "pro";
   return normalizePlan(data.plan) || "free";
@@ -147,7 +196,7 @@ export async function incrementUsage(uid, type, amount = 1) {
 // Returns { allowed: bool, plan, usage, limit }
 
 export async function checkLimit(uid, type) {
-  const plan = await getUserPlan(uid);
+  const plan = await getUserPlan(uid, auth?.currentUser);
   const limits = PLANS[plan] || PLANS.free;
   const usage = await getUsage(uid);
 
