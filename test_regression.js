@@ -5,7 +5,6 @@
  *  2. Plan entitlement & Pro detection logic (client + server)
  *  3. Subscription expiration behavior
  *  4. Usage limits enforcement & modal gating (Free vs Pro)
- *  5. Referral reward attribution
  */
 
 const assert = require("assert");
@@ -19,18 +18,6 @@ let failed = 0;
 function test(name, fn) {
   try {
     fn();
-    console.log(`  ✓ ${name}`);
-    passed++;
-  } catch (err) {
-    console.error(`  ✗ ${name}`);
-    console.error(`    ${err.message}`);
-    failed++;
-  }
-}
-
-async function testAsync(name, fn) {
-  try {
-    await fn();
     console.log(`  ✓ ${name}`);
     passed++;
   } catch (err) {
@@ -59,7 +46,6 @@ const APP_PAGES = [
   "study-session.html",
   "subscription.html",
   "settings.html",
-  "referral.html",
 ];
 
 APP_PAGES.forEach((page) => {
@@ -116,7 +102,7 @@ test("sidebar.html: uses clean clean URLs (no .html suffixes on nav items)", () 
   assert(sidebarHtml.includes('href="/chat"'), 'Missing href="/chat"');
   assert(sidebarHtml.includes('href="/settings"'), 'Missing href="/settings"');
   assert(sidebarHtml.includes('href="/subscription"'), 'Missing href="/subscription"');
-  assert(sidebarHtml.includes('href="/referral"'), 'Missing href="/referral"');
+  assert(!sidebarHtml.includes('href="/referral"'), 'Refer & Earn should not be in sidebar');
   assert(!sidebarHtml.includes('href="home.html"'), 'Found legacy home.html href');
   assert(!sidebarHtml.includes('href="chat.html"'), 'Found legacy chat.html href');
 });
@@ -131,18 +117,6 @@ test("sidebar.html: logo height is styled cleanly in sidebar.css (34px)", () => 
 // ─────────────────────────────────────────────────────────────────────────────
 console.log("\n[Suite 2] Pro Plan Entitlements & Detection (Client)");
 
-// Import functions from subscription.js by evaluating the module logic
-// (subscription.js is ES module that imports Firebase; we test the pure logic functions)
-const subJs = fs.readFileSync(path.join(ROOT, "subscription.js"), "utf8");
-
-// Extract isProUserData function body to test it directly in Node
-function extractFunction(code, funcName) {
-  const match = code.match(new RegExp(`(?:export\\s+)?function\\s+${funcName}\\s*\\([^)]*\\)\\s*\\{([\\s\\S]*?)(?:\\n\\}|\\nexport)`));
-  if (!match) throw new Error(`Could not extract function ${funcName}`);
-  return new Function("data", match[1]);
-}
-
-// Build helper for normalizePlan & isProUserData
 const normalizePlan = (raw) => {
   const p = String(raw || "").trim().toLowerCase();
   if (p === "pro" || p === "premium" || p === "paid" || p === "unlimited" || p === "lifetime") return "pro";
@@ -222,29 +196,10 @@ test("Pro user: admin role returns true", () => {
   assert.strictEqual(isProUserData({ isAdmin: true }), true);
 });
 
-test("Pro user: referralRewards.proDays > 0 with future expiry returns true", () => {
-  const future = new Date(Date.now() + 7 * 86400000).toISOString();
-  assert.strictEqual(
-    isProUserData({ referralRewards: { proDays: 7, proExpiresAt: future } }),
-    true
-  );
-});
-
 test("Expired user: subscriptionExpiresAt in the past returns FALSE (reverts to free)", () => {
   const past = new Date(Date.now() - 3600000).toISOString();
   assert.strictEqual(
     isProUserData({ plan: "pro", subscriptionExpiresAt: past }),
-    false
-  );
-});
-
-test("Expired user: referral proExpiresAt in the past returns FALSE", () => {
-  const past = new Date(Date.now() - 3600000).toISOString();
-  assert.strictEqual(
-    isProUserData({
-      isPro: true,
-      referralRewards: { proDays: 30, proExpiresAt: past },
-    }),
     false
   );
 });
@@ -307,42 +262,6 @@ test("limits.js: preCheckLimit clears limit lock and returns true for Pro users"
 test("limits.js: upgrade modal CTA points to /subscription (clean URL, not .html)", () => {
   assert(limitsJs.includes('href="/subscription" class="aum-cta"'), "CTA link should be /subscription");
   assert(!limitsJs.includes('href="subscription.html"'), "Found legacy subscription.html link in limits.js");
-});
-
-// ─────────────────────────────────────────────────────────────────────────────
-// SUITE 5: REFERRAL REWARD ATTRIBUTION (api/referral.js)
-// ─────────────────────────────────────────────────────────────────────────────
-console.log("\n[Suite 5] Referral Reward Attribution (api/referral.js)");
-
-const referralJs = fs.readFileSync(path.join(ROOT, "api/referral.js"), "utf8");
-
-test("api/referral.js: verify route rewards the referrer with tier perks", () => {
-  assert(
-    referralJs.includes("refData.referrerId"),
-    "Referral verify route does not reference referrerId for reward"
-  );
-  assert(
-    referralJs.includes("newBonusChats"),
-    "Referral verify route does not calculate newBonusChats"
-  );
-  assert(
-    referralJs.includes("newProDays"),
-    "Referral verify route does not calculate newProDays"
-  );
-});
-
-test("api/referral.js: sets plan='pro' when referrer earns Pro days", () => {
-  assert(
-    referralJs.includes('plan: { stringValue: "pro" }'),
-    "Referrer should be granted Pro plan when earning proDays"
-  );
-});
-
-test("api/referral.js: computes proExpiresAt date for referrer Pro rewards", () => {
-  assert(
-    referralJs.includes("proExpiresAt"),
-    "Referrer reward should calculate proExpiresAt date"
-  );
 });
 
 // ─────────────────────────────────────────────────────────────────────────────

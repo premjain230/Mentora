@@ -99,10 +99,6 @@ firebaseReady.then(() => {
       checkDailyQuestion(user);
     }).catch(() => {});
 
-    // Auto-claim referral if user signed up with a referral code
-    import("./modules/referral-system.js").then(({ autoClaimReferral }) => {
-      autoClaimReferral(user.uid);
-    }).catch(() => {});
   });
 });
 
