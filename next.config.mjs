@@ -3,15 +3,9 @@ const nextConfig = {
   reactStrictMode: true,
   poweredByHeader: false,
   experimental: {
-    // Keep the production build in-process. Worker pools fork child processes,
-    // which is unnecessary here and can fail in restricted build environments.
-    webpackBuildWorker: false,
-    workerThreads: true,
-  },
-  // The curriculum adapter reads the canonical dataset from disk instead of
-  // duplicating it. Include that file in the tutor function's server trace.
-  outputFileTracingIncludes: {
-    "/api/tutor": ["./js/learning/curriculum-data.js"],
+    outputFileTracingIncludes: {
+      "/api/tutor": ["./js/learning/curriculum-data.js"],
+    },
   },
   async redirects() {
     return [

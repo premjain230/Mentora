@@ -1,0 +1,18 @@
+User-agent: *
+Allow: /
+
+# Disallow non-HTML and internal-only paths
+Disallow: /api/
+Disallow: /sidebar.html
+Disallow: /admin
+
+# Allow public landing pages
+Allow: /about
+Allow: /founder
+Allow: /blog/
+Allow: /jee-preparation
+Allow: /neet-preparation
+Allow: /cbse-board
+Allow: /maharashtra-board
+
+Sitemap: https://www.learningallied.world/sitemap.xml
