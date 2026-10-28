@@ -1,0 +1,13 @@
+@import "../css/tokens.css";
+@import "../css/base.css";
+@import "../css/shell.css";
+@import "../css/sidebar.css";
+@import "../css/nav.css";
+@import "../css/arena.css";
+@import "../css/learning-hub.css";
+@import "../css/premium.css";
+
+/* Additional Next.js baseline adjustments */
+:root {
+  --la-font: var(--la-font-inter), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}

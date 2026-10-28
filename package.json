@@ -1,26 +1,41 @@
 {
-    "name": "mentora",
-    "version": "1.0.0",
-    "type": "commonjs",
-    "description": "Learning Allied - Your AI-powered learning companion",
+  "name": "mentora",
+  "version": "1.0.0",
+  "type": "commonjs",
+  "description": "Learning Allied - Your AI-powered learning companion",
   "engines": {
-    "node": "24.x"
+    "node": ">=18.17.0"
   },
-    "scripts": {
-        "build": "echo \"No build step required for vanilla HTML\"",
-        "test": "node test_regression.js"
-    },
-    "keywords": [
-        "ai",
-        "learning-allied",
-        "learning allied",
-        "education"
-    ],
-    "author": "",
-    "license": "ISC",
-    "dependencies": {
-        "@vercel/analytics": "^1.4.1",
-        "@vercel/speed-insights": "^2.0.0",
-        "firebase-admin": "^12.7.0"
-    }
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "test": "node test_regression.js",
+    "test:next": "node test_next_migration.js"
+  },
+  "keywords": [
+    "ai",
+    "learning-allied",
+    "learning allied",
+    "education"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@next/swc-win32-x64-msvc": "^14.2.15",
+    "@vercel/analytics": "^1.4.1",
+    "@vercel/speed-insights": "^2.0.0",
+    "firebase": "^10.12.0",
+    "firebase-admin": "^12.7.0",
+    "next": "14.2.15",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@types/node": "^20.14.0",
+    "@types/react": "^18.3.1",
+    "@types/react-dom": "^18.3.1",
+    "typescript": "^5.4.5"
+  }
 }

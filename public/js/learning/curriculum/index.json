@@ -1,0 +1,203 @@
+{
+  "version": "2026.1",
+  "generated_at": "2026-01-15",
+  "curricula": [
+    {
+      "curriculum_id": "msb_2026_09",
+      "board_or_exam": "maharashtra",
+      "class_or_level": 9,
+      "academic_year": "2026-27",
+      "curriculum_version": "2026.1",
+      "official_source": "https://books.ebalbharati.in/ | https://www.mahahsscboard.in/en/studentAndSyllabus/sscGeneral",
+      "status": "verified",
+      "file": "2026-27/maharashtra_09.json",
+      "subjects_count": 7,
+      "chapters_count": 62
+    },
+    {
+      "curriculum_id": "msb_2026_10",
+      "board_or_exam": "maharashtra",
+      "class_or_level": 10,
+      "academic_year": "2026-27",
+      "curriculum_version": "2026.1",
+      "official_source": "https://www.mahahsscboard.in/en/studentAndSyllabus/sscGeneral | https://books.ebalbharati.in/",
+      "status": "not_verified_this_pass",
+      "file": "2026-27/maharashtra_10.json",
+      "note": "NOT verified. Balbharati / MSBSHSE official textbook contents were not fetched in this pass, so the chapter lists in curriculum-data.js remain unverified against the official source. No changes were made."
+    },
+    {
+      "curriculum_id": "msb_2026_11",
+      "board_or_exam": "maharashtra",
+      "class_or_level": 11,
+      "academic_year": "2026-27",
+      "curriculum_version": "2026.1",
+      "official_source": "https://www.mahahsscboard.in/en/studentAndSyllabus/hscGeneral | https://books.ebalbharati.in/",
+      "status": "not_verified_this_pass",
+      "file": "2026-27/maharashtra_11.json",
+      "note": "NOT verified. Balbharati / MSBSHSE official textbook contents were not fetched in this pass, so the chapter lists in curriculum-data.js remain unverified against the official source. No changes were made."
+    },
+    {
+      "curriculum_id": "msb_2026_12",
+      "board_or_exam": "maharashtra",
+      "class_or_level": 12,
+      "academic_year": "2026-27",
+      "curriculum_version": "2026.1",
+      "official_source": "https://www.mahahsscboard.in/en/studentAndSyllabus/hscGeneral | https://books.ebalbharati.in/",
+      "status": "not_verified_this_pass",
+      "file": "2026-27/maharashtra_12.json",
+      "note": "NOT verified. Balbharati / MSBSHSE official textbook contents were not fetched in this pass, so the chapter lists in curriculum-data.js remain unverified against the official source. No changes were made."
+    },
+    {
+      "curriculum_id": "cbse_2026_09",
+      "board_or_exam": "cbse",
+      "class_or_level": 9,
+      "academic_year": "2026-27",
+      "curriculum_version": "2026.1",
+      "official_source": "https://cbseacademic.nic.in/curriculum_2027.html",
+      "status": "partially_verified",
+      "file": "2026-27/cbse_09.json",
+      "subjects_verified": [
+        "Mathematics",
+        "Science",
+        "Social Science",
+        "Languages",
+        "Mathematics at Advanced Level",
+        "Science at Advanced Level"
+      ],
+      "pdfs_fetched": {
+        "Mathematics": "https://cbseacademic.nic.in/web_material/CurriculumMain27/SecPart1/Maths_SecP1IX_2026-27.pdf",
+        "Science": "https://cbseacademic.nic.in/web_material/CurriculumMain27/SecPart1/ScienceSt_SecP1_2026-27.pdf",
+        "Social Science": "https://cbseacademic.nic.in/web_material/CurriculumMain27/SecPart1/SocialScience_SecP1IX_2026-27.pdf"
+      },
+      "verified_against_pdf": {
+        "Mathematics": "EXACT — 15/15 chapters, official order, 6 official units (Number System, Algebra, Coordinate Geometry, Geometry, Mensuration, Statistics and Probability)",
+        "Science": "CORRECTED — official 2026-27 has 12 chapters in 4 units, data had 13 (2025-26). Dropped: Improvement in Food Resources, Gravitation. Added: Reproduction. Renamed: Is Matter Around Us Pure -> Exploring Mixtures and their Separation; Work and Energy -> Work, Energy and Simple Machines; Natural Resources -> Earth as a System: Energy, Matter & Life.",
+        "Social Science": "NOT VERIFIED — the PDF served at the 2026-27 filename still contains CLASS IX (2025-26) content and says 'Course Structure will be provided shortly'. Re-fetch later; do not treat as 2026-27."
+      },
+      "note": "Science chapter ORDER was reconstructed from the official unit groupings (the PDF's own 'Chapter No.' column is inconsistent: it omits chapter 1 and its numbers do not align with document order). Order used = unit order I..IV, which is the only sequence consistent with both the unit table and the chapter topics. This matters because api/learning-event.js enforces in-order chapter defeat. Social Science and the three optional/new subjects below are still unverified in live data.",
+      "known_gaps": [
+        "Mathematics at Advanced Level and Science at Advanced Level are listed as real official 2026-27 Class IX subjects on the CBSE portal but are absent from curriculum-data.js",
+        "Computational Thinking & AI is a real official 2026-27 Class IX subject and is absent from curriculum-data.js",
+        "Social Science (8 chapters) is in curriculum-data.js but still carries 2025-26 content"
+      ]
+    },
+    {
+      "curriculum_id": "cbse_2026_10",
+      "board_or_exam": "cbse",
+      "class_or_level": 10,
+      "academic_year": "2026-27",
+      "curriculum_version": "2026.1",
+      "official_source": "https://cbseacademic.nic.in/curriculum_2027.html",
+      "status": "partially_verified",
+      "file": "2026-27/cbse_10.json",
+      "pdfs_fetched": {
+        "Mathematics": "https://cbseacademic.nic.in/web_material/CurriculumMain27/SecPart1/Maths_SecP1X_2026-27.pdf",
+        "Science": "https://cbseacademic.nic.in/web_material/CurriculumMain27/SecPart1/Science_SecP1_2026-27.pdf",
+        "Social Science": "https://cbseacademic.nic.in/web_material/CurriculumMain27/SecPart1/SocialScience_SecP1X_2026-27.pdf"
+      },
+      "verified_against_pdf": {
+        "Mathematics": "CORRECTED — official 2026-27 has 14 chapters in 7 units (Number Systems, Algebra, Coordinate Geometry, Geometry, Trigonometry, Mensuration, Statistics and Probability). Data had 16: removed Constructions and Heights and Distances, neither of which appears in the official 2026-27 structure.",
+        "Science": "AMBIGUOUS — the 2026-27 X Science PDF is restructured into 5 thematic units rather than a numbered chapter list, and several chapters are now 'assessed only formatively' (Periodic Classification of Elements; Heredity and Evolution; Effects of Electric Current). Unit III Natural Phenomena appears to merge the old Light and Human Eye chapters, so the chapter count cannot be derived unambiguously. Data still holds 16 chapters; NOT changed pending a decision.",
+        "Social Science": "INCOMPLETE — official 2026-27 lists 22 chapters (History 5, Geography 7, Political Science 5, Economics 5). Data has only 8. Not yet expanded."
+      },
+      "note": "All three Class X PDFs are genuinely 2026-27 (unlike the Class IX Social Science PDF). Only the Mathematics correction has been applied so far."
+    },
+    {
+      "curriculum_id": "cbse_2026_11",
+      "board_or_exam": "cbse",
+      "class_or_level": 11,
+      "academic_year": "2026-27",
+      "curriculum_version": "2026.1",
+      "official_source": "https://cbseacademic.nic.in/curriculum_2027.html",
+      "status": "chapters_applied_from_official_pdfs",
+      "file": "2026-27/cbse_11.json",
+      "note": "Chapter names and unit membership transcribed from the official SecPart2 PDFs. Economics XI carries a 'CLASS - XI (2025-26)' label on its own course structure, so that subject is the one genuine mixed-year case.",
+      "correction_2026_10_03": "An earlier audit in this repo claimed 8 of the 16 SecPart2 PDFs were stale 2025-26. That was WRONG: it judged the year from each PDF's title page only. Re-checking the course-structure sections shows the content is 2026-27 throughout; only the cover labels are stale. Physics in particular carries an explicit 'Class XI - 2026-27 (Theory)' marker on its course structure.",
+      "verified_against_pdf": {
+        "Physics": "14 chapters XI / 14 XII - APPLIED",
+        "Mathematics": "14 chapters XI / 13 XII - APPLIED",
+        "Applied Mathematics": "7 units XI - APPLIED; XII units identified but not yet applied",
+        "Chemistry": "9 XI already correct - unchanged",
+        "Biology": "19 XI / 13 XII - APPLIED",
+        "Accountancy": "4 XI / 4 XII - APPLIED",
+        "Business Studies": "6 XI / 5 XII - APPLIED",
+        "Computer Science": "3 XI / 3 XII - APPLIED",
+        "Informatics Practices": "4 XI / 4 XII - APPLIED",
+        "Economics": "7 units XI - APPLIED; XII not yet applied",
+        "Geography": "5 XI / 9 XII - APPLIED",
+        "Political Science": "18 chapters XI (Indian Constitution at Work 10 + Political Theory 8) - APPLIED",
+        "Psychology": "8 units XI / 6 units XII - APPLIED",
+        "Sociology": "7 units XI / 11 units XII - APPLIED"
+      },
+      "still_placeholder": [
+        "English Core XI",
+        "History XI",
+        "Physical Education XI",
+        "Political Science XII",
+        "Psychology/Sociology verified; PE titles truncated in the PDF text layer"
+      ],
+      "still_placeholder_reason": "English Core has no chapter structure at all - the 2026-27 document is a skills/competency syllabus (reading, writing, grammar, listening skills), not a chapter list. History's numbered items in the PDF are project themes, not chapters. Physical Education unit titles are cut off mid-phrase in the PDF text layer (e.g. 'Fundamentals of Kinesiology and'), so completing them would mean inventing the ending."
+    },
+    {
+      "curriculum_id": "cbse_2026_12",
+      "board_or_exam": "cbse",
+      "class_or_level": 12,
+      "academic_year": "2026-27",
+      "curriculum_version": "2026.1",
+      "official_source": "https://cbseacademic.nic.in/curriculum_2027.html",
+      "status": "chapters_applied_from_official_pdfs",
+      "file": "2026-27/cbse_12.json",
+      "note": "CBSE 12 electives verified, units pending",
+      "verified_against_pdf": {
+        "Physics": "14 - APPLIED",
+        "Chemistry": "10 - APPLIED",
+        "Biology": "13 - APPLIED",
+        "Mathematics": "13 - APPLIED",
+        "Accountancy": "4 - APPLIED",
+        "Business Studies": "5 - APPLIED",
+        "Computer Science": "3 - APPLIED",
+        "Informatics Practices": "4 - APPLIED",
+        "Geography": "9 - APPLIED"
+      }
+    },
+    {
+      "curriculum_id": "jee_main_2026",
+      "board_or_exam": "jee_main",
+      "class_or_level": "jee_main",
+      "academic_year": "2026",
+      "curriculum_version": "2026.1",
+      "official_source": "https://cdnbbsr.s3waas.gov.in/s3f8e59f4b2fe7c5705bf878bbd494ccdf/uploads/2025/10/202510311323551056.pdf",
+      "status": "verified_against_official_pdf",
+      "verified_on": "2026-10-19",
+      "file": "2026-27/jee_main_2026.json",
+      "note": "Verified. Downloaded and parsed the official NTA JEE Main Paper 1 syllabus PDF (Oct 2025). Coverage matches exactly: Physics 20/20 units, Chemistry 20/20 units (Physical 8, Inorganic 3, Organic 9), Mathematics 14/14 units. All 54 jee.main.* concepts correspond 1:1 to official syllabus units."
+    },
+    {
+      "curriculum_id": "neet_ug_2026",
+      "board_or_exam": "neet_ug",
+      "class_or_level": "neet_ug",
+      "academic_year": "2026",
+      "curriculum_version": "2026.1",
+      "official_source": "https://www.nta.ac.in/Download/Notice/Notice_20260108180635.pdf",
+      "official_source_title": "Syllabus for NEET (UG) 2026 — NMC/UGMEB File No. U-14023/19/NEET(UGExam)/UGMEB, published 8 January 2026",
+      "landing_page": "https://neet.nta.nic.in/document/syllabus-for-neet-ug-2026-examination/",
+      "status": "verified_against_official_pdf",
+      "verified_on": "2026-10-19",
+      "file": "2026-27/neet_ug_2026.json",
+      "note": "Verified. The official 18-page NTA/NMC PDF was downloaded and parsed. It prescribes 20 Physics, 20 Chemistry and 10 Biology units. Coverage in js/learning/curriculum-data.js: all 10 Biology units and 19/20 Physics units and 17/20 Chemistry units are served by the existing CBSE Class 11/12 science chapters; the remaining four units are real neet.ug.* concepts (Experimental Skills; P-Block Elements; Purification and Characterisation of Organic Compounds; Principles Related to Practical Chemistry). Topics deliberately NOT in the official NEET syllabus and absent from our data: States of Matter, Hydrogen, s-Block Elements, Environmental Chemistry, Solid State, Surface Chemistry, Metallurgy/Isolation of Elements, Polymers, Chemistry in Everyday Life."
+    },
+    {
+      "curriculum_id": "jee_advanced_2026",
+      "board_or_exam": "jee_advanced",
+      "class_or_level": "jee_advanced",
+      "academic_year": "2026",
+      "curriculum_version": "2026.1",
+      "official_source": "https://jeeadv.ac.in/documents/jee-advanced-2026-syllabus.pdf",
+      "landing_page": "https://jeeadv.ac.in/",
+      "status": "partially_verified",
+      "verified_on": "2026-10-19",
+      "file": "2026-27/jee_advanced_2026.json",
+      "note": "Partially verified. JEE Advanced (IIT Roorkee, 2026) is a superset of JEE Main plus Advanced-only topics. The JEE Main foundation chapters are served from the existing jee.main.* data. The official JEE Advanced 2026 PDF prescribes units including fluid mechanics/surface tension/viscosity/Bernoulli, waves (Doppler, beats), thermal physics (Carnot, blackbody radiation), solid state, surface chemistry, hydrogen, s-block, isolation of metals, environmental chemistry, polymers and chemistry in everyday life. js/learning/curriculum-data.js adds 10 jee.advanced.* concepts covering the Advanced-only units not already present as JEE Main chapters (fluid mechanics, thermal physics, solid state, surface chemistry, hydrogen, s-block, isolation of metals, environmental chemistry, polymers, chemistry in everyday life). JEE Advanced Mathematics mirrors JEE Main Mathematics and needs no separate entries."
+    }
+  ]
+}

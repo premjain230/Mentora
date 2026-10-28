@@ -1,12 +1,11 @@
 node_modules/
+.next/
+*.tsbuildinfo
 .vercel/
 .env
 .env.local
 *.log
 .DS_Store
-test_*.js
-test_prompt*.js
+!test_regression.js
+!test_next_migration.js
 .env*.local
-
-.vercel
-.env*

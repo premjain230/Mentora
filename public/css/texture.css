@@ -1,0 +1,67 @@
+/* Learning Allied — ambient texture layers
+   =========================
+   Two themes, two textures:
+      dark  -> plain black, no texture layers paint at all
+      light -> .cracked-earth                        (dark crackle, low opacity)
+
+   Markup + the <filter> defs are injected by js/texture.js, so this file only
+   styles them. The defs MUST live in the document (filter: url(#id) is a
+   same-document reference), which is why they are JS-injected rather than here.
+
+   Tunables live in css/tokens.css:
+      --texture-veil        overall strength of the whole stack
+      --texture-island      .island opacity          (dark theme — unused)
+      --texture-island-t    .islandt opacity         (dark theme — unused)
+      --texture-hatch       .hatch opacity           (dark theme — unused)
+      --texture-cracks      .cracked-earth opacity
+
+   js/texture.js may add .no-filters (mobile / reduced-motion / user opt-out),
+   which swaps the expensive SVG filters for a cheap flat layer.
+*/
+
+.texture-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+  contain: strict;
+  opacity: var(--texture-veil, 0.14);
+}
+.texture-layer > * {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+/* Hidden until texture.js confirms it can run (avoids a flash of unstyled
+   background if the module is blocked). */
+.texture-layer:not(.is-ready) { opacity: 0; }
+
+/* ── Dark theme ────────────────────────────────────────────────────────── */
+/* Flattened to plain black: none of the topographic/hatch layers paint in the
+   dark theme any more, so css/tokens.css --bg-base shows through untouched.
+   Kept as display:none (not opacity:0) so the SVG filters are never evaluated. */
+.island,
+.islandt,
+.hatch {
+  display: none;
+}
+
+.cracked-earth { display: none; }
+
+/* ── Light theme ───────────────────────────────────────────────────────── */
+.light-mode .island,
+.light-mode .islandt,
+.light-mode .hatch { display: none; }
+
+/* Orbit theme: flat in light mode too, no crackle layer. */
+.light-mode .cracked-earth { display: none; }
+
+/* ── Reduced cost fallback ────────────────────────────────────────────── */
+.texture-layer.no-filters .cracked-earth {
+  filter: none;
+  background: transparent;
+}
+.light-mode .texture-layer.no-filters .cracked-earth { background: transparent; }

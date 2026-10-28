@@ -61,7 +61,7 @@ function safeDate(x) {
   return isNaN(d.getTime()) ? null : d;
 }
 
-export default async function handler(req, res) {
+module.exports = async function handler(req, res) {
   const route = String(req.query.route || req.query.action || "").trim();
   const seg = route.split("/").filter(Boolean);
 
