@@ -12,7 +12,9 @@
     "start": "next start",
     "lint": "next lint",
     "test": "node test_regression.js",
-    "test:next": "node test_next_migration.js"
+    "test:next": "node test_next_migration.js",
+    "test:adaptive": "node test_adaptive_engine.js",
+    "test:flow": "node test_tutor_flow.js"
   },
   "keywords": [
     "ai",

@@ -16,7 +16,7 @@ const ALLOWED_TYPES = new Set([
 const ALLOWED_SOURCES = new Set(["quiz","study_session","diagnostic","chat","onboarding","self_report","syllabus", null, undefined]);
 
 function clamp01(n){ const v=Number(n); if(isNaN(v)) return 0; return Math.max(0,Math.min(1,v)); }
-const EVIDENCE_SOURCE_WEIGHTS = { diagnostic:1.0, quiz:0.90, study_session:0.65, self_report:0.20, onboarding:0.20 };
+const EVIDENCE_SOURCE_WEIGHTS = { diagnostic:1.0, quiz:0.90, study_session:0.65, chat:0.50, self_report:0.20, onboarding:0.20 };
 function getSourceWeight(s){ const v=EVIDENCE_SOURCE_WEIGHTS[s]; return typeof v==="number"?v:0; }
 function getHintFactor(h){ const n=Math.max(0,Math.min(20,Number(h)||0)); if(n===0) return 1.0; if(n===1) return 0.85; if(n===2) return 0.70; if(n===3) return 0.55; return 0.40; }
 function getRecencyFactor(createdAt){

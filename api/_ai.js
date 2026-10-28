@@ -17,7 +17,7 @@ const MODEL = process.env.GROQ_MODEL || "openai/gpt-oss-120b";
 // actually cancel an in-flight request instead of waiting for it to finish.
 const RESERVED_BODY_KEYS = ["model", "messages", "max_tokens", "temperature", "response_format", "stream"];
 
-async function groqComplete({ messages, json = false, temperature = 0.6, maxTokens = 3000, model, extra, signal }) {
+async function groqComplete({ messages, json = false, temperature = 0.6, maxTokens = 3000, model, extra, signal, usageOut }) {
   const apiKey = process.env.GROQ_API_KEY;
   if (!apiKey) {
     throw Object.assign(new Error("GROQ_API_KEY is not configured."), { statusCode: 500 });
@@ -53,6 +53,11 @@ async function groqComplete({ messages, json = false, temperature = 0.6, maxToke
     });
   }
   const data = await resp.json();
+  // Optional out-parameter so callers can record real provider usage without
+  // changing the return value that existing callers depend on.
+  if (usageOut && typeof usageOut === "object") {
+    usageOut.usage = data && data.usage ? data.usage : null;
+  }
   const content = data?.choices?.[0]?.message?.content || "";
   if (json) {
     try {

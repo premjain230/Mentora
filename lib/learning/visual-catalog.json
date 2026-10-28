@@ -1,0 +1,183 @@
+{
+  "version": 2,
+  "templates": [
+    {
+      "id": "circuit-series",
+      "renderer": "circuit",
+      "dimension": "2d",
+      "title": "Current in a series circuit",
+      "subjects": ["Physics", "Science", "Science & Technology"],
+      "keywords": ["circuit", "current", "resistance", "resistor", "ohm", "battery", "cell", "electricity", "series", "voltage", "ammeter", "bulb"],
+      "observe": "Watch the charge markers move around the loop. The same number passes every point each second, so the current is identical everywhere in a series circuit.",
+      "altText": "Animated diagram of a battery, a resistor and a bulb wired in series, with charge markers moving around the loop and labelled voltage and resistance.",
+      "params": {
+        "cells": { "min": 1, "max": 3, "default": 2, "step": 1 },
+        "resistanceOhms": { "min": 1, "max": 20, "default": 6, "step": 1 }
+      },
+      "followUp": "The battery voltage rises but the resistance stays the same. Predict what happens to the current, then explain why."
+    },
+    {
+      "id": "force-motion",
+      "renderer": "force",
+      "dimension": "2d",
+      "title": "Forces and acceleration",
+      "subjects": ["Physics", "Science", "Science & Technology"],
+      "keywords": ["force", "newton", "acceleration", "mass", "friction", "motion", "f=ma", "inertia", "momentum", "push", "pull", "motion"],
+      "observe": "The applied force points forward and friction points backward. The block speeds up only when the net force is not zero, and a larger mass accelerates less for the same net force.",
+      "altText": "Animated block on a surface with labelled applied force and friction arrows, showing acceleration for the chosen mass and net force.",
+      "params": {
+        "massKg": { "min": 1, "max": 10, "default": 2, "step": 0.5 },
+        "forceN": { "min": 0, "max": 50, "default": 10, "step": 1 },
+        "frictionN": { "min": 0, "max": 20, "default": 2, "step": 1 }
+      },
+      "followUp": "Double the mass while keeping the forces unchanged. What happens to the acceleration, and why does it not halve exactly if friction is present?"
+    },
+    {
+      "id": "ray-concave-mirror",
+      "renderer": "ray",
+      "dimension": "2d",
+      "title": "Ray diagram for a mirror",
+      "subjects": ["Physics", "Science", "Science & Technology"],
+      "keywords": ["mirror", "reflection", "ray", "focal", "concave", "convex", "image", "optics", "lens", "magnification"],
+      "observe": "Both rays start at the top of the object and meet (or appear to meet) at the image. Change the object distance and watch whether the image is real or virtual and where it forms.",
+      "altText": "Interactive ray diagram of a concave mirror showing the principal axis, focal point, object arrow and the reflected rays forming an image.",
+      "params": {
+        "focalLength": { "min": 5, "max": 20, "default": 10, "step": 1 },
+        "objectDistance": { "min": 4, "max": 40, "default": 20, "step": 1 },
+        "mirror": { "enum": ["concave", "convex"], "default": "concave" }
+      },
+      "followUp": "Move the object inside the focal length. Describe the image and explain why a shaving mirror is designed this way."
+    },
+    {
+      "id": "wave-transverse",
+      "renderer": "wave",
+      "dimension": "2d",
+      "title": "A transverse wave",
+      "subjects": ["Physics", "Science", "Science & Technology"],
+      "keywords": ["wave", "wavelength", "frequency", "amplitude", "sound", "crest", "trough", "vibration", "oscillation", "period"],
+      "observe": "The wave travels forward while each point on the rope only moves up and down. Wavelength is one full crest-to-crest repeat; frequency is how many repeats pass each second.",
+      "altText": "Animated transverse wave with labelled crest, trough, wavelength and amplitude.",
+      "params": {
+        "frequency": { "min": 0.4, "max": 3, "default": 1, "step": 0.1 },
+        "amplitude": { "min": 0.2, "max": 1, "default": 0.6, "step": 0.05 }
+      },
+      "followUp": "If the frequency doubles and the wave speed stays the same, what must happen to the wavelength?"
+    },
+    {
+      "id": "graph-quadratic",
+      "renderer": "graph",
+      "dimension": "2d",
+      "title": "The shape of y = ax\u00b2 + bx + c",
+      "subjects": ["Mathematics", "Mathematics - Part 1", "Mathematics - Part 2", "Physics"],
+      "keywords": ["quadratic", "parabola", "equation", "roots", "vertex", "graph", "function", "coefficient", "discriminant"],
+      "observe": "The curve is a parabola. The sign of a decides whether it opens up or down, and the turning point stays visible as you change the coefficients.",
+      "altText": "Interactive parabola plot with sliders for a, b and c, labelled vertex, axis of symmetry and x-intercepts.",
+      "params": {
+        "a": { "min": -2, "max": 2, "default": 1, "step": 0.25 },
+        "b": { "min": -6, "max": 6, "default": 0, "step": 0.5 },
+        "c": { "min": -6, "max": 6, "default": -4, "step": 0.5 }
+      },
+      "followUp": "Set a negative. Is the vertex still a maximum or minimum, and how does that change the number of real roots?"
+    },
+    {
+      "id": "geometry-transform",
+      "renderer": "transform",
+      "dimension": "2d",
+      "title": "Transforming a shape",
+      "subjects": ["Mathematics", "Mathematics - Part 1", "Mathematics - Part 2", "Science"],
+      "keywords": ["transformation", "translation", "rotation", "reflection", "enlargement", "scale", "geometry", "triangle", "coordinates", "congruent", "similar"],
+      "observe": "Watch how every vertex moves. Translation slides the shape without turning it, rotation turns it about a point, and reflection flips it across a line.",
+      "altText": "Animated coordinate grid showing a shape being translated, rotated or reflected, with the transformed image outlined.",
+      "params": {
+        "transform": { "enum": ["translate", "rotate", "reflect", "scale"], "default": "translate" },
+        "shape": { "enum": ["triangle", "quadrilateral"], "default": "triangle" },
+        "amount": { "min": -6, "max": 6, "default": 3, "step": 1 }
+      },
+      "followUp": "Which of these transformations always produces a congruent shape, and which can change the size?"
+    },
+    {
+      "id": "cycle-process",
+      "renderer": "cycle",
+      "dimension": "2d",
+      "title": "A repeating process",
+      "subjects": ["Biology", "Science", "Science & Technology", "Chemistry", "Geography"],
+      "keywords": ["cycle", "process", "stage", "stages", "photosynthesis", "respiration", "water cycle", "nitrogen", "digestion", "mitosis", "steps", "sequence"],
+      "observe": "Follow the highlighted stages in order. Each stage depends on the output of the previous one and returns material to the cycle.",
+      "altText": "Animated cycle diagram with numbered stages, arrows between them and a caption for the active stage.",
+      "params": {
+        "steps": { "type": "stringArray", "minItems": 3, "maxItems": 6, "maxChars": 90, "default": ["Inputs absorbed", "Energy converted", "Products released", "Materials reused"] }
+      },
+      "followUp": "If one stage is blocked, which later stages stop working first, and why?"
+    },
+    {
+      "id": "cell-labelled",
+      "renderer": "cell",
+      "dimension": "2d",
+      "title": "Inside a cell",
+      "subjects": ["Biology", "Science", "Science & Technology"],
+      "keywords": ["cell", "nucleus", "mitochondria", "membrane", "cytoplasm", "organelle", "plant cell", "animal cell", "chloroplast", "vacuole"],
+      "observe": "Select each label to see what that part does. Notice that the nucleus holds the instructions while the mitochondria release energy from food.",
+      "altText": "Labelled diagram of an animal cell with the nucleus, cytoplasm, cell membrane and mitochondria identified.",
+      "params": {
+        "cellType": { "enum": ["animal", "plant"], "default": "animal" }
+      },
+      "followUp": "A muscle cell needs a lot of energy. Which organelle would you expect to be unusually abundant, and why?"
+    },
+    {
+      "id": "atom-bohr",
+      "renderer": "atom",
+      "dimension": "2d",
+      "title": "A simplified atomic model",
+      "subjects": ["Chemistry", "Science", "Science & Technology", "Physics"],
+      "keywords": ["atom", "electron", "proton", "neutron", "shell", "orbit", "atomic structure", "valence", "bohr", "nucleus", "ion"],
+      "observe": "The nucleus holds protons and neutrons; electrons occupy shells. This shell model is a useful simplification, not a picture of where an electron really is.",
+      "altText": "Animated shell model of an atom showing the nucleus and electrons moving in labelled shells.",
+      "params": {
+        "element": { "enum": ["H", "C", "O", "Na", "Cl", "Mg"], "default": "Na" }
+      },
+      "followUp": "Sodium forms Na\u207a. Which electron leaves first, and why does losing it make the atom more stable?"
+    },
+    {
+      "id": "molecule-3d",
+      "renderer": "molecule3d",
+      "dimension": "3d",
+      "title": "A molecule in 3D",
+      "subjects": ["Chemistry", "Science", "Science & Technology", "Biology"],
+      "keywords": ["molecule", "bond", "covalent", "methane", "water molecule", "ammonia", "carbon dioxide", "shape", "geometry", "tetrahedral", "vsepr", "3d"],
+      "observe": "Drag to rotate and scroll or use the buttons to zoom. Bonds are straight lines between nuclei; the shape comes from how the electron pairs arrange themselves.",
+      "altText": "Interactive three-dimensional ball-and-stick model of a molecule that can be rotated and zoomed.",
+      "params": {
+        "molecule": { "enum": ["water", "methane", "ammonia", "carbon_dioxide"], "default": "water" }
+      },
+      "followUp": "Methane has four identical bonds arranged tetrahedrally. Why does water have a bent shape instead?"
+    },
+    {
+      "id": "solid-3d",
+      "renderer": "solid3d",
+      "dimension": "3d",
+      "title": "A solid you can turn",
+      "subjects": ["Mathematics", "Mathematics - Part 1", "Mathematics - Part 2", "Science", "Physics"],
+      "keywords": ["cube", "cuboid", "sphere", "cone", "cylinder", "volume", "surface area", "mensuration", "solid", "3d", "geometry", "prism", "pyramid"],
+      "observe": "Rotate the solid to see its faces, edges and vertices. The labelled dimensions are the ones you need in the volume and surface-area formulas.",
+      "altText": "Interactive three-dimensional solid with edges, faces and labelled dimensions that can be rotated and zoomed.",
+      "params": {
+        "solid": { "enum": ["cube", "cuboid", "sphere", "cone", "cylinder"], "default": "cube" }
+      },
+      "followUp": "If every edge of a cube doubles, how many times larger is the volume than the surface area? Explain the difference."
+    },
+    {
+      "id": "photo-evidence",
+      "renderer": "photo",
+      "dimension": "image",
+      "title": "A real-world example",
+      "subjects": ["Physics", "Chemistry", "Biology", "Science", "Geography", "History", "Social Science"],
+      "keywords": ["photograph", "photo", "real life", "real-world", "where is", "monument", "river", "map", "apparatus", "experiment", "historical", "geography", "landform", "wildlife", "satellite", "example in nature"],
+      "observe": "Look at the labelled source and caption before using the image. It shows a real example; it is not a diagram of the mechanism.",
+      "altText": "An attributed educational photograph related to the question.",
+      "params": {}
+    }
+  ],
+  "domains": {
+    "allowedImageHosts": ["wikimedia.org", "upload.wikimedia.org", "commons.wikimedia.org", "nasa.gov", "noaa.gov", "usgs.gov", "openstax.org", "si.edu"]
+  }
+}

@@ -1,0 +1,926 @@
+{
+  "version": 1,
+  "reviewedAt": "2026-10-20",
+  "packs": [
+    {
+      "id": "ohm-law",
+      "title": "Ohm's law and resistance",
+      "subjects": ["Physics", "Science", "Science & Technology - Part 1"],
+      "keywords": ["ohm", "current", "resistance", "circuit", "battery", "voltage", "potential difference", "resistor", "electricity", "ammeter"],
+      "reviewed": true,
+      "reviewer": "Learning Allied curriculum review",
+      "prerequisites": [
+        { "name": "Electric charge and current", "note": "Current is the rate at which charge flows, measured in amperes." },
+        { "name": "Potential difference", "note": "A battery provides an energy difference per unit charge, measured in volts." }
+      ],
+      "levelIntros": {
+        "foundation": "Think of voltage as the push that moves charge and resistance as how strongly the material opposes that push. Ohm's law links the three quantities in one equation.",
+        "intermediate": "Ohm's law is a relationship between potential difference, current and resistance for a conductor at constant temperature. It connects a circuit measurement to the motion of charges inside the wire.",
+        "advanced": "For an ohmic conductor at constant temperature, the ratio V/I is constant and defines resistance. This linear behaviour comes from a steady drift velocity reached when the electric force is balanced by collisions in the lattice."
+      },
+      "alternate": {
+        "heading": "A water-pipe picture",
+        "body": "Imagine charge as water flowing through pipes. The battery is the pump that creates a pressure difference, a thin section is high resistance, and the flow rate is the current. This picture is useful for series and parallel intuition, but it stops being literal at the atomic level: charge is not used up, and the wire already contains the charges that move."
+      },
+      "sections": [
+        {
+          "heading": "The relationship",
+          "body": "Potential difference V across a conductor is directly proportional to the current I through it, provided the temperature stays constant. The constant of proportionality is the resistance R, so V = I R. Rearranged, I = V / R and R = V / I."
+        },
+        {
+          "heading": "What resistance depends on",
+          "body": "Resistance is not just a property of the material. A longer wire has more resistance, a thicker wire has less, and a hotter metal usually has more. For a uniform wire, R = \u03c1L/A, where \u03c1 is the resistivity of the material, L its length and A its cross-sectional area."
+        },
+        {
+          "heading": "Why the current is the same everywhere",
+          "body": "In a series circuit there is only one path, so charge cannot pile up or disappear. The same charge passes every cross-section each second. Components share the voltage instead: the total potential difference equals the sum of the potential differences across each component."
+        }
+      ],
+      "derivation": {
+        "heading": "Where the linear graph comes from",
+        "body": "In a metal, electrons accelerate under the electric field but collide with ions. They quickly reach a steady drift velocity v_d proportional to the field E, so I \u221d E. Since E = V/L for a uniform wire, I \u221d V and the V-I graph is a straight line through the origin. The gradient is 1/R."
+      },
+      "workedExample": {
+        "problem": "A 12 V battery is connected across a 4 \u03a9 resistor. Find the current, then find the current if the resistance is doubled.",
+        "steps": [
+          "Write the relationship: I = V / R.",
+          "Substitute the first values: I = 12 / 4 = 3 A.",
+          "Double the resistance: R = 8 \u03a9, with V still 12 V.",
+          "Substitute again: I = 12 / 8 = 1.5 A.",
+          "Check: doubling R at constant V halves I, which matches the equation."
+        ],
+        "answer": "3 A, then 1.5 A. The current halves when the resistance doubles at constant voltage."
+      },
+      "misconceptions": [
+        {
+          "id": "current-used-up",
+          "label": "Current is used up by components",
+          "explanation": "Charge is conserved. A component converts electrical energy into other forms, which lowers the potential difference, but the same current leaves the component as enters it in a series circuit.",
+          "remediation": "Track charge, not energy: count what passes a point per second before and after the bulb."
+        },
+        {
+          "id": "battery-fixed-current",
+          "label": "A battery always supplies the same current",
+          "explanation": "A battery maintains roughly a fixed potential difference, not a fixed current. The current is set by the resistance of the whole circuit.",
+          "remediation": "Use I = V/R and change R while keeping V fixed to see the current change."
+        }
+      ],
+      "questions": [
+        {
+          "id": "ohm-q1",
+          "difficulty": 1,
+          "kind": "short",
+          "prompt": "A 12 V battery is connected across a 4 \u03a9 resistor. What current flows?",
+          "expected": "3 A",
+          "accept": ["3 a", "3a", "3 ampere", "3 amperes", "3.0 a", "3"],
+          "keywords": ["3", "i=v/r", "12/4"],
+          "explanation": "I = V / R = 12 / 4 = 3 A.",
+          "hint": "Rearrange V = I R for the current."
+        },
+        {
+          "id": "ohm-q2",
+          "difficulty": 2,
+          "kind": "short",
+          "prompt": "The resistance in a circuit is doubled while the battery voltage stays the same. What happens to the current, and why?",
+          "expected": "The current halves, because I = V/R and R doubled at constant V.",
+          "accept": ["halves", "halved", "becomes half", "half", "decreases by half"],
+          "keywords": ["halves", "half", "inverse", "v/r"],
+          "explanation": "Since I = V/R, doubling R at constant V makes I half as large. Current is inversely proportional to resistance.",
+          "hint": "Use I = V/R and substitute a doubled value.",
+          "misconceptionId": "battery-fixed-current"
+        },
+        {
+          "id": "ohm-q3",
+          "difficulty": 2,
+          "kind": "short",
+          "prompt": "Two identical bulbs are connected in series with one battery. Why is each bulb dimmer than a single bulb on its own?",
+          "expected": "The total resistance is larger, so the current is smaller, and each bulb gets less power.",
+          "accept": ["total resistance increases", "current decreases", "less current", "smaller current", "resistance increases"],
+          "keywords": ["resistance", "series", "current", "power", "dimmer"],
+          "explanation": "Adding a second bulb in series increases the total resistance, so the battery drives a smaller current. With less current through each bulb, the power converted in each one falls, so each glows dimmer.",
+          "hint": "What happens to total resistance when you add a component in series?"
+        },
+        {
+          "id": "ohm-q4",
+          "difficulty": 3,
+          "kind": "short",
+          "prompt": "A wire is stretched so that its length doubles while its volume stays the same. What happens to its resistance? Show the reasoning.",
+          "expected": "It becomes four times larger: length doubles and area halves, so R = \u03c1L/A increases by 2 / 0.5 = 4.",
+          "accept": ["four times", "4 times", "quadruples", "x4", "4x", "becomes 4"],
+          "keywords": ["length doubles", "area halves", "4", "rho", "volume constant"],
+          "explanation": "Constant volume means L A stays fixed. Doubling L forces A to halve. R = \u03c1L/A then changes by a factor 2 / (1/2) = 4. So the resistance becomes four times its original value.",
+          "hint": "If the volume is constant, what must happen to the cross-sectional area when the length doubles?"
+        }
+      ],
+      "visualId": "circuit-series",
+      "visualParams": { "cells": 2, "resistanceOhms": 6 },
+      "revisionDays": [1, 3, 7]
+    },
+    {
+      "id": "newtons-second-law",
+      "title": "Newton's second law",
+      "subjects": ["Physics", "Science", "Science & Technology - Part 1"],
+      "keywords": ["newton", "force", "mass", "acceleration", "f=ma", "friction", "net force", "motion", "momentum", "inertia"],
+      "reviewed": true,
+      "reviewer": "Learning Allied curriculum review",
+      "prerequisites": [
+        { "name": "Vectors", "note": "Forces add as vectors, so direction matters as much as size." },
+        { "name": "Kinematics", "note": "Acceleration is the rate of change of velocity." }
+      ],
+      "levelIntros": {
+        "foundation": "A net force changes how an object moves. The bigger the net force, the faster the change; the heavier the object, the slower the change.",
+        "intermediate": "Newton's second law says the acceleration of an object is proportional to the net force on it and inversely proportional to its mass. It is a vector equation: the acceleration points in the direction of the net force.",
+        "advanced": "The law is more generally stated as net force equals the rate of change of momentum, F_net = dp/dt. For constant mass this reduces to F_net = m a, and it holds only in an inertial frame."
+      },
+      "alternate": {
+        "heading": "One net push on a trolley",
+        "body": "Put the trolley on a smooth floor and push it. The push minus friction is the single net push that changes its speed. If you double the net push, the speed changes twice as fast; if you load the trolley with the same net push, it changes speed half as fast. This is why the equation is written for the net force, not for one individual force."
+      },
+      "sections": [
+        {
+          "heading": "Net force, not just any force",
+          "body": "Add all forces on the object as vectors. If they cancel, the net force is zero and the velocity does not change. If they do not cancel, the object accelerates in the direction of the net force."
+        },
+        {
+          "heading": "The equation",
+          "body": "F_net = m a, so a = F_net / m. Acceleration is measured in m/s\u00b2. Doubling the net force doubles the acceleration; doubling the mass halves it for the same net force."
+        },
+        {
+          "heading": "What the law does not say",
+          "body": "It does not say that a force is needed to keep moving. An object with zero net force keeps a constant velocity, which may be zero or non-zero. Friction and air resistance are forces too, so they must be included in the net force."
+        }
+      ],
+      "derivation": {
+        "heading": "From momentum to F = ma",
+        "body": "Momentum is p = m v. Newton's second law in its general form is F_net = dp/dt = d(mv)/dt. When mass is constant this becomes m dv/dt = m a. For a variable-mass system, such as a rocket, the full momentum form must be used instead."
+      },
+      "workedExample": {
+        "problem": "A 2 kg block is pushed with 10 N while friction opposes it with 2 N. Find the acceleration.",
+        "steps": [
+          "Take the direction of motion as positive.",
+          "Net force = 10 N \u2212 2 N = 8 N.",
+          "Use a = F_net / m.",
+          "Substitute: a = 8 / 2 = 4 m/s\u00b2.",
+          "The acceleration points in the direction of the push."
+        ],
+        "answer": "4 m/s\u00b2 in the direction of the applied force."
+      },
+      "misconceptions": [
+        {
+          "id": "motion-needs-force",
+          "label": "Constant motion requires a constant force",
+          "explanation": "A net force changes velocity; it is not required to maintain velocity. With zero net force, velocity stays constant. In everyday life friction makes it look as if a push is always needed.",
+          "remediation": "Draw the free-body diagram and check whether the forces actually cancel."
+        },
+        {
+          "id": "mass-is-weight",
+          "label": "Mass and weight are the same",
+          "explanation": "Mass measures inertia in kilograms and does not change with location. Weight is the gravitational force W = m g and is measured in newtons.",
+          "remediation": "Label mass in kg and weight in N in every free-body diagram."
+        }
+      ],
+      "questions": [
+        {
+          "id": "nsl-q1",
+          "difficulty": 1,
+          "kind": "short",
+          "prompt": "A net force of 20 N acts on a 4 kg object. What is its acceleration?",
+          "expected": "5 m/s\u00b2",
+          "accept": ["5 m/s", "5 m/s2", "5 m/s\u00b2", "5 ms-2", "5"],
+          "keywords": ["5", "20/4", "f/m"],
+          "explanation": "a = F_net / m = 20 / 4 = 5 m/s\u00b2.",
+          "hint": "Use a = F_net / m."
+        },
+        {
+          "id": "nsl-q2",
+          "difficulty": 2,
+          "kind": "short",
+          "prompt": "A 5 kg box is pushed with 30 N and friction is 10 N. Find the acceleration.",
+          "expected": "4 m/s\u00b2, using the net force 20 N.",
+          "accept": ["4 m/s", "4 m/s2", "4 m/s\u00b2", "4"],
+          "keywords": ["4", "net force", "20", "30-10"],
+          "explanation": "The net force is 30 \u2212 10 = 20 N, so a = 20 / 5 = 4 m/s\u00b2. Using 30 N directly would ignore friction.",
+          "hint": "First find the net force, then divide by mass."
+        },
+        {
+          "id": "nsl-q3",
+          "difficulty": 2,
+          "kind": "short",
+          "prompt": "The same net force acts on two objects, one twice as heavy as the other. Compare their accelerations and explain.",
+          "expected": "The heavier object accelerates half as much, because a = F/m.",
+          "accept": ["half", "halves", "half as much", "heavier accelerates less"],
+          "keywords": ["inversely", "mass", "half", "f/m"],
+          "explanation": "For the same net force, acceleration is inversely proportional to mass. The heavier object has twice the mass, so it has half the acceleration.",
+          "hint": "Keep F fixed in a = F/m and double m.",
+          "misconceptionId": "mass-is-weight"
+        },
+        {
+          "id": "nsl-q4",
+          "difficulty": 3,
+          "kind": "short",
+          "prompt": "A car moves at a constant 60 km/h on a straight road. What is the net force on it, and why do the engine and friction both act?",
+          "expected": "The net force is zero because the velocity is constant; the engine force balances friction and air resistance.",
+          "accept": ["zero", "0 n", "net force is zero", "balanced forces"],
+          "keywords": ["zero", "constant velocity", "balanced", "engine equals friction"],
+          "explanation": "Constant velocity means zero acceleration, so F_net = m a = 0. The engine still does work against friction and air resistance, but those forces balance, so the net force is zero.",
+          "hint": "What does constant velocity tell you about acceleration, and therefore about net force?"
+        }
+      ],
+      "visualId": "force-motion",
+      "visualParams": { "massKg": 2, "forceN": 10, "frictionN": 2 },
+      "revisionDays": [1, 3, 7]
+    },
+    {
+      "id": "mirror-ray-diagram",
+      "title": "Reflection and image formation in a concave mirror",
+      "subjects": ["Physics", "Science", "Science & Technology - Part 1"],
+      "keywords": ["mirror", "reflection", "concave", "convex", "focal length", "ray diagram", "image", "magnification", "optics", "pole"],
+      "reviewed": true,
+      "reviewer": "Learning Allied curriculum review",
+      "prerequisites": [
+        { "name": "Law of reflection", "note": "Angle of incidence equals angle of reflection, measured from the normal." },
+        { "name": "Similar triangles", "note": "Used to relate object distance, image distance and magnification." }
+      ],
+      "levelIntros": {
+        "foundation": "A mirror changes the direction of light. A curved mirror can make light converge or spread out, which lets it form an image you can locate with a diagram.",
+        "intermediate": "For a spherical mirror, parallel rays close to the principal axis converge at the focal point, with f = R/2. Ray diagrams use two standard rays to locate the image.",
+        "advanced": "The mirror formula 1/f = 1/u + 1/v and magnification m = \u2212v/u follow from the paraxial approximation. Signs encode whether distances are measured in front of or behind the mirror, and the same rules reproduce whether an image is real or virtual."
+      },
+      "alternate": {
+        "heading": "Trace one ray at a time",
+        "body": "Instead of trying to remember the whole diagram, follow one ray and ask one question at each surface: where does it go after reflection? A ray parallel to the axis must pass through F; a ray through C must retrace itself. The image is simply where two reflected rays meet. If they only appear to meet behind the mirror, the image is virtual."
+      },
+      "sections": [
+        {
+          "heading": "The three useful rays",
+          "body": "A ray parallel to the principal axis reflects through the focal point. A ray through the focal point reflects parallel to the axis. A ray through the centre of curvature reflects back along itself. Any two of these locate the image."
+        },
+        {
+          "heading": "The mirror formula",
+          "body": "For a mirror, 1/f = 1/u + 1/v relates the focal length f, the object distance u and the image distance v. Real distances in front of the mirror are taken as positive in the school convention used here; a negative v means a virtual image behind the mirror."
+        },
+        {
+          "heading": "Reading the result",
+          "body": "Magnification m = \u2212v/u. A negative m means the image is inverted, and |m| tells you how many times larger or smaller it is. A virtual image is formed where reflected rays only appear to meet, so it cannot be caught on a screen."
+        }
+      ],
+      "derivation": {
+        "heading": "Why f = R/2",
+        "body": "A ray parallel to the axis hits the mirror at height h. The normal at that point passes through the centre of curvature C. Using the small-angle (paraxial) approximation, the reflected ray crosses the axis at a distance f from the pole, and the geometry gives f = R/2. This fails for rays far from the axis, which is why real mirrors show spherical aberration."
+      },
+      "workedExample": {
+        "problem": "An object is 30 cm in front of a concave mirror with focal length 10 cm. Find the image distance and magnification.",
+        "steps": [
+          "Use 1/f = 1/u + 1/v with u = 30 cm and f = 10 cm.",
+          "1/v = 1/10 \u2212 1/30 = 3/30 \u2212 1/30 = 2/30.",
+          "So v = 15 cm. It is positive, so the image is real and in front of the mirror.",
+          "Magnification m = \u2212v/u = \u221215/30 = \u22120.5.",
+          "The image is real, inverted and half the object's height."
+        ],
+        "answer": "v = 15 cm, m = \u22120.5: a real, inverted, diminished image."
+      },
+      "misconceptions": [
+        {
+          "id": "virtual-cannot-be-seen",
+          "label": "A virtual image cannot be seen",
+          "explanation": "A virtual image can be seen by an observer because the reflected rays enter the eye as if they came from behind the mirror. It simply cannot be projected onto a screen.",
+          "remediation": "Distinguish 'can be seen' from 'can be caught on a screen'."
+        },
+        {
+          "id": "rays-through-image",
+          "label": "Light rays actually pass through a virtual image",
+          "explanation": "For a virtual image the reflected rays diverge. Their backward extensions meet behind the mirror; no light actually travels there.",
+          "remediation": "Draw the reflected rays with arrows and use dashed lines only for the backward extensions."
+        }
+      ],
+      "questions": [
+        {
+          "id": "mir-q1",
+          "difficulty": 1,
+          "kind": "short",
+          "prompt": "A concave mirror has focal length 10 cm. What is its radius of curvature?",
+          "expected": "20 cm, because R = 2f.",
+          "accept": ["20 cm", "20cm", "20", "2f"],
+          "keywords": ["20", "2f", "radius"],
+          "explanation": "For a spherical mirror, the focal length is half the radius of curvature: f = R/2, so R = 2f = 20 cm.",
+          "hint": "How is f related to R for a spherical mirror?"
+        },
+        {
+          "id": "mir-q2",
+          "difficulty": 2,
+          "kind": "short",
+          "prompt": "An object is 20 cm from a concave mirror of focal length 10 cm. Where is the image?",
+          "expected": "20 cm in front of the mirror; the object is at the centre of curvature, so the image is real, inverted and the same size.",
+          "accept": ["20 cm", "20cm", "at the centre of curvature", "at center of curvature"],
+          "keywords": ["20", "v=20", "same size", "real inverted"],
+          "explanation": "1/v = 1/10 \u2212 1/20 = 1/20, so v = 20 cm. With the object at C, the image forms at C, inverted and the same size.",
+          "hint": "Substitute into 1/f = 1/u + 1/v."
+        },
+        {
+          "id": "mir-q3",
+          "difficulty": 2,
+          "kind": "short",
+          "prompt": "An object is placed between the pole and the focus of a concave mirror. Describe the image.",
+          "expected": "Virtual, erect and enlarged, behind the mirror.",
+          "accept": ["virtual erect enlarged", "virtual, erect and enlarged", "virtual and enlarged", "erect enlarged virtual"],
+          "keywords": ["virtual", "erect", "enlarged", "behind"],
+          "explanation": "Rays from an object inside the focal length diverge after reflection. Their backward extensions meet behind the mirror, giving a virtual, erect, enlarged image. This is how a shaving mirror works.",
+          "hint": "Trace a ray parallel to the axis and a ray through the centre of curvature.",
+          "misconceptionId": "virtual-cannot-be-seen"
+        },
+        {
+          "id": "mir-q4",
+          "difficulty": 3,
+          "kind": "short",
+          "prompt": "An object 30 cm from a concave mirror of focal length 10 cm has height 4 cm. Find the image height and state its orientation.",
+          "expected": "Image height 2 cm, inverted (m = \u22120.5).",
+          "accept": ["2 cm", "2cm", "2", "inverted", "2 cm inverted"],
+          "keywords": ["2", "0.5", "inverted", "magnification"],
+          "explanation": "From the previous calculation v = 15 cm, so m = \u2212v/u = \u22120.5. The image height is |m| \u00d7 4 = 2 cm, and the negative sign means it is inverted.",
+          "hint": "Find m first, then multiply the object height by its magnitude."
+        }
+      ],
+      "visualId": "ray-concave-mirror",
+      "visualParams": { "focalLength": 10, "objectDistance": 20, "mirror": "concave" },
+      "revisionDays": [1, 3, 7]
+    },
+    {
+      "id": "covalent-bonding",
+      "title": "Covalent bonds and molecular shape",
+      "subjects": ["Chemistry", "Science", "Science & Technology - Part 1"],
+      "keywords": ["covalent", "bond", "molecule", "electron", "octet", "vsepr", "tetrahedral", "polar", "water", "methane", "ammonia", "sharing"],
+      "reviewed": true,
+      "reviewer": "Learning Allied curriculum review",
+      "prerequisites": [
+        { "name": "Valence electrons", "note": "Only the outer-shell electrons are involved in bonding." },
+        { "name": "Electron pairs repel", "note": "Electron pairs around a central atom arrange themselves as far apart as possible." }
+      ],
+      "levelIntros": {
+        "foundation": "Atoms can share electrons to fill their outer shells. A shared pair is a covalent bond, and the number of shared pairs decides how many bonds an atom forms.",
+        "intermediate": "A covalent bond forms when two atoms share a pair of electrons. The shape of the molecule is set by the arrangement of electron pairs around the central atom, not by the bonds alone.",
+        "advanced": "Lewis structures account for sigma bonding and lone pairs, while VSEPR predicts geometry from electron-domain repulsion. Bond polarity depends on electronegativity difference, and molecular polarity also depends on the vector sum of bond dipoles, which is why CO2 is non-polar but H2O is polar."
+      },
+      "alternate": {
+        "heading": "Electron-pair balloons",
+        "body": "Tie several balloons to one knot. They push each other away and settle into the most spread-out arrangement. Electron pairs around a central atom behave similarly: four pairs spread tetrahedrally, while a lone pair takes more room and squeezes the bonds together. Rotate the model and look for the balloon-like arrangement, then count atoms only to name the molecular shape."
+      },
+      "sections": [
+        {
+          "heading": "Sharing, not transferring",
+          "body": "In a covalent bond the nuclei attract the same shared electron pair. Each atom counts the shared pair towards its outer shell. Covalent bonding typically occurs between non-metals, where neither atom gives up an electron completely."
+        },
+        {
+          "heading": "Shape comes from electron pairs",
+          "body": "Electron pairs around a central atom repel and spread out. Two domains give a linear shape, three give trigonal planar, and four give tetrahedral. Lone pairs occupy space too and push the bonding pairs closer together."
+        },
+        {
+          "heading": "Why shape matters",
+          "body": "Shape controls boiling point, solubility and how a molecule interacts with a receptor or another molecule. Two molecules with the same formula can have different shapes and very different properties."
+        }
+      ],
+      "derivation": {
+        "heading": "Predicting a shape with VSEPR",
+        "body": "Count electron domains on the central atom: each bond (single, double or triple counts once) plus each lone pair. Arrange the domains to minimise repulsion. Then name the shape from the positions of atoms only. For water, oxygen has two bonds and two lone pairs: four domains, tetrahedral electron geometry, bent molecular shape, about 104.5\u00b0."
+      },
+      "workedExample": {
+        "problem": "Predict the shape and bond angle of methane (CH4) and ammonia (NH3).",
+        "steps": [
+          "Carbon in CH4 has four single bonds and no lone pairs: four domains.",
+          "Four domains arrange tetrahedrally, so CH4 is tetrahedral with 109.5\u00b0 bond angles.",
+          "Nitrogen in NH3 has three single bonds and one lone pair: also four domains.",
+          "The lone pair repels more strongly than a bond pair, so the H\u2013N\u2013H angle is squeezed to about 107\u00b0.",
+          "The molecular shape counts atoms only, so NH3 is trigonal pyramidal."
+        ],
+        "answer": "CH4: tetrahedral, 109.5\u00b0. NH3: trigonal pyramidal, about 107\u00b0."
+      },
+      "misconceptions": [
+        {
+          "id": "covalent-transfers",
+          "label": "Covalent bonds transfer electrons",
+          "explanation": "Transfer of electrons produces ions and ionic bonding. A covalent bond shares an electron pair, and the pair is attracted by both nuclei.",
+          "remediation": "Compare NaCl (transfer) with CH4 (sharing) using electron-dot diagrams."
+        },
+        {
+          "id": "shape-irrelevant",
+          "label": "Molecular shape does not matter",
+          "explanation": "Shape determines polarity, intermolecular forces and biological activity. Bent water is polar and has a high boiling point; linear CO2 is non-polar despite polar bonds.",
+          "remediation": "Add bond dipoles as vectors on the 3D model and see whether they cancel."
+        }
+      ],
+      "questions": [
+        {
+          "id": "bond-q1",
+          "difficulty": 1,
+          "kind": "short",
+          "prompt": "How many covalent bonds does a carbon atom form in methane?",
+          "expected": "Four single covalent bonds.",
+          "accept": ["4", "four", "4 bonds", "four bonds", "four single"],
+          "keywords": ["4", "four", "tetravalent"],
+          "explanation": "Carbon has four valence electrons and needs four more to complete its octet, so it forms four single covalent bonds in CH4.",
+          "hint": "Count the valence electrons carbon needs to reach eight."
+        },
+        {
+          "id": "bond-q2",
+          "difficulty": 2,
+          "kind": "short",
+          "prompt": "Why is the H\u2013O\u2013H bond angle in water about 104.5\u00b0 rather than 109.5\u00b0?",
+          "expected": "Oxygen has two lone pairs, which repel the bonding pairs more strongly and squeeze the angle.",
+          "accept": ["lone pair", "lone pairs", "two lone pairs", "repulsion", "repel"],
+          "keywords": ["lone pair", "repel", "104.5", "tetrahedral"],
+          "explanation": "Water has four electron domains, but two are lone pairs. Lone pairs occupy more space and repel bonding pairs more strongly, so the H\u2013O\u2013H angle closes to about 104.5\u00b0.",
+          "hint": "How many lone pairs does oxygen have in water?"
+        },
+        {
+          "id": "bond-q3",
+          "difficulty": 2,
+          "kind": "short",
+          "prompt": "CO2 has polar C=O bonds but the molecule is non-polar. Explain why.",
+          "expected": "CO2 is linear, so the two equal bond dipoles point in opposite directions and cancel.",
+          "accept": ["cancel", "linear", "opposite", "symmetrical", "symmetric"],
+          "keywords": ["linear", "dipoles", "cancel", "180"],
+          "explanation": "The C=O bonds are polar, but the molecule is linear with the two dipoles equal and opposite. Their vector sum is zero, so the molecule as a whole is non-polar.",
+          "hint": "Draw the bond dipoles as arrows and add them vectorially.",
+          "misconceptionId": "shape-irrelevant"
+        },
+        {
+          "id": "bond-q4",
+          "difficulty": 3,
+          "kind": "short",
+          "prompt": "Using VSEPR, predict the electron-domain geometry and molecular shape of NH4+.",
+          "expected": "Four bonding pairs and no lone pairs: tetrahedral electron geometry and tetrahedral molecular shape, angle 109.5\u00b0.",
+          "accept": ["tetrahedral", "109.5", "four bonding pairs", "no lone pairs"],
+          "keywords": ["tetrahedral", "109.5", "no lone pair", "four bonds"],
+          "explanation": "The ammonium ion has four N\u2013H bonds and no lone pair on nitrogen. Four domains give a tetrahedral arrangement, so both the electron geometry and the molecular shape are tetrahedral with 109.5\u00b0 angles.",
+          "hint": "Remember the positive charge means nitrogen has gained a bond, not a lone pair."
+        }
+      ],
+      "visualId": "molecule-3d",
+      "visualParams": { "molecule": "water" },
+      "revisionDays": [1, 3, 7]
+    },
+    {
+      "id": "photosynthesis",
+      "title": "Photosynthesis",
+      "subjects": ["Biology", "Science", "Science & Technology - Part 2"],
+      "keywords": ["photosynthesis", "chlorophyll", "chloroplast", "glucose", "oxygen", "carbon dioxide", "light reaction", "calvin", "stomata", "plant"],
+      "reviewed": true,
+      "reviewer": "Learning Allied curriculum review",
+      "prerequisites": [
+        { "name": "Cell organelles", "note": "Chloroplasts contain chlorophyll and the membranes where the light reactions happen." },
+        { "name": "Energy in chemical bonds", "note": "Light energy is converted into chemical energy stored in glucose." }
+      ],
+      "levelIntros": {
+        "foundation": "Plants use light energy to turn carbon dioxide and water into glucose and oxygen. Chlorophyll captures the light, and the glucose stores the energy.",
+        "intermediate": "Photosynthesis has two linked stages: the light-dependent reactions in the thylakoid membranes and the light-independent Calvin cycle in the stroma. The first supplies ATP and NADPH to the second.",
+        "advanced": "The light reactions split water at photosystem II, pump protons to build a gradient, and use chemiosmosis to make ATP while reducing NADP+. The Calvin cycle then fixes CO2 with RuBisCO, consuming ATP and NADPH. Overall, six CO2 molecules are fixed per glucose."
+      },
+      "alternate": {
+        "heading": "A solar-powered factory",
+        "body": "The leaf is a factory with two departments. The thylakoid department runs on sunlight, splits water and produces the energy carriers ATP and NADPH. The stroma department uses those carriers to build sugar from CO2. If the solar department stops at night, the sugar department soon runs out of power even though raw materials are still available."
+      },
+      "sections": [
+        {
+          "heading": "The overall change",
+          "body": "6CO2 + 6H2O \u2192 C6H12O6 + 6O2, with light absorbed by chlorophyll. The oxygen released comes from water, not from carbon dioxide. The glucose stores energy that the plant and the food chain use."
+        },
+        {
+          "heading": "Two stages",
+          "body": "In the light reactions, water is split, oxygen is released, and ATP and NADPH are produced. In the Calvin cycle, CO2 is fixed using that ATP and NADPH to build sugars. The stages are linked: stopping the light reactions quickly stops the Calvin cycle."
+        },
+        {
+          "heading": "Where and when",
+          "body": "Chloroplasts contain stacks of thylakoids surrounded by stroma. Light reactions occur on the thylakoid membranes; the Calvin cycle occurs in the stroma. Photosynthesis needs light, but the Calvin cycle itself does not use light directly."
+        }
+      ],
+      "derivation": {
+        "heading": "Why oxygen comes from water",
+        "body": "Isotope experiments using H2\u00b9\u2078O showed that the released oxygen is labelled, while CO2 labelled with \u00b9\u2078O did not label the oxygen gas. This identified water as the electron donor at photosystem II: 2H2O \u2192 4H+ + 4e\u207b + O2."
+      },
+      "workedExample": {
+        "problem": "A plant fixes 12 molecules of CO2. How many glucose molecules can it build, and how much oxygen is released?",
+        "steps": [
+          "The balanced equation needs 6 CO2 per glucose: 6CO2 + 6H2O \u2192 C6H12O6 + 6O2.",
+          "12 CO2 is twice 6, so it can produce 2 glucose molecules.",
+          "Oxygen released is 6 per glucose, so 2 \u00d7 6 = 12 O2 molecules.",
+          "Check atom balance: 12 C, 24 H and 18 O on each side."
+        ],
+        "answer": "2 glucose molecules and 12 oxygen molecules."
+      },
+      "misconceptions": [
+        {
+          "id": "plants-only-breathe-at-night",
+          "label": "Plants photosynthesise only at night",
+          "explanation": "Photosynthesis requires light, so it happens in daylight. Respiration happens all the time, day and night. At night only respiration occurs, which is why CO2 output can exceed uptake.",
+          "remediation": "Separate the two processes: light drives photosynthesis, respiration is continuous."
+        },
+        {
+          "id": "oxygen-from-co2",
+          "label": "The released oxygen comes from carbon dioxide",
+          "explanation": "Isotope experiments show the O2 comes from splitting water. Carbon dioxide supplies carbon for glucose, not the oxygen gas.",
+          "remediation": "Write the half-reaction at photosystem II and mark the source of each atom."
+        }
+      ],
+      "questions": [
+        {
+          "id": "photo-q1",
+          "difficulty": 1,
+          "kind": "short",
+          "prompt": "Name the gas released during photosynthesis and the process that produces it.",
+          "expected": "Oxygen, released when water is split in the light reactions.",
+          "accept": ["oxygen", "o2", "oxygen from water", "splitting of water"],
+          "keywords": ["oxygen", "water", "light reaction"],
+          "explanation": "Oxygen is released when water is split at photosystem II during the light-dependent reactions.",
+          "hint": "Which molecule is split to provide electrons?"
+        },
+        {
+          "id": "photo-q2",
+          "difficulty": 2,
+          "kind": "short",
+          "prompt": "Explain why a plant kept in darkness cannot continue making glucose for long, even though it has plenty of CO2 and water.",
+          "expected": "Without light, the light reactions stop producing ATP and NADPH, so the Calvin cycle cannot fix CO2.",
+          "accept": ["no atp", "no nadph", "light reactions stop", "calvin cycle stops", "needs atp and nadph"],
+          "keywords": ["atp", "nadph", "calvin", "light", "stops"],
+          "explanation": "The Calvin cycle needs ATP and NADPH from the light reactions. In darkness those supplies run out, so CO2 fixation stops even if CO2 and water are available.",
+          "hint": "What do the light reactions supply to the Calvin cycle?"
+        },
+        {
+          "id": "photo-q3",
+          "difficulty": 2,
+          "kind": "short",
+          "prompt": "A plant is given water containing labelled oxygen (H2\u00b9\u2078O). Where does the label appear?",
+          "expected": "In the released oxygen gas, because water is split at photosystem II.",
+          "accept": ["oxygen gas", "o2", "released oxygen", "in oxygen"],
+          "keywords": ["oxygen", "water split", "photosystem ii"],
+          "explanation": "Water is the electron donor at photosystem II, so its oxygen atoms become the O2 released. This is the isotope evidence that oxygen does not come from CO2.",
+          "hint": "Which molecule is split during the light reactions?",
+          "misconceptionId": "oxygen-from-co2"
+        },
+        {
+          "id": "photo-q4",
+          "difficulty": 3,
+          "kind": "short",
+          "prompt": "A plant fixes 18 molecules of CO2. How many glucose and oxygen molecules result, and how did you balance it?",
+          "expected": "3 glucose and 18 oxygen, using 6CO2 per glucose.",
+          "accept": ["3 glucose", "3 glucose and 18 oxygen", "3 and 18", "three glucose"],
+          "keywords": ["3", "18", "6co2", "balance"],
+          "explanation": "The equation fixes 6 CO2 and releases 6 O2 per glucose. 18/6 = 3 glucose, so 3 \u00d7 6 = 18 O2. Balancing carbon first, then hydrogen and oxygen, confirms the counts.",
+          "hint": "Start from 6CO2 + 6H2O \u2192 C6H12O6 + 6O2."
+        }
+      ],
+      "visualId": "cycle-process",
+      "visualParams": {
+        "steps": [
+          "Light absorbed by chlorophyll",
+          "Water split, oxygen released",
+          "ATP and NADPH made",
+          "CO2 fixed in Calvin cycle",
+          "Glucose formed and stored"
+        ]
+      },
+      "revisionDays": [1, 3, 7]
+    },
+    {
+      "id": "quadratic-equations",
+      "title": "Quadratic equations and parabolas",
+      "subjects": ["Mathematics", "Mathematics - Part 1", "Mathematics - Part 2"],
+      "keywords": ["quadratic", "parabola", "roots", "vertex", "discriminant", "factorise", "factorize", "equation", "coefficient", "x-intercept"],
+      "reviewed": true,
+      "reviewer": "Learning Allied curriculum review",
+      "prerequisites": [
+        { "name": "Factorisation", "note": "Splitting a quadratic into two linear factors gives its roots directly." },
+        { "name": "Coordinate geometry", "note": "The graph of a quadratic is a parabola in the coordinate plane." }
+      ],
+      "levelIntros": {
+        "foundation": "A quadratic equation has the form ax\u00b2 + bx + c = 0 with a not zero. Its solutions are the x-values where the graph crosses the x-axis.",
+        "intermediate": "Every quadratic can be solved by factorising, completing the square or the quadratic formula. The discriminant b\u00b2 \u2212 4ac tells you how many real roots exist before you solve.",
+        "advanced": "Completing the square rewrites ax\u00b2 + bx + c as a(x + b/2a)\u00b2 + (c \u2212 b\u00b2/4a). This exposes the vertex and yields the quadratic formula, while the discriminant determines whether the roots are real and distinct, equal, or complex conjugates."
+      },
+      "alternate": {
+        "heading": "The bowl and the x-axis",
+        "body": "Picture the parabola as a bowl standing on the x-axis. The bottom of the bowl is the vertex, and the two places where the rim crosses the axis are the roots. If the bowl is lifted above the axis, there are no real roots; if it just touches, there is one repeated root. Move the sliders and watch the bowl move rather than trying to memorise the discriminant."
+      },
+      "sections": [
+        {
+          "heading": "Three ways to solve",
+          "body": "Factorise when the numbers cooperate, complete the square to reveal the vertex, or substitute into the quadratic formula x = (\u2212b \u00b1 \u221a(b\u00b2 \u2212 4ac)) / 2a. All three give the same roots when used correctly."
+        },
+        {
+          "heading": "The discriminant",
+          "body": "D = b\u00b2 \u2212 4ac. If D > 0 there are two distinct real roots; if D = 0 there is one repeated real root; if D < 0 there are no real roots (the roots are complex). The parabola touches or misses the x-axis accordingly."
+        },
+        {
+          "heading": "Reading the graph",
+          "body": "The vertex is at x = \u2212b/(2a). Its y-value is the minimum when a > 0 and the maximum when a < 0. The axis of symmetry is the vertical line x = \u2212b/(2a), so the roots are symmetric about it."
+        }
+      ],
+      "derivation": {
+        "heading": "Deriving the quadratic formula",
+        "body": "Start with ax\u00b2 + bx + c = 0 and divide by a. Complete the square by adding and subtracting (b/2a)\u00b2. The equation becomes (x + b/2a)\u00b2 = (b\u00b2 \u2212 4ac)/4a\u00b2. Take the square root of both sides and solve for x, giving x = (\u2212b \u00b1 \u221a(b\u00b2 \u2212 4ac)) / 2a. This is also why the discriminant appears under the square root."
+      },
+      "workedExample": {
+        "problem": "Solve x\u00b2 \u2212 5x + 6 = 0 and describe its graph.",
+        "steps": [
+          "Look for two numbers that multiply to 6 and add to \u22125: \u22122 and \u22123.",
+          "Factorise: (x \u2212 2)(x \u2212 3) = 0.",
+          "So x = 2 or x = 3.",
+          "Check with the discriminant: D = 25 \u2212 24 = 1 > 0, so two distinct real roots.",
+          "Vertex x = \u2212b/2a = 5/2 = 2.5; y = 2.5\u00b2 \u2212 5(2.5) + 6 = \u22120.25. The parabola opens upward with minimum at (2.5, \u22120.25)."
+        ],
+        "answer": "x = 2 and x = 3; an upward parabola with vertex (2.5, \u22120.25)."
+      },
+      "misconceptions": [
+        {
+          "id": "two-real-roots-always",
+          "label": "Every quadratic has two real roots",
+          "explanation": "A quadratic always has two roots over the complex numbers, but it may have no real roots. When the discriminant is negative, the parabola does not cross the x-axis.",
+          "remediation": "Compute the discriminant first and connect its sign to the graph."
+        },
+        {
+          "id": "vertex-always-minimum",
+          "label": "The vertex is always a minimum",
+          "explanation": "The vertex is a minimum only when a > 0. If a < 0 the parabola opens downward and the vertex is a maximum.",
+          "remediation": "Use the sign of a to choose the opening direction before naming the vertex."
+        }
+      ],
+      "questions": [
+        {
+          "id": "quad-q1",
+          "difficulty": 1,
+          "kind": "short",
+          "prompt": "Solve x\u00b2 \u2212 5x + 6 = 0 by factorising.",
+          "expected": "x = 2 or x = 3",
+          "accept": ["2 and 3", "x=2,3", "2, 3", "2 or 3", "3 and 2", "x=2 or x=3"],
+          "keywords": ["2", "3", "factor"],
+          "explanation": "x\u00b2 \u2212 5x + 6 = (x \u2212 2)(x \u2212 3), so x = 2 or x = 3.",
+          "hint": "Find two numbers with product 6 and sum \u22125."
+        },
+        {
+          "id": "quad-q2",
+          "difficulty": 2,
+          "kind": "short",
+          "prompt": "For x\u00b2 + 2x + 5 = 0, calculate the discriminant and state how many real roots there are.",
+          "expected": "D = 4 \u2212 20 = \u221216, so there are no real roots.",
+          "accept": ["-16", "\u221216", "no real roots", "0 real roots", "none"],
+          "keywords": ["-16", "negative", "no real roots"],
+          "explanation": "D = b\u00b2 \u2212 4ac = 4 \u2212 4(1)(5) = \u221216. A negative discriminant means no real roots, and the parabola does not cross the x-axis.",
+          "hint": "Substitute a = 1, b = 2, c = 5 into b\u00b2 \u2212 4ac.",
+          "misconceptionId": "two-real-roots-always"
+        },
+        {
+          "id": "quad-q3",
+          "difficulty": 2,
+          "kind": "short",
+          "prompt": "A parabola has equation y = \u22122x\u00b2 + 4x + 1. Is its vertex a maximum or a minimum? Find the x-coordinate of the vertex.",
+          "expected": "A maximum, at x = \u2212b/2a = \u22124/(\u22124) = 1.",
+          "accept": ["maximum", "max", "x=1", "1"],
+          "keywords": ["maximum", "x=1", "opens down", "a negative"],
+          "explanation": "Here a = \u22122 < 0, so the parabola opens downward and the vertex is a maximum. Its x-coordinate is \u2212b/2a = \u22124/(\u22124) = 1.",
+          "hint": "The sign of a decides the opening direction.",
+          "misconceptionId": "vertex-always-minimum"
+        },
+        {
+          "id": "quad-q4",
+          "difficulty": 3,
+          "kind": "short",
+          "prompt": "The roots of a quadratic are 2 and 5. Write an equation with these roots and explain how the coefficients relate to the roots.",
+          "expected": "x\u00b2 \u2212 7x + 10 = 0; the sum of roots is \u2212b/a = 7 and the product is c/a = 10.",
+          "accept": ["x2-7x+10", "x\u00b2-7x+10", "x^2-7x+10", "sum 7 product 10", "x2 - 7x + 10"],
+          "keywords": ["sum", "product", "7", "10", "-b/a", "c/a"],
+          "explanation": "(x \u2212 2)(x \u2212 5) = x\u00b2 \u2212 7x + 10. In general the sum of the roots is \u2212b/a and the product is c/a, so 2 + 5 = 7 and 2 \u00d7 5 = 10.",
+          "hint": "Multiply (x \u2212 r1)(x \u2212 r2) and compare coefficients."
+        }
+      ],
+      "visualId": "graph-quadratic",
+      "visualParams": { "a": 1, "b": -5, "c": 6 },
+      "revisionDays": [1, 3, 7]
+    },
+    {
+      "id": "geometry-transformations",
+      "title": "Transformations in the plane",
+      "subjects": ["Mathematics", "Mathematics - Part 1", "Mathematics - Part 2"],
+      "keywords": ["transformation", "translation", "rotation", "reflection", "enlargement", "scale factor", "congruent", "similar", "coordinate", "image", "preimage"],
+      "reviewed": true,
+      "reviewer": "Learning Allied curriculum review",
+      "prerequisites": [
+        { "name": "Coordinates", "note": "Points are located by an ordered pair (x, y)." },
+        { "name": "Congruence and similarity", "note": "Congruent shapes are identical in size and shape; similar shapes have equal angles and proportional sides." }
+      ],
+      "levelIntros": {
+        "foundation": "A transformation moves a shape on a grid. Translation slides it, rotation turns it, reflection flips it, and scaling changes its size.",
+        "intermediate": "Each transformation can be described by a rule applied to every vertex. Translation adds a vector, rotation turns points about a centre, reflection flips across a line and enlargement multiplies distances from a centre.",
+        "advanced": "Transformations can be represented by matrices acting on position vectors. Rotations and reflections are isometries, preserving distance and area. A scaling matrix changes area by the square of its scale factor, and the determinant of the matrix tells you that area multiplier."
+      },
+      "alternate": {
+        "heading": "A paper cut-out on a grid",
+        "body": "Cut a triangle from paper and place it on squared paper. Slide it without turning: that is translation. Stick a pin in one point and turn it: that is rotation. Flip it over a line: that is reflection. Trace the original and the image, then check which lengths and angles survived. Only the enlargement changes the side lengths."
+      },
+      "sections": [
+        {
+          "heading": "Four standard moves",
+          "body": "Translation adds the same vector to every point. Rotation turns the shape through an angle about a fixed centre. Reflection flips it across a mirror line. Enlargement multiplies distances from a centre by a scale factor, making similar images."
+        },
+        {
+          "heading": "What is preserved",
+          "body": "Translations, rotations and reflections are rigid motions: lengths, angles and area are unchanged, so the image is congruent to the original. Enlargement preserves angles but changes lengths and area, so the image is similar rather than congruent."
+        },
+        {
+          "heading": "Describing a transformation fully",
+          "body": "Always state the type and the details: a translation needs its vector, a rotation needs its centre, direction and angle, a reflection needs its mirror line, and an enlargement needs its centre and scale factor."
+        }
+      ],
+      "derivation": {
+        "heading": "Area under scaling",
+        "body": "A scale factor k multiplies both dimensions by k, so area is multiplied by k\u00b2. This is why doubling the side of a square makes its area four times larger. The determinant of the 2 \u00d7 2 scaling matrix is k\u00b2, which is exactly the area multiplier."
+      },
+      "workedExample": {
+        "problem": "Translate triangle A(1, 1), B(4, 1), C(1, 3) by the vector (3, \u22122). Give the image coordinates and check the lengths.",
+        "steps": [
+          "Add 3 to every x-coordinate and \u22122 to every y-coordinate.",
+          "A\u2032 = (1 + 3, 1 \u2212 2) = (4, \u22121).",
+          "B\u2032 = (4 + 3, 1 \u2212 2) = (7, \u22121).",
+          "C\u2032 = (1 + 3, 3 \u2212 2) = (4, 1).",
+          "AB = 3 units and A\u2032B\u2032 = 3 units; AC = 2 and A\u2032C\u2032 = 2, so the image is congruent."
+        ],
+        "answer": "A\u2032(4, \u22121), B\u2032(7, \u22121), C\u2032(4, 1); the triangle is unchanged in size and shape."
+      },
+      "misconceptions": [
+        {
+          "id": "rotation-is-reflection",
+          "label": "Rotation and reflection are the same",
+          "explanation": "A rotation preserves the orientation of the shape (the order of vertices around the shape). A reflection reverses orientation, so the image is a mirror version and cannot be reached by rotation alone.",
+          "remediation": "Track the order of the vertices clockwise or anticlockwise before and after the move."
+        },
+        {
+          "id": "scale-is-congruent",
+          "label": "An enlarged shape is congruent",
+          "explanation": "Enlargement changes lengths, so the image is similar, not congruent. Angles stay the same but area changes by the square of the scale factor.",
+          "remediation": "Compare a side length and the area before and after scaling."
+        }
+      ],
+      "questions": [
+        {
+          "id": "tr-q1",
+          "difficulty": 1,
+          "kind": "short",
+          "prompt": "Point P(2, 5) is translated by the vector (\u22124, 3). What are the coordinates of P\u2032?",
+          "expected": "(\u22122, 8)",
+          "accept": ["(-2, 8)", "(-2,8)", "\u22122, 8", "x=-2 y=8", "-2 8"],
+          "keywords": ["-2", "8"],
+          "explanation": "Add the vector to the coordinates: (2 \u2212 4, 5 + 3) = (\u22122, 8).",
+          "hint": "Add the x-components and the y-components separately."
+        },
+        {
+          "id": "tr-q2",
+          "difficulty": 2,
+          "kind": "short",
+          "prompt": "Which transformations always produce a congruent shape, and which one can change the size?",
+          "expected": "Translation, rotation and reflection are congruent; enlargement changes size (similar, not congruent).",
+          "accept": ["translation rotation reflection", "enlargement changes size", "translation rotation and reflection", "scale changes size"],
+          "keywords": ["translation", "rotation", "reflection", "enlargement", "similar"],
+          "explanation": "Translations, rotations and reflections preserve all lengths and angles, so images are congruent. Enlargement multiplies lengths by the scale factor, producing a similar shape, not a congruent one.",
+          "hint": "Ask which transformations keep every length unchanged.",
+          "misconceptionId": "scale-is-congruent"
+        },
+        {
+          "id": "tr-q3",
+          "difficulty": 2,
+          "kind": "short",
+          "prompt": "A shape is enlarged by scale factor 3. What happens to its area? Explain.",
+          "expected": "The area becomes 9 times larger, because both dimensions are multiplied by 3.",
+          "accept": ["9 times", "9x", "nine times", "factor of 9", "9"],
+          "keywords": ["9", "square", "area", "k squared"],
+          "explanation": "Each length is multiplied by 3, so area is multiplied by 3 \u00d7 3 = 9. Area scales with the square of the linear scale factor.",
+          "hint": "Area depends on two dimensions."
+        },
+        {
+          "id": "tr-q4",
+          "difficulty": 3,
+          "kind": "short",
+          "prompt": "A point is reflected across the line y = x. What is the image of (3, \u22121), and why does reflection reverse orientation?",
+          "expected": "(\u22121, 3). Reflection swaps the coordinates across y = x and flips the shape, reversing the order of the vertices.",
+          "accept": ["(-1, 3)", "(-1,3)", "\u22121, 3", "x=-1 y=3"],
+          "keywords": ["-1", "3", "swap", "orientation"],
+          "explanation": "Reflecting across y = x swaps x and y, so (3, \u22121) becomes (\u22121, 3). A reflection reverses the clockwise order of the vertices, which is why it cannot be reproduced by a rotation.",
+          "hint": "On the line y = x, the x- and y-coordinates trade places."
+        }
+      ],
+      "visualId": "geometry-transform",
+      "visualParams": { "transform": "translate", "shape": "triangle", "amount": 3 },
+      "revisionDays": [1, 3, 7]
+    },
+    {
+      "id": "cell-structure",
+      "title": "Cell structure and organelles",
+      "subjects": ["Biology", "Science", "Science & Technology - Part 2"],
+      "keywords": ["cell", "nucleus", "mitochondria", "membrane", "cytoplasm", "organelle", "chloroplast", "vacuole", "ribosome", "plant cell", "animal cell", "cell wall"],
+      "reviewed": true,
+      "reviewer": "Learning Allied curriculum review",
+      "prerequisites": [
+        { "name": "Living things are made of cells", "note": "The cell is the basic structural and functional unit of life." },
+        { "name": "Diffusion and osmosis", "note": "The cell membrane controls what enters and leaves the cell." }
+      ],
+      "levelIntros": {
+        "foundation": "A cell is the smallest unit of life. Its parts, called organelles, each do a specific job, much like organs in a body.",
+        "intermediate": "The cell membrane controls exchange, the nucleus stores genetic instructions, mitochondria release energy from food, and ribosomes build proteins. Plant cells add a cell wall, chloroplasts and a large vacuole.",
+        "advanced": "Organelles are compartmentalised to keep incompatible reactions separate. The endomembrane system, including the nuclear envelope, ER and Golgi, handles protein and lipid traffic, while mitochondria and chloroplasts carry their own DNA, supporting the endosymbiotic theory."
+      },
+      "alternate": {
+        "heading": "A cell as a small factory",
+        "body": "The nucleus is the office holding the instructions, ribosomes are the assembly benches, mitochondria are the power station, and the membrane is the security gate. In a plant cell, chloroplasts are solar panels and the wall is the outer brick shell. Walk through the labelled diagram and assign each part a factory job; then explain why a muscle cell needs more power stations."
+      },
+      "sections": [
+        {
+          "heading": "The shared parts",
+          "body": "All cells have a membrane, cytoplasm and genetic material. The membrane is a phospholipid bilayer that controls exchange. The nucleus in eukaryotes holds DNA, and ribosomes assemble proteins."
+        },
+        {
+          "heading": "Energy organelles",
+          "body": "Mitochondria release energy from glucose through respiration, producing ATP. Chloroplasts in plant cells capture light energy for photosynthesis. Both have double membranes, and both contain their own DNA."
+        },
+        {
+          "heading": "Plant and animal cells",
+          "body": "Plant cells have a cellulose cell wall, chloroplasts and a large central vacuole. Animal cells lack a cell wall and chloroplasts, and may have small, temporary vacuoles. Both have mitochondria, ribosomes and a nucleus."
+        }
+      ],
+      "derivation": {
+        "heading": "Why compartmentalisation matters",
+        "body": "Different reactions need different conditions. Lysosomes keep digestive enzymes acidic and separate from the cytoplasm; the inner mitochondrial membrane hosts the electron transport chain. Compartmentalising these processes prevents interference and concentrates reactants, making the cell more efficient."
+      },
+      "workedExample": {
+        "problem": "A muscle cell and a root hair cell are examined. Predict which organelles are especially abundant in each.",
+        "steps": [
+          "Muscle contraction needs a continuous supply of ATP.",
+          "ATP is produced by mitochondria, so muscle cells contain many mitochondria.",
+          "Root hair cells absorb mineral ions by active transport, which also needs ATP.",
+          "They are underground and receive no light, so they have no chloroplasts despite being plant cells.",
+          "So: many mitochondria in both; chloroplasts absent in the root hair cell."
+        ],
+        "answer": "Both have many mitochondria; the root hair cell has no chloroplasts."
+      },
+      "misconceptions": [
+        {
+          "id": "plant-cells-no-mitochondria",
+          "label": "Plant cells do not have mitochondria",
+          "explanation": "Plant cells respire day and night and therefore need mitochondria. They also have chloroplasts for photosynthesis; the two organelles work together.",
+          "remediation": "Compare a leaf cell and an animal cell organelle by organelle."
+        },
+        {
+          "id": "cell-wall-is-membrane",
+          "label": "The cell wall and the cell membrane are the same",
+          "explanation": "The cell wall is a rigid outer layer that gives support and shape. The cell membrane is the selectively permeable layer just inside it, which controls what enters and leaves.",
+          "remediation": "Locate both layers on the labelled diagram and compare their functions."
+        }
+      ],
+      "questions": [
+        {
+          "id": "cell-q1",
+          "difficulty": 1,
+          "kind": "short",
+          "prompt": "Which organelle releases energy from glucose in the cell?",
+          "expected": "The mitochondrion.",
+          "accept": ["mitochondria", "mitochondrion", "mitochondria (singular mitochondrion)"],
+          "keywords": ["mitochondria", "atp", "respiration"],
+          "explanation": "Mitochondria carry out aerobic respiration and release energy stored in glucose as ATP.",
+          "hint": "Which organelle is called the powerhouse of the cell?"
+        },
+        {
+          "id": "cell-q2",
+          "difficulty": 2,
+          "kind": "short",
+          "prompt": "Give two structures present in a plant cell but absent in a typical animal cell, and state one function of each.",
+          "expected": "Cell wall (support and shape) and chloroplasts (photosynthesis); a large central vacuole is also accepted.",
+          "accept": ["cell wall and chloroplast", "cell wall, chloroplast", "chloroplast", "cell wall"],
+          "keywords": ["cell wall", "chloroplast", "vacuole", "support", "photosynthesis"],
+          "explanation": "Plant cells have a cellulose cell wall for support and shape, chloroplasts for photosynthesis and usually a large central vacuole. Animal cells do not have a cell wall or chloroplasts.",
+          "hint": "Think about support, photosynthesis and storage."
+        },
+        {
+          "id": "cell-q3",
+          "difficulty": 2,
+          "kind": "short",
+          "prompt": "Why does a muscle cell contain more mitochondria than a skin cell?",
+          "expected": "Muscle contraction needs much more ATP, so more mitochondria are needed for respiration.",
+          "accept": ["more atp", "more energy", "needs energy", "high energy demand"],
+          "keywords": ["atp", "energy", "contraction", "respiration"],
+          "explanation": "Muscle contraction repeatedly uses ATP, so the cell needs many mitochondria to release energy quickly. A skin cell has a much lower energy demand.",
+          "hint": "Link the organelle's function to the cell's job."
+        },
+        {
+          "id": "cell-q4",
+          "difficulty": 3,
+          "kind": "short",
+          "prompt": "A root hair cell has many mitochondria but no chloroplasts. Explain why both facts make sense.",
+          "expected": "It actively transports minerals, needing ATP from mitochondria; it is underground and receives no light, so chloroplasts would be useless.",
+          "accept": ["active transport", "no light", "underground", "needs atp", "no sunlight"],
+          "keywords": ["active transport", "atp", "no light", "underground"],
+          "explanation": "Root hair cells absorb mineral ions against a concentration gradient, which requires active transport and therefore ATP. They are below ground and receive no light, so chloroplasts would serve no purpose.",
+          "hint": "What process lets roots take up minerals, and does it need energy?",
+          "misconceptionId": "plant-cells-no-mitochondria"
+        }
+      ],
+      "visualId": "cell-labelled",
+      "visualParams": { "cellType": "plant" },
+      "revisionDays": [1, 3, 7]
+    }
+  ]
+}
