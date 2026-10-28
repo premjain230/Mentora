@@ -25,7 +25,6 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@next/swc-win32-x64-msvc": "^14.2.15",
     "@vercel/analytics": "^1.4.1",
     "@vercel/speed-insights": "^2.0.0",
     "firebase": "^10.12.0",
