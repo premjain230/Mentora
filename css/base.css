@@ -96,6 +96,9 @@ p { color: var(--text-secondary); line-height: var(--lh-relaxed); }
 ::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: var(--radius-full); }
 ::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
 
+.light-mode ::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.2); }
+.light-mode ::-webkit-scrollbar-thumb:hover { background: rgba(0,0,0,0.35); }
+
 /* Focus (visible, keyboard only) */
 :focus { outline: none; }
 :focus-visible {
@@ -206,9 +209,10 @@ textarea.field { padding: var(--space-3) var(--space-4); min-height: 96px; resiz
   background: var(--bg-card);
   border: 1px solid var(--border);
   border-radius: var(--radius-xl);
-  transition: border-color var(--dur-fast) var(--ease-out);
+  transition: border-color var(--dur-fast) var(--ease-out), box-shadow var(--dur-fast) var(--ease-out);
 }
 .card:hover { border-color: var(--border-strong); }
+.light-mode .card:hover { box-shadow: var(--shadow-sm); }
 .card-pad { padding: var(--space-5); }
 
 /* ── Toasts ── */

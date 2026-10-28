@@ -1,4 +1,4 @@
-﻿/* ==========================================================================
+/* ==========================================================================
    Learning Allied — AI Learning Hub
    Self-contained: every rule is scoped to lh-* classes, so nothing leaks into
    other pages. Theme follows the existing mechanism: dark by default,
@@ -350,6 +350,36 @@ html.light-mode .lh-board-icon, html.light-mode .lh-sub-ico { background: rgba(v
   .lh-ch-go { display: none; }
   .lh-continue { flex-direction: column; align-items: flex-start; }
 }
+
+/* ---------- polish additions ---------- */
+
+/* (a) Chapter list general hover */
+.lh-ch:hover { background: var(--lh-hover); }
+
+/* (b) Board card smooth transform on hover */
+.lh-board { cursor: pointer; transition: border-color .18s, background .18s, transform .18s cubic-bezier(.16,1,.3,1); }
+.lh-board:hover { transform: translateY(-1px); }
+
+/* (c) Quiz option active press state */
+.lh-option:active:not(:disabled) { transform: scale(0.99); }
+
+/* (d) Skeleton shimmer performance hint */
+.lh-skel i { will-change: background-position; }
+
+/* (e) Continue card hover lift */
+.lh-continue { cursor: pointer; transition: filter .15s, transform .15s cubic-bezier(.16,1,.3,1); }
+.lh-continue:hover { transform: translateY(-1px); }
+
+/* (f) Lesson card fade-in animation */
+.lh-card { animation: lh-fade-in .25s cubic-bezier(.16,1,.3,1) both; }
+@keyframes lh-fade-in { from { opacity: 0; transform: translateY(8px); } }
+@media (prefers-reduced-motion: reduce) { .lh-card { animation: none; } }
+
+/* (g) Wrong-answer card improved padding */
+.lh-wrong { padding: 16px 18px; margin-bottom: 12px; }
+
+/* (h) Score display responsive font */
+.lh-score-text b { font-size: clamp(18px, 3vw, 22px); }
 
 /* ---------- Orbit theme overrides (keep last) ---------- */
 .lh-btn { border-radius: 999px; min-height: 42px; }

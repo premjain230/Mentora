@@ -4,7 +4,7 @@
 // server-only so the key is never exposed to browsers.
 // ─────────────────────────────────────────────────────────────
 
-const MODEL = process.env.GROQ_MODEL || "openai/gpt-oss-120b";
+const MODEL = process.env.GROQ_MODEL || "llama-3.3-70b-versatile";
 
 // `model` is an optional per-call override used for the model-availability
 // fallback chain (see api/groq-proxy.js). Omitting it keeps the existing

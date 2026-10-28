@@ -1,4 +1,4 @@
-<!doctype html>
+﻿<!doctype html>
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
@@ -29,7 +29,7 @@
 <meta name="twitter:image" content="https://www.learningallied.world/learningallied-white.svg" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" />
 <link rel="stylesheet" href="/css/tokens.css" />
 <link rel="stylesheet" href="/css/base.css" />
 <link rel="stylesheet" href="/css/nav.css" />
@@ -56,6 +56,7 @@
 *{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth;scroll-padding-top:88px;-webkit-text-size-adjust:100%}
 body{background:var(--la-bg);color:var(--la-text);font-family:var(--la-font);line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:hidden;min-height:100vh}
+h1,h2,h3{font-family:'Space Grotesk',var(--la-font)}
 a{color:inherit;text-decoration:none}
 img{display:block;max-width:100%}
 :focus-visible{outline:2px solid var(--la-accent);outline-offset:3px;border-radius:6px}
@@ -176,7 +177,7 @@ img{display:block;max-width:100%}
 .faq-item.open .faq-body-inner{padding-bottom:22px}
 
 /* CTA */
-.cta{background:var(--la-surface);border:1px solid var(--la-line);border-radius:22px;padding:72px 32px;text-align:center}
+.cta{background:var(--la-accent-soft);border:1px solid var(--la-line);border-radius:22px;padding:72px 32px;text-align:center}
 .cta h2{font-size:clamp(28px,4vw,42px);letter-spacing:-.03em;line-height:1.1;margin-bottom:14px}
 .cta p{color:var(--la-muted);font-size:17px;max-width:440px;margin:0 auto 30px}
 .cta .hero-ctas{justify-content:center}
@@ -285,7 +286,7 @@ try {
         <p class="hero-note hero-anim d2">Free to start. Also available on <a class="link" href="https://github.com/premjain230/Mentora/releases/download/v1.1.0/learningallied.apk" aria-label="Download the Learning Allied Android app">Android</a>.</p>
       </div>
 
-      <div class="app hero-anim d2" role="img" aria-label="Preview of a Learning Allied study session: a tutor conversation next to memory strength for each topic">
+      <div class="app is-visible hero-anim d2" role="img" aria-label="Preview of a Learning Allied study session: a tutor conversation next to memory strength for each topic">
         <div class="app-bar"><div class="app-dots"><i></i><i></i><i></i></div><span>Study session</span><span></span></div>
         <div class="app-body">
           <div class="pane">
@@ -324,6 +325,36 @@ try {
     </div>
   </section>
 
+  <section class="section" id="how-to-use" aria-labelledby="how-heading" style="padding-top:24px;padding-bottom:24px">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <h2 id="how-heading">How to get started</h2>
+        <p>Four steps from sign-up to your first study session.</p>
+      </div>
+      <ol class="steps-list reveal" style="list-style:none;display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:24px;counter-reset:step">
+        <li style="counter-increment:step">
+          <div class="step-num" style="font:700 13px/1 'Space Grotesk',var(--la-font);color:var(--la-accent);margin-bottom:10px;letter-spacing:.06em">STEP <span style="font-size:22px">01</span></div>
+          <h3 style="font-size:16px;font-weight:600;margin-bottom:6px">Sign up free</h3>
+          <p style="font-size:14px;color:var(--la-muted);line-height:1.55">Create your account in seconds — no card required.</p>
+        </li>
+        <li style="counter-increment:step">
+          <div class="step-num" style="font:700 13px/1 'Space Grotesk',var(--la-font);color:var(--la-accent);margin-bottom:10px;letter-spacing:.06em">STEP <span style="font-size:22px">02</span></div>
+          <h3 style="font-size:16px;font-weight:600;margin-bottom:6px">Pick your exam and subjects</h3>
+          <p style="font-size:14px;color:var(--la-muted);line-height:1.55">Choose JEE, NEET, or Board exams and select your active chapters.</p>
+        </li>
+        <li style="counter-increment:step">
+          <div class="step-num" style="font:700 13px/1 'Space Grotesk',var(--la-font);color:var(--la-accent);margin-bottom:10px;letter-spacing:.06em">STEP <span style="font-size:22px">03</span></div>
+          <h3 style="font-size:16px;font-weight:600;margin-bottom:6px">Ask questions and study with AI</h3>
+          <p style="font-size:14px;color:var(--la-muted);line-height:1.55">Chat with the Socratic tutor, work through problems, and deepen your understanding.</p>
+        </li>
+        <li style="counter-increment:step">
+          <div class="step-num" style="font:700 13px/1 'Space Grotesk',var(--la-font);color:var(--la-accent);margin-bottom:10px;letter-spacing:.06em">STEP <span style="font-size:22px">04</span></div>
+          <h3 style="font-size:16px;font-weight:600;margin-bottom:6px">Review with spaced repetition</h3>
+          <p style="font-size:14px;color:var(--la-muted);line-height:1.55">The app schedules revision for just before you'd forget a topic, so you keep more with less effort.</p>
+        </li>
+      </ol>
+    </div>
+  </section>
   <section class="section" id="exams" aria-labelledby="exams-heading" style="padding-top:24px">
     <div class="wrap">
       <div class="section-head reveal">
@@ -384,7 +415,11 @@ try {
             <svg class="faq-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg></button>
           <div class="faq-body"><div class="faq-body-inner">Yes. It works in any modern browser on desktop or mobile, and there is an Android app you can download from this page.</div></div>
         </div>
-      </div>
+        <div class="faq-item">
+          <button class="faq-q" aria-expanded="false">Which exams does it support?
+            <svg class="faq-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg></button>
+          <div class="faq-body"><div class="faq-body-inner">JEE Main, JEE Advanced, NEET, Maharashtra State Board (Class 9–12) and CBSE (Class 9–12).</div></div>
+        </div>      </div>
     </div>
   </section>
 
@@ -415,6 +450,7 @@ try {
         <a href="https://discord.gg/vDvrJhUzud" rel="noopener">Discord</a>
         <a href="https://x.com/itzprem109" rel="noopener">TeenFounders</a>
       </div>
+      <div class="footer-col"><h4>Download</h4><a href="https://github.com/premjain230/Mentora/releases/download/v1.1.0/learningallied.apk" rel="noopener">Android APK</a></div>
     </div>
     <div class="footer-bottom"><span>&copy; 2026 Learning Allied. All rights reserved.</span></div>
   </div>

@@ -434,7 +434,7 @@ async function writeCachedPlan(conceptId, plan) {
       {
         conceptId,
         version: PLAN_VERSION,
-        model: process.env.GROQ_MODEL || "openai/gpt-oss-120b",
+        model: process.env.GROQ_MODEL || "llama-3.3-70b-versatile",
         createdAtMs: Date.now(),
         createdAt: new Date().toISOString(),
         pageCount: plan.pages.length,
@@ -458,8 +458,8 @@ async function writeCachedPlan(conceptId, plan) {
  *     does not spend the whole budget thinking out loud
  *   - a wall-clock deadline: once it passes, stop trying and answer cleanly
  */
-const FALLBACK_MODELS = ["openai/gpt-oss-20b"];
-const CALL_BUDGET_MS = 25000;
+const FALLBACK_MODELS = ["llama-3.1-8b-instant", "qwen/qwen3.6-27b"];
+const CALL_BUDGET_MS = 22000;
 
 function overBudget(startedAt) {
   return Date.now() - startedAt > CALL_BUDGET_MS;

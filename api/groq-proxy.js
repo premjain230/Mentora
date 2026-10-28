@@ -18,6 +18,8 @@ const { applyCors, rateLimit, readJsonBody, sendError } = require("./_shared");
 const { verifyIdToken, checkAndIncrementChat } = require("./_admin");
 
 const ALLOWED_MODELS = new Set([
+  "llama-3.3-70b-versatile",
+  "llama-3.1-8b-instant",
   "openai/gpt-oss-120b",
   "openai/gpt-oss-20b",
   "qwen/qwen3.6-27b",
@@ -27,6 +29,8 @@ const ALLOWED_MODELS = new Set([
 // have access"), retry with these in order so a restricted/renamed account
 // catalog degrades gracefully instead of hard-failing the chat.
 const FALLBACK_MODELS = [
+  "llama-3.3-70b-versatile",
+  "llama-3.1-8b-instant",
   "openai/gpt-oss-20b",
   "qwen/qwen3.6-27b",
 ];
