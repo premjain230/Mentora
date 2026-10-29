@@ -155,7 +155,7 @@ export default function SignupPage() {
     >
       <div style={{ marginBottom: 32 }}>
         <Link href="/" style={{ display: "flex", alignItems: "center", gap: 10, textDecoration: "none" }}>
-          <img src="/learningallied-white.svg" alt="Learning Allied logo" width={38} height={38} />
+          <img src="/learningallied-white.svg" alt="Learning Allied logo" width={38} height={38} style={{ width: 38, height: 38 }} />
           <span style={{ fontSize: 20, fontWeight: 700, color: "var(--la-text, #fff)" }}>
             Learning Allied
           </span>
@@ -211,7 +211,7 @@ export default function SignupPage() {
               Join thousands of students learning smarter with Learning Allied.
             </p>
 
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 16 }}>
+            <div className="auth-row-2">
               <div>
                 <label style={{ display: "block", fontSize: 13, fontWeight: 500, marginBottom: 6, color: "var(--la-muted, #a1a1aa)" }}>
                   First name

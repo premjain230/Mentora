@@ -74,7 +74,7 @@ export default function ReviewPage() {
           </div>
         </div>
 
-        <div style={{ display: "flex", justifyContent: "center", gap: 12 }}>
+        <div style={{ display: "flex", justifyContent: "center", gap: 12, flexWrap: "wrap" }}>
           <button
             type="button"
             onClick={handleNext}

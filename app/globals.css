@@ -8,7 +8,276 @@
 @import "../css/learning-experience.css";
 @import "../css/premium.css";
 
-/* Additional Next.js baseline adjustments */
+/* Public & marketing theme tokens (--la-*) and Next.js layout utilities */
 :root {
-  --la-font: var(--la-font-inter), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --la-bg: #000000;
+  --la-surface: #111113;
+  --la-surface-2: #17171a;
+  --la-line: rgba(255, 255, 255, 0.09);
+  --la-line-strong: rgba(255, 255, 255, 0.16);
+  --la-text: #f4f4f5;
+  --la-muted: #a1a1aa;
+  --la-faint: #71717a;
+  --la-accent: #ff8a1f;
+  --la-accent-ink: #0a0a0b;
+  --la-accent-soft: rgba(255, 138, 31, 0.14);
+  --la-ok: #4ade80;
+  --la-warn: #fbbf24;
+  --la-r: 14px;
+  --la-r-sm: 10px;
+  --la-font: var(--la-font-inter), "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+.light-mode {
+  --la-bg: #fafaf9;
+  --la-surface: #ffffff;
+  --la-surface-2: #f3f3f1;
+  --la-line: rgba(0, 0, 0, 0.09);
+  --la-line-strong: rgba(0, 0, 0, 0.18);
+  --la-text: #18181b;
+  --la-muted: #52525b;
+  --la-faint: #71717a;
+  --la-accent: #ea6a00;
+  --la-accent-ink: #ffffff;
+  --la-accent-soft: rgba(234, 106, 0, 0.10);
+  --la-ok: #15803d;
+  --la-warn: #b45309;
+}
+
+/* Shared container for public marketing & content pages */
+.wrap {
+  width: 100%;
+  max-width: 1160px;
+  margin: 0 auto;
+  padding: 0 24px;
+  box-sizing: border-box;
+}
+
+/* Public Navbar */
+.nav-wrap {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  width: 100%;
+  background: color-mix(in srgb, var(--la-bg) 84%, transparent);
+  border-bottom: 1px solid var(--la-line);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+
+.nav-wrap .nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  height: 68px;
+}
+
+.nav-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+  color: var(--la-text);
+  flex-shrink: 0;
+}
+
+.nav-brand img {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  flex-shrink: 0;
+}
+
+.nav-brand-title {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 17px;
+  letter-spacing: -0.02em;
+  color: var(--la-text);
+  white-space: nowrap;
+}
+
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 22px;
+}
+
+.nav-links .nav-link {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--la-muted);
+  text-decoration: none;
+  white-space: nowrap;
+  transition: color 0.18s ease;
+}
+
+.nav-links .nav-link:hover,
+.nav-links .nav-link[aria-current="page"] {
+  color: var(--la-text);
+}
+
+.nav-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.theme-toggle {
+  background: transparent;
+  border: 1px solid var(--la-line-strong, rgba(255, 255, 255, 0.16));
+  border-radius: 999px;
+  width: 38px;
+  height: 38px;
+  cursor: pointer;
+  color: var(--la-text);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.theme-toggle:hover {
+  background: var(--la-surface-2);
+}
+
+.nav-wrap .mnav-btn {
+  position: static;
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+}
+
+/* Public Page Grids & Sections */
+.hero-grid {
+  display: grid;
+  grid-template-columns: 1fr 1.05fr;
+  gap: 56px;
+  align-items: center;
+}
+
+.app-preview-grid {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+}
+
+.app-preview-right {
+  padding: 18px;
+  border-left: 1px solid var(--la-line, rgba(255, 255, 255, 0.09));
+}
+
+.feature-row {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: 32px;
+  padding: 28px 0;
+  border-bottom: 1px solid var(--la-line, rgba(255, 255, 255, 0.09));
+}
+
+.auth-row-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.footer-wrap img[src$="learningallied-white.svg"] {
+  width: 28px;
+  height: 28px;
+  flex-shrink: 0;
+}
+
+@media (max-width: 960px) {
+  .hero-grid {
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+
+  .hero,
+  .page-hero {
+    padding-top: 72px;
+  }
+}
+
+@media (max-width: 880px) {
+  .nav-wrap .nav-links {
+    display: none;
+  }
+
+  .nav-wrap .mnav-btn {
+    display: inline-flex;
+  }
+}
+
+@media (max-width: 760px) {
+  .feature-row {
+    grid-template-columns: 1fr;
+    gap: 10px;
+    padding: 22px 0;
+  }
+}
+
+@media (max-width: 560px) {
+  .app-preview-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .app-preview-right {
+    border-left: 0;
+    border-top: 1px solid var(--la-line, rgba(255, 255, 255, 0.09));
+  }
+
+  .nav-actions .btn-secondary {
+    display: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .wrap {
+    padding: 0 16px;
+  }
+
+  .nav-wrap .nav {
+    gap: 8px;
+  }
+
+  .nav-brand {
+    gap: 8px;
+  }
+
+  .nav-brand img {
+    width: 28px;
+    height: 28px;
+  }
+
+  .nav-brand-title {
+    font-size: 15px;
+  }
+
+  .nav-actions {
+    gap: 6px;
+  }
+
+  .theme-toggle,
+  .nav-wrap .mnav-btn {
+    width: 36px;
+    height: 36px;
+  }
+
+  .nav-actions .btn-primary {
+    padding: 0 12px;
+    min-height: 36px;
+    font-size: 12.5px;
+  }
+
+  .auth-box {
+    padding: 28px 20px;
+  }
+
+  .auth-row-2 {
+    grid-template-columns: 1fr;
+  }
 }

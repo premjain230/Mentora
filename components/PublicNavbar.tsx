@@ -2,8 +2,10 @@
 
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 export function PublicNavbar() {
+  const pathname = usePathname();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [theme, setTheme] = useState<"dark" | "light">("dark");
 
@@ -20,6 +22,10 @@ export function PublicNavbar() {
     } catch {}
   }, []);
 
+  useEffect(() => {
+    setMobileMenuOpen(false);
+  }, [pathname]);
+
   const toggleTheme = () => {
     const nextTheme = theme === "dark" ? "light" : "dark";
     setTheme(nextTheme);
@@ -34,59 +40,94 @@ export function PublicNavbar() {
   };
 
   return (
-    <header className="nav-wrap" style={{ position: "sticky", top: 0, zIndex: 100 }}>
-      <div className="wrap nav" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", height: 68 }}>
-        <Link href="/" className="nav-brand" style={{ display: "flex", alignItems: "center", gap: 10, textDecoration: "none" }}>
-          <img
-            src="/learningallied-white.svg"
-            alt="Learning Allied logo"
-            width={34}
-            height={34}
-            style={{ borderRadius: 8 }}
-          />
-          <span className="nav-brand-title" style={{ fontWeight: 700, fontSize: 18, color: "var(--la-text)" }}>
-            Learning Allied
-          </span>
-        </Link>
-
-        <nav className="nav-links" style={{ display: "flex", gap: 20 }}>
-          <Link href="/jee-preparation" className="nav-link">JEE</Link>
-          <Link href="/neet-preparation" className="nav-link">NEET</Link>
-          <Link href="/cbse-board" className="nav-link">CBSE</Link>
-          <Link href="/maharashtra-board" className="nav-link">Maharashtra</Link>
-          <Link href="/about" className="nav-link">About</Link>
-          <Link href="/founder" className="nav-link">Founder</Link>
-          <Link href="/blog/how-to-make-a-jee-study-plan" className="nav-link">Blog</Link>
-        </nav>
-
-        <div className="nav-actions" style={{ display: "flex", alignItems: "center", gap: 12 }}>
-          <button
-            onClick={toggleTheme}
-            className="theme-toggle"
-            aria-label="Toggle theme"
-            type="button"
-            style={{
-              background: "transparent",
-              border: "1px solid var(--la-line-strong, rgba(255,255,255,0.16))",
-              borderRadius: 8,
-              padding: "8px 10px",
-              cursor: "pointer",
-              color: "var(--la-text)",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-          >
-            {theme === "dark" ? "☀" : "🌙"}
-          </button>
-          <Link href="/login" className="btn btn-secondary">
-            Log in
+    <>
+      <header className="nav-wrap">
+        <div className="wrap nav">
+          <Link href="/" className="nav-brand">
+            <img
+              src="/learningallied-white.svg"
+              alt="Learning Allied logo"
+              width={32}
+              height={32}
+            />
+            <span className="nav-brand-title">Learning Allied</span>
           </Link>
-          <Link href="/signup" className="btn btn-primary">
-            Start free
-          </Link>
+
+          <nav className="nav-links" aria-label="Primary">
+            <Link href="/jee-preparation" className="nav-link" aria-current={pathname === "/jee-preparation" ? "page" : undefined}>JEE</Link>
+            <Link href="/neet-preparation" className="nav-link" aria-current={pathname === "/neet-preparation" ? "page" : undefined}>NEET</Link>
+            <Link href="/cbse-board" className="nav-link" aria-current={pathname === "/cbse-board" ? "page" : undefined}>CBSE</Link>
+            <Link href="/maharashtra-board" className="nav-link" aria-current={pathname === "/maharashtra-board" ? "page" : undefined}>Maharashtra</Link>
+            <Link href="/about" className="nav-link" aria-current={pathname === "/about" ? "page" : undefined}>About</Link>
+            <Link href="/founder" className="nav-link" aria-current={pathname === "/founder" ? "page" : undefined}>Founder</Link>
+            <Link href="/blog/how-to-make-a-jee-study-plan" className="nav-link" aria-current={pathname?.startsWith("/blog") ? "page" : undefined}>Blog</Link>
+          </nav>
+
+          <div className="nav-actions">
+            <button
+              onClick={toggleTheme}
+              className="theme-toggle"
+              aria-label="Toggle theme"
+              type="button"
+            >
+              {theme === "dark" ? "☀" : "🌙"}
+            </button>
+            <Link href="/login" className="btn btn-secondary">
+              Log in
+            </Link>
+            <Link href="/signup" className="btn btn-primary">
+              Start free
+            </Link>
+            <button
+              type="button"
+              className="mnav-btn"
+              aria-label="Open navigation menu"
+              aria-expanded={mobileMenuOpen}
+              onClick={() => setMobileMenuOpen(true)}
+            >
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
+                <path d="M4 7h16M4 12h16M4 17h16" />
+              </svg>
+            </button>
+          </div>
         </div>
-      </div>
-    </header>
+      </header>
+
+      <div
+        className={`mnav-overlay ${mobileMenuOpen ? "open" : ""}`}
+        onClick={() => setMobileMenuOpen(false)}
+      />
+      <aside className={`mnav-panel ${mobileMenuOpen ? "open" : ""}`} aria-label="Mobile navigation">
+        <div className="mnav-head">
+          <Link href="/" className="mnav-brand" onClick={() => setMobileMenuOpen(false)}>
+            <img src="/learningallied-white.svg" alt="" width={26} height={26} />
+            <span>Learning Allied</span>
+          </Link>
+          <button
+            type="button"
+            className="mnav-close"
+            aria-label="Close navigation menu"
+            onClick={() => setMobileMenuOpen(false)}
+          >
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
+              <path d="M6 6l12 12M18 6 6 18" />
+            </svg>
+          </button>
+        </div>
+        <nav className="mnav-links">
+          <div className="mnav-label">Exams &amp; Boards</div>
+          <Link href="/jee-preparation" onClick={() => setMobileMenuOpen(false)}>JEE Main &amp; Advanced</Link>
+          <Link href="/neet-preparation" onClick={() => setMobileMenuOpen(false)}>NEET UG Medical</Link>
+          <Link href="/cbse-board" onClick={() => setMobileMenuOpen(false)}>CBSE Class 9–12</Link>
+          <Link href="/maharashtra-board" onClick={() => setMobileMenuOpen(false)}>Maharashtra Board</Link>
+          <div className="mnav-label">Company &amp; Resources</div>
+          <Link href="/about" onClick={() => setMobileMenuOpen(false)}>About Us</Link>
+          <Link href="/founder" onClick={() => setMobileMenuOpen(false)}>Founder</Link>
+          <Link href="/blog/how-to-make-a-jee-study-plan" onClick={() => setMobileMenuOpen(false)}>JEE Study Plan Guide</Link>
+          <Link href="/signup" className="mnav-cta" onClick={() => setMobileMenuOpen(false)}>Start learning free</Link>
+          <Link href="/login" className="mnav-ghost" onClick={() => setMobileMenuOpen(false)}>Log in</Link>
+        </nav>
+      </aside>
+    </>
   );
 }

@@ -94,7 +94,7 @@ export default function VerifyEmailPage() {
     >
       <div style={{ marginBottom: 32 }}>
         <Link href="/" style={{ display: "flex", alignItems: "center", gap: 10, textDecoration: "none" }}>
-          <img src="/learningallied-white.svg" alt="Learning Allied logo" width={38} height={38} />
+          <img src="/learningallied-white.svg" alt="Learning Allied logo" width={38} height={38} style={{ width: 38, height: 38 }} />
           <span style={{ fontSize: 20, fontWeight: 700, color: "var(--la-text, #fff)" }}>
             Learning Allied
           </span>
@@ -102,6 +102,7 @@ export default function VerifyEmailPage() {
       </div>
 
       <div
+        className="auth-box"
         style={{
           width: "100%",
           maxWidth: 440,
@@ -184,7 +185,7 @@ export default function VerifyEmailPage() {
             cursor: checking ? "not-allowed" : "pointer",
           }}
         >
-          {checking ? "Checking status…" : "I&apos;ve verified my email"}
+          {checking ? "Checking status…" : "I've verified my email"}
         </button>
 
         <button

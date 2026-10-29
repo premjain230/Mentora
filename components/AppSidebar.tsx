@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useAuth } from "./AuthContext";
@@ -9,6 +9,10 @@ export function AppSidebar() {
   const pathname = usePathname();
   const { user, userData, isPro, signOut } = useAuth();
   const [mobileOpen, setMobileOpen] = useState(false);
+
+  useEffect(() => {
+    setMobileOpen(false);
+  }, [pathname]);
 
   const navKey = pathname?.split("/").filter(Boolean).pop() || "home";
 
@@ -22,6 +26,28 @@ export function AppSidebar() {
 
   return (
     <>
+      <button
+        className="menu-btn sidebar-mobile-toggle"
+        id="menuBtn"
+        type="button"
+        aria-label="Open navigation menu"
+        aria-expanded={mobileOpen}
+        onClick={() => setMobileOpen(true)}
+      >
+        <svg
+          width="18"
+          height="18"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          aria-hidden="true"
+        >
+          <path d="M4 7h16M4 12h16M4 17h16" />
+        </svg>
+      </button>
+
       <div
         className={`sidebar-overlay ${mobileOpen ? "open" : ""}`}
         id="sidebarOverlay"
@@ -262,7 +288,7 @@ export function AppSidebar() {
           <Link
             href="/subscription"
             data-nav="subscription"
-            className="upgrade-nav-btn"
+            className={`upgrade-nav-btn ${navKey === "subscription" ? "active" : ""}`}
           >
             <span className="nav-icon">
               <svg
@@ -314,7 +340,7 @@ export function AppSidebar() {
               </div>
             </div>
             <button
-              className="sign-out-btn"
+              className="signout-btn"
               id="signOutBtn"
               type="button"
               aria-label="Sign out"
@@ -322,10 +348,12 @@ export function AppSidebar() {
               title="Sign out"
             >
               <svg
+                width="17"
+                height="17"
                 viewBox="0 0 24 24"
                 fill="none"
                 stroke="currentColor"
-                strokeWidth="1.7"
+                strokeWidth="1.8"
                 strokeLinecap="round"
                 strokeLinejoin="round"
                 aria-hidden="true"

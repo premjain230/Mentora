@@ -60,11 +60,11 @@ export default function StudySessionPage() {
             background: "var(--bg-card)",
             border: "1px solid var(--border)",
             borderRadius: 24,
-            padding: "48px 32px",
+            padding: "36px 24px",
             marginBottom: 28,
           }}
         >
-          <div style={{ display: "flex", justifyContent: "center", gap: 8, marginBottom: 24 }}>
+          <div style={{ display: "flex", justifyContent: "center", gap: 8, marginBottom: 24, flexWrap: "wrap" }}>
             <button
               type="button"
               onClick={() => resetTimer(25, "focus")}
@@ -128,7 +128,7 @@ export default function StudySessionPage() {
             {timeFormatted}
           </div>
 
-          <div style={{ display: "flex", justifyContent: "center", gap: 14 }}>
+          <div style={{ display: "flex", justifyContent: "center", gap: 14, flexWrap: "wrap" }}>
             <button
               type="button"
               onClick={toggleTimer}

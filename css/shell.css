@@ -2,11 +2,32 @@
 
    Sidebar styles live in sidebar.css. This file must NOT style .sidebar. */
 
-/* Root layout: body is a flex row (sidebar + main) */
+/* Root layout: normal document flow by default; fixed flex-row shell for app pages */
 
-html { width: 100%; height: 100%; overflow-x: hidden; }
+html { width: 100%; min-height: 100%; overflow-x: hidden; }
 
-body { width: 100%; height: 100vh; height: 100dvh; height: var(--app-height, 100dvh); min-width: 0; min-height: 100vh; min-height: 100dvh; min-height: var(--app-height, 100dvh); overflow: hidden; display: flex; overflow-x: hidden; }
+body {
+  width: 100%;
+  min-width: 0;
+  min-height: 100vh;
+  min-height: 100dvh;
+  overflow-x: hidden;
+}
+
+body:has(> #sidebarMount),
+.shell {
+  width: 100%;
+  height: 100vh;
+  height: 100dvh;
+  height: var(--app-height, 100dvh);
+  min-width: 0;
+  min-height: 100vh;
+  min-height: 100dvh;
+  min-height: var(--app-height, 100dvh);
+  overflow: hidden;
+  display: flex;
+  overflow-x: hidden;
+}
 
 #sidebarMount { display: contents; }
 
@@ -14,11 +35,12 @@ body { width: 100%; height: 100vh; height: 100dvh; height: var(--app-height, 100
   flex: 1 1 auto;
   display: flex;
   flex-direction: column;
-  overflow: hidden;
+  overflow-y: auto;
+  overflow-x: hidden;
   background: var(--bg-base-veil);
   position: relative;
   z-index: 1;
-  width: auto;
+  width: 100%;
   min-width: 0;
   min-height: 0;
   /* The sidebar is a floating card (fixed, inset 12px, rounded), so .main must
@@ -26,6 +48,11 @@ body { width: 100%; height: 100vh; height: 100dvh; height: var(--app-height, 100
      between the card and .main would expose whatever paints behind .main
      instead of .main's own background spanning the full viewport. */
   padding-left: calc(var(--sidebar-w) + 24px);
+}
+
+.main > :not(.topbar):not(.scroll-progress) {
+  width: 100%;
+  box-sizing: border-box;
 }
 
 @media (max-width: 880px) {
@@ -38,27 +65,14 @@ body { width: 100%; height: 100vh; height: 100dvh; height: var(--app-height, 100
 
 /* Ambient background */
 
-/* The blurred accent orbs are a dark-theme-only decoration and are now removed,
-   so .main paints flat black. Scoped with :not(.light-mode) because the light
-   theme renders the same orbs. */
 .ambient-orb {
   display: none;
-}
-
-.ambient-orb {
-
   position: fixed;
-
   border-radius: 50%;
-
   pointer-events: none;
-
   z-index: 0;
-
   filter: blur(90px);
-
   opacity: 0.16;
-
 }
 
 .orb-1 { width: 400px; height: 400px; background: var(--accent); top: -12%; left: -8%; animation: orbFloat1 20s ease-in-out infinite; }
@@ -69,68 +83,23 @@ body { width: 100%; height: 100vh; height: 100dvh; height: var(--app-height, 100
 
 @keyframes orbFloat2 { 0%, 100% { transform: translate(0, 0); } 33% { transform: translate(-20px, 15px); } 66% { transform: translate(40px, -30px); } }
 
-/* Dark theme: no glow wash, the page stays plain black. The gradients are kept
-   for the light theme, which still renders them. */
 body::before {
-
   content: none;
-
 }
 
 /* Scroll progress */
 
 .scroll-progress {
-
   position: fixed;
-
   top: env(safe-area-inset-top);
-
   left: var(--sidebar-w);
-
   height: 2px;
-
   z-index: 999;
-
   background: var(--accent);
-
   width: 0%;
-
   pointer-events: none;
-
   transition: width 0.1s linear;
-
-  color:black;
-
-}
-
-@media (max-width: 880px) {
-
-  .menu-btn { display: flex; }
-
-  .topbar-mobile-logo { display: flex; }
-
-  .mobile-logo { display: flex; }
-
-  .topbar-center, .topbar-greeting { display: none !important; }
-
-  .topbar-left { flex: 1 1 auto; overflow: hidden; }
-
-  .topbar-right { gap: 6px; }
-
-  .scroll-progress { left: 0; }
-
-}
-
-@media (max-width: 480px) {
-
-  .topbar { gap: 8px; padding-right: 10px; padding-left: 10px; }
-
-  .topbar-mobile-logo .logo-img { height: 28px; width: auto; }
-
-  .topbar-mobile-logo .logo-text { display: none; }
-
-  .topbar-avatar svg { display: none; }
-
+  color: black;
 }
 
 /* ── Topbar ───────────────────────────────────────────────── */
@@ -148,32 +117,64 @@ body::before {
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   flex-shrink: 0;
-  position: relative;
+  position: sticky;
+  top: 0;
   z-index: 20;
   overflow: hidden;
 }
 
 .topbar-center {
-
   flex: 1 1 480px;
-
   display: flex;
-
   justify-content: center;
-
   min-width: 0;
-
   max-width: 480px;
-
   margin: 0 var(--space-4);
-
   overflow: hidden;
-
 }
 
 .topbar-left { display: flex; align-items: center; gap: var(--space-3); min-width: 0; flex-shrink: 1; overflow: hidden; }
 
-.topbar-greeting { flex-shrink: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 14px; font-weight: 500; color: var(--text-secondary); margin-left: 8px; }
+.brand-mark {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 14.5px;
+  letter-spacing: -0.025em;
+  color: var(--text-primary);
+  flex-shrink: 1;
+  min-width: 0;
+}
+
+.brand-mark img {
+  width: 24px;
+  height: 24px;
+  border-radius: var(--radius-xs);
+  flex-shrink: 0;
+}
+
+.brand-mark span {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.greeting,
+.topbar-greeting {
+  flex-shrink: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 13.5px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  margin-left: 8px;
+  padding-left: 12px;
+  border-left: 1px solid var(--border);
+}
 
 .topbar-right { display: flex; align-items: center; gap: var(--space-3); flex-shrink: 0; }
 
@@ -184,59 +185,44 @@ body::before {
 .topbar-avatar svg { width: 14px; height: 14px; color: var(--text-muted); }
 
 .menu-btn {
-
   display: none;
-
-  width: 44px; height: 44px;
-
+  width: 38px;
+  height: 38px;
   border-radius: var(--radius-full);
-
   border: 1px solid var(--border);
-
   background: var(--bg-card);
-
   color: var(--text-secondary);
-
-  align-items: center; justify-content: center;
-
+  align-items: center;
+  justify-content: center;
   cursor: pointer;
-
   flex-shrink: 0;
-
   transition: all var(--dur-fast) ease;
-
 }
 
 .menu-btn:hover { color: var(--text-primary); border-color: var(--border-hover); }
 
+.sidebar-mobile-toggle {
+  display: none;
+  position: fixed;
+  top: calc(9px + env(safe-area-inset-top));
+  left: 12px;
+  z-index: 22;
+}
+
 .scroll-control {
-
   width: 36px; height: 36px;
-
   border-radius: 999px;
-
   background: var(--bg-card);
-
   border: 1px solid var(--border);
-
   color: var(--text-muted);
-
   display: grid;
-
   place-items: center;
-
   cursor: pointer;
-
   flex-shrink: 0;
-
   visibility: hidden;
-
   opacity: 0;
-
   transform: scale(0.86);
-
   transition: color var(--dur-fast) ease, border-color var(--dur-fast) ease, background var(--dur-fast) ease, opacity var(--dur-fast) ease, transform var(--dur-fast) var(--ease-out), visibility var(--dur-fast) ease;
-
 }
 
 .scroll-control.visible { visibility: visible; opacity: 1; transform: scale(1); }
@@ -254,51 +240,69 @@ body::before {
 .mobile-logo { display: none; align-items: center; gap: var(--space-2); }
 
 .model-selector {
-
   display: flex; align-items: center; gap: 7px;
-
   background: var(--bg-card);
-
   border: 1px solid var(--border);
-
   border-radius: var(--radius-full);
-
   padding: 7px 13px;
-
   font-size: var(--fs-sm);
-
   color: var(--text-secondary);
-
   user-select: none;
-
   font-weight: 500;
-
   white-space: nowrap;
-
 }
 
 .model-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--accent); flex-shrink: 0; }
 
+@media (max-width: 880px) {
+  .menu-btn,
+  .sidebar-mobile-toggle { display: inline-flex; }
+
+  .topbar:not(:has(.menu-btn)) {
+    padding-left: 58px;
+  }
+
+  .topbar-mobile-logo { display: flex; }
+
+  .mobile-logo { display: flex; }
+
+  .topbar-center,
+  .topbar-greeting,
+  .greeting { display: none; }
+
+  .topbar-left { flex: 1 1 auto; overflow: hidden; }
+
+  .topbar-right { gap: 6px; }
+
+  .scroll-progress { left: 0; }
+}
+
+@media (max-width: 480px) {
+  .topbar { gap: 8px; padding-right: 12px; padding-left: 12px; }
+
+  .topbar:not(:has(.menu-btn)) {
+    padding-left: 56px;
+  }
+
+  .topbar-mobile-logo .logo-img { height: 28px; width: auto; }
+
+  .topbar-mobile-logo .logo-text { display: none; }
+
+  .topbar-avatar svg { display: none; }
+}
+
 /* Mobile safe areas & keyboard handling */
 
 .input-area, .composer, .chat-composer {
-
   flex-shrink: 0;
-
   padding-bottom: calc(16px + env(safe-area-inset-bottom));
-
 }
 
 .chat-area {
-
   min-height: 0;
-
   overflow-x: hidden;
-
   overscroll-behavior-y: contain;
-
   -webkit-overflow-scrolling: touch;
-
 }
 
 .markdown-table-wrap { max-width: 100%; overflow-x: auto; margin: 10px 0; -webkit-overflow-scrolling: touch; }
@@ -306,7 +310,6 @@ body::before {
 .markdown-table-wrap table { min-width: 520px; }
 
 @media (max-width: 480px) {
-
   .input-area textarea, .field, .form-input { font-size: 16px !important; }
 
   .input-box { padding: 8px 9px 8px 12px; }
@@ -314,14 +317,10 @@ body::before {
   .input-box textarea { min-height: 24px; max-height: 112px; }
 
   .markdown-table-wrap { margin-right: -4px; margin-left: -4px; }
-
 }
 
 @media (max-width: 880px) and (max-height: 700px) {
-
   .input-area { padding-top: 8px; padding-bottom: calc(8px + env(safe-area-inset-bottom)); }
 
   .input-footer { display: none; }
-
 }
-

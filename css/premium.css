@@ -46,20 +46,20 @@ html.light-mode{
 .stat-card,.countdown-banner,.subject-panel,.panel,.modal,.arena-modal .sheet,.battle-card,.subject-card{border-radius:var(--pm-r)!important}
 
 /* Shared buttons: primary = inverse, secondary = quiet outline */
-.btn-accent,.quiz-primary,.btn:not(.secondary),.battle-btn:not(.secondary),.resume-btn{
+.btn-accent,.quiz-primary,.btn:not(.secondary):not(.btn-secondary):not(.btn-outline):not(.btn-ghost):not(.btn-danger):not(.btn-quiet):not(.g),.battle-btn:not(.secondary),.resume-btn{
   background:var(--pm-inv-bg)!important;color:var(--pm-inv-fg)!important;border:1px solid transparent!important;
   border-radius:var(--pm-r-sm)!important;font-weight:500!important;
   transition:opacity var(--pm-dur),transform var(--pm-dur) var(--pm-ease)!important;
 }
-.btn-accent:hover:not(:disabled),.btn:not(.secondary):hover:not(:disabled),.battle-btn:not(.secondary):hover:not(:disabled),.resume-btn:hover{opacity:.88;transform:translateY(-1px)}
+.btn-accent:hover:not(:disabled),.btn:not(.secondary):not(.btn-secondary):not(.btn-outline):not(.btn-ghost):not(.btn-danger):not(.btn-quiet):not(.g):hover:not(:disabled),.battle-btn:not(.secondary):hover:not(:disabled),.resume-btn:hover{opacity:.88;transform:translateY(-1px)}
 .btn:active:not(:disabled),.btn-accent:active:not(:disabled),.battle-btn:active:not(:disabled){transform:scale(.98)}
 .btn:disabled,.btn-accent:disabled,.battle-btn:disabled{opacity:.45!important;cursor:not-allowed}
-.btn-outline,.btn.secondary,.battle-btn.secondary,.back-btn{
-  background:transparent!important;color:var(--pm-text-2)!important;border:1px solid var(--pm-border-strong)!important;
+.btn-outline,.btn.secondary,.btn.btn-secondary,.battle-btn.secondary,.back-btn{
+  background:transparent!important;color:var(--pm-text)!important;border:1px solid var(--pm-border-strong)!important;
   border-radius:var(--pm-r-sm)!important;box-shadow:none!important;
   transition:color var(--pm-dur),border-color var(--pm-dur),background var(--pm-dur)!important;
 }
-.btn-outline:hover,.btn.secondary:hover,.battle-btn.secondary:hover,.back-btn:hover{color:var(--pm-text)!important;background:var(--pm-surface-2)!important;border-color:var(--pm-text-3)!important;transform:none}
+.btn-outline:hover,.btn.secondary:hover,.btn.btn-secondary:hover:not(:disabled),.battle-btn.secondary:hover,.back-btn:hover{color:var(--pm-text)!important;background:var(--pm-surface-2)!important;border-color:var(--pm-text-3)!important;transform:none}
 .btn-danger,.btn-replan{background:var(--pm-bad-soft)!important;color:var(--pm-bad)!important;border:1px solid color-mix(in srgb,var(--pm-bad) 35%,transparent)!important;border-radius:var(--pm-r-sm)!important}
 
 /* Shared form controls */

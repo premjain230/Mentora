@@ -69,7 +69,7 @@ export default function HomePage() {
       <main id="main">
         {/* Hero Section */}
         <section className="hero" aria-labelledby="hero-heading" style={{ padding: "120px 0 72px" }}>
-          <div className="wrap hero-grid" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 56, alignItems: "center" }}>
+          <div className="wrap hero-grid">
             <div>
               <h1
                 id="hero-heading"
@@ -145,7 +145,7 @@ export default function HomePage() {
                 <span />
               </div>
 
-              <div style={{ display: "grid", gridTemplateColumns: "1.2fr 1fr" }}>
+              <div className="app-preview-grid">
                 <div style={{ padding: 18 }}>
                   <h3 style={{ fontSize: 12, fontWeight: 700, color: "var(--la-muted, #a1a1aa)", marginBottom: 14, textTransform: "uppercase" }}>
                     AI Socratic Tutor
@@ -180,7 +180,7 @@ export default function HomePage() {
                   </div>
                 </div>
 
-                <div style={{ padding: 18, borderLeft: "1px solid var(--la-line, rgba(255,255,255,0.09))" }}>
+                <div className="app-preview-right">
                   <h3 style={{ fontSize: 12, fontWeight: 700, color: "var(--la-muted, #a1a1aa)", marginBottom: 14, textTransform: "uppercase" }}>
                     Memory Retention
                   </h3>
@@ -240,16 +240,7 @@ export default function HomePage() {
                 { title: "Confidence calibration", desc: "Compare how confident you felt with your actual score. Closing this gap helps you focus on genuine blind spots.", note: "Metacognition calibration, Flavell, 1979" },
                 { title: "Prerequisites first", desc: "Concepts are mapped into a dependency graph so you never build advanced topics on shaky foundations.", note: "Curriculum knowledge graph" },
               ].map((feat, idx) => (
-                <div
-                  key={idx}
-                  style={{
-                    display: "grid",
-                    gridTemplateColumns: "280px 1fr",
-                    gap: 32,
-                    padding: "28px 0",
-                    borderBottom: "1px solid var(--la-line, rgba(255,255,255,0.09))",
-                  }}
-                >
+                <div key={idx} className="feature-row">
                   <h3 style={{ fontSize: 18, fontWeight: 700, color: "var(--la-text)" }}>{feat.title}</h3>
                   <div>
                     <p style={{ color: "var(--la-muted, #a1a1aa)", fontSize: 15.5, lineHeight: 1.6, maxWidth: 640 }}>{feat.desc}</p>
