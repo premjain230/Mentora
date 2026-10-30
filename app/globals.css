@@ -7,6 +7,7 @@
 @import "../css/learning-hub.css";
 @import "../css/learning-experience.css";
 @import "../css/premium.css";
+@import "../css/system.css";
 
 /* Public & marketing theme tokens (--la-*) and Next.js layout utilities */
 :root {
