@@ -205,24 +205,24 @@ test("Expired user: subscriptionExpiresAt in the past returns FALSE (reverts to 
 });
 
 // ─────────────────────────────────────────────────────────────────────────────
-// SUITE 3: SERVER-SIDE PRO DETECTION (api/_admin.js)
+// SUITE 3: SERVER-SIDE PRO DETECTION (server/_admin.js)
 // ─────────────────────────────────────────────────────────────────────────────
-console.log("\n[Suite 3] Server-Side Plan Verification (api/_admin.js)");
+console.log("\n[Suite 3] Server-Side Plan Verification (server/_admin.js)");
 
-const adminJs = fs.readFileSync(path.join(ROOT, "api/_admin.js"), "utf8");
+const adminJs = fs.readFileSync(path.join(ROOT, "server/_admin.js"), "utf8");
 
-test("api/_admin.js: contains server-authoritative isProUserDataServer", () => {
+test("server/_admin.js: contains server-authoritative isProUserDataServer", () => {
   assert(adminJs.includes("function isProUserDataServer"), "Missing isProUserDataServer");
 });
 
-test("api/_admin.js: contains expired subscription check in isProUserDataServer", () => {
+test("server/_admin.js: contains expired subscription check in isProUserDataServer", () => {
   assert(
     adminJs.includes("exp.getTime() <= Date.now()"),
     "Missing expiry check in isProUserDataServer"
   );
 });
 
-test("api/_admin.js: SERVER_PLAN_LIMITS defines Infinity for Pro chatLimit", () => {
+test("server/_admin.js: SERVER_PLAN_LIMITS defines Infinity for Pro chatLimit", () => {
   assert(adminJs.includes("pro: { chatLimit: Infinity }"), "Pro limit should be Infinity");
   assert(adminJs.includes("free: { chatLimit: 20 }"), "Free limit should be 20");
 });

@@ -1,6 +1,8 @@
 import { NextRequest } from "next/server";
 import { runNodeHandler } from "../../../lib/nodeHandlerAdapter";
-const handler = require("../../../api/generate-plan");
+const handler = require("../../../server/generate-plan");
+
+export const maxDuration = 30;
 
 export async function POST(req: NextRequest) {
   return runNodeHandler(handler, req);

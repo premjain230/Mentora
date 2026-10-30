@@ -1,6 +1,8 @@
 import { NextRequest } from "next/server";
 import { runNodeHandler } from "../../../lib/nodeHandlerAdapter";
-const handler = require("../../../api/growth");
+const handler = require("../../../server/growth");
+
+export const maxDuration = 30;
 
 export async function GET(req: NextRequest) {
   return runNodeHandler(handler, req);

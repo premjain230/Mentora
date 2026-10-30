@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Learning Allied — AI Learning Hub (page controller)
  *
  * Journey: Board → Class → Subject → Chapter → READ (paged) → QUIZ (5-7 MCQs)
@@ -293,7 +293,7 @@ async function record(stage, { type, payload = {}, questionId = null, correct } 
       conceptId: ch ? ch.conceptId : null,
       subject: ch ? ch.subject : null,
       topic: ch ? ch.name : null,
-      source: "study_session", // allowed in both js/learning/schema.js and api/learning-event.js
+      source: "study_session", // allowed in both js/learning/schema.js and server/learning-event.js
       sessionId: state.sessionId,
       questionId,
       payload: body,
