@@ -15,12 +15,7 @@ interface StudyTask {
 
 export default function PlannerPage() {
   const { isPro } = useAuth();
-  const [tasks, setTasks] = useState<StudyTask[]>([
-    { id: "1", subject: "Physics", topic: "Rotational Dynamics — Moment of Inertia calculations", duration: "60 mins", done: false },
-    { id: "2", subject: "Chemistry", topic: "Coordination Compounds — Crystal Field Theory & Isomerism", duration: "45 mins", done: true },
-    { id: "3", subject: "Mathematics", topic: "Application of Derivatives — Maxima and Minima word problems", duration: "60 mins", done: false },
-    { id: "4", subject: "Revision", topic: "Spaced Review: Electrostatics Gauss Law & PYQs", duration: "30 mins", done: false },
-  ]);
+  const [tasks, setTasks] = useState<StudyTask[]>([]);
   const [generating, setGenerating] = useState(false);
 
   const toggleTask = (id: string) => {
@@ -81,6 +76,16 @@ export default function PlannerPage() {
 
         {/* Task list */}
         <div style={{ display: "flex", flexDirection: "column", gap: 12, marginBottom: 36 }}>
+          {tasks.length === 0 && (
+            <div style={{ padding: 32, textAlign: "center", color: "var(--text-muted)", background: "var(--bg-card)", border: "1px dashed var(--border)", borderRadius: 14 }}>
+              No study tasks yet. Complete onboarding to generate your personalized plan.
+              <div style={{ marginTop: 12 }}>
+                <Link href="/planner-onboarding" className="btn btn-primary" style={{ padding: "8px 16px", fontSize: 13 }}>
+                  Set up planner
+                </Link>
+              </div>
+            </div>
+          )}
           {tasks.map((task) => (
             <div
               key={task.id}
@@ -160,10 +165,12 @@ export default function PlannerPage() {
         >
           <div style={{ display: "flex", justifyContent: "space-between", fontSize: 14, marginBottom: 10 }}>
             <span style={{ fontWeight: 600, color: "var(--text-primary)" }}>Weekly Syllabus Target</span>
-            <span style={{ color: "var(--accent)", fontWeight: 700 }}>68% Completed</span>
+            <span style={{ color: "var(--accent)", fontWeight: 700 }}>
+              {tasks.length ? Math.round((tasks.filter((t) => t.done).length / tasks.length) * 100) : 0}% Completed
+            </span>
           </div>
           <div style={{ height: 8, background: "var(--bg-elevated)", borderRadius: 999, overflow: "hidden" }}>
-            <div style={{ height: "100%", width: "68%", background: "var(--accent)", borderRadius: 999 }} />
+            <div style={{ height: "100%", width: `${tasks.length ? Math.round((tasks.filter((t) => t.done).length / tasks.length) * 100) : 0}%`, background: "var(--accent)", borderRadius: 999 }} />
           </div>
           <p style={{ marginTop: 12, fontSize: 13, color: "var(--text-muted)", lineHeight: 1.5 }}>
             You are on track for your January exam deadline. Completing today&apos;s physics module will keep you ahead of schedule.

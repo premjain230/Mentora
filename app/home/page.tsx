@@ -12,12 +12,12 @@ export default function HomePage() {
   const router = useRouter();
   const { user, userData, isPro, loading } = useAuth();
   const [profile, setProfile] = useState<any>(null);
-  const [stats, setStats] = useState({
-    streak: 3,
-    quizzesCompleted: 12,
-    studyHours: 8.5,
-    masteryScore: 78,
-  });
+  const [stats, setStats] = useState<{
+    streak: number | null;
+    quizzesCompleted: number | null;
+    studyHours: number | null;
+    masteryScore: number | null;
+  } | null>(null);
 
   useEffect(() => {
     if (!loading && !user) {
@@ -111,7 +111,7 @@ export default function HomePage() {
               Active Streak
             </div>
             <div style={{ fontSize: 28, fontWeight: 800, color: "var(--accent)", marginTop: 6 }}>
-              🔥 {stats.streak} Days
+              🔥 {stats && stats.streak != null ? stats.streak : "—"} Days
             </div>
             <div style={{ fontSize: 12, color: "var(--text-muted)", marginTop: 4 }}>Keep it up today</div>
           </div>
@@ -121,7 +121,7 @@ export default function HomePage() {
               Mastery Index
             </div>
             <div style={{ fontSize: 28, fontWeight: 800, color: "#4ade80", marginTop: 6 }}>
-              {stats.masteryScore}%
+              {stats && stats.masteryScore != null ? stats.masteryScore : "—"}%
             </div>
             <div style={{ fontSize: 12, color: "var(--text-muted)", marginTop: 4 }}>Across your active subjects</div>
           </div>
@@ -131,7 +131,7 @@ export default function HomePage() {
               Quizzes Solved
             </div>
             <div style={{ fontSize: 28, fontWeight: 800, color: "var(--text-primary)", marginTop: 6 }}>
-              {stats.quizzesCompleted}
+              {stats && stats.quizzesCompleted != null ? stats.quizzesCompleted : "—"}
             </div>
             <div style={{ fontSize: 12, color: "var(--text-muted)", marginTop: 4 }}>With active recall analysis</div>
           </div>
