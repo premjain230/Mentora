@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import { AppShell } from "../../components/AppShell";
 import { useAuth } from "../../components/AuthContext";
 import { initFirebase } from "../../lib/firebase";
-import { doc, getDoc, updateDoc } from "firebase/firestore";
+import { doc, getDoc, setDoc } from "firebase/firestore";
 
 export default function ProfilePage() {
   const { user, userData, isPro, refreshUserData } = useAuth();
@@ -13,8 +13,21 @@ export default function ProfilePage() {
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
-    if (userData?.displayName || user?.displayName) {
-      setDisplayName(userData?.displayName || user?.displayName || "");
+    const saved = userData?.displayName || userData?.name || user?.displayName;
+    if (saved) {
+      setDisplayName(saved);
+      return;
+    }
+    // Derive a sensible initial display name from the email address.
+    if (user?.email) {
+      const local = user.email.split("@")[0] || "";
+      const derived = local
+        .replace(/[._-]+/g, " ")
+        .split(" ")
+        .filter(Boolean)
+        .map((part) => part.charAt(0).toUpperCase() + part.slice(1).toLowerCase())
+        .join(" ");
+      setDisplayName(derived || "Student");
     }
   }, [userData, user]);
 
@@ -25,9 +38,11 @@ export default function ProfilePage() {
     try {
       const { db } = await initFirebase();
       if (db) {
-        await updateDoc(doc(db, "users", user.uid), {
-          displayName: displayName.trim(),
-        });
+        await setDoc(
+          doc(db, "users", user.uid),
+          { uid: user.uid, displayName: displayName.trim(), email: user.email || "" },
+          { merge: true }
+        );
         await refreshUserData();
         setEditing(false);
       }

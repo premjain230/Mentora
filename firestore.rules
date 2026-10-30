@@ -166,6 +166,11 @@ service cloud.firestore {
         allow read, write: if isOwner(userId);
       }
 
+      /* planner — onboarding config and generated plans */
+      match /planner/{docId} {
+        allow read, write: if isOwner(userId);
+      }
+
       /* ── Prompt 4: Real evidence pipeline ──
          learningEvents: append-only, validated type, no update/delete */
       match /learningEvents/{eventId} {

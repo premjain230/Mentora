@@ -6,6 +6,8 @@ import { useRouter } from "next/navigation";
 import {
   signInWithEmailAndPassword,
   signInWithPopup,
+  signInWithRedirect,
+  getRedirectResult,
   sendPasswordResetEmail,
 } from "firebase/auth";
 import { initFirebase } from "../../lib/firebase";
@@ -212,6 +214,29 @@ export default function LoginPage() {
     }
   };
 
+  // Complete any pending redirect-based Google sign-in when the page loads.
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const { auth } = await initFirebase();
+        if (!auth) return;
+        const result = await getRedirectResult(auth);
+        if (!cancelled && result?.user) {
+          router.push(result.user.emailVerified ? "/home" : "/verify-email");
+        }
+      } catch (err: any) {
+        if (!cancelled) {
+          logAuthFailure("Google redirect sign-in failed", err);
+          setErrorMsg(authErrorMessage(err, "Google sign-in didn't complete. Please try again."));
+        }
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [router]);
+
   const handleGoogleLogin = async () => {
     setGoogleLoading(true);
     setErrorMsg("");
@@ -221,8 +246,18 @@ export default function LoginPage() {
       const { auth, googleProvider } = await initFirebase();
       if (!auth) throw new Error("Firebase configuration is unavailable.");
 
-      const result = await signInWithPopup(auth, googleProvider);
-      if (result.user) router.push("/home");
+      try {
+        const result = await signInWithPopup(auth, googleProvider);
+        if (result.user) router.push(result.user.emailVerified ? "/home" : "/verify-email");
+        return;
+      } catch (popupErr: any) {
+        // Fall back to redirect flow when popups are blocked or COOP prevents them.
+        if (popupErr?.code === "auth/popup-blocked") {
+          await signInWithRedirect(auth, googleProvider);
+          return;
+        }
+        throw popupErr;
+      }
     } catch (err: any) {
       if (
         err?.code === "auth/popup-closed-by-user" ||

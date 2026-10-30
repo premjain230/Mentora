@@ -47,31 +47,56 @@
   "redirects": [
     {
       "source": "/(.*)",
-      "has": [{ "type": "host", "value": "mentora.vercel.app" }],
+      "has": [
+        {
+          "type": "host",
+          "value": "mentora.vercel.app"
+        }
+      ],
       "destination": "https://www.learningallied.world/$1",
       "permanent": true
     },
     {
       "source": "/(.*)",
-      "has": [{ "type": "host", "value": "mentora-ai.vercel.app" }],
+      "has": [
+        {
+          "type": "host",
+          "value": "mentora-ai.vercel.app"
+        }
+      ],
       "destination": "https://www.learningallied.world/$1",
       "permanent": true
     },
     {
       "source": "/(.*)",
-      "has": [{ "type": "host", "value": "mentora-lyart-nine.vercel.app" }],
+      "has": [
+        {
+          "type": "host",
+          "value": "mentora-lyart-nine.vercel.app"
+        }
+      ],
       "destination": "https://www.learningallied.world/$1",
       "permanent": true
     },
     {
       "source": "/(.*)",
-      "has": [{ "type": "host", "value": "aquila-sand.vercel.app" }],
+      "has": [
+        {
+          "type": "host",
+          "value": "aquila-sand.vercel.app"
+        }
+      ],
       "destination": "https://www.learningallied.world/$1",
       "permanent": true
     },
     {
       "source": "/(.*)",
-      "has": [{ "type": "host", "value": "aquila-ai.vercel.app" }],
+      "has": [
+        {
+          "type": "host",
+          "value": "aquila-ai.vercel.app"
+        }
+      ],
       "destination": "https://www.learningallied.world/$1",
       "permanent": true
     }
@@ -87,6 +112,10 @@
         {
           "key": "Cache-Control",
           "value": "public, max-age=3600, s-maxage=3600"
+        },
+        {
+          "key": "Cross-Origin-Opener-Policy",
+          "value": "same-origin-allow-popups"
         }
       ]
     },
@@ -100,6 +129,10 @@
         {
           "key": "Cache-Control",
           "value": "public, max-age=86400, s-maxage=86400"
+        },
+        {
+          "key": "Cross-Origin-Opener-Policy",
+          "value": "same-origin-allow-popups"
         }
       ]
     },
@@ -113,6 +146,10 @@
         {
           "key": "Cache-Control",
           "value": "public, max-age=3600, s-maxage=3600"
+        },
+        {
+          "key": "Cross-Origin-Opener-Policy",
+          "value": "same-origin-allow-popups"
         }
       ]
     },
@@ -134,6 +171,10 @@
         {
           "key": "Cache-Control",
           "value": "no-store"
+        },
+        {
+          "key": "Cross-Origin-Opener-Policy",
+          "value": "same-origin-allow-popups"
         }
       ]
     },
@@ -151,6 +192,10 @@
         {
           "key": "Referrer-Policy",
           "value": "strict-origin-when-cross-origin"
+        },
+        {
+          "key": "Cross-Origin-Opener-Policy",
+          "value": "same-origin-allow-popups"
         }
       ]
     }
