@@ -47,6 +47,35 @@ function authErrorMessage(error: any, fallback: string): string {
   return fallback;
 }
 
+/**
+ * Errors the UI already explains to the user. They are normal outcomes of a
+ * mistyped password or a dismissed popup, so they should not be reported as
+ * console errors — only genuinely unexpected failures are.
+ */
+function isExpectedAuthError(error: any): boolean {
+  const code = String(error?.code || "");
+  return [
+    "auth/invalid-credential",
+    "auth/wrong-password",
+    "auth/user-not-found",
+    "auth/invalid-email",
+    "auth/too-many-requests",
+    "auth/popup-closed-by-user",
+    "auth/cancelled-popup-request",
+    "auth/popup-blocked",
+    "auth/unauthorized-domain",
+    "auth/account-exists-with-different-credential",
+  ].includes(code);
+}
+
+function logAuthFailure(label: string, error: any) {
+  if (isExpectedAuthError(error)) {
+    console.warn(`${label}: ${error?.code || "unknown"}`);
+    return;
+  }
+  console.error(`${label}:`, error);
+}
+
 function EyeIcon({ hidden }: { hidden: boolean }) {
   return hidden ? (
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
@@ -174,7 +203,7 @@ export default function LoginPage() {
       const cred = await signInWithEmailAndPassword(auth, email.trim(), password);
       router.push(cred.user.emailVerified ? "/home" : "/verify-email");
     } catch (err) {
-      console.error("Login failed:", err);
+      logAuthFailure("Login failed", err);
       setErrorMsg(
         authErrorMessage(err, "Could not sign in. Please check your details and try again.")
       );
@@ -201,7 +230,7 @@ export default function LoginPage() {
       ) {
         return;
       }
-      console.error("Google sign-in failed:", err);
+      logAuthFailure("Google sign-in failed", err);
       setErrorMsg(
         authErrorMessage(err, "Google sign-in didn't complete. Please try again.")
       );
@@ -227,7 +256,7 @@ export default function LoginPage() {
       await sendPasswordResetEmail(auth, email.trim());
       setInfoMsg("Password reset link sent. Check your inbox and spam folder.");
     } catch (err) {
-      console.error("Reset email error:", err);
+      logAuthFailure("Reset email error", err);
       setErrorMsg(
         authErrorMessage(
           err,
