@@ -7,6 +7,7 @@ import { initFirebase } from "@/lib/firebase";
 
 type PageKey =
   | "home"
+  | "chat"
   | "chat-history"
   | "review"
   | "study-session"
@@ -38,6 +39,7 @@ type VanillaModule = {
 
 const loaders: Record<PageKey, () => Promise<VanillaModule>> = {
   home: () => import("@/vanilla/home"),
+  chat: () => import("@/vanilla/chat"),
   "chat-history": () => import("@/vanilla/chat-history"),
   review: () => import("@/vanilla/review"),
   "study-session": () => import("@/vanilla/study-session"),

@@ -5,6 +5,17 @@
   overflow: hidden;
 }
 
+.page-chat [hidden] {
+  display: none !important;
+}
+
+/* Message rows keep the log gap even though they live in their own container. */
+.page-chat .chat-messages {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
 /* The dashboard topbar already owns its 56px row; let the shell fill the rest. */
 .page-chat .chat-shell {
   flex: 1 1 auto;

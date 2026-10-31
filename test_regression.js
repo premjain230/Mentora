@@ -687,6 +687,92 @@ test("arena client: uses server sessions and never scores locally", () => {
 
 
 // ─────────────────────────────────────────────────────────────────────────────
+// SUITE 3D: CHAT PAGE VANILLA ARCHITECTURE
+// ─────────────────────────────────────────────────────────────────────────────
+console.log("\n[Suite 3D] Chat page vanilla architecture");
+
+const chatRouteSource = fs.readFileSync(
+  path.join(ROOT, "app/(dashboard)/chat/page.tsx"),
+  "utf8"
+);
+const chatControllerSource = fs.readFileSync(
+  path.join(ROOT, "vanilla/chat.js"),
+  "utf8"
+);
+const chatMarkupSource = fs.readFileSync(
+  path.join(ROOT, "components/pages/chat/ChatMarkup.tsx"),
+  "utf8"
+);
+const chatVisualSource = fs.readFileSync(
+  path.join(ROOT, "vanilla/chat/visual.js"),
+  "utf8"
+);
+const vanillaPageSource = fs.readFileSync(
+  path.join(ROOT, "components/vanilla/VanillaPage.tsx"),
+  "utf8"
+);
+const chatCssSource = fs.readFileSync(
+  path.join(ROOT, "css/pages/chat.css"),
+  "utf8"
+);
+
+test("chat route uses the VanillaPage + ChatMarkup pattern", () => {
+  assert(chatRouteSource.includes('from "@/components/vanilla/VanillaPage"'), "route must import VanillaPage");
+  assert(chatRouteSource.includes('from "@/components/pages/chat/ChatMarkup"'), "route must import ChatMarkup");
+  assert(chatRouteSource.includes('<VanillaPage page="chat">'), "route must render the chat page key");
+  assert(chatRouteSource.includes("<ChatMarkup />"), "route must render the chat markup");
+  assert(!chatRouteSource.includes('"use client"'), "chat route must stay a server component");
+  assert(!chatRouteSource.includes("callTutor"), "chat route must not own tutor calls");
+});
+
+test("VanillaPage registers the chat controller", () => {
+  assert(vanillaPageSource.includes('| "chat"'), "PageKey must include chat");
+  assert(vanillaPageSource.includes('chat: () => import("@/vanilla/chat")'), "chat loader missing");
+});
+
+test("ChatMarkup exposes the shell hooks the controller hydrates", () => {
+  for (const id of [
+    "chatMessages",
+    "chatLog",
+    "chatStarters",
+    "chatThinking",
+    "chatInput",
+    "chatSend",
+    "chatBoard",
+    "chatSubject",
+  ]) {
+    assert(chatMarkupSource.includes(`id="${id}"`), `ChatMarkup missing #${id}`);
+  }
+  assert(chatMarkupSource.includes("page-chat"), "ChatMarkup must keep the scoped root class");
+});
+
+test("chat controller preserves tutor, persistence and learning-event flows", () => {
+  assert(chatControllerSource.includes("export function mount(root, ctx)"), "mount export missing");
+  assert(chatControllerSource.includes("createLifecycle()"), "lifecycle missing");
+  assert(chatControllerSource.includes("return () => lifecycle.dispose()"), "cleanup missing");
+  assert(chatControllerSource.includes('callTutor'), "tutor calls missing");
+  assert(chatControllerSource.includes("emitLearningEvent"), "learning events missing");
+  assert(chatControllerSource.includes("summarizeConversation"), "conversation summary missing");
+  assert(chatControllerSource.includes("createChatSession"), "chat session creation missing");
+  assert(chatControllerSource.includes("loadChatSession"), "resume support missing");
+  assert(chatControllerSource.includes("saveChatMessage"), "message persistence missing");
+  assert(!chatControllerSource.includes("/api/groq-proxy"), "controller must not call the legacy proxy");
+  assert(!chatControllerSource.includes("question.answer"), "controller must not read answer keys");
+});
+
+test("chat visuals mount on demand and unmount with the page", () => {
+  assert(chatControllerSource.includes('import("./chat/visual.js")'), "visual island must load on demand");
+  assert(chatControllerSource.includes("clearVisuals"), "visual cleanup missing");
+  assert(chatVisualSource.includes("mountVisual"), "visual island exporter missing");
+  assert(chatVisualSource.includes("root.unmount()"), "visual island must unmount");
+});
+
+test("chat CSS scopes hidden toggles and message spacing", () => {
+  assert(chatCssSource.includes(".page-chat [hidden]"), "hidden rows need a scoped display rule");
+  assert(chatCssSource.includes(".page-chat .chat-messages"), "message container spacing missing");
+});
+
+// ─────────────────────────────────────────────────────────────────────────────
 // SUITE 4: USAGE LIMITS & MODAL GATING
 // ─────────────────────────────────────────────────────────────────────────────
 console.log("\n[Suite 4] Usage Limits & Modal Gating (limits.js)");
