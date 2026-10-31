@@ -2,8 +2,8 @@ const { applyCors, rateLimit, readJsonBody, sendError } = require("./_shared");
 const { verifyIdToken } = require("./_admin");
 
 function searchCredentials() {
-  const key = process.env.SEARCH_API_KEY;
-  const cx = process.env.SEARCH_ENGINE_ID;
+  const key = process.env.SEARCH_API_KEY || process.env.GOOGLE_SEARCH_API_KEY;
+  const cx = process.env.SEARCH_ENGINE_ID || process.env.GOOGLE_CX;
   return key && cx ? { key, cx } : null;
 }
 

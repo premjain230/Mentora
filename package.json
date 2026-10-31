@@ -4,7 +4,7 @@
   "type": "commonjs",
   "description": "Learning Allied - Your AI-powered learning companion",
   "engines": {
-    "node": ">=18.17.0"
+    "node": "24.x"
   },
   "scripts": {
     "dev": "next dev",

@@ -390,3 +390,6 @@ html.light-mode .lh-board-icon, html.light-mode .lh-sub-ico { background: rgba(v
 .lh-pick .lh-chapters { border-radius: 24px; }
 .lh-option, .lh-wrong, .lh-alert, .lh-formula { border-radius: 16px; }
 .lh-hero-title, .lh-h2, .lh-title { letter-spacing: -0.03em; }
+/* ---------- Dashboard shell alignment (React page) ---------- */
+.page-learning-hub { min-height: 0; overflow: hidden; }
+.page-learning-hub .lh-content { flex: 1 1 auto; min-height: 0; overflow-y: auto; }

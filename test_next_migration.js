@@ -102,25 +102,51 @@ test('app/robots.ts disallows private and sensitive paths', () => {
 });
 
 // 5. Verify Authenticated and Private Pages have noindex robots directives or auth redirects
-const privatePages = [
-  'app/home/page.tsx',
-  'app/chat/page.tsx',
-  'app/planner/page.tsx',
-  'app/profile/page.tsx',
-  'app/settings/page.tsx',
-  'app/subscription/page.tsx',
+const dashboardPages = [
+  'app/(dashboard)/home/page.tsx',
+  'app/(dashboard)/chat/page.tsx',
+  'app/(dashboard)/chat-history/page.tsx',
+  'app/(dashboard)/planner/page.tsx',
+  'app/(dashboard)/profile/page.tsx',
+  'app/(dashboard)/settings/page.tsx',
+  'app/(dashboard)/subscription/page.tsx',
+  'app/(dashboard)/arena/page.tsx',
+  'app/(dashboard)/learning-hub/page.tsx',
+  'app/(dashboard)/study-session/page.tsx',
+  'app/(dashboard)/quiz/page.tsx',
+  'app/(dashboard)/review/page.tsx',
+];
+
+const standalonePrivatePages = [
   'app/admin/page.tsx',
-  'app/arena/page.tsx',
-  'app/learning-hub/page.tsx',
-  'app/study-session/page.tsx',
-  'app/quiz/page.tsx',
-  'app/review/page.tsx',
   'app/onboarding/page.tsx',
   'app/planner-onboarding/page.tsx',
 ];
 
-privatePages.forEach((pagePath) => {
-  test(`Private page [${pagePath}] has auth guard and/or noindex protection`, () => {
+test('Dashboard layout guards every dashboard page', () => {
+  const layout = fs.readFileSync(
+    path.join(__dirname, 'app/(dashboard)/layout.tsx'),
+    'utf8'
+  );
+  assert(layout.includes('AuthGate'), 'Dashboard layout must include AuthGate');
+  assert(layout.includes('AppShell'), 'Dashboard layout must preserve AppShell');
+  assert(
+    layout.includes('index: false'),
+    'Dashboard layout must mark dashboard routes noindex'
+  );
+});
+
+dashboardPages.forEach((pagePath) => {
+  test(`Dashboard page [${pagePath}] exists under the guarded layout`, () => {
+    assert(
+      fs.existsSync(path.join(__dirname, pagePath)),
+      `${pagePath} must exist inside app/(dashboard)`
+    );
+  });
+});
+
+standalonePrivatePages.forEach((pagePath) => {
+  test(`Standalone private page [${pagePath}] has auth guard and/or noindex protection`, () => {
     const content = fs.readFileSync(path.join(__dirname, pagePath), 'utf8');
     assert(
       content.includes('index: false') ||

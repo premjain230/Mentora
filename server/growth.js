@@ -259,7 +259,7 @@ async function adminSettings(req, res) {
         adminEmails: adminEmails(),
         capabilities: {
           groq: Boolean(process.env.GROQ_API_KEY),
-          search: Boolean(process.env.SEARCH_API_KEY && process.env.SEARCH_ENGINE_ID),
+          search: Boolean((process.env.SEARCH_API_KEY || process.env.GOOGLE_SEARCH_API_KEY) && (process.env.SEARCH_ENGINE_ID || process.env.GOOGLE_CX)),
           cronSecret: Boolean(process.env.CRON_SECRET),
         },
         minSample: 10,
@@ -883,8 +883,8 @@ function cleanResearch(doc) {
 }
 
 async function doResearch(topic, n) {
-  const key = process.env.SEARCH_API_KEY;
-  const cx = process.env.SEARCH_ENGINE_ID;
+  const key = process.env.SEARCH_API_KEY || process.env.GOOGLE_SEARCH_API_KEY;
+  const cx = process.env.SEARCH_ENGINE_ID || process.env.GOOGLE_CX;
   let sources = [];
   if (key && cx) {
     const url =

@@ -4,6 +4,10 @@ const handler = require("../../../server/learning-event");
 
 export const maxDuration = 30;
 
+export async function GET(req: NextRequest) {
+  return runNodeHandler(handler, req);
+}
+
 export async function POST(req: NextRequest) {
   return runNodeHandler(handler, req);
 }
