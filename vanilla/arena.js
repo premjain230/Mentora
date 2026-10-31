@@ -1,14 +1,14 @@
 /**
  * Arena controller — vanilla port of the legacy arena.html module script.
- * Real Firestore progress via /api/arena, real AI battles via /api/groq-proxy,
- * learning events via /api/learning-event. No sample questions: if the AI is
- * unreachable the battle surfaces an error and offers a retry.
+ * Real Firestore progress via /api/arena, server-issued AI battles (questions
+ * and scoring stay on the server), learning events via /api/learning-event.
+ * No sample questions: if the AI is unreachable the battle surfaces an error
+ * and offers a retry.
  */
 
 import {
   collection,
   doc,
-  getDoc,
   getDocs,
   limit,
   onSnapshot,
@@ -23,18 +23,12 @@ import {
 import { createLifecycle, escapeHtml } from "./shared/lifecycle.js";
 import { mountToast } from "./shared/toast.js";
 import {
-  DEFEAT_SCORE,
-  FINAL_BOSS_DEFEAT_SCORE,
   canBattle,
   computeProgress,
   createDefaultProgress,
-  defeatChapter,
 } from "./arena/progress.js";
 
-const MODEL = "openai/gpt-oss-120b";
 const LAST_SUBJECT_KEY = "arena_last_subjectKey";
-const BATTLE_SIZE = 5;
-const BOSS_SIZE = 8;
 
 export function mount(root, ctx) {
   if (!root || !ctx?.user) return undefined;
@@ -112,19 +106,20 @@ export function mount(root, ctx) {
   let progressUnsub = null;
 
   let classTimer = null;
-  let battleAbort = null;
   let battleRequestToken = 0;
   let bossRequestToken = 0;
 
   let battleQs = [];
   let battleIdx = 0;
-  let battleScore = 0;
+  let battleSessionId = null;
+  let battlePending = false;
   let battleConcept = null;
   let battleReplay = false;
 
   let bossQs = [];
   let bossIdx = 0;
-  let bossScore = 0;
+  let bossSessionId = null;
+  let bossPending = false;
 
   hydrateTopbar(root, ctx.user);
   initLanding();
@@ -133,7 +128,6 @@ export function mount(root, ctx) {
 
   lifecycle.add(() => {
     if (classTimer) clearTimeout(classTimer);
-    if (battleAbort) battleAbort.abort();
     unsubscribeProgress();
   });
 
@@ -795,8 +789,9 @@ export function mount(root, ctx) {
     battleConcept = chapter;
     battleReplay = Boolean(isReplay);
     battleIdx = 0;
-    battleScore = 0;
     battleQs = [];
+    battleSessionId = null;
+    battlePending = false;
 
     const requestToken = ++battleRequestToken;
 
@@ -819,14 +814,22 @@ export function mount(root, ctx) {
     openModal("battleModal");
 
     try {
-      const prompt = `Generate ${BATTLE_SIZE} MCQs for ${chapter.subject} — ${chapter.name} (${chapter.topic}). Return a JSON array [{"q":"","options":["A) ...","B) ...","C) ...","D) ..."],"answer":"B","explanation":"..."}]. Only JSON.`;
-      const parsed = await generateQuestions(prompt, 900);
+      const data = await arenaRequest("start_battle", {
+        subjectKey: selectedSubjectKey,
+        mode: "chapter",
+        conceptId: chapter.conceptId,
+        subject: chapter.subject,
+        name: chapter.name,
+        topic: chapter.topic,
+      });
       if (lifecycle.disposed || requestToken !== battleRequestToken) return;
-      battleQs = normalizeQuestions(parsed, BATTLE_SIZE);
-      if (!battleQs.length) throw new Error("The AI returned no usable questions");
+      battleQs = Array.isArray(data.questions) ? data.questions : [];
+      battleSessionId = data.sessionId || null;
+      if (!battleQs.length || !battleSessionId) {
+        throw new Error("The server returned no usable questions");
+      }
     } catch (err) {
       if (lifecycle.disposed || requestToken !== battleRequestToken) return;
-      if (err?.name === "AbortError") return;
       console.warn("[arena] question generation failed", err);
       if (els.qCounter) els.qCounter.textContent = "Questions unavailable";
       if (els.qText) {
@@ -890,18 +893,49 @@ export function mount(root, ctx) {
       text.textContent = label;
       button.append(key, text);
 
-      button.addEventListener("click", () => {
-        if (selected !== null) return;
+      button.addEventListener("click", async () => {
+        if (selected !== null || battlePending || !battleSessionId) return;
         selected = index;
+        battlePending = true;
         for (const sibling of els.qOptions?.children || []) {
           sibling.classList.remove("selected");
+          sibling.disabled = true;
         }
         button.classList.add("selected");
+        els.battleError?.classList.add("hidden");
+        els.battleRetryBtn?.classList.add("hidden");
+        if (els.nextQBtn) els.nextQBtn.disabled = true;
 
-        const isCorrect = letter === question.answer;
+        let result;
+        try {
+          result = await arenaRequest("submit_answer", {
+            subjectKey: selectedSubjectKey,
+            sessionId: battleSessionId,
+            questionIndex: battleIdx,
+            choice: index,
+          });
+        } catch (err) {
+          if (lifecycle.disposed) return;
+          battlePending = false;
+          selected = null;
+          button.classList.remove("selected");
+          for (const sibling of els.qOptions?.children || []) {
+            sibling.disabled = false;
+          }
+          if (els.battleError) {
+            els.battleError.textContent = err.message || "Could not submit your answer";
+            els.battleError.classList.remove("hidden");
+          }
+          return;
+        }
+        if (lifecycle.disposed) return;
+        battlePending = false;
+
+        const isCorrect = Boolean(result.correct);
+        const answerLetter = String(result.answer || "").charAt(0).toUpperCase();
         button.classList.add(isCorrect ? "correct" : "wrong");
-        if (!isCorrect) {
-          const correctIndex = "ABCD".indexOf(question.answer);
+        const correctIndex = "ABCD".indexOf(answerLetter);
+        if (correctIndex >= 0) {
           els.qOptions?.children[correctIndex]?.classList.add("correct");
         }
 
@@ -909,13 +943,12 @@ export function mount(root, ctx) {
           els.qFeedback.classList.remove("hidden");
           els.qFeedback.className = `feedback ${isCorrect ? "correct" : "wrong"}`;
           els.qFeedback.textContent = isCorrect
-            ? `Correct. ${question.explanation || ""}`
-            : `Incorrect. Correct answer: ${question.answer}. ${
-                question.explanation || ""
+            ? `Correct. ${result.explanation || ""}`
+            : `Incorrect. Correct answer: ${answerLetter}. ${
+                result.explanation || ""
               }`;
         }
 
-        if (isCorrect) battleScore += 1;
         if (els.nextQBtn) els.nextQBtn.disabled = false;
 
         const payload = {
@@ -947,66 +980,65 @@ export function mount(root, ctx) {
   }
 
   async function finishBattle() {
-    closeModal("battleModal");
-    if (!battleConcept) return;
+    if (battlePending || !battleConcept || !battleSessionId) return;
+    battlePending = true;
+    if (els.nextQBtn) {
+      els.nextQBtn.disabled = true;
+      els.nextQBtn.textContent = "Saving…";
+    }
 
-    const total = battleQs.length;
-    const score = total ? battleScore / total : 0;
-    const pct = Math.round(score * 100);
-    const passed = score >= DEFEAT_SCORE;
-
+    let result;
     try {
-      if (passed) {
-        let masteryScore = null;
-        try {
-          const snapshot = await getDoc(
-            doc(ctx.db, "users", uid, "mastery", battleConcept.conceptId)
-          );
-          if (snapshot.exists()) masteryScore = snapshot.data().masteryScore;
-        } catch {}
-
-        const result = await arenaRequest("defeat_chapter", {
-          subjectKey: selectedSubjectKey,
-          conceptId: battleConcept.conceptId,
-          score,
-          masteryScore,
-        });
-        progress = result.progress;
-        try {
-          localStorage.setItem(LAST_SUBJECT_KEY, selectedSubjectKey);
-        } catch {}
-        burstVictory(pct, total, battleScore, masteryScore);
-      } else {
-        const result = await arenaRequest("level_complete", {
-          subjectKey: selectedSubjectKey,
-          conceptId: battleConcept.conceptId,
-          score,
-          level: "challenge",
-        });
-        if (result?.progress) progress = result.progress;
-        toast.show(
-          `Keep fighting! ${pct}% — need 60% to defeat. Review and try again.`,
-          "error",
-          3200
-        );
-        renderMap();
-      }
+      result = await arenaRequest("finish_battle", {
+        subjectKey: selectedSubjectKey,
+        sessionId: battleSessionId,
+      });
     } catch (err) {
       if (lifecycle.disposed) return;
-      console.warn("[arena] battle save failed", err);
-      toast.show(`Battle saved locally — sync will retry. ${err.message || err}`, "error");
-      if (passed) {
-        progress = defeatChapter(progress, chapters, battleConcept.conceptId, { score });
-        renderMap();
-        burstVictory(pct, total, battleScore, null);
+      battlePending = false;
+      if (els.nextQBtn) {
+        els.nextQBtn.disabled = false;
+        els.nextQBtn.textContent = "Finish";
       }
+      console.warn("[arena] battle finish failed", err);
+      toast.show(
+        err.message || "Could not save this battle. Try finishing again.",
+        "error",
+        3600
+      );
+      return;
+    }
+    if (lifecycle.disposed) return;
+
+    battlePending = false;
+    closeModal("battleModal");
+    battleSessionId = null;
+    if (result?.progress) progress = result.progress;
+
+    const total = Number(result?.total) || battleQs.length;
+    const correct = Number(result?.correct) || 0;
+    const score = Number(result?.score) || 0;
+    const pct = Math.round(score * 100);
+
+    if (result?.passed) {
+      try {
+        localStorage.setItem(LAST_SUBJECT_KEY, selectedSubjectKey);
+      } catch {}
+      burstVictory(pct, total, correct, result?.masteryScore);
+    } else {
+      toast.show(
+        `Keep fighting! ${pct}% — need 60% to defeat. Review and try again.`,
+        "error",
+        3200
+      );
+      renderMap();
     }
 
     emitEvent("quiz_completed", {
       conceptId: battleConcept.conceptId,
       subject: battleConcept.subject,
       topic: battleConcept.topic,
-      payload: { correct: battleScore, totalQ: total, score, arena: true },
+      payload: { correct, totalQ: total, score, arena: true },
     });
   }
 
@@ -1045,7 +1077,8 @@ export function mount(root, ctx) {
   async function startFinalBoss() {
     bossQs = [];
     bossIdx = 0;
-    bossScore = 0;
+    bossSessionId = null;
+    bossPending = false;
 
     const requestToken = ++bossRequestToken;
 
@@ -1061,14 +1094,21 @@ export function mount(root, ctx) {
       .join(", ");
 
     try {
-      const prompt = `Generate ${BOSS_SIZE} MCQs covering ${selectedSubject} chapters: ${topics}. Mix difficulties. Return a JSON array [{"q":"","options":["A) ...","B) ...","C) ...","D) ..."],"answer":"B","explanation":"..."}]. Only JSON.`;
-      const parsed = await generateQuestions(prompt, 1200);
+      const data = await arenaRequest("start_battle", {
+        subjectKey: selectedSubjectKey,
+        mode: "final_boss",
+        subject: selectedSubject,
+        name: `${selectedSubject} final boss`,
+        topics,
+      });
       if (lifecycle.disposed || requestToken !== bossRequestToken) return;
-      bossQs = normalizeQuestions(parsed, BOSS_SIZE);
-      if (!bossQs.length) throw new Error("The AI returned no usable questions");
+      bossQs = Array.isArray(data.questions) ? data.questions : [];
+      bossSessionId = data.sessionId || null;
+      if (!bossQs.length || !bossSessionId) {
+        throw new Error("The server returned no usable questions");
+      }
     } catch (err) {
       if (lifecycle.disposed || requestToken !== bossRequestToken) return;
-      if (err?.name === "AbortError") return;
       console.warn("[arena] boss generation failed", err);
       if (els.bossBody) {
         els.bossBody.innerHTML = `<div class="error">Could not generate the final boss right now. ${
@@ -1104,32 +1144,40 @@ export function mount(root, ctx) {
         renderBossQ();
         return;
       }
+      if (bossPending || !bossSessionId) return;
+      bossPending = true;
+      const nextBtn = els.bossBody?.querySelector("#bossNext");
+      if (nextBtn) nextBtn.disabled = true;
 
-      const total = bossQs.length;
-      const score = total ? bossScore / total : 0;
-      if (score < FINAL_BOSS_DEFEAT_SCORE) {
-        toast.show(
-          `Final boss needs 70% — you got ${Math.round(score * 100)}%. Train more and return!`,
-          "error",
-          3000
-        );
-        closeModal("bossModal");
-        return;
-      }
-
+      let result;
       try {
-        const result = await arenaRequest("final_boss_attempt", {
+        result = await arenaRequest("finish_battle", {
           subjectKey: selectedSubjectKey,
-          score,
+          sessionId: bossSessionId,
         });
-        if (lifecycle.disposed) return;
-        progress = result.progress;
-        closeModal("bossModal");
-        openSubjectComplete();
       } catch (err) {
         if (lifecycle.disposed) return;
-        toast.show(err.message || "Boss defeat failed", "error");
+        bossPending = false;
+        if (nextBtn) nextBtn.disabled = false;
+        toast.show(err.message || "Boss fight could not be saved", "error");
+        return;
       }
+      if (lifecycle.disposed) return;
+      bossSessionId = null;
+      if (result?.progress) progress = result.progress;
+
+      if (result?.passed) {
+        closeModal("bossModal");
+        openSubjectComplete();
+        return;
+      }
+      const pct = Math.round((Number(result?.score) || 0) * 100);
+      toast.show(
+        `Final boss needs 70% — you got ${pct}%. Train more and return!`,
+        "error",
+        3000
+      );
+      closeModal("bossModal");
     });
   }
 
@@ -1167,18 +1215,42 @@ export function mount(root, ctx) {
       text.textContent = label;
       button.append(key, text);
 
-      button.addEventListener("click", () => {
-        if (picked !== null) return;
+      button.addEventListener("click", async () => {
+        if (picked !== null || bossPending || !bossSessionId) return;
         picked = index;
+        bossPending = true;
         for (const sibling of options.children) {
           sibling.classList.remove("selected");
+          sibling.disabled = true;
         }
         button.classList.add("selected");
+        if (next) next.disabled = true;
 
-        const isCorrect = letter === question.answer;
+        let result;
+        try {
+          result = await arenaRequest("submit_answer", {
+            subjectKey: selectedSubjectKey,
+            sessionId: bossSessionId,
+            questionIndex: bossIdx,
+            choice: index,
+          });
+        } catch (err) {
+          if (lifecycle.disposed) return;
+          bossPending = false;
+          picked = null;
+          button.classList.remove("selected");
+          for (const sibling of options.children) sibling.disabled = false;
+          toast.show(err.message || "Could not submit your answer", "error");
+          return;
+        }
+        if (lifecycle.disposed) return;
+        bossPending = false;
+
+        const isCorrect = Boolean(result.correct);
+        const answerLetter = String(result.answer || "").charAt(0).toUpperCase();
         button.classList.add(isCorrect ? "correct" : "wrong");
-        if (!isCorrect) {
-          const correctIndex = "ABCD".indexOf(question.answer);
+        const correctIndex = "ABCD".indexOf(answerLetter);
+        if (correctIndex >= 0) {
           options.children[correctIndex]?.classList.add("correct");
         }
 
@@ -1187,11 +1259,10 @@ export function mount(root, ctx) {
           feedback.classList.remove("hidden");
           feedback.className = `feedback ${isCorrect ? "correct" : "wrong"}`;
           feedback.textContent = isCorrect
-            ? question.explanation || "Correct!"
-            : `Correct answer: ${question.answer}. ${question.explanation || ""}`;
+            ? result.explanation || "Correct!"
+            : `Correct answer: ${answerLetter}. ${result.explanation || ""}`;
         }
 
-        if (isCorrect) bossScore += 1;
         if (next) {
           next.disabled = false;
           next.textContent =
@@ -1304,51 +1375,6 @@ export function mount(root, ctx) {
       throw new Error(json.error || `Arena ${action} failed (${response.status})`);
     }
     return json;
-  }
-
-  async function generateQuestions(prompt, maxTokens) {
-    if (battleAbort) battleAbort.abort();
-    battleAbort = new AbortController();
-    const response = await ctx.authFetch("/api/groq-proxy", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        model: MODEL,
-        messages: [{ role: "user", content: prompt }],
-        temperature: 0.7,
-        max_tokens: maxTokens,
-      }),
-      signal: battleAbort.signal,
-    });
-    if (!response.ok) throw new Error(`AI request failed (${response.status})`);
-    const data = await response.json();
-    const text = data.choices?.[0]?.message?.content || "";
-    return JSON.parse(String(text).replace(/```json|```/g, "").trim());
-  }
-
-  function normalizeQuestions(raw, total) {
-    if (!Array.isArray(raw)) return [];
-    const questions = [];
-    for (const item of raw) {
-      if (!item || typeof item !== "object") continue;
-      const question = item.q ?? item.question;
-      const options = Array.isArray(item.options)
-        ? item.options.map((option) => String(option)).filter(Boolean).slice(0, 4)
-        : [];
-      if (typeof question !== "string" || !question.trim()) continue;
-      if (options.length < 2) continue;
-      const answer = String(item.answer || "A").trim().charAt(0).toUpperCase();
-      if (!"ABCD".includes(answer)) continue;
-      if ("ABCD".indexOf(answer) >= options.length) continue;
-      questions.push({
-        q: question,
-        options,
-        answer,
-        explanation: String(item.explanation || ""),
-      });
-      if (questions.length >= total) break;
-    }
-    return questions;
   }
 
   function emitEvent(type, fields = {}) {

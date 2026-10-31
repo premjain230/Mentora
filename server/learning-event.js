@@ -5,6 +5,8 @@
 
 const { applyCors, rateLimit, readJsonBody, sendError } = require("./_shared");
 const { verifyIdToken, firestore } = require("./_admin");
+const { groqComplete } = require("./_ai");
+const arena = require("./_arena");
 
 const ALLOWED_TYPES = new Set([
   "lesson_started","lesson_completed","question_answered","question_correct","question_incorrect",
@@ -65,7 +67,8 @@ function validate(body){
 /* ── Arena — consolidated to stay within Vercel Hobby 12-function limit ──
    /api/arena is rewritten to /api/learning-event?route=arena (vercel.json) so this
    single function serves both learning events and arena. Keeps deployment on Hobby. */
-const ARENA_VALID_ACTIONS = new Set(["init","get","heartbeat","level_complete","defeat_chapter","final_boss_attempt"]);
+const ARENA_VALID_ACTIONS = new Set(["init","get","heartbeat","start_battle","submit_answer","finish_battle"]);
+const ARENA_LEGACY_ACTIONS = new Set(["defeat_chapter","level_complete","final_boss_attempt"]);
 function isArenaSubjectKey(s){ return typeof s==="string" && s.length>=3 && s.length<=80 && /^[a-z0-9_]+$/.test(s); }
 async function handleArena(req, res){
   // GET ?route=arena&subjectKey=xxx  -> fetch progress
@@ -95,7 +98,10 @@ async function handleArena(req, res){
   const subjectKey = body.subjectKey ? String(body.subjectKey).trim() : null;
   const action = body.action ? String(body.action).trim() : null;
   if(!subjectKey || !isArenaSubjectKey(subjectKey)) return res.status(400).json({error:"subjectKey invalid"});
-  if(!action || !ARENA_VALID_ACTIONS.has(action)) return res.status(400).json({error:"invalid action (init,get,level_complete,defeat_chapter,final_boss_attempt)"});
+  if(action && ARENA_LEGACY_ACTIONS.has(action)){
+    return res.status(410).json({error:"Client-scored actions are disabled. Start a battle session and finish it server-side."});
+  }
+  if(!action || !ARENA_VALID_ACTIONS.has(action)) return res.status(400).json({error:"invalid action (init,get,heartbeat,start_battle,submit_answer,finish_battle)"});
   const uid=dec.uid;
   const db=firestore();
   try{
@@ -171,121 +177,209 @@ async function handleArena(req, res){
       const fresh = await progressRef.get();
       return res.status(201).json({ progress: fresh.data(), created:true });
     }
-    if(action==="level_complete" || action==="heartbeat"){
-      const conceptId = body.conceptId ? String(body.conceptId).trim().slice(0,80) : null;
-      const level = body.level ? String(body.level).trim().slice(0,20) : null;
-      const score = body.score!=null ? clamp01(body.score) : null;
-      const masteryScore = body.masteryScore!=null ? clamp01(body.masteryScore) : null;
-      if(!conceptId) return res.status(400).json({error:"conceptId required"});
-      if(score!=null && (score<0||score>1)) return res.status(400).json({error:"score 0..1"});
-      await db.runTransaction(async tx=>{
-        const snap = await tx.get(progressRef);
-        if(!snap.exists) throw Object.assign(new Error("No progress yet — call init first"),{statusCode:404});
-        const data=snap.data();
-        const chapters=data.chapters||{};
-        const entry=chapters[conceptId];
-        if(!entry) throw Object.assign(new Error("conceptId not in this subject"),{statusCode:400});
-        if(entry.state==="locked") throw Object.assign(new Error("Chapter locked — defeat prerequisites first"),{statusCode:403});
-        const prereqs = (data.prerequisites && data.prerequisites[conceptId]) || [];
-        for(const pre of prereqs){
-          const pe=chapters[pre];
-          if(pe && pe.state!=="defeated" && pe.state!=="mastered"){
-            throw Object.assign(new Error("Prerequisite not defeated: "+pre),{statusCode:403});
-          }
-        }
-        const updated = { ...entry };
-        updated.attempts = (Number(entry.attempts)||0)+1;
-        updated.lastAttemptAt = new Date().toISOString();
-        if(score!=null) updated.bestScore = Math.max(Number(entry.bestScore)||0, score);
-        if(masteryScore!=null) updated.masteryScore = masteryScore;
-        if(entry.state==="available") updated.state="in_progress";
-        if(level && ["foundation","application","challenge","boss"].includes(level)) updated.level=level;
-        chapters[conceptId]=updated;
-        let defeated=0; for(const id in chapters){ if(chapters[id].state==="defeated"||chapters[id].state==="mastered") defeated++; }
-        const total = (data.chapterOrder||Object.keys(chapters)).length;
-        const progressPct = total? Math.round(defeated/total*100):0;
-        const order=data.chapterOrder||Object.keys(chapters);
-        let current=null;
-        for(const cid of order){ const s=chapters[cid].state; if(s==="available"||s==="in_progress"){ current=cid; break; } }
-        if(!current && defeated===total) current=null;
-        else if(!current && order.length){ let lastIdx=-1; order.forEach((cid,i)=>{ if(chapters[cid].state==="defeated"||chapters[cid].state==="mastered") lastIdx=i; }); if(lastIdx>=0 && lastIdx+1<order.length) current=order[lastIdx+1]; else current=order[0]||null; }
-        tx.update(progressRef, { chapters, defeated, progressPct, currentChapterId: current, finalBossUnlocked: defeated===total && total>0, updatedAt: require("firebase-admin").firestore.FieldValue.serverTimestamp() });
-      });
-      const fresh=await progressRef.get();
-      return res.status(200).json({ progress: fresh.data() });
+    if(action==="heartbeat"){
+      const snap=await progressRef.get();
+      if(!snap.exists) return res.status(404).json({error:"No progress yet — call init first"});
+      return res.status(200).json({ progress: snap.data() });
     }
-    if(action==="defeat_chapter"){
+    if(action==="start_battle"){
+      const mode = body.mode==="final_boss" ? "final_boss" : "chapter";
       const conceptId = body.conceptId ? String(body.conceptId).trim().slice(0,80) : null;
-      const score = body.score!=null ? clamp01(body.score) : 0;
-      const masteryScore = body.masteryScore!=null ? clamp01(body.masteryScore) : null;
-      if(!conceptId) return res.status(400).json({error:"conceptId required"});
-      const MIN_DEFEAT = 0.60;
-      if(score < MIN_DEFEAT && (masteryScore==null || masteryScore < 0.60)){
-        return res.status(400).json({error:`Score too low to defeat (need >= ${MIN_DEFEAT})`});
+      if(mode==="chapter" && (!conceptId || !/^[a-z][a-z0-9]*(\.[a-z0-9_]+)+$/.test(conceptId))){
+        return res.status(400).json({error:"conceptId invalid"});
       }
+      const subject = body.subject ? String(body.subject).trim().slice(0,60) : "this subject";
+      const name = body.name ? String(body.name).trim().slice(0,120) : (conceptId || subject);
+      const topic = body.topic ? String(body.topic).trim().slice(0,160) : name;
+      const topics = body.topics ? String(body.topics).trim().slice(0,400) : name;
+      const count = mode==="final_boss" ? arena.BOSS_SIZE : arena.BATTLE_SIZE;
+      if(!rateLimit(req,res,{name:"arena-generate",limit:10})) return;
+      let parsed;
+      try{
+        const prompt = mode==="final_boss"
+          ? `Generate ${count} MCQs covering ${subject} chapters: ${topics}. Mix difficulties. Return a JSON array [{"q":"","options":["A) ...","B) ...","C) ...","D) ..."],"answer":"B","explanation":"..."}]. Only JSON.`
+          : `Generate ${count} MCQs for ${subject} — ${name} (${topic}). Return a JSON array [{"q":"","options":["A) ...","B) ...","C) ...","D) ..."],"answer":"B","explanation":"..."}]. Only JSON.`;
+        const content = await groqComplete({ model: process.env.GROQ_MODEL || "openai/gpt-oss-120b", messages:[{role:"user",content:prompt}], temperature:0.7, maxTokens: mode==="final_boss" ? 1200 : 900 });
+        parsed = JSON.parse(String(content).replace(/```json|```/g,"").trim());
+      }catch(e){
+        console.error("[arena] question generation failed", e && e.message ? e.message : e);
+        return res.status(502).json({error:"Could not generate battle questions. Please retry."});
+      }
+      const questions = arena.normalizeQuestions(parsed, count);
+      if(!questions.length) return res.status(502).json({error:"Could not generate battle questions. Please retry."});
+      const sessionId = arena.newSessionId();
+      await db.doc(`users/${uid}/arenaSessions/${sessionId}`).set({
+        sessionId, uid, subjectKey, mode,
+        conceptId: mode==="chapter" ? conceptId : null,
+        subject, name, topic,
+        questions,
+        answers: [],
+        status: "active",
+        questionCount: questions.length,
+        createdAt: require("firebase-admin").firestore.FieldValue.serverTimestamp(),
+        expiresAt: require("firebase-admin").firestore.Timestamp.fromMillis(Date.now()+arena.SESSION_TTL_MS),
+      });
+      return res.status(201).json({ sessionId, mode, questions: arena.publicQuestions(questions) });
+    }
+    if(action==="submit_answer"){
+      const sessionId = typeof body.sessionId==="string" ? body.sessionId.trim() : "";
+      if(!/^[A-Za-z0-9_-]{10,80}$/.test(sessionId)) return res.status(400).json({error:"sessionId invalid"});
+      const questionIndex = Number(body.questionIndex);
+      if(!Number.isInteger(questionIndex) || questionIndex<0) return res.status(400).json({error:"questionIndex invalid"});
+      const sessionRef = db.doc(`users/${uid}/arenaSessions/${sessionId}`);
+      let result;
       await db.runTransaction(async tx=>{
-        const snap=await tx.get(progressRef);
-        if(!snap.exists) throw Object.assign(new Error("No progress yet — call init first"),{statusCode:404});
-        const data=snap.data();
-        const chapters=data.chapters||{};
-        const entry=chapters[conceptId];
-        if(!entry) throw Object.assign(new Error("conceptId not in this subject"),{statusCode:400});
-        if(entry.state==="locked") throw Object.assign(new Error("Chapter locked"),{statusCode:403});
-        if(entry.state==="defeated"||entry.state==="mastered"){
+        const snap = await tx.get(sessionRef);
+        const { questions, answers } = arena.assertUsableSession(snap.exists ? snap.data() : null, { uid, now: Date.now(), subjectKey });
+        if(questionIndex > answers.length) throw Object.assign(new Error("Answer questions in order."), {statusCode:409});
+        if(questionIndex < answers.length){
+          const prior = answers[questionIndex];
+          if(prior && Number(prior.choice) === Number(body.choice)){
+            result = { index: questionIndex, correct: Boolean(prior.correct), answer: questions[questionIndex].answer, explanation: questions[questionIndex].explanation, idempotent: true };
+            return;
+          }
+          throw Object.assign(new Error("Question already answered."), {statusCode:409});
+        }
+        const question = questions[questionIndex];
+        if(!question) throw Object.assign(new Error("questionIndex out of range"), {statusCode:400});
+        const choice = arena.normalizeChoice(body.choice, question.options.length);
+        const correct = arena.isCorrectChoice(question, choice);
+        tx.update(sessionRef, {
+          answers: [...answers, { index: questionIndex, choice, correct, at: new Date().toISOString() }],
+          updatedAt: require("firebase-admin").firestore.FieldValue.serverTimestamp(),
+        });
+        result = { index: questionIndex, correct, answer: question.answer, explanation: question.explanation };
+      });
+      return res.status(200).json(result);
+    }
+    if(action==="finish_battle"){
+      const sessionId = typeof body.sessionId==="string" ? body.sessionId.trim() : "";
+      if(!/^[A-Za-z0-9_-]{10,80}$/.test(sessionId)) return res.status(400).json({error:"sessionId invalid"});
+      const sessionRef = db.doc(`users/${uid}/arenaSessions/${sessionId}`);
+      const serverTs = () => require("firebase-admin").firestore.FieldValue.serverTimestamp();
+      let outcome;
+      await db.runTransaction(async tx=>{
+        const sessionSnap = await tx.get(sessionRef);
+        const session = sessionSnap.exists ? sessionSnap.data() : null;
+        // Idempotent retry: a save that already landed must replay its outcome
+        // instead of failing the client after a dropped response.
+        if(session && session.status==="completed"){
+          if(session.uid!==uid || session.subjectKey!==subjectKey){
+            throw Object.assign(new Error("Battle session belongs to another user."), {statusCode:403});
+          }
+          outcome = {
+            mode: session.mode==="final_boss" ? "final_boss" : "chapter",
+            passed: Boolean(session.passed),
+            score: Number(session.score)||0,
+            correct: Number(session.correct)||0,
+            total: Array.isArray(session.questions) ? session.questions.length : 0,
+            masteryScore: session.masteryScore ?? null,
+            idempotent: true,
+          };
           return;
         }
+        const { questions, answers } = arena.assertUsableSession(session, { uid, now: Date.now(), requireComplete: true, subjectKey });
+        const scored = arena.scoreAnswers(questions, answers);
+        const mode = session.mode==="final_boss" ? "final_boss" : "chapter";
+        const conceptId = session.conceptId;
+        const progSnap = await tx.get(progressRef);
+        if(!progSnap.exists) throw Object.assign(new Error("No progress yet — call init first"), {statusCode:404});
+        const data = progSnap.data();
+
+        if(mode==="final_boss"){
+          if(!data.finalBossUnlocked) throw Object.assign(new Error("Final boss locked — defeat all chapters first"), {statusCode:403});
+          const passed = scored.score >= arena.MIN_BOSS_DEFEAT;
+          tx.update(sessionRef, { status:"completed", completedAt: serverTs(), score: scored.score, correct: scored.correct, passed, masteryScore:null });
+          if(passed && !data.finalBossDefeated){
+            tx.update(progressRef, { finalBossDefeated:true, finalBossScore:scored.score, updatedAt: serverTs() });
+            const eventId = `${Date.now()}_final_boss`.slice(0,120);
+            tx.set(db.doc(`users/${uid}/arenaEvents/${eventId}`), { eventId, uid, subjectKey, type:"final_boss_defeated", score:scored.score, createdAt: serverTs(), arenaVersion:1 });
+          }
+          outcome = { mode, passed, score:scored.score, correct:scored.correct, total:scored.total, masteryScore:null };
+          return;
+        }
+
+        const chapters = { ...(data.chapters || {}) };
+        const entry = chapters[conceptId];
+        if(!entry) throw Object.assign(new Error("conceptId not in this subject"), {statusCode:400});
+        if(entry.state==="locked") throw Object.assign(new Error("Chapter locked"), {statusCode:403});
         const prereqs = (data.prerequisites && data.prerequisites[conceptId]) || [];
         for(const pre of prereqs){
-          const pe=chapters[pre]; if(pe && pe.state!=="defeated" && pe.state!=="mastered") throw Object.assign(new Error("Prerequisite not defeated: "+pre),{statusCode:403});
+          const pe=chapters[pre]; if(pe && pe.state!=="defeated" && pe.state!=="mastered") throw Object.assign(new Error("Prerequisite not defeated: "+pre), {statusCode:403});
         }
-        const order=data.chapterOrder||Object.keys(chapters);
-        const idx=order.indexOf(conceptId);
-        if(idx>0){
-          let earliestAvailable = null;
-          for(const cid of order){ const s=chapters[cid].state; if(s==="available"||s==="in_progress"){ earliestAvailable=cid; break; } }
-          if(earliestAvailable && earliestAvailable!==conceptId){
-            const earliestIdx=order.indexOf(earliestAvailable);
-            if(idx > earliestIdx){
-              throw Object.assign(new Error("Defeat chapters in order — current is "+earliestAvailable),{statusCode:403});
+        let masteryScore = null;
+        try{
+          const masterySnap = await tx.get(db.doc(`users/${uid}/mastery/${conceptId}`));
+          if(masterySnap.exists) masteryScore = arena.clamp01(masterySnap.data().masteryScore);
+        }catch{}
+        if(entry.state==="defeated" || entry.state==="mastered"){
+          const replayPassed = scored.score>=arena.MIN_DEFEAT || (masteryScore!=null && masteryScore>=arena.MIN_DEFEAT);
+          tx.update(sessionRef, { status:"completed", completedAt: serverTs(), score: scored.score, correct: scored.correct, passed: replayPassed, masteryScore });
+          outcome = {
+            mode, passed: replayPassed,
+            score: scored.score, correct: scored.correct, total: scored.total, masteryScore,
+          };
+          return;
+        }
+        const passed = scored.score >= arena.MIN_DEFEAT || (masteryScore!=null && masteryScore>=arena.MIN_DEFEAT);
+        const order = data.chapterOrder || Object.keys(chapters);
+        const idx = order.indexOf(conceptId);
+        if(passed){
+          if(idx>0){
+            let earliestAvailable = null;
+            for(const cid of order){ const s=chapters[cid].state; if(s==="available"||s==="in_progress"){ earliestAvailable=cid; break; } }
+            if(earliestAvailable && earliestAvailable!==conceptId){
+              throw Object.assign(new Error("Defeat chapters in order — current is "+earliestAvailable), {statusCode:403});
             }
           }
+          const updated = {
+            ...entry,
+            state: (masteryScore!=null && masteryScore>=0.85) ? "mastered" : "defeated",
+            defeatedAt: new Date().toISOString(),
+            bestScore: Math.max(Number(entry.bestScore)||0, scored.score),
+            attempts: (Number(entry.attempts)||0)+1,
+            lastAttemptAt: new Date().toISOString(),
+          };
+          if(masteryScore!=null) updated.masteryScore = masteryScore;
+          chapters[conceptId] = updated;
+          if(idx>=0 && idx+1<order.length){
+            const nxtId = order[idx+1]; const nxt = chapters[nxtId];
+            if(nxt && nxt.state==="locked") nxt.state="available";
+          }
+          const eventId = `${Date.now()}_${conceptId}`.slice(0,120);
+          tx.set(db.doc(`users/${uid}/arenaEvents/${eventId}`), {
+            eventId, uid, subjectKey, conceptId, type:"chapter_defeated",
+            score:scored.score, masteryScore: masteryScore ?? null,
+            createdAt: serverTs(), arenaVersion:1,
+          });
+        } else {
+          const updated = {
+            ...entry,
+            attempts: (Number(entry.attempts)||0)+1,
+            lastAttemptAt: new Date().toISOString(),
+            bestScore: Math.max(Number(entry.bestScore)||0, scored.score),
+          };
+          if(masteryScore!=null) updated.masteryScore = masteryScore;
+          if(entry.state==="available") updated.state="in_progress";
+          chapters[conceptId] = updated;
         }
-        const updated={...entry, state: (masteryScore!=null && masteryScore>=0.85)? "mastered":"defeated", defeatedAt: new Date().toISOString(), bestScore: Math.max(Number(entry.bestScore)||0, score), attempts: (Number(entry.attempts)||0)+1, lastAttemptAt: new Date().toISOString() };
-        if(masteryScore!=null) updated.masteryScore=masteryScore;
-        chapters[conceptId]=updated;
-        if(idx>=0 && idx+1<order.length){
-          const nxtId=order[idx+1]; const nxt=chapters[nxtId];
-          if(nxt && nxt.state==="locked") nxt.state="available";
-        }
-        let defeated=0; for(const id in chapters){ if(chapters[id].state==="defeated"||chapters[id].state==="mastered") defeated++; }
-        const total=order.length; const progressPct=total?Math.round(defeated/total*100):0;
-        let current=null;
+        let defeated = 0;
+        for(const id in chapters){ if(chapters[id].state==="defeated"||chapters[id].state==="mastered") defeated++; }
+        const total = order.length;
+        const progressPct = total ? Math.round(defeated/total*100) : 0;
+        let current = null;
         for(const cid of order){ const s=chapters[cid].state; if(s==="available"||s==="in_progress"){ current=cid; break; } }
-        if(!current && defeated===total) current=null;
-        const finalBossUnlocked = defeated===total && total>0;
-        tx.update(progressRef, { chapters, defeated, progressPct, currentChapterId: current, finalBossUnlocked, updatedAt: require("firebase-admin").firestore.FieldValue.serverTimestamp() });
-        const eventId = `${Date.now()}_${conceptId}`.slice(0,120);
-        const evRef = db.doc(`users/${uid}/arenaEvents/${eventId}`);
-        tx.set(evRef, { eventId, uid, subjectKey, conceptId, type:"chapter_defeated", score, masteryScore: masteryScore??null, createdAt: require("firebase-admin").firestore.FieldValue.serverTimestamp(), arenaVersion:1 });
+        if(!current && defeated===total) current = null;
+        tx.update(progressRef, {
+          chapters, defeated, progressPct, currentChapterId: current,
+          finalBossUnlocked: defeated===total && total>0,
+          updatedAt: serverTs(),
+        });
+        tx.update(sessionRef, { status:"completed", completedAt: serverTs(), score: scored.score, correct: scored.correct, passed, masteryScore });
+        outcome = { mode, passed, score: scored.score, correct: scored.correct, total: scored.total, masteryScore };
       });
-      const fresh=await progressRef.get();
-      return res.status(200).json({ progress: fresh.data() });
-    }
-    if(action==="final_boss_attempt"){
-      const score = body.score!=null ? clamp01(body.score) : 0;
-      if(score < 0.7) return res.status(400).json({error:"Final boss requires >= 0.70"});
-      await db.runTransaction(async tx=>{
-        const snap=await tx.get(progressRef);
-        if(!snap.exists) throw Object.assign(new Error("No progress yet"),{statusCode:404});
-        const data=snap.data();
-        if(!data.finalBossUnlocked) throw Object.assign(new Error("Final boss locked — defeat all chapters first"),{statusCode:403});
-        if(data.finalBossDefeated) return;
-        tx.update(progressRef, { finalBossDefeated: true, finalBossScore: score, updatedAt: require("firebase-admin").firestore.FieldValue.serverTimestamp() });
-        const eventId = `${Date.now()}_final_boss`.slice(0,120);
-        tx.set(db.doc(`users/${uid}/arenaEvents/${eventId}`), { eventId, uid, subjectKey, type:"final_boss_defeated", score, createdAt: require("firebase-admin").firestore.FieldValue.serverTimestamp(), arenaVersion:1 });
-      });
-      const fresh=await progressRef.get();
-      return res.status(200).json({ progress: fresh.data() });
+      const fresh = await progressRef.get();
+      return res.status(200).json({ ...outcome, progress: fresh.data() });
     }
     return res.status(400).json({error:"Unknown action"});
   }catch(e){

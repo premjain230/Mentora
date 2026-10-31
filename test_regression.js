@@ -338,6 +338,40 @@ test("server: chat quota increment is transactional", () => {
   assert(adminJs.includes("db.runTransaction"), "Usage increment must be atomic");
 });
 
+test("server: ID tokens are verified with checkRevoked enabled", () => {
+  assert(
+    adminJs.includes("verifyIdToken(token, true)"),
+    "verifyIdToken must request revocation checking"
+  );
+  const revocationCheck = adminJs.indexOf("if (isRevocationError(adminErr))");
+  const fallbackCall = adminJs.indexOf("return await verifyIdTokenWithPublicKey(token)");
+  assert(revocationCheck > -1, "verifyIdToken must detect revocation errors");
+  assert(
+    revocationCheck < fallbackCall,
+    "Revoked tokens must be rejected before the public-key fallback"
+  );
+});
+
+test("server: revocation error classification covers revoked/disabled/deleted users", () => {
+  assert.strictEqual(
+    serverAdmin.isRevocationError({ code: "auth/id-token-revoked" }),
+    true
+  );
+  assert.strictEqual(
+    serverAdmin.isRevocationError({ errorInfo: { code: "auth/user-disabled" } }),
+    true
+  );
+  assert.strictEqual(
+    serverAdmin.isRevocationError({ code: "auth/user-not-found" }),
+    true
+  );
+  assert.strictEqual(
+    serverAdmin.isRevocationError({ code: "auth/id-token-expired" }),
+    false
+  );
+  assert.strictEqual(serverAdmin.isRevocationError(null), false);
+});
+
 // ─────────────────────────────────────────────────────────────────────────────
 // SUITE 3B: ADMIN GRANT/REVOKE SAFETY (server/_entitlement-admin.js)
 // ─────────────────────────────────────────────────────────────────────────────
@@ -437,6 +471,218 @@ test("admin endpoint is admin-gated, tombstones instead of deleting", () => {
   assert(entitlementHandlerJs.includes("setCustomUserClaims"), "revocation must clear Pro claims");
   assert(entitlementHandlerJs.includes("entitlementAudit"), "missing audit log write");
   assert(!entitlementHandlerJs.includes(".delete()"), "entitlements must never be deleted");
+});
+
+test("admin revoke: invalidates refresh tokens and audits the result", () => {
+  assert(
+    entitlementHandlerJs.includes("revokeRefreshTokens(uid)"),
+    "revocation must invalidate outstanding refresh tokens"
+  );
+  assert(
+    entitlementHandlerJs.includes("sessionsRevoked"),
+    "revocation response/audit must report session invalidation"
+  );
+  assert(
+    entitlementHandlerJs.includes("sessionsRevoked, sessionError"),
+    "session invalidation must be recorded in the audit log"
+  );
+});
+
+// ─────────────────────────────────────────────────────────────────────────────
+// SUITE 3C: SERVER-VERIFIED ARENA BATTLES (server/_arena.js)
+// ─────────────────────────────────────────────────────────────────────────────
+console.log("\n[Suite 3C] Server-Verified Arena Battles");
+
+const arenaHelpers = require("./server/_arena");
+const arenaClientJs = fs.readFileSync(path.join(ROOT, "vanilla/arena.js"), "utf8");
+const learningEventJs = fs.readFileSync(
+  path.join(ROOT, "server/learning-event.js"),
+  "utf8"
+);
+
+const ARENA_QUESTIONS = [
+  { q: "2 + 2?", options: ["3", "4", "5", "6"], answer: "B", explanation: "Addition" },
+  { q: "3 + 3?", options: ["5", "6", "7", "8"], answer: "B", explanation: "Addition" },
+  { q: "4 + 4?", options: ["7", "8", "9", "10"], answer: "B", explanation: "Addition" },
+];
+
+test("arena: normalizeQuestions keeps only valid MCQs and caps the count", () => {
+  const raw = [
+    ...ARENA_QUESTIONS,
+    { q: "no options", options: [], answer: "A" },
+    { q: "bad answer", options: ["a", "b"], answer: "Z" },
+    { q: "answer out of range", options: ["a", "b"], answer: "D" },
+    null,
+    "not an object",
+  ];
+  const normalized = arenaHelpers.normalizeQuestions(raw, 5);
+  assert.strictEqual(normalized.length, 3);
+  assert.strictEqual(arenaHelpers.normalizeQuestions(raw, 2).length, 2);
+  assert.strictEqual(
+    arenaHelpers.normalizeQuestions({ questions: ARENA_QUESTIONS }, 5).length,
+    3
+  );
+  assert.strictEqual(arenaHelpers.normalizeQuestions("nope", 5).length, 0);
+});
+
+test("arena: questions sent to the browser never include the answer key", () => {
+  const publicQs = arenaHelpers.publicQuestions(ARENA_QUESTIONS);
+  assert.strictEqual(publicQs.length, 3);
+  for (const question of publicQs) {
+    assert.strictEqual(question.answer, undefined);
+    assert.strictEqual(question.explanation, undefined);
+    assert.deepStrictEqual(Object.keys(question).sort(), ["options", "q"]);
+  }
+});
+
+test("arena: answer choices are range-checked server-side", () => {
+  assert.strictEqual(arenaHelpers.normalizeChoice(0, 4), 0);
+  assert.strictEqual(arenaHelpers.normalizeChoice("3", 4), 3);
+  assert.throws(() => arenaHelpers.normalizeChoice(4, 4), /out of range/);
+  assert.throws(() => arenaHelpers.normalizeChoice(-1, 4), /out of range/);
+  assert.throws(() => arenaHelpers.normalizeChoice("B", 4), /out of range/);
+  assert.strictEqual(arenaHelpers.isCorrectChoice(ARENA_QUESTIONS[0], 1), true);
+  assert.strictEqual(arenaHelpers.isCorrectChoice(ARENA_QUESTIONS[0], 0), false);
+});
+
+test("arena: session validation rejects foreign, completed, expired, incomplete sessions", () => {
+  const questions = ARENA_QUESTIONS;
+  const base = {
+    uid: "alice",
+    subjectKey: "physics",
+    status: "active",
+    questions,
+    answers: [],
+    expiresAt: new Date(Date.now() + 60000),
+  };
+  assert.throws(
+    () => arenaHelpers.assertUsableSession(null, { uid: "alice" }),
+    (err) => err.statusCode === 404
+  );
+  assert.throws(
+    () => arenaHelpers.assertUsableSession(base, { uid: "bob" }),
+    (err) => err.statusCode === 403
+  );
+  assert.throws(
+    () => arenaHelpers.assertUsableSession({ ...base, status: "completed" }, { uid: "alice" }),
+    (err) => err.statusCode === 409
+  );
+  assert.throws(
+    () =>
+      arenaHelpers.assertUsableSession(
+        { ...base, expiresAt: new Date(Date.now() - 1000) },
+        { uid: "alice" }
+      ),
+    (err) => err.statusCode === 410
+  );
+  assert.throws(
+    () => arenaHelpers.assertUsableSession(base, { uid: "alice", requireComplete: true }),
+    (err) => err.statusCode === 400
+  );
+  assert.throws(
+    () => arenaHelpers.assertUsableSession(base, { uid: "alice", subjectKey: "chemistry" }),
+    (err) => err.statusCode === 403
+  );
+  assert.doesNotThrow(() =>
+    arenaHelpers.assertUsableSession(base, { uid: "alice", subjectKey: "physics" })
+  );
+});
+
+test("arena: score is computed from the stored answer key, not client claims", () => {
+  const answers = [
+    { index: 0, choice: 1 },
+    { index: 1, choice: 1 },
+    { index: 2, choice: 0 },
+  ];
+  const scored = arenaHelpers.scoreAnswers(ARENA_QUESTIONS, answers);
+  assert.deepStrictEqual(scored, { correct: 2, total: 3, score: 2 / 3 });
+  assert.throws(
+    () => arenaHelpers.scoreAnswers(ARENA_QUESTIONS, answers.slice(0, 2)),
+    /Answer every question/
+  );
+  assert.throws(
+    () => arenaHelpers.scoreAnswers(ARENA_QUESTIONS, [answers[0], answers[0], answers[2]]),
+    /Duplicate answer/
+  );
+  assert.throws(
+    () =>
+      arenaHelpers.scoreAnswers(ARENA_QUESTIONS, [
+        { index: 0, choice: 9 },
+        answers[1],
+        answers[2],
+      ]),
+    /out of range/
+  );
+});
+
+test("arena: sessions expire and ids are unique", () => {
+  assert(arenaHelpers.SESSION_TTL_MS > 0);
+  assert(arenaHelpers.MAX_QUESTIONS >= arenaHelpers.BOSS_SIZE);
+  assert.notStrictEqual(arenaHelpers.newSessionId(), arenaHelpers.newSessionId());
+});
+
+test("arena server: legacy client-scored actions are disabled", () => {
+  assert(learningEventJs.includes('ARENA_LEGACY_ACTIONS = new Set(["defeat_chapter","level_complete","final_boss_attempt"])'));
+  assert(learningEventJs.includes("Client-scored actions are disabled"));
+  assert(learningEventJs.includes("arena.publicQuestions(questions)"));
+  assert(learningEventJs.includes("arena.scoreAnswers(questions, answers)"));
+});
+
+test("arena server: finishing is idempotent and stores the verified outcome", () => {
+  assert(
+    learningEventJs.includes('session.status==="completed"'),
+    "finish_battle must replay an already-completed session"
+  );
+  assert(
+    learningEventJs.includes("idempotent: true"),
+    "idempotent finish must be marked in the response"
+  );
+  assert(
+    /passed, masteryScore \{?\}?\);?/.test(learningEventJs),
+    "completed sessions must persist passed/mastery for retries"
+  );
+  assert(
+    learningEventJs.includes("assertUsableSession(session, { uid, now: Date.now(), requireComplete: true, subjectKey })"),
+    "finish must bind the session to the requested subject"
+  );
+});
+
+test("legacy arena page: uses the same server-session actions", () => {
+  const legacyArena = fs.readFileSync(path.join(ROOT, "arena.html"), "utf8");
+  for (const action of ["start_battle", "submit_answer", "finish_battle"]) {
+    assert(
+      legacyArena.includes(`arenaAction("${action}"`),
+      `arena.html must call ${action}`
+    );
+  }
+  for (const legacy of ["defeat_chapter", "level_complete", "final_boss_attempt"]) {
+    assert(!legacyArena.includes(legacy), `arena.html must not call ${legacy}`);
+  }
+  assert(!legacyArena.includes("/api/groq-proxy"), "arena.html must not generate questions locally");
+  assert(!legacyArena.includes("makeLocalQuestions"), "arena.html must not fabricate questions");
+});
+
+test("arena client: uses server sessions and never scores locally", () => {
+  for (const action of ["start_battle", "submit_answer", "finish_battle"]) {
+    assert(
+      arenaClientJs.includes(`arenaRequest("${action}"`),
+      `arena client must call ${action}`
+    );
+  }
+  for (const legacy of ['"defeat_chapter"', '"level_complete"', '"final_boss_attempt"']) {
+    assert(
+      !arenaClientJs.includes(legacy),
+      `arena client must not call legacy action ${legacy}`
+    );
+  }
+  assert(
+    !arenaClientJs.includes("/api/groq-proxy"),
+    "arena client must not generate questions locally"
+  );
+  assert(
+    !arenaClientJs.includes("question.answer"),
+    "arena client must not read answer keys"
+  );
 });
 
 

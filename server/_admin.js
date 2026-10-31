@@ -126,19 +126,45 @@ async function verifyIdTokenWithPublicKey(token) {
   };
 }
 
+const REVOCATION_ERROR_CODES = new Set([
+  "auth/id-token-revoked",
+  "auth/user-disabled",
+  "auth/user-not-found",
+]);
+
+/**
+ * True when the Admin SDK rejected a token because its refresh tokens were
+ * revoked or the account was disabled/deleted. The public-key fallback cannot
+ * observe revocation, so these detections must never fall through to it.
+ */
+function isRevocationError(err) {
+  const code = String(
+    (err && err.code) || (err && err.errorInfo && err.errorInfo.code) || ""
+  ).trim().toLowerCase();
+  return REVOCATION_ERROR_CODES.has(code);
+}
+
 /**
  * Verifies a Firebase ID token; returns decoded claims ({ uid, email, ... })
  * or null. Prefers the Admin SDK (needs a service account) and transparently
  * falls back to public-key JWT verification, so authentication still works
  * when the service account env var is missing or misconfigured.
+ *
+ * checkRevoked=true makes the Admin SDK compare the token's auth_time against
+ * the user's tokensValidAfterTime, so a revoked session (or a token carrying a
+ * stale Pro claim) is rejected immediately instead of lasting until expiry.
  */
 async function verifyIdToken(token) {
   if (!token) return null;
 
   try {
-    const decoded = await adminSdk().auth().verifyIdToken(token);
+    const decoded = await adminSdk().auth().verifyIdToken(token, true);
     return decoded;
   } catch (adminErr) {
+    if (isRevocationError(adminErr)) {
+      // Do not fall back: signature verification cannot see revocations.
+      return null;
+    }
     // Admin SDK path failed (missing service account, bad env, transient).
     // Only log the config-class failures; a plain invalid token is expected
     // traffic and should not spam the logs.
@@ -466,6 +492,7 @@ module.exports = {
   adminSdk,
   firestore,
   verifyIdToken,
+  isRevocationError,
   requireAdmin,
   requireCron,
   isAdminEmail,

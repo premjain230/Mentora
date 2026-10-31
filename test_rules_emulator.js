@@ -431,6 +431,23 @@ async function main() {
         setDoc(doc(alice, "arenaProgress/physics"), { completed: true })
       );
     });
+
+    await test("SECURITY: arenaSessions (answer keys) are server-only", async () => {
+      await assertFails(
+        setDoc(doc(alice, "users/alice/arenaSessions/s1"), {
+          uid: "alice",
+          status: "active",
+          questions: [{ q: "2+2?", options: ["3", "4"], answer: "B" }],
+          answers: [],
+        })
+      );
+      await assertFails(getDoc(doc(alice, "users/alice/arenaSessions/s1")));
+      await assertFails(
+        updateDoc(doc(alice, "users/alice/arenaSessions/s1"), {
+          answers: [{ index: 0, choice: 1 }],
+        })
+      );
+    });
   } finally {
     await testEnv.cleanup();
   }

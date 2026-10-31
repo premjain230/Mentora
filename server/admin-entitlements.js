@@ -141,6 +141,8 @@ async function revokePro({ db, admin, uid, reason }) {
       reason,
       claimsUpdated: false,
       claimError: null,
+      sessionsRevoked: false,
+      sessionError: null,
       at: serverTs(),
     });
   });
@@ -158,13 +160,28 @@ async function revokePro({ db, admin, uid, reason }) {
     if (err && err.code !== "auth/user-not-found") claimError = safeErrorCode(err);
   }
 
+  // Invalidates every outstanding refresh token, so the next ID-token refresh
+  // drops the Pro claim. verifyIdToken(checkRevoked) then rejects ID tokens
+  // issued before this moment instead of honouring them for up to an hour.
+  let sessionsRevoked = false;
+  let sessionError = null;
   try {
-    await auditRef.set({ claimsUpdated, claimError }, { merge: true });
+    await adminSdk().auth().revokeRefreshTokens(uid);
+    sessionsRevoked = true;
+  } catch (err) {
+    if (err && err.code !== "auth/user-not-found") sessionError = safeErrorCode(err);
+  }
+
+  try {
+    await auditRef.set(
+      { claimsUpdated, claimError, sessionsRevoked, sessionError },
+      { merge: true }
+    );
   } catch (err) {
     console.error("[admin-entitlements] audit update failed:", safeErrorCode(err));
   }
 
-  return { bonusChats, claimsUpdated, claimError };
+  return { bonusChats, claimsUpdated, claimError, sessionsRevoked, sessionError };
 }
 
 module.exports = async function handler(req, res) {
@@ -235,17 +252,16 @@ module.exports = async function handler(req, res) {
     }
 
     const reason = validateReason(body.reason, { required: true });
-    const { bonusChats, claimsUpdated, claimError } = await revokePro({
-      db,
-      admin,
-      uid,
-      reason,
-    });
-    if (claimError) {
+    const { bonusChats, claimsUpdated, claimError, sessionsRevoked, sessionError } =
+      await revokePro({ db, admin, uid, reason });
+    if (claimError || sessionError) {
       return res.status(500).json({
-        error: "Entitlement revoked, but Pro claims could not be cleared. Retry the revoke.",
+        error: claimError
+          ? "Entitlement revoked, but Pro claims could not be cleared. Retry the revoke."
+          : "Entitlement revoked, but active sessions could not be revoked. Retry the revoke.",
         retryable: true,
-        claimsCleared: false,
+        claimsCleared: !claimError,
+        sessionsRevoked,
       });
     }
     return res.status(200).json({
@@ -254,6 +270,7 @@ module.exports = async function handler(req, res) {
       plan: "free",
       claimsCleared: true,
       claimsUpdated,
+      sessionsRevoked,
       referralBonusChats: bonusChats,
     });
   } catch (err) {
