@@ -339,6 +339,108 @@ test("server: chat quota increment is transactional", () => {
 });
 
 // ─────────────────────────────────────────────────────────────────────────────
+// SUITE 3B: ADMIN GRANT/REVOKE SAFETY (server/_entitlement-admin.js)
+// ─────────────────────────────────────────────────────────────────────────────
+console.log("\n[Suite 3B] Admin Grant/Revoke Safety");
+
+const entitlementAdmin = require("./server/_entitlement-admin");
+const entitlementHandlerJs = fs.readFileSync(
+  path.join(ROOT, "server/admin-entitlements.js"),
+  "utf8"
+);
+const ADMIN_NOW = Date.parse("2026-10-31T00:00:00Z");
+const GRANT_FUTURE = ADMIN_NOW + 30 * 86400000;
+
+test("admin grant: target uid rejects empty and path separators", () => {
+  assert.strictEqual(entitlementAdmin.validateTargetUid(" abc123 "), "abc123");
+  assert.throws(() => entitlementAdmin.validateTargetUid(""), /uid is required/);
+  assert.throws(() => entitlementAdmin.validateTargetUid("../users/x"), /invalid characters/);
+});
+
+test("admin grant: expiry must be future and within ten years", () => {
+  assert.strictEqual(
+    entitlementAdmin.validateGrantExpiry(new Date(GRANT_FUTURE).toISOString(), ADMIN_NOW),
+    GRANT_FUTURE
+  );
+  assert.throws(() => entitlementAdmin.validateGrantExpiry(null, ADMIN_NOW), /expiresAt is required/);
+  assert.throws(() => entitlementAdmin.validateGrantExpiry("not-a-date", ADMIN_NOW), /not a valid date/);
+  assert.throws(
+    () => entitlementAdmin.validateGrantExpiry(new Date(ADMIN_NOW - 1000).toISOString(), ADMIN_NOW),
+    /must be in the future/
+  );
+  assert.throws(
+    () => entitlementAdmin.validateGrantExpiry(ADMIN_NOW + 3651 * 86400000, ADMIN_NOW),
+    /cannot be more than/
+  );
+});
+
+test("admin grant: bonus chats are clamped and never silently dropped", () => {
+  assert.strictEqual(entitlementAdmin.resolveBonusChats({ explicit: 999999 }), 500);
+  assert.strictEqual(entitlementAdmin.resolveBonusChats({ explicit: -5 }), 0);
+  assert.strictEqual(
+    entitlementAdmin.resolveBonusChats({ entitlementData: { referralRewards: { bonusChats: 120 } } }),
+    120
+  );
+  assert.strictEqual(
+    entitlementAdmin.resolveBonusChats({ userData: { referralRewards: { bonusChats: 200 } } }),
+    200
+  );
+  assert.strictEqual(
+    entitlementAdmin.resolveBonusChats({
+      explicit: 0,
+      entitlementData: { referralRewards: { bonusChats: 120 } },
+    }),
+    0
+  );
+});
+
+test("admin revoke: every Pro claim is stripped, admin claims preserved", () => {
+  const stripped = entitlementAdmin.stripProClaims({
+    admin: true,
+    role: "admin",
+    email: "admin@example.com",
+    pro: true,
+    proExpiresAt: "2027-01-01T00:00:00Z",
+    proUntil: "2027-01-01T00:00:00Z",
+    subscriptionExpiresAt: "2027-01-01T00:00:00Z",
+  });
+  assert.strictEqual(stripped.changed, true);
+  assert.deepStrictEqual(stripped.removed.sort(), [
+    "pro",
+    "proExpiresAt",
+    "proUntil",
+    "subscriptionExpiresAt",
+  ]);
+  assert.strictEqual(stripped.claims.pro, undefined);
+  assert.strictEqual(stripped.claims.proExpiresAt, undefined);
+  assert.strictEqual(stripped.claims.admin, true);
+  assert.strictEqual(stripped.claims.role, "admin");
+  assert.strictEqual(stripped.claims.email, "admin@example.com");
+  assert.strictEqual(entitlementAdmin.stripProClaims(null).changed, false);
+});
+
+test("admin revoke: reason is required and length-capped", () => {
+  assert.throws(
+    () => entitlementAdmin.validateReason("  ", { required: true }),
+    /reason is required/
+  );
+  assert.throws(
+    () => entitlementAdmin.validateReason("x".repeat(501)),
+    /cannot exceed/
+  );
+  assert.strictEqual(entitlementAdmin.validateReason(" support request "), "support request");
+});
+
+test("admin endpoint is admin-gated, tombstones instead of deleting", () => {
+  assert(entitlementHandlerJs.includes("await requireAdmin(req, res)"), "missing requireAdmin gate");
+  assert(entitlementHandlerJs.includes('status: "revoked"'), "revocation must tombstone");
+  assert(entitlementHandlerJs.includes("setCustomUserClaims"), "revocation must clear Pro claims");
+  assert(entitlementHandlerJs.includes("entitlementAudit"), "missing audit log write");
+  assert(!entitlementHandlerJs.includes(".delete()"), "entitlements must never be deleted");
+});
+
+
+// ─────────────────────────────────────────────────────────────────────────────
 // SUITE 4: USAGE LIMITS & MODAL GATING
 // ─────────────────────────────────────────────────────────────────────────────
 console.log("\n[Suite 4] Usage Limits & Modal Gating (limits.js)");

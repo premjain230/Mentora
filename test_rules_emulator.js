@@ -294,6 +294,19 @@ async function main() {
       await assertFails(getDoc(doc(bob, "entitlements/alice")));
     });
 
+    console.log("\n[entitlementAudit] server-only");
+
+    await test("SECURITY: clients cannot read or write entitlement audit logs", async () => {
+      await assertFails(
+        setDoc(doc(alice, "entitlementAudit/audit1"), {
+          action: "grant",
+          targetUid: "alice",
+        })
+      );
+      await assertFails(getDoc(doc(alice, "entitlementAudit/audit1")));
+      await assertFails(getDoc(doc(bob, "entitlementAudit/audit1")));
+    });
+
     console.log("\n[usage] read-only counters");
 
     await test("owner can read usage", async () => {
