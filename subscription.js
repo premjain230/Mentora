@@ -94,10 +94,10 @@ export function isProUserData(data) {
     return false;
   }
 
-  // 2. Admins are always Pro
-  if (data.role === "admin" || data.isAdmin === true) return true;
+  // NOTE: role/isAdmin fields are profile data, not proof of entitlement.
+  // Admin Pro access comes from verified custom claims in getUserPlan().
 
-  // 3. Plan string matches
+  // 2. Plan string matches
   if (normalizePlan(data.plan) === "pro") return true;
   if (normalizePlan(data.tier) === "pro" || normalizePlan(data.subscriptionTier) === "pro") return true;
 
@@ -108,11 +108,10 @@ export function isProUserData(data) {
   if (data.subscriptionStatus === "active" || data.subscriptionStatus === "pro") return true;
   if (data.subscription?.status === "active" || normalizePlan(data.subscription?.plan) === "pro") return true;
 
-  // 6. Referral-earned pro days (with optional expiry)
+  // 6. Referral-earned pro days (require an explicit, still-valid expiry)
   const proDays = Number(data.referralRewards?.proDays) || 0;
   const proExpiresAt = data.referralRewards?.proExpiresAt || data.proExpiresAt || data.subscriptionExpiresAt || data.proUntil;
-  if (proDays > 0) {
-    if (!proExpiresAt) return true;
+  if (proDays > 0 && proExpiresAt) {
     const exp = new Date(proExpiresAt);
     if (!isNaN(exp.getTime()) && exp.getTime() > Date.now()) return true;
   }
@@ -128,19 +127,42 @@ export function isProUserData(data) {
 
 // ─── Get user plan ────────────────────────────────────────────────────────────
 
+/** Claims are authoritative only while their attached expiry (if any) is valid. */
+function claimsGrantPro(claims) {
+  if (!claims) return false;
+  if (claims.admin === true || claims.role === "admin") return true;
+  if (claims.pro !== true) return false;
+  const expiry = claims.proExpiresAt || claims.proUntil || claims.subscriptionExpiresAt;
+  if (!expiry) return true; // lifetime claim
+  const exp = new Date(expiry);
+  return !isNaN(exp.getTime()) && exp.getTime() > Date.now();
+}
+
 export async function getUserPlan(uid, user = null) {
   // 1. First check Firebase Auth custom claims if user object is available (fastest, authoritative)
   const u = user || auth?.currentUser;
   if (u && typeof u.getIdTokenResult === "function") {
     try {
       const tokenResult = await u.getIdTokenResult();
-      if (tokenResult?.claims?.pro === true || tokenResult?.claims?.admin === true || tokenResult?.claims?.role === "admin") {
+      if (claimsGrantPro(tokenResult?.claims)) {
         return "pro";
       }
     } catch {}
   }
 
   if (!db) return "free";
+
+  // Server-owned entitlement record wins when present, so a revocation can
+  // never be undone by stale legacy user-document fields.
+  try {
+    const entSnap = await getDoc(doc(db, "entitlements", uid));
+    if (entSnap.exists()) {
+      return isProUserData(entSnap.data()) ? "pro" : "free";
+    }
+  } catch (err) {
+    console.warn("[getUserPlan] entitlement read failed:", err);
+  }
+
   const ref = doc(db, "users", uid);
   let snap;
   try {

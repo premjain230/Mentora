@@ -7,7 +7,6 @@ import {
   setDoc,
 } from "firebase/firestore";
 import { createLifecycle } from "./shared/lifecycle.js";
-import { isProUserData } from "./shared/plan.js";
 import { mountToast } from "./shared/toast.js";
 
 const PERSONALITY_NAMES = {
@@ -148,7 +147,7 @@ export function mount(root, ctx) {
     const email = profileData.email || ctx.user.email || "–";
     const avatarUrl = profileData.photoURL || ctx.user.photoURL || "";
     const topics = Array.isArray(profileData.topics) ? profileData.topics : [];
-    const pro = Boolean(ctx.isPro) || isProUserData(profileData);
+    const pro = Boolean(ctx.isPro);
 
     if (els.avatar) {
       els.avatar.textContent = "";

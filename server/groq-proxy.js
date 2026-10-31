@@ -95,7 +95,7 @@ module.exports = async function handler(req, res) {
   // IMPORTANT: Never fall back to unlimited on error — that would let free users bypass limits via new chats/reloads.
   let gate;
   try {
-    gate = await checkAndIncrementChat(decoded.uid);
+    gate = await checkAndIncrementChat(decoded.uid, decoded);
   } catch (err) {
     console.error("checkAndIncrementChat failed (fail-closed):", err && err.message ? err.message : err);
     // Fail closed: do NOT grant unlimited. Return 503 so client shows retry, not a bypass.

@@ -123,7 +123,6 @@ export default function SignupPage() {
             uid: user.uid,
             displayName: user.displayName || "Student",
             email: user.email,
-            plan: "free",
             updatedAt: serverTimestamp(),
           },
           { merge: true }

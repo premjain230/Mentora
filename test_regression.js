@@ -10,8 +10,23 @@
 const assert = require("assert");
 const fs = require("fs");
 const path = require("path");
+const ts = require("typescript");
 
 const ROOT = path.resolve(__dirname);
+
+/** Loads a small dependency-free TypeScript module with the installed tsc. */
+function loadTsModule(relativePath) {
+  const source = fs.readFileSync(path.join(ROOT, relativePath), "utf8");
+  const output = ts.transpileModule(source, {
+    compilerOptions: {
+      module: ts.ModuleKind.CommonJS,
+      target: ts.ScriptTarget.ES2020,
+    },
+  }).outputText;
+  const mod = { exports: {} };
+  new Function("exports", "module", "require", output)(mod.exports, mod, require);
+  return mod.exports;
+}
 let passed = 0;
 let failed = 0;
 
@@ -117,42 +132,12 @@ test("sidebar.html: logo height is styled cleanly in sidebar.css (34px)", () => 
 // ─────────────────────────────────────────────────────────────────────────────
 console.log("\n[Suite 2] Pro Plan Entitlements & Detection (Client)");
 
-const normalizePlan = (raw) => {
-  const p = String(raw || "").trim().toLowerCase();
-  if (p === "pro" || p === "premium" || p === "paid" || p === "unlimited" || p === "lifetime") return "pro";
-  return "free";
-};
-
-const isSubscriptionExpired = (data) => {
-  if (!data) return false;
-  const expiresAt = data.subscriptionExpiresAt || data.proExpiresAt || data.proUntil || data.referralRewards?.proExpiresAt;
-  if (!expiresAt) return false;
-  const exp = new Date(expiresAt);
-  return !isNaN(exp.getTime()) && exp.getTime() <= Date.now();
-};
-
-const isProUserData = (data) => {
-  if (!data) return false;
-  if (isSubscriptionExpired(data)) return false;
-  if (data.role === "admin" || data.isAdmin === true) return true;
-  if (normalizePlan(data.plan) === "pro") return true;
-  if (normalizePlan(data.tier) === "pro" || normalizePlan(data.subscriptionTier) === "pro") return true;
-  if (data.isPro === true || data.pro === true || data.isPremium === true) return true;
-  if (data.subscriptionStatus === "active" || data.subscriptionStatus === "pro") return true;
-  if (data.subscription?.status === "active" || normalizePlan(data.subscription?.plan) === "pro") return true;
-  const proDays = Number(data.referralRewards?.proDays) || 0;
-  const proExpiresAt = data.referralRewards?.proExpiresAt || data.proExpiresAt || data.subscriptionExpiresAt || data.proUntil;
-  if (proDays > 0) {
-    if (!proExpiresAt) return true;
-    const exp = new Date(proExpiresAt);
-    if (!isNaN(exp.getTime()) && exp.getTime() > Date.now()) return true;
-  }
-  if (proExpiresAt) {
-    const exp = new Date(proExpiresAt);
-    if (!isNaN(exp.getTime()) && exp.getTime() > Date.now()) return true;
-  }
-  return false;
-};
+const {
+  resolveIsPro,
+  resolveEntitlement,
+  entitlementDataIsPro: isProUserData,
+  MAX_REFERRAL_BONUS_CHATS,
+} = loadTsModule("lib/entitlement.ts");
 
 test("Free user: plan: 'free' returns false (not Pro)", () => {
   assert.strictEqual(isProUserData({ plan: "free" }), false);
@@ -191,9 +176,31 @@ test("Pro user: nested subscription.status: 'active' returns true", () => {
   assert.strictEqual(isProUserData({ subscription: { status: "active" } }), true);
 });
 
-test("Pro user: admin role returns true", () => {
-  assert.strictEqual(isProUserData({ role: "admin" }), true);
-  assert.strictEqual(isProUserData({ isAdmin: true }), true);
+test("SECURITY: user-doc role/isAdmin never grants Pro (claims only)", () => {
+  assert.strictEqual(isProUserData({ role: "admin" }), false);
+  assert.strictEqual(isProUserData({ isAdmin: true }), false);
+  assert.strictEqual(resolveIsPro({ userData: { role: "admin", isAdmin: true } }), false);
+});
+
+test("Verified admin custom claim grants Pro", () => {
+  assert.strictEqual(resolveIsPro({ claims: { admin: true } }), true);
+  assert.strictEqual(resolveIsPro({ claims: { role: "admin" } }), true);
+  assert.strictEqual(resolveEntitlement({ claims: { admin: true } }).plan, "pro");
+});
+
+test("Verified Pro claim is validated against its expiry", () => {
+  const future = new Date(Date.now() + 86400000).toISOString();
+  const past = new Date(Date.now() - 86400000).toISOString();
+  assert.strictEqual(resolveIsPro({ claims: { pro: true } }), true);
+  assert.strictEqual(resolveIsPro({ claims: { pro: true, proExpiresAt: future } }), true);
+  assert.strictEqual(resolveIsPro({ claims: { pro: true, proExpiresAt: past } }), false);
+});
+
+test("legacy subscription.js validates Pro claim expiry in getUserPlan", () => {
+  const legacy = fs.readFileSync(path.join(ROOT, "subscription.js"), "utf8");
+  assert(legacy.includes("function claimsGrantPro(claims)"), "claimsGrantPro helper missing");
+  assert(!legacy.includes("tokenResult?.claims?.pro === true ||"), "raw unvalidated Pro claim check still present");
+  assert(legacy.includes("exp.getTime() > Date.now()"), "claim expiry check missing");
 });
 
 test("Expired user: subscriptionExpiresAt in the past returns FALSE (reverts to free)", () => {
@@ -204,27 +211,131 @@ test("Expired user: subscriptionExpiresAt in the past returns FALSE (reverts to 
   );
 });
 
+test("SECURITY: entitlement record is authoritative over legacy user doc", () => {
+  const past = new Date(Date.now() - 3600000).toISOString();
+  assert.strictEqual(
+    resolveIsPro({
+      entitlement: { plan: "free" },
+      userData: { plan: "pro" },
+    }),
+    false
+  );
+  assert.strictEqual(
+    resolveIsPro({
+      entitlement: { plan: "pro", subscriptionExpiresAt: past },
+      userData: { plan: "pro" },
+    }),
+    false
+  );
+  assert.strictEqual(
+    resolveIsPro({ entitlement: { plan: "pro" }, userData: { plan: "free" } }),
+    true
+  );
+});
+
+test("SECURITY: referral Pro days require an explicit, valid expiry", () => {
+  assert.strictEqual(isProUserData({ referralRewards: { proDays: 30 } }), false);
+  assert.strictEqual(
+    isProUserData({
+      referralRewards: { proDays: 30, proExpiresAt: new Date(Date.now() + 86400000).toISOString() },
+    }),
+    true
+  );
+});
+
+test("SECURITY: referral bonus chats are clamped", () => {
+  assert.strictEqual(
+    resolveEntitlement({ userData: { referralRewards: { bonusChats: 999999 } } }).bonusChats,
+    MAX_REFERRAL_BONUS_CHATS
+  );
+  assert.strictEqual(
+    resolveEntitlement({ userData: { referralRewards: { bonusChats: -5 } } }).bonusChats,
+    0
+  );
+});
+
 // ─────────────────────────────────────────────────────────────────────────────
 // SUITE 3: SERVER-SIDE PRO DETECTION (server/_admin.js)
 // ─────────────────────────────────────────────────────────────────────────────
 console.log("\n[Suite 3] Server-Side Plan Verification (server/_admin.js)");
 
 const adminJs = fs.readFileSync(path.join(ROOT, "server/_admin.js"), "utf8");
-
-test("server/_admin.js: contains server-authoritative isProUserDataServer", () => {
-  assert(adminJs.includes("function isProUserDataServer"), "Missing isProUserDataServer");
-});
-
-test("server/_admin.js: contains expired subscription check in isProUserDataServer", () => {
-  assert(
-    adminJs.includes("exp.getTime() <= Date.now()"),
-    "Missing expiry check in isProUserDataServer"
-  );
-});
+const serverAdmin = require("./server/_admin");
 
 test("server/_admin.js: SERVER_PLAN_LIMITS defines Infinity for Pro chatLimit", () => {
   assert(adminJs.includes("pro: { chatLimit: Infinity }"), "Pro limit should be Infinity");
   assert(adminJs.includes("free: { chatLimit: 20 }"), "Free limit should be 20");
+});
+
+test("server: user-doc email/role/isAdmin never grants Pro", () => {
+  assert.strictEqual(
+    serverAdmin.isProUserDataServer({ role: "admin", isAdmin: true, email: "premjains106@gmail.com" }),
+    false
+  );
+});
+
+test("SECURITY: admin email allowlist requires a verified email", () => {
+  const adminEmail = "premjains106@gmail.com";
+  assert.strictEqual(
+    serverAdmin.isAdminClaims({ email: adminEmail, email_verified: false }),
+    false
+  );
+  assert.strictEqual(
+    serverAdmin.isAdminClaims({ email: adminEmail }),
+    false
+  );
+  assert.strictEqual(
+    serverAdmin.isAdminClaims({ email: adminEmail, email_verified: true }),
+    true
+  );
+  assert.strictEqual(
+    serverAdmin.resolveEntitlement({ claims: { email: adminEmail, email_verified: false } }).plan,
+    "free"
+  );
+});
+
+test("server: verified claims outrank server-owned and legacy sources", () => {
+  const resolved = serverAdmin.resolveEntitlement({
+    claims: { admin: true },
+    entitlementData: { plan: "free" },
+    entitlementExists: true,
+    userData: { plan: "free" },
+  });
+  assert.strictEqual(resolved.plan, "pro");
+  assert.strictEqual(resolved.source, "claims-admin");
+});
+
+test("server: entitlement record suppresses stale Pro user doc", () => {
+  const resolved = serverAdmin.resolveEntitlement({
+    claims: null,
+    entitlementData: { plan: "free" },
+    entitlementExists: true,
+    userData: { plan: "pro" },
+  });
+  assert.strictEqual(resolved.plan, "free");
+  assert.strictEqual(resolved.source, "entitlement");
+});
+
+test("server: expired subscription reverts to free (server-side validation)", () => {
+  const past = new Date(Date.now() - 3600000).toISOString();
+  const resolved = serverAdmin.resolveEntitlement({
+    claims: null,
+    entitlementData: { plan: "pro", subscriptionExpiresAt: past },
+    entitlementExists: true,
+    userData: null,
+  });
+  assert.strictEqual(resolved.plan, "free");
+});
+
+test("server: referral bonuses are clamped", () => {
+  const resolved = serverAdmin.resolveEntitlement({
+    userData: { referralRewards: { bonusChats: 999999 } },
+  });
+  assert.strictEqual(resolved.bonusChats, serverAdmin.MAX_REFERRAL_BONUS_CHATS);
+});
+
+test("server: chat quota increment is transactional", () => {
+  assert(adminJs.includes("db.runTransaction"), "Usage increment must be atomic");
 });
 
 // ─────────────────────────────────────────────────────────────────────────────

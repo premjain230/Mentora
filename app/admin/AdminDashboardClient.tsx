@@ -7,13 +7,9 @@ import { useRouter } from "next/navigation";
 
 export function AdminDashboardClient() {
   const router = useRouter();
-  const { user, userData, loading } = useAuth();
+  const { user, isAdmin, loading } = useAuth();
   const [stats, setStats] = useState<any>(null);
   const [fetching, setFetching] = useState(true);
-
-  const isAdmin =
-    userData?.role === "admin" ||
-    user?.email === "premjains106@gmail.com";
 
   useEffect(() => {
     if (!loading && (!user || !isAdmin)) {
@@ -39,7 +35,7 @@ export function AdminDashboardClient() {
         }
       });
     }
-  }, [user, userData, loading, isAdmin, router]);
+  }, [user, loading, isAdmin, router]);
 
   if (loading || fetching) {
     return (

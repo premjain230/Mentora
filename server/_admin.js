@@ -119,7 +119,11 @@ async function verifyIdTokenWithPublicKey(token) {
   if (typeof payload.exp !== "number" || payload.exp * 1000 < Date.now()) return null;
   if (!payload.sub) return null;
 
-  return { uid: payload.sub, email: payload.email || null };
+  return {
+    uid: payload.sub,
+    email: payload.email || null,
+    email_verified: payload.email_verified === true,
+  };
 }
 
 /**
@@ -169,11 +173,15 @@ async function requireAdmin(req, res) {
   }
   const email = decoded.email ? decoded.email.toLowerCase() : "";
   const claimAdmin = decoded.admin === true;
-  const allowlisted = isAdminEmail(decoded.email || email);
+  const allowlisted = decoded.email_verified === true && isAdminEmail(decoded.email || email);
   if (allowlisted) {
     // Hand out the claim once so future reads/writes can rely on it too.
+    // Merge existing custom claims so a Pro grant is not overwritten.
     try {
-      await adminSdk().auth().setCustomUserClaims(decoded.uid, { admin: true });
+      const record = await adminSdk().auth().getUser(decoded.uid);
+      await adminSdk()
+        .auth()
+        .setCustomUserClaims(decoded.uid, { ...(record.customClaims || {}), admin: true });
     } catch (_) {
       /* non-fatal: allowlist still passes */
     }
@@ -234,43 +242,154 @@ function normalizePlanServer(raw) {
   return "free";
 }
 
-function isProUserDataServer(data) {
+const MAX_REFERRAL_BONUS_CHATS = 500;
+const MAX_REFERRAL_PRO_DAYS = 3650;
+
+/** Normalizes Firestore Timestamp / ISO string / seconds / ms to epoch ms. */
+function toMillis(value) {
+  if (value == null) return null;
+  if (typeof value === "number") {
+    if (!Number.isFinite(value)) return null;
+    return value < 1e12 ? value * 1000 : value;
+  }
+  if (typeof value === "string") {
+    const parsed = Date.parse(value);
+    return Number.isNaN(parsed) ? null : parsed;
+  }
+  if (typeof value.toDate === "function") {
+    const date = value.toDate();
+    return date instanceof Date && !Number.isNaN(date.getTime()) ? date.getTime() : null;
+  }
+  if (typeof value.seconds === "number") {
+    return value.seconds * 1000;
+  }
+  const date = new Date(value);
+  return Number.isNaN(date.getTime()) ? null : date.getTime();
+}
+
+function expiryIsFuture(value) {
+  const ms = toMillis(value);
+  return ms != null && ms > Date.now();
+}
+
+function expiryIsPast(value) {
+  const ms = toMillis(value);
+  return ms != null && ms <= Date.now();
+}
+
+/**
+ * Admin identity comes ONLY from verified token claims / the server-controlled
+ * ADMIN_EMAILS env list. Firestore fields such as users/{uid}.role or isAdmin
+ * are never consulted, even though clients can no longer write them.
+ */
+function isAdminClaims(decoded) {
+  if (!decoded) return false;
+  return decoded.admin === true
+    || decoded.role === "admin"
+    || (decoded.email_verified === true && isAdminEmail(decoded.email));
+}
+
+/** Pro from verified custom claims. Expiry claims are validated server-side. */
+function isProClaims(decoded) {
+  if (!decoded || decoded.pro !== true) return false;
+  const expiry = decoded.proExpiresAt || decoded.proUntil || decoded.subscriptionExpiresAt;
+  return expiry ? expiryIsFuture(expiry) : true;
+}
+
+/**
+ * Pro from an entitlement record. Callers must only pass data from a
+ * server-owned source (entitlements/{uid} or a hardened users/{uid}).
+ * Expiry is always evaluated at request time.
+ */
+function entitlementDataIsPro(data) {
   if (!data) return false;
 
-  // 1. Admin emails are always pro on server (belt & suspenders)
-  if (data.email && isAdminEmail(data.email)) return true;
-  if (data.role === "admin" || data.isAdmin === true) return true;
+  const proExpiresAt =
+    data.subscriptionExpiresAt ||
+    data.proExpiresAt ||
+    data.proUntil ||
+    data.referralRewards?.proExpiresAt;
+  if (expiryIsPast(proExpiresAt)) return false;
 
-  // 2. Check if subscription is expired (if expiry date exists and is in the past)
-  const proExpiresAt = data.subscriptionExpiresAt || data.proExpiresAt || data.proUntil || data.referralRewards?.proExpiresAt;
-  if (proExpiresAt) {
-    const exp = new Date(proExpiresAt);
-    if (!isNaN(exp.getTime()) && exp.getTime() <= Date.now()) {
-      return false; // Expired — fall back to free plan
-    }
-  }
-
-  // 3. Active Pro indicators
   if (normalizePlanServer(data.plan) === "pro") return true;
   if (normalizePlanServer(data.tier) === "pro" || normalizePlanServer(data.subscriptionTier) === "pro") return true;
   if (data.isPro === true || data.pro === true || data.isPremium === true) return true;
   if (data.subscriptionStatus === "active" || data.subscriptionStatus === "pro") return true;
   if (data.subscription?.status === "active" || normalizePlanServer(data.subscription?.plan) === "pro") return true;
 
-  // 4. Referral rewards (verified not expired above)
+  // Referral Pro days only count with an explicit, still-valid expiry.
   const proDays = Number(data.referralRewards?.proDays) || 0;
-  if (proDays > 0) {
-    if (!proExpiresAt) return true;
-    const exp = new Date(proExpiresAt);
-    if (!isNaN(exp.getTime()) && exp.getTime() > Date.now()) return true;
+  if (proDays > 0 && proDays <= MAX_REFERRAL_PRO_DAYS && expiryIsFuture(proExpiresAt)) {
+    return true;
   }
 
-  if (proExpiresAt) {
-    const exp = new Date(proExpiresAt);
-    if (!isNaN(exp.getTime()) && exp.getTime() > Date.now()) return true;
-  }
+  return expiryIsFuture(proExpiresAt);
+}
 
-  return false;
+/** Bonus free-plan chats from referral rewards, clamped to a sane range. */
+function referralBonusChats(data) {
+  const raw = Number(data?.referralRewards?.bonusChats);
+  if (!Number.isFinite(raw) || raw <= 0) return 0;
+  return Math.floor(Math.min(raw, MAX_REFERRAL_BONUS_CHATS));
+}
+
+/**
+ * Pure entitlement resolution (no I/O) so it can be unit-tested.
+ *
+ * Precedence:
+ *   1. verified custom claims (admin / Pro)
+ *   2. server-owned entitlements/{uid} — authoritative when present
+ *   3. hardened users/{uid} legacy fields
+ *
+ * Client-writable user fields were the previous trust boundary; the rules now
+ * make placement in these sources meaningful. An existing entitlement record
+ * suppresses the legacy user doc so a revocation cannot be undone by stale data.
+ */
+function resolveEntitlement({ claims, entitlementData, entitlementExists, userData } = {}) {
+  const entitlement = entitlementExists ? entitlementData || {} : null;
+  const bonusSource = entitlement || userData;
+
+  if (isAdminClaims(claims)) {
+    return { plan: "pro", source: "claims-admin", isAdmin: true, bonusChats: referralBonusChats(bonusSource) };
+  }
+  if (isProClaims(claims)) {
+    return { plan: "pro", source: "claims-pro", isAdmin: false, bonusChats: referralBonusChats(bonusSource) };
+  }
+  if (entitlementExists) {
+    return {
+      plan: entitlementDataIsPro(entitlement) ? "pro" : "free",
+      source: "entitlement",
+      isAdmin: false,
+      bonusChats: referralBonusChats(entitlement),
+    };
+  }
+  return {
+    plan: entitlementDataIsPro(userData) ? "pro" : "free",
+    source: userData ? "user-doc" : "default",
+    isAdmin: false,
+    bonusChats: referralBonusChats(userData),
+  };
+}
+
+/** Reads the server-owned sources and resolves the verified entitlement. */
+async function getVerifiedEntitlement(uid, decoded) {
+  const db = firestore();
+  const [entitlementSnap, userSnap] = await Promise.all([
+    db.doc(`entitlements/${uid}`).get(),
+    db.doc(`users/${uid}`).get(),
+  ]);
+
+  return resolveEntitlement({
+    claims: decoded,
+    entitlementData: entitlementSnap.exists ? entitlementSnap.data() : null,
+    entitlementExists: entitlementSnap.exists,
+    userData: userSnap.exists ? userSnap.data() : null,
+  });
+}
+
+/** Backwards-compatible pure helper (entitlement-shaped data only). */
+function isProUserDataServer(data) {
+  return entitlementDataIsPro(data);
 }
 
 function serverTodayStr() {
@@ -283,57 +402,63 @@ function serverTodayStr() {
  * success, or { allowed:false, status:429, error, plan, used, limit } when
  * the free-plan limit has been reached.
  */
-async function checkAndIncrementChat(uid) {
-  const db = firestore();
-  const [userSnap, usageSnap] = await Promise.all([
-    db.doc(`users/${uid}`).get(),
-    db.doc(`usage/${uid}`).get(),
-  ]);
-
-  const userData = userSnap.exists ? userSnap.data() : {};
-  const plan = isProUserDataServer(userData) ? "pro" : "free";
+async function checkAndIncrementChat(uid, decoded) {
+  const entitlement = await getVerifiedEntitlement(uid, decoded);
+  const plan = entitlement.plan === "pro" ? "pro" : "free";
   const limits = SERVER_PLAN_LIMITS[plan] || SERVER_PLAN_LIMITS.free;
+  const limit = limits.chatLimit === Infinity ? Infinity : limits.chatLimit + entitlement.bonusChats;
 
+  const db = firestore();
+  const usageRef = db.doc(`usage/${uid}`);
   const today = serverTodayStr();
-  let usage = usageSnap.exists ? usageSnap.data() : {};
-  if (!usage || usage.date !== today) {
-    usage = { date: today, dailyChatCount: 0, dailyAnalysisCount: 0, plannerUsageMinutes: 0 };
-  }
-  const used = Number(usage.dailyChatCount) || 0;
 
-  const bonusChats = Number(userData?.referralRewards?.bonusChats) || 0;
-  const limit = limits.chatLimit === Infinity ? Infinity : limits.chatLimit + bonusChats;
+  let previousUsed = 0;
+  let allowed = true;
 
-  if (limit !== Infinity && used >= limit) {
-    return {
-      allowed: false,
-      status: 429,
-      plan,
-      used,
-      limit,
-      error: `Daily chat limit reached (${limit}). Upgrade to Learning Allied Pro for unlimited access.`,
-    };
-  }
+  // Transaction prevents parallel requests from reading the same count and
+  // each writing count+1 (which would let a free user exceed the daily limit).
+  await db.runTransaction(async (tx) => {
+    const usageSnap = await tx.get(usageRef);
+    let usage = usageSnap.exists ? usageSnap.data() : {};
+    if (!usage || usage.date !== today) {
+      usage = { date: today, dailyChatCount: 0, dailyAnalysisCount: 0, plannerUsageMinutes: 0 };
+    }
+    previousUsed = Number(usage.dailyChatCount) || 0;
 
-  await db
-    .doc(`usage/${uid}`)
-    .set(
+    if (limit !== Infinity && previousUsed >= limit) {
+      allowed = false;
+      return;
+    }
+
+    tx.set(
+      usageRef,
       {
-        ...usage,
         date: today,
-        dailyChatCount: used + 1,
+        dailyChatCount: previousUsed + 1,
         dailyAnalysisCount: Number(usage.dailyAnalysisCount) || 0,
         plannerUsageMinutes: Number(usage.plannerUsageMinutes) || 0,
       },
       { merge: false }
     );
+  });
+
+  if (!allowed) {
+    return {
+      allowed: false,
+      status: 429,
+      plan,
+      used: previousUsed,
+      limit,
+      error: `Daily chat limit reached (${limit}). Upgrade to Learning Allied Pro for unlimited access.`,
+    };
+  }
 
   return {
     allowed: true,
     plan,
-    used,
+    used: previousUsed,
     limit,
-    remaining: limit === Infinity ? Infinity : Math.max(0, limit - (used + 1)),
+    remaining: limit === Infinity ? Infinity : Math.max(0, limit - (previousUsed + 1)),
   };
 }
 
@@ -348,4 +473,13 @@ module.exports = {
   streamDocs,
   MIN_SAMPLE,
   checkAndIncrementChat,
+  getVerifiedEntitlement,
+  resolveEntitlement,
+  entitlementDataIsPro,
+  isProUserDataServer,
+  isAdminClaims,
+  isProClaims,
+  referralBonusChats,
+  toMillis,
+  MAX_REFERRAL_BONUS_CHATS,
 };

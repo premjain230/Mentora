@@ -73,7 +73,7 @@ module.exports = async function handler(req, res) {
   if (action === "chat") {
     let gate;
     try {
-      gate = await checkAndIncrementChat(uid);
+      gate = await checkAndIncrementChat(uid, decoded);
     } catch (err) {
       console.error("[tutor] chat gate failed (fail-closed):", err && err.message ? err.message : err);
       return res.status(503).json({ error: "Usage service temporarily unavailable. Please retry in a moment." });

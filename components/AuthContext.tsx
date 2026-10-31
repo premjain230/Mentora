@@ -4,12 +4,18 @@ import React, { createContext, useContext, useEffect, useState } from "react";
 import { User, onAuthStateChanged, signOut as firebaseSignOut } from "firebase/auth";
 import { doc, getDoc, Firestore } from "firebase/firestore";
 import { initFirebase } from "../lib/firebase";
-import { isProUser, UserPlanData } from "../lib/subscription";
+import {
+  resolveIsPro,
+  UserPlanData,
+  EntitlementClaims,
+  EntitlementData,
+} from "../lib/subscription";
 
 interface AuthContextType {
   user: User | null;
   userData: UserPlanData | null;
   isPro: boolean;
+  isAdmin: boolean;
   loading: boolean;
   signOut: () => Promise<void>;
   refreshUserData: () => Promise<void>;
@@ -19,6 +25,7 @@ const AuthContext = createContext<AuthContextType>({
   user: null,
   userData: null,
   isPro: false,
+  isAdmin: false,
   loading: true,
   signOut: async () => {},
   refreshUserData: async () => {},
@@ -27,18 +34,31 @@ const AuthContext = createContext<AuthContextType>({
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [userData, setUserData] = useState<UserPlanData | null>(null);
+  const [claims, setClaims] = useState<EntitlementClaims | null>(null);
+  const [entitlement, setEntitlement] = useState<EntitlementData | null>(null);
   const [loading, setLoading] = useState(true);
 
-  const fetchUserData = async (currentUser: User, firestoreDb?: Firestore) => {
+  const fetchUserData = async (
+    currentUser: User,
+    firestoreDb?: Firestore,
+    forceRefreshToken = false
+  ) => {
     try {
       const { db } = await initFirebase();
       const activeDb = firestoreDb || db;
       if (!activeDb) return;
-      const snap = await getDoc(doc(activeDb, "users", currentUser.uid));
-      if (snap.exists()) {
-        const data = snap.data() as UserPlanData;
-        setUserData(data);
-      }
+      const [snap, entitlementSnap, tokenResult] = await Promise.all([
+        getDoc(doc(activeDb, "users", currentUser.uid)),
+        getDoc(doc(activeDb, "entitlements", currentUser.uid)),
+        currentUser
+          .getIdTokenResult(forceRefreshToken)
+          .catch(() => null),
+      ]);
+      setUserData(snap.exists() ? (snap.data() as UserPlanData) : null);
+      setEntitlement(
+        entitlementSnap.exists() ? (entitlementSnap.data() as EntitlementData) : null
+      );
+      setClaims((tokenResult?.claims as EntitlementClaims) || null);
     } catch (e) {
       console.warn("Could not fetch user profile:", e);
     }
@@ -59,6 +79,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           await fetchUserData(currentUser, db || undefined);
         } else {
           setUserData(null);
+          setClaims(null);
+          setEntitlement(null);
         }
         setLoading(false);
       });
@@ -77,6 +99,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
       setUser(null);
       setUserData(null);
+      setClaims(null);
+      setEntitlement(null);
       window.location.href = "/login";
     } catch (err) {
       console.error("Sign out error:", err);
@@ -85,11 +109,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const refreshUserData = async () => {
     if (user) {
-      await fetchUserData(user);
+      await fetchUserData(user, undefined, true);
     }
   };
 
-  const isPro = isProUser(userData);
+  const isPro = resolveIsPro({ claims, entitlement, userData });
+  const isAdmin =
+    claims?.admin === true ||
+    claims?.role === "admin" ||
+    (user?.emailVerified === true &&
+      user?.email?.toLowerCase() === "premjains106@gmail.com");
 
   return (
     <AuthContext.Provider
@@ -97,6 +126,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         user,
         userData,
         isPro,
+        isAdmin,
         loading,
         signOut: handleSignOut,
         refreshUserData,

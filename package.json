@@ -14,7 +14,10 @@
     "test": "node test_regression.js",
     "test:next": "node test_next_migration.js",
     "test:adaptive": "node test_adaptive_engine.js",
-    "test:flow": "node test_tutor_flow.js"
+    "test:flow": "node test_tutor_flow.js",
+    "test:rules": "firebase emulators:exec --only firestore --project demo-learning-allied \"node test_rules_emulator.js\"",
+    "audit:entitlements": "node scripts/audit-entitlements.js",
+    "migrate:entitlements": "node scripts/migrate-entitlements.js"
   },
   "keywords": [
     "ai",
@@ -34,6 +37,7 @@
     "react-dom": "^18.3.1"
   },
   "devDependencies": {
+    "@firebase/rules-unit-testing": "^3.0.4",
     "@types/node": "^20.14.0",
     "@types/react": "^18.3.1",
     "@types/react-dom": "^18.3.1",

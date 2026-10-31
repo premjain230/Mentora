@@ -10,8 +10,15 @@ service cloud.firestore {
       return isSignedIn() && request.auth.uid == userId;
     }
 
-    function notChangingOwner(field) {
-      return !(field in request.resource.data.diff(resource.data).affectedKeys());
+    function emailMatchesToken() {
+      return !('email' in request.resource.data)
+        || request.resource.data.email == null
+        || (
+          request.resource.data.email is string
+          && request.resource.data.email.size() <= 320
+          && request.auth.token.email != null
+          && request.resource.data.email.lower() == request.auth.token.email.lower()
+        );
     }
 
     /* ──────────────────────────────────────────────
@@ -32,15 +39,79 @@ service cloud.firestore {
         && (
           ('displayName' in request.resource.data && request.resource.data.displayName.size() <= 100)
           || ('name' in request.resource.data && request.resource.data.name.size() <= 100)
-        );
-
-      allow update: if isOwner(userId)
-        && notChangingOwner('uid')
-        && notChangingOwner('referralRewards')
+        )
+        // A new self-created profile can never carry entitlement or admin state.
         && (
           !('plan' in request.resource.data)
-          || request.resource.data.plan == resource.data.plan
+          || request.resource.data.plan == 'free'
         )
+        && (
+          !('tier' in request.resource.data)
+          || request.resource.data.tier == 'free'
+        )
+        && (
+          !('subscriptionTier' in request.resource.data)
+          || request.resource.data.subscriptionTier == 'free'
+        )
+        && (
+          !('subscriptionStatus' in request.resource.data)
+          || !(request.resource.data.subscriptionStatus in ['active', 'pro'])
+        )
+        && (
+          !('isPro' in request.resource.data)
+          || request.resource.data.isPro != true
+        )
+        && (
+          !('pro' in request.resource.data)
+          || request.resource.data.pro != true
+        )
+        && (
+          !('isPremium' in request.resource.data)
+          || request.resource.data.isPremium != true
+        )
+        && (
+          !('isAdmin' in request.resource.data)
+          || request.resource.data.isAdmin != true
+        )
+        && (
+          !('admin' in request.resource.data)
+          || request.resource.data.admin != true
+        )
+        && (
+          !('role' in request.resource.data)
+          || (
+            request.resource.data.role is string
+            && request.resource.data.role.size() <= 60
+            && request.resource.data.role.lower() != 'admin'
+          )
+        )
+        && !('subscription' in request.resource.data)
+        && !('subscriptionExpiresAt' in request.resource.data)
+        && !('proExpiresAt' in request.resource.data)
+        && !('proUntil' in request.resource.data)
+        && !('referralRewards' in request.resource.data)
+        && emailMatchesToken();
+
+      allow update: if isOwner(userId)
+        && !request.resource.data.diff(resource.data).affectedKeys().hasAny([
+          'uid',
+          'plan',
+          'isPro',
+          'pro',
+          'isPremium',
+          'tier',
+          'subscriptionTier',
+          'subscriptionStatus',
+          'subscription',
+          'subscriptionExpiresAt',
+          'proExpiresAt',
+          'proUntil',
+          'role',
+          'isAdmin',
+          'admin',
+          'referralRewards'
+        ])
+        && (!('email' in request.resource.data) || request.resource.data.email == resource.data.email)
         && (!('displayName' in request.resource.data) || (request.resource.data.displayName is string && request.resource.data.displayName.size() <= 100))
         && (!('name' in request.resource.data) || (request.resource.data.name is string && request.resource.data.name.size() <= 100))
         && (!('photoURL' in request.resource.data) || (request.resource.data.photoURL is string && request.resource.data.photoURL.size() <= 500))
@@ -250,6 +321,21 @@ service cloud.firestore {
     }
 
     /* ──────────────────────────────────────────────
+       entitlements/{userId} — server-owned Pro entitlement
+
+       Written ONLY by trusted server code (Admin SDK): payment webhooks,
+       support grants and referral rewards. Clients may read their own record
+       so the dashboard can mirror the server's decision, but never write it.
+    ────────────────────────────────────────────── */
+
+    match /entitlements/{userId} {
+
+      allow read: if isOwner(userId);
+
+      allow create, update, delete: if false;
+    }
+
+    /* ──────────────────────────────────────────────
        usage
     ────────────────────────────────────────────── */
 
@@ -269,8 +355,48 @@ service cloud.firestore {
 
     match /proRequests/{userId} {
 
+      // A request is an immutable "please upgrade me" signal. It can never
+      // carry an approval/status change or arbitrary extra fields.
       allow create: if isOwner(userId)
-        && request.resource.data.uid == request.auth.uid;
+        && request.resource.data.keys().hasOnly([
+          'uid',
+          'email',
+          'contactEmail',
+          'contactName',
+          'message',
+          'requestedAt',
+          'status'
+        ])
+        && request.resource.data.uid == request.auth.uid
+        && request.resource.data.status == 'pending'
+        && request.resource.data.requestedAt == request.time
+        && request.resource.data.email is string
+        && request.resource.data.email.size() <= 320
+        && (
+          request.auth.token.email == null
+          || request.resource.data.email.lower() == request.auth.token.email.lower()
+        )
+        && (
+          !('contactEmail' in request.resource.data)
+          || (
+            request.resource.data.contactEmail is string
+            && request.resource.data.contactEmail.size() <= 320
+          )
+        )
+        && (
+          !('contactName' in request.resource.data)
+          || (
+            request.resource.data.contactName is string
+            && request.resource.data.contactName.size() <= 100
+          )
+        )
+        && (
+          !('message' in request.resource.data)
+          || (
+            request.resource.data.message is string
+            && request.resource.data.message.size() <= 2000
+          )
+        );
 
       allow read: if isOwner(userId);
 

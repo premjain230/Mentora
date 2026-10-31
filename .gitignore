@@ -9,3 +9,4 @@ node_modules/
 !test_regression.js
 !test_next_migration.js
 .env*.local
+audit-reports/

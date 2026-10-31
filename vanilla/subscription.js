@@ -1,6 +1,5 @@
 import { doc, getDoc, serverTimestamp, setDoc } from "firebase/firestore";
 import { createLifecycle } from "./shared/lifecycle.js";
-import { isProUserData } from "./shared/plan.js";
 import { mountToast } from "./shared/toast.js";
 
 const FREE_LIMITS = {
@@ -83,25 +82,10 @@ export function mount(root, ctx) {
   }
 
   async function loadSubscription() {
-    let claimsPro = false;
-    try {
-      const tokenResult = await user.getIdTokenResult();
-      const claims = tokenResult?.claims || {};
-      claimsPro =
-        claims.pro === true ||
-        claims.admin === true ||
-        claims.role === "admin";
-    } catch {}
-
-    let data = {};
-    try {
-      const snap = await getDoc(doc(ctx.db, "users", uid));
-      if (snap.exists()) data = snap.data() || {};
-    } catch (err) {
-      console.warn("[subscription] could not read user plan", err);
-    }
-
-    isPro = claimsPro || isProUserData(data) || Boolean(ctx.isPro);
+    // AuthContext already resolved the verified entitlement (claims →
+    // server-owned entitlements/{uid} → legacy user doc), so mirror that
+    // decision instead of re-deriving it from user-writable fields.
+    isPro = Boolean(ctx.isPro);
 
     let usage = {
       dailyChatCount: 0,
