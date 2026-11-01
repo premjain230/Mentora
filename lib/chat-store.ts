@@ -2,6 +2,7 @@ import {
   addDoc,
   collection,
   doc,
+  endBefore,
   getDoc,
   getDocs,
   increment,
@@ -11,7 +12,7 @@ import {
   serverTimestamp,
   updateDoc,
 } from "firebase/firestore";
-import type { Firestore } from "firebase/firestore";
+import type { Firestore, QueryDocumentSnapshot } from "firebase/firestore";
 import type { TeachingReply, TutorMeta } from "@/lib/learning/types";
 
 export type ChatRole = "user" | "assistant";
@@ -28,6 +29,15 @@ export interface ChatSession {
   id: string;
   title: string;
   messages: StoredChatMessage[];
+  /** True when older messages exist before `nextCursor`. */
+  hasMore: boolean;
+  nextCursor: QueryDocumentSnapshot | null;
+}
+
+export interface ChatMessagePage {
+  messages: StoredChatMessage[];
+  hasMore: boolean;
+  nextCursor: QueryDocumentSnapshot | null;
 }
 
 export interface ChatSessionSummary {
@@ -35,6 +45,7 @@ export interface ChatSessionSummary {
   title: string;
   updatedAt: unknown;
   messageCount: number;
+  pinned: boolean;
 }
 
 function chatCollection(db: Firestore, uid: string) {
@@ -98,40 +109,126 @@ export async function saveChatMessage(
   });
 }
 
+const MESSAGE_PAGE = 40;
+
+function toStoredMessage(
+  messageDoc: QueryDocumentSnapshot
+): StoredChatMessage | null {
+  const message = messageDoc.data();
+  if (message.role !== "user" && message.role !== "assistant") return null;
+  const content = typeof message.content === "string" ? message.content : "";
+  if (!content.trim()) return null;
+  return {
+    id: messageDoc.id,
+    role: message.role,
+    content,
+    reply: (message.reply as TeachingReply) || null,
+    meta: (message.meta as TutorMeta) || null,
+  };
+}
+
+/** Newest-first document window, returned in chronological order. */
+function readWindow(
+  docs: QueryDocumentSnapshot[],
+  size: number
+): ChatMessagePage {
+  const hasMore = docs.length > size;
+  const pageDocs = docs.slice(0, size);
+  const messages: StoredChatMessage[] = [];
+  for (const messageDoc of pageDocs.slice().reverse()) {
+    const message = toStoredMessage(messageDoc);
+    if (message) messages.push(message);
+  }
+  return {
+    messages,
+    hasMore,
+    nextCursor: pageDocs.length ? pageDocs[pageDocs.length - 1] : null,
+  };
+}
+
+function pageSize(value: unknown): number {
+  const size = Number(value);
+  if (!Number.isFinite(size)) return MESSAGE_PAGE;
+  return Math.min(100, Math.max(1, Math.floor(size)));
+}
+
+/**
+ * Loads the most recent page of a conversation. Older turns are fetched on
+ * demand with `loadEarlierChatMessages`, so opening a long conversation never
+ * reads every message up front.
+ */
 export async function loadChatSession(
   db: Firestore,
   uid: string,
-  chatId: string
+  chatId: string,
+  options: { limit?: number } = {}
 ): Promise<ChatSession | null> {
   const chatRef = chatDocument(db, uid, chatId);
   const chatSnap = await getDoc(chatRef);
   if (!chatSnap.exists()) return null;
 
-  const data = chatSnap.data();
+  const size = pageSize(options.limit);
   const messagesSnap = await getDocs(
-    query(collection(chatRef, "messages"), orderBy("ts", "asc"))
+    query(
+      collection(chatRef, "messages"),
+      orderBy("ts", "desc"),
+      limit(size + 1)
+    )
   );
+  const page = readWindow(messagesSnap.docs, size);
 
-  const messages: StoredChatMessage[] = [];
-  messagesSnap.forEach((messageDoc) => {
-    const message = messageDoc.data();
-    if (message.role !== "user" && message.role !== "assistant") return;
-    const content = typeof message.content === "string" ? message.content : "";
-    if (!content.trim()) return;
-    messages.push({
-      id: messageDoc.id,
-      role: message.role,
-      content,
-      reply: (message.reply as TeachingReply) || null,
-      meta: (message.meta as TutorMeta) || null,
-    });
-  });
-
+  const data = chatSnap.data();
   return {
     id: chatSnap.id,
     title: typeof data.title === "string" ? data.title : "Untitled chat",
-    messages,
+    messages: page.messages,
+    hasMore: page.hasMore,
+    nextCursor: page.nextCursor,
   };
+}
+
+export async function loadEarlierChatMessages(
+  db: Firestore,
+  uid: string,
+  chatId: string,
+  cursor: QueryDocumentSnapshot,
+  pageLimit = MESSAGE_PAGE
+): Promise<ChatMessagePage> {
+  const size = pageSize(pageLimit);
+  const messagesSnap = await getDocs(
+    query(
+      collection(chatDocument(db, uid, chatId), "messages"),
+      orderBy("ts", "desc"),
+      endBefore(cursor),
+      limit(size + 1)
+    )
+  );
+  return readWindow(messagesSnap.docs, size);
+}
+
+export async function renameChatSession(
+  db: Firestore,
+  uid: string,
+  chatId: string,
+  title: string
+): Promise<string> {
+  const clean = String(title || "").trim().replace(/\s+/g, " ").slice(0, 200);
+  if (!clean) throw new Error("A conversation title is required.");
+  await updateDoc(chatDocument(db, uid, chatId), { title: clean });
+  return clean;
+}
+
+export async function setChatPinned(
+  db: Firestore,
+  uid: string,
+  chatId: string,
+  pinned: boolean
+): Promise<void> {
+  // `pinnedAt` keeps the recency ordering in `updatedAt` untouched.
+  await updateDoc(chatDocument(db, uid, chatId), {
+    pinned: Boolean(pinned),
+    pinnedAt: pinned ? serverTimestamp() : null,
+  });
 }
 
 export async function listChatSessions(
@@ -159,6 +256,7 @@ export async function listChatSessions(
       updatedAt: data.updatedAt ?? null,
       messageCount:
         typeof data.messageCount === "number" ? data.messageCount : 0,
+      pinned: data.pinned === true,
     });
   });
   return sessions;

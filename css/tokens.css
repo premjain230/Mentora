@@ -157,6 +157,17 @@
   --scroll-thumb-hover-b: rgba(255, 255, 255, 0.34);
   --scroll-thumb-border: rgba(0, 0, 0, 0.35);
   --scroll-fade: 14px;
+
+  /* ─── Chat study desk ─────────────────────────────────────────────────────── */
+  --chat-rail-w: 264px;
+  --chat-rail-compact: 64px;
+  --chat-measure: 720px;
+  --chat-gutter: clamp(20px, 4vw, 48px);
+  --chat-rail-bg: #050505;
+  --chat-user-bg: rgba(255, 255, 255, 0.045);
+  --chat-user-border: rgba(255, 255, 255, 0.09);
+  --chat-hover: rgba(255, 255, 255, 0.05);
+  --chat-rule: rgba(255, 255, 255, 0.08);
 }
 
 .light-mode {
@@ -237,4 +248,11 @@
   --scroll-thumb-hover-a: rgba(0, 0, 0, 0.4);
   --scroll-thumb-hover-b: rgba(0, 0, 0, 0.4);
   --scroll-thumb-border: rgba(255, 255, 255, 0.75);
+
+  /* ─── Chat study desk ─────────────────────────────────────────────────────── */
+  --chat-rail-bg: #fbfbfa;
+  --chat-user-bg: rgba(0, 0, 0, 0.035);
+  --chat-user-border: rgba(0, 0, 0, 0.08);
+  --chat-hover: rgba(0, 0, 0, 0.04);
+  --chat-rule: rgba(0, 0, 0, 0.08);
 }

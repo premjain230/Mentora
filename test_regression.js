@@ -703,6 +703,16 @@ const chatMarkupSource = fs.readFileSync(
   path.join(ROOT, "components/pages/chat/ChatMarkup.tsx"),
   "utf8"
 );
+const chatModulesDir = path.join(ROOT, "vanilla/chat");
+const chatModuleSource = fs
+  .readdirSync(chatModulesDir)
+  .filter((file) => file.endsWith(".js"))
+  .sort()
+  .map((file) => fs.readFileSync(path.join(chatModulesDir, file), "utf8"))
+  .join("\n");
+// The shell is split into vanilla/chat.js (orchestrator) plus vanilla/chat/*
+// feature modules; capability checks must span the whole controller.
+const chatFlowsSource = chatControllerSource + "\n" + chatModuleSource;
 const chatVisualSource = fs.readFileSync(
   path.join(ROOT, "vanilla/shared/visual-island.js"),
   "utf8"
@@ -750,14 +760,47 @@ test("chat controller preserves tutor, persistence and learning-event flows", ()
   assert(chatControllerSource.includes("export function mount(root, ctx)"), "mount export missing");
   assert(chatControllerSource.includes("createLifecycle()"), "lifecycle missing");
   assert(chatControllerSource.includes("return () => lifecycle.dispose()"), "cleanup missing");
-  assert(chatControllerSource.includes('callTutor'), "tutor calls missing");
-  assert(chatControllerSource.includes("emitLearningEvent"), "learning events missing");
-  assert(chatControllerSource.includes("summarizeConversation"), "conversation summary missing");
-  assert(chatControllerSource.includes("createChatSession"), "chat session creation missing");
-  assert(chatControllerSource.includes("loadChatSession"), "resume support missing");
-  assert(chatControllerSource.includes("saveChatMessage"), "message persistence missing");
-  assert(!chatControllerSource.includes("/api/groq-proxy"), "controller must not call the legacy proxy");
-  assert(!chatControllerSource.includes("question.answer"), "controller must not read answer keys");
+  assert(chatFlowsSource.includes('callTutor'), "tutor calls missing");
+  assert(chatFlowsSource.includes("emitLearningEvent"), "learning events missing");
+  assert(chatFlowsSource.includes("summarizeConversation"), "conversation summary missing");
+  assert(chatFlowsSource.includes("createChatSession"), "chat session creation missing");
+  assert(chatFlowsSource.includes("loadChatSession"), "resume support missing");
+  assert(chatFlowsSource.includes("saveChatMessage"), "message persistence missing");
+  assert(!chatFlowsSource.includes("/api/groq-proxy"), "controller must not call the legacy proxy");
+  assert(!chatFlowsSource.includes("question.answer"), "controller must not read answer keys");
+});
+
+test("chat rail ships search, grouping, rename, pin and confirmed delete", () => {
+  const railSource = fs.readFileSync(path.join(chatModulesDir, "rail.js"), "utf8");
+  for (const token of [
+    "listChatSessions",
+    "renameChatSession",
+    "setChatPinned",
+    "deleteChatSession",
+    "Previous 7 days",
+  ]) {
+    assert(railSource.includes(token), `rail missing ${token}`);
+  }
+  assert(chatFlowsSource.includes("#chatSearch"), "rail search binding missing");
+  assert(chatFlowsSource.includes("#chatDeleteModal"), "delete confirmation binding missing");
+  assert(chatMarkupSource.includes('id="chatRail"'), "rail container missing");
+  assert(chatMarkupSource.includes('id="chatRailToggle"'), "rail toggle missing");
+});
+
+test("chat shell drops the non-functional model and web-search controls", () => {
+  assert(!chatMarkupSource.includes('id="chatModel"'), "fake model selector must stay removed");
+  assert(!chatMarkupSource.includes('id="chatWeb"'), "web search toggle must stay hidden");
+});
+
+test("chat module split keeps the owner-scoped delete path", () => {
+  const manageController = fs.readFileSync(path.join(chatModulesDir, "manage.js"), "utf8");
+  assert(manageController.includes('"/api/chat/manage"'), "delete must use the owner-verified endpoint");
+  assert(manageController.includes('"delete_chat"'), "delete action missing");
+  assert(!manageController.includes("deleteDoc"), "clients cannot delete chat docs directly");
+  const manageServer = fs.readFileSync(path.join(ROOT, "server/chat-manage.js"), "utf8");
+  assert(manageServer.includes("recursiveDelete("), "server must cascade delete");
+  assert(manageServer.includes("verifyIdToken("), "server must verify the caller token");
+  assert(manageServer.includes("users/${decoded.uid}/chats/"), "delete path must derive from the verified uid");
 });
 
 const learningBlocksSource = fs.readFileSync(
@@ -766,18 +809,18 @@ const learningBlocksSource = fs.readFileSync(
 );
 
 test("chat and the hub share one lesson-content renderer", () => {
-  assert(chatControllerSource.includes('from "./shared/learning-blocks.js"'), "chat must import the shared renderer");
+  assert(chatFlowsSource.includes('from "../shared/learning-blocks.js"'), "chat must import the shared renderer");
   assert(learningBlocksSource.includes("export function renderTeaching"), "shared renderTeaching missing");
   assert(learningBlocksSource.includes("export function renderExample"), "shared renderExample missing");
   assert(learningBlocksSource.includes("generatedNotice"), "generated notice support missing");
   assert(learningBlocksSource.includes("exampleFirst"), "example-first support missing");
-  assert(!chatControllerSource.includes("function renderTeaching"), "chat must not keep a duplicate renderer");
+  assert(!chatFlowsSource.includes("function renderTeaching"), "chat must not keep a duplicate renderer");
 });
 
 test("chat visuals mount on demand and unmount with the page", () => {
-  assert(chatControllerSource.includes('import("./shared/visual-island.js")'), "visual island must load on demand");
-  assert(chatControllerSource.includes("{ compact: true }"), "chat visuals must keep compact mode");
-  assert(chatControllerSource.includes("clearVisuals"), "visual cleanup missing");
+  assert(chatFlowsSource.includes('import("../shared/visual-island.js")'), "visual island must load on demand");
+  assert(chatFlowsSource.includes("{ compact: true }"), "chat visuals must keep compact mode");
+  assert(chatFlowsSource.includes("clearVisuals"), "visual cleanup missing");
   assert(chatVisualSource.includes("mountVisual"), "visual island exporter missing");
   assert(chatVisualSource.includes("root.unmount()"), "visual island must unmount");
 });
