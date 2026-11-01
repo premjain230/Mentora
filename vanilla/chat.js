@@ -69,6 +69,7 @@ export function mount(root, ctx) {
     railCollapse: root.querySelector("#chatRailCollapse"),
     railClose: root.querySelector("#chatRailClose"),
     railToggle: root.querySelector("#chatRailToggle"),
+    newTop: root.querySelector("#chatNewTop"),
     scrim: root.querySelector("#chatRailScrim"),
     menu: root.querySelector("#chatRailMenu"),
     menuPin: root.querySelector("#chatRailMenuPin"),

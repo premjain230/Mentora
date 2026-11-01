@@ -217,20 +217,15 @@ export function createTranscript(app) {
     EMPTY_ACTIONS.forEach((action) => {
       const button = el("button", "chat-starter");
       button.type = "button";
+      button.title = action.hint;
 
       const icon = el("span", "chat-starter-icon");
-      icon.innerHTML = iconMarkup(action.icon, 16);
+      icon.innerHTML = iconMarkup(action.icon, 20);
       icon.setAttribute("aria-hidden", "true");
 
-      const copy = el("span", "chat-starter-copy");
-      copy.appendChild(el("span", "chat-starter-label", action.label));
-      copy.appendChild(el("span", "chat-starter-hint", action.hint));
+      const label = el("span", "chat-starter-label", action.label);
 
-      const arrow = el("span", "chat-starter-arrow");
-      arrow.innerHTML = iconMarkup("arrowRight", 16);
-      arrow.setAttribute("aria-hidden", "true");
-
-      button.append(icon, copy, arrow);
+      button.append(icon, label);
       lifecycle.on(button, "click", () => app.beginDraft(action.prompt));
       els.starters.appendChild(button);
     });

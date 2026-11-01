@@ -18,6 +18,8 @@ export function createComposer(app) {
     els.input.style.height = `${next}px`;
     els.input.style.overflowY =
       els.input.scrollHeight > MAX_HEIGHT ? "auto" : "hidden";
+    const box = els.form?.querySelector(".chat-composer-box");
+    if (box) box.classList.toggle("is-expanded", next > 46);
   }
 
   function updateMeta() {

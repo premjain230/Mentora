@@ -7,6 +7,50 @@ import { ICON_PATHS } from "../../../vanilla/chat/icons.js";
 
 type IconName = keyof typeof ICON_PATHS;
 
+const hash = (n: number) => {
+  const x = Math.sin(n * 127.1) * 43758.5453;
+  return x - Math.floor(x);
+};
+
+/* A quiet constellation that fades into the page, echoing the reference's
+   dot field without shipping a canvas or a new dependency. */
+const SPARK_DOTS = Array.from({ length: 56 }, (_, i) => ({
+  x: 22 + hash(i + 1) * 596,
+  y: 18 + hash(i + 101) * 184,
+  r: 0.6 + hash(i + 201) * 1.05,
+  opacity: 0.18 + hash(i + 301) * 0.55,
+  tone: i % 9 === 0 ? 1 : i % 4 === 0 ? 2 : 3,
+}));
+
+function SparkleField() {
+  const tones = {
+    1: "var(--chat-sparkle-1)",
+    2: "var(--chat-sparkle-2)",
+    3: "var(--chat-sparkle-3)",
+  } as const;
+
+  return (
+    <svg
+      className="chat-sparkle"
+      viewBox="0 0 640 220"
+      preserveAspectRatio="xMidYMid slice"
+      aria-hidden="true"
+      focusable="false"
+    >
+      {SPARK_DOTS.map((dot, index) => (
+        <circle
+          key={index}
+          cx={dot.x.toFixed(1)}
+          cy={dot.y.toFixed(1)}
+          r={dot.r.toFixed(2)}
+          fill={tones[dot.tone as 1 | 2 | 3]}
+          opacity={dot.opacity.toFixed(2)}
+        />
+      ))}
+    </svg>
+  );
+}
+
 function Icon({
   name,
   size = 16,
@@ -183,6 +227,16 @@ export function ChatMarkup() {
               </div>
 
               <div className="chat-topbar-right">
+                <button
+                  type="button"
+                  id="chatNewTop"
+                  className="chat-icon-btn chat-top-new"
+                  aria-label="New chat"
+                  title="New chat"
+                >
+                  <Icon name="plus" size={18} />
+                </button>
+
                 <span id="chatProTag" className="chat-pro-tag" hidden>
                   <Icon name="pro" size={13} />
                   <span>Pro</span>
@@ -299,9 +353,7 @@ export function ChatMarkup() {
 
             <div className="chat-empty" id="chatEmpty" hidden>
               <div className="chat-empty-inner">
-                <span className="chat-empty-mark" aria-hidden="true">
-                  <Icon name="spark" size={26} />
-                </span>
+                <SparkleField />
                 <h2 className="chat-empty-title">
                   What are we learning today?
                 </h2>

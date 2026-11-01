@@ -170,6 +170,20 @@
   --chat-rule: rgba(255, 255, 255, 0.08);
   /* Secondary chat chrome text that must still clear WCAG AA 4.5:1. */
   --chat-text-quiet: #7a7a7a;
+
+  /* Floating study-desk surfaces (reference-driven chat redesign). */
+  --chat-page-bg: #000000;
+  --chat-rail-gap: 14px;
+  --chat-pill-h: 54px;
+  --chat-surface-solid: #101116;
+  --chat-surface-translucent: rgba(16, 17, 22, 0.95);
+  --chat-hairline: rgba(255, 255, 255, 0.1);
+  --chat-hairline-strong: rgba(255, 255, 255, 0.16);
+  --chat-card-shadow: 0 24px 60px -24px rgba(0, 0, 0, 0.85);
+  --chat-pill-shadow: 0 10px 34px rgba(0, 0, 0, 0.45);
+  --chat-sparkle-1: rgba(255, 138, 31, 0.9);
+  --chat-sparkle-2: rgba(255, 161, 77, 0.5);
+  --chat-sparkle-3: rgba(255, 255, 255, 0.28);
 }
 
 .light-mode {
@@ -258,4 +272,16 @@
   --chat-hover: rgba(0, 0, 0, 0.04);
   --chat-rule: rgba(0, 0, 0, 0.08);
   --chat-text-quiet: #6a6a6a;
+
+  /* Floating study-desk surfaces (reference-driven chat redesign). */
+  --chat-page-bg: #f8f9fa;
+  --chat-surface-solid: #ffffff;
+  --chat-surface-translucent: rgba(255, 255, 255, 0.95);
+  --chat-hairline: rgba(0, 0, 0, 0.08);
+  --chat-hairline-strong: rgba(0, 0, 0, 0.14);
+  --chat-card-shadow: 0 20px 50px -24px rgba(0, 0, 0, 0.18);
+  --chat-pill-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+  --chat-sparkle-1: rgba(234, 106, 0, 0.85);
+  --chat-sparkle-2: rgba(234, 106, 0, 0.42);
+  --chat-sparkle-3: rgba(0, 0, 0, 0.22);
 }

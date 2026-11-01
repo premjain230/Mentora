@@ -416,6 +416,11 @@ export function createRail(app) {
       app.startNewChat();
     });
 
+    lifecycle.on(els.newTop, "click", () => {
+      if (isMobile()) closeDrawer();
+      app.startNewChat();
+    });
+
     lifecycle.on(els.railCollapse, "click", () => {
       if (isMobile()) closeDrawer();
       else toggleCollapsed();
