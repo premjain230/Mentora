@@ -1,0 +1,104 @@
+/* Chat History page — scoped to .page-chat-history. */
+
+.page-chat-history .chat-history-content {
+  max-width: 840px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.page-chat-history .chat-history-back {
+  display: inline-flex;
+  margin-bottom: 14px;
+  color: var(--text-secondary);
+  font-size: 13px;
+  text-decoration: none;
+}
+
+.page-chat-history .chat-history-back:hover {
+  color: var(--text-primary);
+}
+
+.page-chat-history .chat-history-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.page-chat-history .chat-history-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 16px 18px;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: var(--bg-card);
+  color: inherit;
+  text-decoration: none;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.page-chat-history .chat-history-item:hover {
+  border-color: var(--border-strong);
+  background: var(--bg-card-hover);
+}
+
+.page-chat-history .chat-history-item:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.page-chat-history .chat-history-main {
+  min-width: 0;
+}
+
+.page-chat-history .chat-history-title {
+  margin: 0 0 4px;
+  color: var(--text-primary);
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.4;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.page-chat-history .chat-history-meta {
+  color: var(--text-muted);
+  font-size: 12px;
+}
+
+.page-chat-history .chat-history-open {
+  flex-shrink: 0;
+  color: var(--accent);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.page-chat-history .chat-history-empty {
+  padding: 36px 24px;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: var(--bg-card);
+  text-align: center;
+}
+
+.page-chat-history .chat-history-empty p {
+  margin: 0 0 16px;
+  color: var(--text-muted);
+  font-size: 13px;
+}
+
+.page-chat-history .chat-history-retry {
+  margin-top: 12px;
+}
+
+@media (max-width: 560px) {
+  .page-chat-history .chat-history-item {
+    padding: 14px;
+  }
+
+  .page-chat-history .chat-history-title {
+    white-space: normal;
+  }
+}
