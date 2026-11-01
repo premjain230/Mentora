@@ -55,9 +55,11 @@ const loaders: Record<PageKey, () => Promise<VanillaModule>> = {
 
 export function VanillaPage({
   page,
+  fill = false,
   children,
 }: {
   page: PageKey;
+  fill?: boolean;
   children: React.ReactNode;
 }) {
   const hostRef = useRef<HTMLDivElement>(null);
@@ -136,7 +138,11 @@ export function VanillaPage({
   }, [page, router]);
 
   return (
-    <div ref={hostRef} className="vanilla-page" data-vanilla-page={page}>
+    <div
+      ref={hostRef}
+      className={fill ? "vanilla-page vanilla-page--fill" : "vanilla-page"}
+      data-vanilla-page={page}
+    >
       {children}
     </div>
   );

@@ -10,10 +10,12 @@ import {
   LEVEL_LABEL,
   renderTeaching,
 } from "../shared/learning-blocks.js";
-import { replyToText, STARTERS } from "./messages.js";
+import { EMPTY_ACTIONS, replyToText } from "./messages.js";
+import { iconMarkup } from "./icons.js";
 
 export function createTranscript(app) {
   const { els, state, lifecycle } = app;
+  let actionsBuilt = false;
 
   function renderAll({ scroll = true } = {}) {
     clearVisuals();
@@ -22,14 +24,17 @@ export function createTranscript(app) {
       els.messages.appendChild(renderMessage(message));
     }
     syncEarlier();
-    showStarters(state.messages.length === 1 && !state.loadingChat && !state.sending);
+    syncEmpty();
     updateQuickbar();
+    if (els.latest) els.latest.hidden = true;
     if (scroll) scrollToEnd();
   }
 
   function appendMessage(message) {
     els.messages.appendChild(renderMessage(message));
     syncEarlier();
+    syncEmpty();
+    syncLatest();
   }
 
   /** Prepends older turns without rebuilding the rendered transcript. */
@@ -82,9 +87,11 @@ export function createTranscript(app) {
       head.appendChild(el("span", "chat-speaker-meta", LEVEL_LABEL[level]));
     }
 
-    const copy = el("button", "chat-copy", "Copy");
+    const copy = el("button", "chat-copy");
     copy.type = "button";
+    copy.innerHTML = iconMarkup("copy", 15);
     copy.setAttribute("aria-label", "Copy this answer");
+    copy.title = "Copy";
     lifecycle.on(copy, "click", () => copyAnswer(message, copy));
     head.appendChild(copy);
 
@@ -102,10 +109,14 @@ export function createTranscript(app) {
 
     navigator.clipboard.writeText(text).then(
       () => {
-        button.textContent = "Copied";
+        button.innerHTML = iconMarkup("check", 15);
+        button.setAttribute("aria-label", "Answer copied");
+        button.title = "Copied";
         button.classList.add("is-copied");
         setTimeout(() => {
-          button.textContent = "Copy";
+          button.innerHTML = iconMarkup("copy", 15);
+          button.setAttribute("aria-label", "Copy this answer");
+          button.title = "Copy";
           button.classList.remove("is-copied");
         }, 1600);
       },
@@ -146,8 +157,11 @@ export function createTranscript(app) {
     }
 
     if (reply.retry) {
-      const retry = el("button", "btn btn-primary chat-retry", "Retry");
+      const retry = el("button", "chat-retry");
       retry.type = "button";
+      retry.innerHTML = iconMarkup("refresh", 14);
+      const label = el("span", "", "Retry");
+      retry.appendChild(label);
       retry.disabled = state.sending;
       lifecycle.on(retry, "click", app.retryLast);
       bubble.appendChild(retry);
@@ -190,18 +204,36 @@ export function createTranscript(app) {
     }
   }
 
-  function showStarters(show) {
+  function syncEmpty() {
+    if (!els.empty) return;
+    const show = !state.loadingChat && !state.sending && !state.messages.length;
+    els.empty.hidden = !show;
+    if (show && !actionsBuilt) buildEmptyActions();
+  }
+
+  function buildEmptyActions() {
     if (!els.starters) return;
-    els.starters.hidden = !show;
-    if (show && !els.starters.childElementCount) {
-      STARTERS.forEach((starter, index) => {
-        const button = el("button", "chat-starter", starter);
-        button.type = "button";
-        button.style.setProperty("--starter-index", String(index + 1));
-        lifecycle.on(button, "click", () => app.sendQuestion(starter));
-        els.starters.appendChild(button);
-      });
-    }
+    actionsBuilt = true;
+    EMPTY_ACTIONS.forEach((action) => {
+      const button = el("button", "chat-starter");
+      button.type = "button";
+
+      const icon = el("span", "chat-starter-icon");
+      icon.innerHTML = iconMarkup(action.icon, 16);
+      icon.setAttribute("aria-hidden", "true");
+
+      const copy = el("span", "chat-starter-copy");
+      copy.appendChild(el("span", "chat-starter-label", action.label));
+      copy.appendChild(el("span", "chat-starter-hint", action.hint));
+
+      const arrow = el("span", "chat-starter-arrow");
+      arrow.innerHTML = iconMarkup("arrowRight", 16);
+      arrow.setAttribute("aria-hidden", "true");
+
+      button.append(icon, copy, arrow);
+      lifecycle.on(button, "click", () => app.beginDraft(action.prompt));
+      els.starters.appendChild(button);
+    });
   }
 
   function updateQuickbar() {
@@ -238,9 +270,17 @@ export function createTranscript(app) {
 
   function setSending(value) {
     if (els.thinking) els.thinking.hidden = !value;
+    syncEmpty();
     for (const button of els.messages.querySelectorAll(".chat-retry")) {
       button.disabled = value;
     }
+  }
+
+  function syncLatest() {
+    if (!els.latest || !els.log) return;
+    const atBottom =
+      els.log.scrollHeight - els.log.scrollTop - els.log.clientHeight < 80;
+    els.latest.hidden = atBottom;
   }
 
   function bindScroll() {
@@ -248,10 +288,7 @@ export function createTranscript(app) {
       els.log,
       "scroll",
       () => {
-        if (!els.latest) return;
-        const atBottom =
-          els.log.scrollHeight - els.log.scrollTop - els.log.clientHeight < 80;
-        els.latest.hidden = atBottom;
+        syncLatest();
       },
       { passive: true }
     );
@@ -270,11 +307,12 @@ export function createTranscript(app) {
     prependMessages,
     renderMessage,
     clearVisuals,
-    showStarters,
+    syncEmpty,
     updateQuickbar,
     chip,
     setSending,
     bindScroll,
+    syncLatest,
     scrollToEnd,
     syncEarlier,
   };

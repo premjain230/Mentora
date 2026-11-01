@@ -3,13 +3,31 @@
  * The teaching reply contract itself lives in lib/learning/types.ts.
  */
 
-export const WELCOME_TEXT =
-  "Hello! I am your Learning Allied tutor. Ask me to explain a concept, work through a problem, or check your reasoning. I will keep simple questions short and go deeper when a topic needs it.";
-
-export const STARTERS = [
-  "Why is the current the same everywhere in a series circuit?",
-  "Help me understand photosynthesis instead of memorising it.",
-  "Give me a worked example of a quadratic with two real roots.",
+export const EMPTY_ACTIONS = [
+  {
+    icon: "bulb",
+    label: "Explain a concept",
+    hint: "Start with a topic you want broken down",
+    prompt: "Explain this concept: ",
+  },
+  {
+    icon: "layers",
+    label: "Help me understand a difficult topic",
+    hint: "Bring the part that has not clicked yet",
+    prompt: "Help me understand this topic: ",
+  },
+  {
+    icon: "message",
+    label: "Ask a question",
+    hint: "Get a direct answer from your tutor",
+    prompt: "",
+  },
+  {
+    icon: "target",
+    label: "Quiz me on a topic",
+    hint: "Practise one question at a time",
+    prompt: "Quiz me on ",
+  },
 ];
 
 export const VERDICT_META = {
@@ -26,27 +44,6 @@ export function makeId() {
     return crypto.randomUUID();
   }
   return `m${Date.now()}${Math.random().toString(36).slice(2, 8)}`;
-}
-
-export function welcomeMessage() {
-  return {
-    id: "welcome",
-    role: "assistant",
-    content: WELCOME_TEXT,
-    reply: {
-      kind: "short",
-      title: null,
-      directAnswer: WELCOME_TEXT,
-      sections: [],
-      example: null,
-      check: null,
-      visual: null,
-      personalization: null,
-      advanced: null,
-      level: "intermediate",
-      source: "system",
-    },
-  };
 }
 
 export function fallbackReply(text, source, retry = false) {

@@ -729,7 +729,10 @@ const chatCssSource = fs.readFileSync(
 test("chat route uses the VanillaPage + ChatMarkup pattern", () => {
   assert(chatRouteSource.includes('from "@/components/vanilla/VanillaPage"'), "route must import VanillaPage");
   assert(chatRouteSource.includes('from "@/components/pages/chat/ChatMarkup"'), "route must import ChatMarkup");
-  assert(chatRouteSource.includes('<VanillaPage page="chat">'), "route must render the chat page key");
+  assert(
+    /<VanillaPage\s+page="chat"(?:\s+fill)?\s*>/.test(chatRouteSource),
+    "route must render the chat page key"
+  );
   assert(chatRouteSource.includes("<ChatMarkup />"), "route must render the chat markup");
   assert(!chatRouteSource.includes('"use client"'), "chat route must stay a server component");
   assert(!chatRouteSource.includes("callTutor"), "chat route must not own tutor calls");
@@ -887,6 +890,102 @@ test("chat visuals mount on demand and unmount with the page", () => {
 test("chat CSS scopes hidden toggles and message spacing", () => {
   assert(chatCssSource.includes(".page-chat [hidden]"), "hidden rows need a scoped display rule");
   assert(chatCssSource.includes(".page-chat .chat-messages"), "message container spacing missing");
+});
+
+test("chat redesign keeps the composer anchored in the fill frame", () => {
+  const shellCss = fs.readFileSync(path.join(ROOT, "css/shell.css"), "utf8");
+  assert(
+    /<VanillaPage\s+page="chat"\s+fill\s*>/.test(chatRouteSource),
+    "chat route must opt into the definite-height frame"
+  );
+  assert(vanillaPageSource.includes("vanilla-page--fill"), "fill host class missing");
+  assert(shellCss.includes(".vanilla-page--fill"), "fill frame rules missing");
+  const dockIndex = chatCssSource.indexOf(".page-chat .chat-dock {");
+  assert(dockIndex > -1, "dock rules missing");
+  assert(
+    chatCssSource.slice(dockIndex, dockIndex + 260).includes("flex: none"),
+    "dock must stay out of the scroll flow"
+  );
+  assert(
+    chatCssSource.slice(dockIndex, dockIndex + 260).includes("position: relative"),
+    "dock must anchor the latest-message button"
+  );
+});
+
+test("chat follows the profile theme and drops its own switcher", () => {
+  assert(!chatMarkupSource.includes("chatThemeToggle"), "chat theme switcher must stay removed");
+  assert(!chatFlowsSource.includes("toggleTheme"), "chat must not toggle the global theme");
+  assert(!chatFlowsSource.includes('from "./shared/theme.js"'), "chat must not import the theme helper");
+  assert(chatMarkupSource.includes("className=\"dashboard-page page-chat\""), "chat root class missing");
+});
+
+test("chat empty state offers exactly the four approved actions", () => {
+  const messagesSource = fs.readFileSync(path.join(chatModulesDir, "messages.js"), "utf8");
+  const labels = [
+    "Explain a concept",
+    "Help me understand a difficult topic",
+    "Ask a question",
+    "Quiz me on a topic",
+  ];
+  for (const label of labels) {
+    assert(messagesSource.includes(label), `empty action missing: ${label}`);
+  }
+  assert(
+    (messagesSource.match(/\n\s+label:/g) || []).length === 4,
+    "exactly four empty actions are allowed"
+  );
+  assert(!/upload/i.test(messagesSource), "no upload action before a pipeline exists");
+  assert(!messagesSource.includes("welcomeMessage"), "the scripted welcome bubble must stay removed");
+  assert(chatFlowsSource.includes("beginDraft"), "empty actions must prefill the composer");
+  assert(chatFlowsSource.includes("syncEmpty"), "empty state visibility is not synced");
+});
+
+test("chat icons are inline SVG rather than text glyphs", () => {
+  const iconsSource = fs.readFileSync(path.join(chatModulesDir, "icons.js"), "utf8");
+  for (const icon of [
+    "panel",
+    "plus",
+    "search",
+    "history",
+    "pencil",
+    "pin",
+    "trash",
+    "more",
+    "copy",
+    "check",
+    "refresh",
+    "arrowRight",
+    "bulb",
+    "layers",
+    "message",
+    "target",
+    "globe",
+    "arrowUp",
+    "stop",
+    "arrowDown",
+    "spark",
+  ]) {
+    assert(iconsSource.includes(`${icon}:`), `icon definitions missing: ${icon}`);
+  }
+  assert(iconsSource.includes("currentColor"), "icons must inherit currentColor");
+  assert(!chatMarkupSource.includes("⋯"), "rail menu must use an SVG icon");
+  assert(
+    !/[\u{1F300}-\u{1FAFF}]/u.test(chatMarkupSource + chatModuleSource),
+    "chat UI must not use emoji icons"
+  );
+});
+
+test("composer stops the browser request without claiming backend cancellation", () => {
+  assert(chatFlowsSource.includes("controller.abort()"), "abort path missing");
+  assert(chatFlowsSource.includes("abortController"), "abort controller missing");
+  assert(chatFlowsSource.includes("stopGeneration"), "stop action missing");
+  assert(chatFlowsSource.includes("Stopped waiting for the tutor's response"), "honest stop notice missing");
+  assert(
+    !/cancel(?:l)?ed the (?:generation|response)/i.test(chatFlowsSource),
+    "the client cannot claim backend cancellation"
+  );
+  assert(chatMarkupSource.includes('data-state="send"'), "send/stop state hook missing");
+  assert(chatMarkupSource.includes("chat-stop-icon"), "stop glyph missing");
 });
 
 // ─────────────────────────────────────────────────────────────────────────────

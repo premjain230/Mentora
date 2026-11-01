@@ -2,69 +2,41 @@
  * Chat shell — React owns the static markup; vanilla/chat.js hydrates the
  * conversation rail, header, transcript and composer.
  */
+
+import { ICON_PATHS } from "../../../vanilla/chat/icons.js";
+
+type IconName = keyof typeof ICON_PATHS;
+
+function Icon({
+  name,
+  size = 16,
+  className,
+}: {
+  name: IconName;
+  size?: number;
+  className?: string;
+}) {
+  return (
+    <svg
+      className={className}
+      viewBox="0 0 20 20"
+      width={size}
+      height={size}
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={1.6}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+      focusable="false"
+      dangerouslySetInnerHTML={{ __html: ICON_PATHS[name] }}
+    />
+  );
+}
+
 export function ChatMarkup() {
   return (
     <div className="dashboard-page page-chat">
-      <div className="topbar chat-topbar">
-        <div className="topbar-left">
-          <button
-            type="button"
-            id="chatRailToggle"
-            className="chat-icon-btn chat-rail-toggle-btn"
-            aria-label="Open conversations"
-            aria-controls="chatRail"
-            aria-expanded="false"
-          >
-            <svg viewBox="0 0 20 20" aria-hidden="true">
-              <path
-                d="M3 4.5h14M3 10h14M3 15.5h9"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="1.5"
-                strokeLinecap="round"
-              />
-            </svg>
-          </button>
-          <div className="brand-mark">
-            <img src="/learningallied-white.svg" alt="" width={24} height={24} />
-            <span>Learning Allied</span>
-          </div>
-          <span className="chat-topbar-tag">Study desk</span>
-        </div>
-        <div className="topbar-right">
-          <span className="chat-pro-tag" id="chatProTag" hidden>
-            ★ Pro
-          </span>
-          <button
-            type="button"
-            id="chatThemeToggle"
-            className="chat-icon-btn chat-theme-toggle"
-            aria-label="Switch colour theme"
-            aria-pressed="false"
-          >
-            <svg viewBox="0 0 20 20" aria-hidden="true">
-              <circle
-                cx="10"
-                cy="10"
-                r="6.5"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="1.5"
-              />
-              <path d="M10 3.5a6.5 6.5 0 0 0 0 13z" fill="currentColor" />
-            </svg>
-          </button>
-          <span className="greeting">
-            Hi, <strong id="greetingName">there</strong>
-          </span>
-          <img
-            id="topbarAvatar"
-            src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'/%3E"
-            alt="Your account"
-          />
-        </div>
-      </div>
-
       <div className="chat-workspace" id="chatWorkspace">
         <aside
           className="chat-rail"
@@ -73,10 +45,14 @@ export function ChatMarkup() {
           data-collapsed="false"
         >
           <div className="chat-rail-head">
-            <button type="button" id="chatRailNew" className="chat-rail-new">
-              <span className="chat-rail-new-icon" aria-hidden="true">
-                +
-              </span>
+            <button
+              type="button"
+              id="chatRailNew"
+              className="chat-rail-new"
+              aria-label="New chat"
+              title="New chat"
+            >
+              <Icon name="plus" size={18} className="chat-rail-new-icon" />
               <span className="chat-rail-new-label">New chat</span>
             </button>
             <button
@@ -84,39 +60,24 @@ export function ChatMarkup() {
               id="chatRailCollapse"
               className="chat-icon-btn chat-rail-collapse"
               aria-label="Collapse conversations"
+              title="Collapse conversations"
               aria-expanded="true"
             >
-              <svg viewBox="0 0 20 20" aria-hidden="true">
-                <path
-                  d="M12.5 5 7.5 10l5 5"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="1.6"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
+              <Icon name="chevronLeft" />
+            </button>
+            <button
+              type="button"
+              id="chatRailClose"
+              className="chat-icon-btn chat-rail-close"
+              aria-label="Close conversations"
+              title="Close conversations"
+            >
+              <Icon name="close" />
             </button>
           </div>
 
           <label className="chat-rail-search">
-            <svg viewBox="0 0 20 20" aria-hidden="true">
-              <circle
-                cx="9"
-                cy="9"
-                r="5.25"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="1.5"
-              />
-              <path
-                d="m13 13 3.5 3.5"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="1.5"
-                strokeLinecap="round"
-              />
-            </svg>
+            <Icon name="search" size={14} className="chat-rail-search-icon" />
             <input
               id="chatSearch"
               type="search"
@@ -137,23 +98,33 @@ export function ChatMarkup() {
 
           <div className="chat-rail-foot">
             <a className="chat-rail-link" href="/chat-history">
-              Conversation history <span aria-hidden="true">→</span>
+              <Icon name="history" size={14} />
+              <span>Conversation history</span>
             </a>
           </div>
 
-          <div className="chat-rail-menu" id="chatRailMenu" hidden>
-            <button type="button" data-rail-action="rename">
-              Rename
-            </button>
-            <button type="button" data-rail-action="pin" id="chatRailMenuPin">
-              Pin
+          <div className="chat-rail-menu" id="chatRailMenu" hidden role="menu">
+            <button type="button" role="menuitem" data-rail-action="rename">
+              <Icon name="pencil" size={15} />
+              <span>Rename</span>
             </button>
             <button
               type="button"
+              role="menuitem"
+              data-rail-action="pin"
+              id="chatRailMenuPin"
+            >
+              <Icon name="pin" size={15} />
+              <span id="chatRailMenuPinLabel">Pin</span>
+            </button>
+            <button
+              type="button"
+              role="menuitem"
               data-rail-action="delete"
               className="is-danger"
             >
-              Delete
+              <Icon name="trash" size={15} />
+              <span>Delete</span>
             </button>
           </div>
         </aside>
@@ -167,115 +138,143 @@ export function ChatMarkup() {
         />
 
         <section className="chat-main">
-          <header className="chat-head">
-            <div className="chat-head-heading">
-              <input
-                id="chatTitleInput"
-                className="chat-title-input"
-                aria-label="Conversation title"
-                maxLength={200}
-                hidden
-              />
-              <h1 className="chat-title-wrap">
+          <header className="chat-topbar">
+            <div className="chat-topbar-inner">
+              <div className="chat-topbar-left">
                 <button
                   type="button"
-                  id="chatTitle"
-                  className="chat-title-btn"
-                  disabled
-                  title="Start a conversation to name it"
+                  id="chatRailToggle"
+                  className="chat-icon-btn chat-rail-toggle-btn"
+                  aria-label="Open conversations"
+                  title="Open conversations"
+                  aria-controls="chatRail"
+                  aria-expanded="false"
                 >
-                  New study session
+                  <Icon name="panel" />
                 </button>
-              </h1>
-            </div>
 
-            <div className="chat-head-actions">
-              <button
-                type="button"
-                id="chatContextBtn"
-                className="chat-context-btn"
-                aria-expanded="false"
-                aria-controls="chatContextPanel"
-              >
-                <svg viewBox="0 0 20 20" aria-hidden="true">
-                  <circle
-                    cx="10"
-                    cy="10"
-                    r="6.5"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="1.4"
+                <div className="chat-heading">
+                  <input
+                    id="chatTitleInput"
+                    className="chat-title-input"
+                    aria-label="Conversation title"
+                    maxLength={200}
+                    hidden
                   />
-                  <path
-                    d="M3.5 10h13M10 3.5c2 2 2 11 0 13M10 3.5c-2 2-2 11 0 13"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="1.4"
-                  />
-                </svg>
-                <span id="chatContextChips">General · All subjects · English</span>
-                <svg
-                  className="chat-context-chevron"
-                  viewBox="0 0 20 20"
-                  aria-hidden="true"
-                >
-                  <path
-                    d="M6 8l4 4 4-4"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="1.6"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </svg>
-              </button>
+                  <h1 className="chat-title-wrap">
+                    <button
+                      type="button"
+                      id="chatTitle"
+                      className="chat-title-btn"
+                      disabled
+                      title="Start a conversation to name it"
+                    >
+                      <span className="chat-title-text">
+                        New study session
+                      </span>
+                      <Icon
+                        name="pencil"
+                        size={14}
+                        className="chat-title-edit"
+                      />
+                    </button>
+                  </h1>
+                </div>
+              </div>
 
-              <div className="chat-context-panel" id="chatContextPanel" hidden>
-                <p className="chat-context-label">Learning context</p>
+              <div className="chat-topbar-right">
+                <span id="chatProTag" className="chat-pro-tag" hidden>
+                  <Icon name="pro" size={13} />
+                  <span>Pro</span>
+                </span>
 
-                <label className="chat-context-field">
-                  <span>Board or exam</span>
-                  <select id="chatBoard" aria-label="Board or exam" className="chat-select">
-                    <option value="">General</option>
-                  </select>
-                </label>
-
-                <label className="chat-context-field">
-                  <span>Class</span>
-                  <select id="chatClass" aria-label="Class" className="chat-select" hidden>
-                    <option value="">Class</option>
-                  </select>
-                </label>
-
-                <label className="chat-context-field">
-                  <span>Subject</span>
-                  <select
-                    id="chatSubject"
-                    aria-label="Subject"
-                    className="chat-select"
-                    disabled
+                <div className="chat-head-actions">
+                  <button
+                    type="button"
+                    id="chatContextBtn"
+                    className="chat-context-btn"
+                    aria-label="Learning context"
+                    aria-expanded="false"
+                    aria-controls="chatContextPanel"
                   >
-                    <option value="">All subjects</option>
-                  </select>
-                </label>
+                    <Icon name="globe" size={15} />
+                    <span id="chatContextChips">
+                      General · All subjects · English
+                    </span>
+                    <Icon
+                      name="chevronDown"
+                      size={14}
+                      className="chat-context-chevron"
+                    />
+                  </button>
 
-                <label className="chat-context-field">
-                  <span>Explanation language</span>
-                  <select
-                    id="chatLanguage"
-                    aria-label="Explanation language"
-                    className="chat-select"
+                  <div
+                    className="chat-context-panel"
+                    id="chatContextPanel"
+                    hidden
                   >
-                    <option value="en">English</option>
-                    <option value="hi">हिन्दी</option>
-                    <option value="mr">मराठी</option>
-                  </select>
-                </label>
+                    <p className="chat-context-label">Learning context</p>
 
-                <p className="chat-context-note">
-                  The tutor uses this context to pitch explanations. It does not
-                  change saved progress on its own.
-                </p>
+                    <label className="chat-context-field">
+                      <span>Board or exam</span>
+                      <select
+                        id="chatBoard"
+                        aria-label="Board or exam"
+                        className="chat-select"
+                      >
+                        <option value="">General</option>
+                      </select>
+                    </label>
+
+                    <label className="chat-context-field">
+                      <span>Class</span>
+                      <select
+                        id="chatClass"
+                        aria-label="Class"
+                        className="chat-select"
+                        hidden
+                      >
+                        <option value="">Class</option>
+                      </select>
+                    </label>
+
+                    <label className="chat-context-field">
+                      <span>Subject</span>
+                      <select
+                        id="chatSubject"
+                        aria-label="Subject"
+                        className="chat-select"
+                        disabled
+                      >
+                        <option value="">All subjects</option>
+                      </select>
+                    </label>
+
+                    <label className="chat-context-field">
+                      <span>Explanation language</span>
+                      <select
+                        id="chatLanguage"
+                        aria-label="Explanation language"
+                        className="chat-select"
+                      >
+                        <option value="en">English</option>
+                        <option value="hi">हिन्दी</option>
+                        <option value="mr">मराठी</option>
+                      </select>
+                    </label>
+
+                    <p className="chat-context-note">
+                      The tutor uses this context to pitch explanations. It does
+                      not change saved progress on its own.
+                    </p>
+                  </div>
+                </div>
+
+                <img
+                  id="topbarAvatar"
+                  src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'/%3E"
+                  alt="Your account"
+                />
               </div>
             </div>
           </header>
@@ -287,88 +286,121 @@ export function ChatMarkup() {
             aria-live="polite"
             aria-label="Conversation"
           >
-            <button type="button" id="chatEarlier" className="chat-earlier" hidden>
+            <button
+              type="button"
+              id="chatEarlier"
+              className="chat-earlier"
+              hidden
+            >
               Load earlier messages
             </button>
 
             <div className="chat-messages" id="chatMessages" />
 
-            <div className="chat-starters" id="chatStarters" hidden />
+            <div className="chat-empty" id="chatEmpty" hidden>
+              <div className="chat-empty-inner">
+                <span className="chat-empty-mark" aria-hidden="true">
+                  <Icon name="spark" size={26} />
+                </span>
+                <h2 className="chat-empty-title">
+                  What are we learning today?
+                </h2>
+                <p className="chat-empty-text">
+                  Your tutor explains ideas, works through problems, and checks
+                  your reasoning — pitched at your level.
+                </p>
+                <div className="chat-starters" id="chatStarters" />
+              </div>
+            </div>
 
             <div className="chat-row is-assistant" id="chatLoading" hidden>
               <div
-                className="chat-bubble is-assistant chat-thinking"
+                className="chat-loading-card"
                 role="status"
+                aria-label="Loading saved chat"
               >
-                Loading saved chat…
+                <span className="chat-loading-line" />
+                <span className="chat-loading-line" />
+                <span className="chat-loading-line" />
               </div>
             </div>
 
             <div className="chat-row is-assistant" id="chatThinking" hidden>
-              <div
-                className="chat-bubble is-assistant chat-thinking"
-                role="status"
-              >
+              <div className="chat-thinking" role="status">
                 <span className="chat-typing" aria-hidden="true">
                   <i />
                   <i />
                   <i />
                 </span>
-                <span id="chatThinkingLabel">Thinking through your question…</span>
+                <span id="chatThinkingLabel">
+                  Thinking through your question…
+                </span>
               </div>
             </div>
 
             <div id="chatEnd" />
           </div>
 
-          <button
-            type="button"
-            id="chatLatestBtn"
-            className="chat-chip chat-latest-btn"
-            hidden
-          >
-            ↓ Latest
-          </button>
+          <div className="chat-dock">
+            <button
+              type="button"
+              id="chatLatestBtn"
+              className="chat-latest-btn"
+              aria-label="Jump to latest message"
+              title="Jump to latest"
+              hidden
+            >
+              <Icon name="arrowDown" size={17} />
+            </button>
 
-          <p
-            className="chat-progress-notice"
-            id="chatProgressNotice"
-            role="status"
-            hidden
-          />
+            <p
+              className="chat-progress-notice"
+              id="chatProgressNotice"
+              role="status"
+              hidden
+            />
 
-          <div
-            className="chat-quickbar"
-            id="chatQuickbar"
-            aria-label="Quick follow-ups"
-            hidden
-          />
+            <div
+              className="chat-quickbar"
+              id="chatQuickbar"
+              aria-label="Quick follow-ups"
+              hidden
+            />
 
-          <form className="chat-composer" id="chatForm">
-            <div className="chat-composer-box">
-              <textarea
-                id="chatInput"
-                placeholder="Ask anything from your syllabus…"
-                rows={1}
-                aria-label="Your question"
-                maxLength={2000}
-                className="chat-input"
-              />
-              <button
-                type="submit"
-                id="chatSend"
-                className="chat-send"
-                disabled
-                aria-label="Send message"
-              >
-                <span>Send</span>
-              </button>
-            </div>
-            <div className="chat-composer-meta">
-              <span>Enter to send · Shift + Enter for a new line</span>
-              <span id="chatCharCount" hidden />
-            </div>
-          </form>
+            <form className="chat-composer" id="chatForm">
+              <div className="chat-composer-box">
+                <textarea
+                  id="chatInput"
+                  placeholder="Ask anything from your syllabus…"
+                  rows={1}
+                  aria-label="Your question"
+                  maxLength={2000}
+                  className="chat-input"
+                />
+                <button
+                  type="submit"
+                  id="chatSend"
+                  className="chat-send"
+                  disabled
+                  aria-label="Send message"
+                  data-state="send"
+                >
+                  <span className="chat-send-glyph chat-send-icon">
+                    <Icon name="arrowUp" size={18} />
+                  </span>
+                  <span className="chat-send-glyph chat-stop-icon">
+                    <Icon name="stop" size={18} />
+                  </span>
+                </button>
+              </div>
+              <div className="chat-composer-meta">
+                <span className="chat-composer-hint">
+                  Enter to send · Shift + Enter for a new line
+                </span>
+                <span id="chatCharCount" hidden />
+              </div>
+            </form>
+          </div>
         </section>
       </div>
 
@@ -382,16 +414,32 @@ export function ChatMarkup() {
         aria-labelledby="chatDeleteTitle"
       >
         <div className="chat-modal-card">
+          <button
+            type="button"
+            id="chatDeleteClose"
+            className="chat-modal-close"
+            aria-label="Close dialog"
+          >
+            <Icon name="close" size={16} />
+          </button>
           <h2 id="chatDeleteTitle">Delete this conversation?</h2>
           <p id="chatDeleteText">
             This removes the conversation and every message in it. It cannot be
             undone.
           </p>
           <div className="chat-modal-actions">
-            <button type="button" id="chatDeleteCancel" className="btn btn-secondary">
+            <button
+              type="button"
+              id="chatDeleteCancel"
+              className="btn btn-secondary"
+            >
               Cancel
             </button>
-            <button type="button" id="chatDeleteConfirm" className="btn btn-danger">
+            <button
+              type="button"
+              id="chatDeleteConfirm"
+              className="btn btn-danger"
+            >
               Delete conversation
             </button>
           </div>

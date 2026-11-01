@@ -159,9 +159,9 @@
   --scroll-fade: 14px;
 
   /* ─── Chat study desk ─────────────────────────────────────────────────────── */
-  --chat-rail-w: 264px;
-  --chat-rail-compact: 64px;
-  --chat-measure: 720px;
+  --chat-rail-w: 272px;
+  --chat-rail-compact: 68px;
+  --chat-measure: 700px;
   --chat-gutter: clamp(20px, 4vw, 48px);
   --chat-rail-bg: #050505;
   --chat-user-bg: rgba(255, 255, 255, 0.045);

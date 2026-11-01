@@ -24,8 +24,6 @@ export function createContext(app) {
       app.user.displayName ||
       (app.user.email ? app.user.email.split("@")[0] : "there");
 
-    if (els.greetingName) els.greetingName.textContent = displayName;
-
     if (els.avatar && app.user.photoURL) {
       els.avatar.src = app.user.photoURL;
       els.avatar.alt = displayName;

@@ -15,6 +15,7 @@ import {
   setChatPinned,
 } from "../../lib/chat-store";
 import { deleteChatSession } from "./manage.js";
+import { iconMarkup } from "./icons.js";
 
 const RAIL_KEY = "learning-allied-chat-rail";
 const MOBILE_QUERY = "(max-width: 880px)";
@@ -53,6 +54,10 @@ export function createRail(app) {
     els.railCollapse?.setAttribute("aria-expanded", String(!collapsed));
     els.railCollapse?.setAttribute(
       "aria-label",
+      collapsed ? "Expand conversations" : "Collapse conversations"
+    );
+    els.railCollapse?.setAttribute(
+      "title",
       collapsed ? "Expand conversations" : "Collapse conversations"
     );
     if (els.railToggle) {
@@ -164,21 +169,22 @@ export function createRail(app) {
 
     const open = el("button", "chat-rail-open");
     open.type = "button";
-    open.appendChild(el("span", "chat-rail-title", session.title));
-
-    const meta = [];
-    if (session.messageCount > 0) {
-      meta.push(
-        `${session.messageCount} message${session.messageCount === 1 ? "" : "s"}`
-      );
+    if (session.id === state.chatId) open.setAttribute("aria-current", "true");
+    if (session.pinned) {
+      const pin = el("span", "chat-rail-pin");
+      pin.innerHTML = iconMarkup("pin", 13);
+      pin.setAttribute("aria-hidden", "true");
+      open.appendChild(pin);
     }
-    open.appendChild(
-      el("span", "chat-rail-meta", meta.join(" · ") || "Saved conversation")
-    );
+    open.appendChild(el("span", "chat-rail-title", session.title));
+    if (session.pinned) {
+      open.setAttribute("aria-label", `${session.title} — pinned`);
+    }
 
-    const more = el("button", "chat-rail-more", "⋯");
+    const more = el("button", "chat-rail-more");
     more.type = "button";
     more.dataset.more = session.id;
+    more.innerHTML = iconMarkup("more", 15);
     more.setAttribute("aria-label", `Options for ${session.title}`);
     more.setAttribute("aria-haspopup", "menu");
     more.setAttribute("aria-expanded", "false");
@@ -242,18 +248,38 @@ export function createRail(app) {
   function setActive(id) {
     if (!els.railList) return;
     for (const item of els.railList.querySelectorAll(".chat-rail-item")) {
-      if (item.dataset.id === id) item.dataset.active = "true";
-      else delete item.dataset.active;
+      const open = item.querySelector(".chat-rail-open");
+      if (item.dataset.id === id) {
+        item.dataset.active = "true";
+        open?.setAttribute("aria-current", "true");
+      } else {
+        delete item.dataset.active;
+        open?.removeAttribute("aria-current");
+      }
     }
   }
 
-  function closeMenu() {
+  function menuItems() {
+    if (!els.menu) return [];
+    return Array.from(els.menu.querySelectorAll('[role="menuitem"]'));
+  }
+
+  function focusMenuItem(index) {
+    const items = menuItems();
+    if (!items.length) return;
+    const next = ((index % items.length) + items.length) % items.length;
+    items[next].focus({ preventScroll: true });
+  }
+
+  function closeMenu({ restoreFocus = false } = {}) {
     if (!els.menu) return;
+    const trigger = menuTrigger;
     els.menu.hidden = true;
     menuSessionId = null;
-    if (menuTrigger) {
-      menuTrigger.setAttribute("aria-expanded", "false");
-      menuTrigger = null;
+    menuTrigger = null;
+    if (trigger) {
+      trigger.setAttribute("aria-expanded", "false");
+      if (restoreFocus) trigger.focus({ preventScroll: true });
     }
   }
 
@@ -262,16 +288,17 @@ export function createRail(app) {
     closeMenu();
     menuSessionId = session.id;
     menuTrigger = trigger;
-    els.menuPin.textContent = session.pinned ? "Unpin" : "Pin";
+    const pinLabel = els.menuPinLabel || els.menuPin;
+    if (pinLabel) pinLabel.textContent = session.pinned ? "Unpin" : "Pin";
     els.menu.hidden = false;
     trigger.setAttribute("aria-expanded", "true");
 
     const railRect = els.rail.getBoundingClientRect();
     const rect = trigger.getBoundingClientRect();
-    const width = 168;
+    const width = els.menu.offsetWidth || 180;
     const left = Math.max(
       8,
-      Math.min(rect.left - railRect.left - width + rect.width, railRect.width - width - 8)
+      Math.min(rect.right - railRect.left - width, railRect.width - width - 8)
     );
     const below = rect.bottom - railRect.top + 6;
     const fitsBelow = below + els.menu.offsetHeight < railRect.height - 12;
@@ -279,6 +306,7 @@ export function createRail(app) {
     els.menu.style.top = `${
       fitsBelow ? below : rect.top - railRect.top - els.menu.offsetHeight - 6
     }px`;
+    focusMenuItem(0);
   }
 
   function beginRename(session, item) {
@@ -393,6 +421,8 @@ export function createRail(app) {
       else toggleCollapsed();
     });
 
+    lifecycle.on(els.railClose, "click", closeDrawer);
+
     lifecycle.on(els.railToggle, "click", () => {
       if (isMobile()) {
         if (els.rail?.classList.contains("is-open")) closeDrawer();
@@ -417,7 +447,7 @@ export function createRail(app) {
       if (!session) return;
 
       if (target.closest(".chat-rail-more")) {
-        if (menuSessionId === session.id) closeMenu();
+        if (menuSessionId === session.id) closeMenu({ restoreFocus: true });
         else openMenu(session, target.closest(".chat-rail-more"));
         return;
       }
@@ -430,6 +460,26 @@ export function createRail(app) {
     });
 
     lifecycle.on(els.railList, "scroll", closeMenu, { passive: true });
+
+    lifecycle.on(els.menu, "keydown", (event) => {
+      const items = menuItems();
+      const current = items.indexOf(document.activeElement);
+      if (event.key === "ArrowDown") {
+        event.preventDefault();
+        focusMenuItem(current + 1);
+      } else if (event.key === "ArrowUp") {
+        event.preventDefault();
+        focusMenuItem(current - 1);
+      } else if (event.key === "Home") {
+        event.preventDefault();
+        focusMenuItem(0);
+      } else if (event.key === "End") {
+        event.preventDefault();
+        focusMenuItem(items.length - 1);
+      } else if (event.key === "Tab") {
+        closeMenu({ restoreFocus: true });
+      }
+    });
 
     lifecycle.on(els.menu, "click", (event) => {
       const action = event.target.closest?.("[data-rail-action]")?.dataset
@@ -462,12 +512,12 @@ export function createRail(app) {
     lifecycle.on(document, "keydown", (event) => {
       if (event.key !== "Escape") return;
       if (els.menu && !els.menu.hidden) {
-        closeMenu();
-        menuTrigger?.focus();
+        closeMenu({ restoreFocus: true });
       }
     });
 
     lifecycle.on(els.deleteCancel, "click", () => modal.close(els.deleteModal));
+    lifecycle.on(els.deleteClose, "click", () => modal.close(els.deleteModal));
     lifecycle.on(els.deleteConfirm, "click", () => void confirmDelete());
 
     if (typeof window.matchMedia === "function") {

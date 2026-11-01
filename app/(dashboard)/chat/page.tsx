@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 
 export default function ChatPage() {
   return (
-    <VanillaPage page="chat">
+    <VanillaPage page="chat" fill>
       <ChatMarkup />
     </VanillaPage>
   );

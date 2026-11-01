@@ -21,9 +21,8 @@ import {
   TutorError,
 } from "../lib/learning/types";
 import { createLifecycle } from "./shared/lifecycle.js";
-import { getTheme, toggleTheme } from "./shared/theme.js";
 import { mountToast } from "./shared/toast.js";
-import { NEW_CHAT_TITLE, fallbackReply, makeId, welcomeMessage } from "./chat/messages.js";
+import { NEW_CHAT_TITLE, fallbackReply, makeId } from "./chat/messages.js";
 import { createContext } from "./chat/context.js";
 import { createTranscript } from "./chat/transcript.js";
 import { createCheck } from "./chat/check.js";
@@ -39,6 +38,7 @@ export function mount(root, ctx) {
   const els = {
     messages: root.querySelector("#chatMessages"),
     log: root.querySelector("#chatLog"),
+    empty: root.querySelector("#chatEmpty"),
     starters: root.querySelector("#chatStarters"),
     loading: root.querySelector("#chatLoading"),
     thinking: root.querySelector("#chatThinking"),
@@ -59,8 +59,6 @@ export function mount(root, ctx) {
     classSelect: root.querySelector("#chatClass"),
     subject: root.querySelector("#chatSubject"),
     language: root.querySelector("#chatLanguage"),
-    themeToggle: root.querySelector("#chatThemeToggle"),
-    greetingName: root.querySelector("#greetingName"),
     avatar: root.querySelector("#topbarAvatar"),
     proTag: root.querySelector("#chatProTag"),
     workspace: root.querySelector("#chatWorkspace"),
@@ -69,12 +67,15 @@ export function mount(root, ctx) {
     railSearch: root.querySelector("#chatSearch"),
     railNew: root.querySelector("#chatRailNew"),
     railCollapse: root.querySelector("#chatRailCollapse"),
+    railClose: root.querySelector("#chatRailClose"),
     railToggle: root.querySelector("#chatRailToggle"),
     scrim: root.querySelector("#chatRailScrim"),
     menu: root.querySelector("#chatRailMenu"),
     menuPin: root.querySelector("#chatRailMenuPin"),
+    menuPinLabel: root.querySelector("#chatRailMenuPinLabel"),
     deleteModal: root.querySelector("#chatDeleteModal"),
     deleteText: root.querySelector("#chatDeleteText"),
+    deleteClose: root.querySelector("#chatDeleteClose"),
     deleteCancel: root.querySelector("#chatDeleteCancel"),
     deleteConfirm: root.querySelector("#chatDeleteConfirm"),
   };
@@ -84,7 +85,7 @@ export function mount(root, ctx) {
   }
 
   const state = {
-    messages: [welcomeMessage()],
+    messages: [],
     tracks: [],
     subjects: [],
     profile: null,
@@ -120,9 +121,11 @@ export function mount(root, ctx) {
       callTutor(getToken, action, payload, options),
     setNotice,
     setSending,
+    stopGeneration,
     scrollToEnd,
     setTitle,
     persistTitle,
+    beginDraft,
     startNewChat,
     openConversation,
     sendQuestion,
@@ -151,7 +154,6 @@ export function mount(root, ctx) {
   app.transcript.bindScroll();
   app.rail.bind();
   bindTitle();
-  bindTheme();
   bindEarlier();
 
   void app.context.loadCatalog();
@@ -204,24 +206,6 @@ export function mount(root, ctx) {
     lifecycle.on(els.titleInput, "blur", () => finish(true));
   }
 
-  function bindTheme() {
-    if (!els.themeToggle) return;
-    const sync = () => {
-      const theme = getTheme();
-      els.themeToggle.dataset.theme = theme;
-      els.themeToggle.setAttribute(
-        "aria-label",
-        theme === "dark" ? "Switch to light theme" : "Switch to dark theme"
-      );
-      els.themeToggle.setAttribute("aria-pressed", String(theme === "light"));
-    };
-    sync();
-    lifecycle.on(els.themeToggle, "click", () => {
-      toggleTheme();
-      sync();
-    });
-  }
-
   function bindEarlier() {
     lifecycle.on(els.earlier, "click", () => void loadEarlier());
   }
@@ -229,7 +213,9 @@ export function mount(root, ctx) {
   function setTitle(value) {
     state.title = value || NEW_CHAT_TITLE;
     if (!els.title) return;
-    els.title.textContent = state.title;
+    const label = els.title.querySelector(".chat-title-text");
+    if (label) label.textContent = state.title;
+    else els.title.textContent = state.title;
     els.title.disabled = !state.chatId;
     els.title.setAttribute(
       "title",
@@ -272,6 +258,24 @@ export function mount(root, ctx) {
     app.transcript.scrollToEnd();
   }
 
+  /** Aborts the browser request. The model may still finish server-side, so the
+   * UI only claims that we stopped waiting for the answer. */
+  function stopGeneration() {
+    if (!state.inFlight || !abortController) return;
+    const controller = abortController;
+    abortController = null;
+    try {
+      controller.abort();
+    } catch (_) {
+      /* already aborted */
+    }
+    state.inFlight = false;
+    setSending(false);
+    setNotice(
+      "Stopped waiting for the tutor's response. Your question is still in this conversation and no answer was added."
+    );
+  }
+
   /* ── Conversation switching ─────────────────────────────────────────── */
 
   function startNewChat(options = {}) {
@@ -284,7 +288,7 @@ export function mount(root, ctx) {
     state.inFlight = false;
     state.loadingChat = false;
     state.chatId = null;
-    state.messages = [welcomeMessage()];
+    state.messages = [];
     state.hasEarlier = false;
     state.earlierCursor = null;
     state.lastAttempt = null;
@@ -331,6 +335,7 @@ export function mount(root, ctx) {
     const base = state.messages;
     const userMessage = { id: makeId(), role: "user", content: question };
     app.composer.reset();
+    els.input?.focus();
     void runChat(question, base, userMessage);
   }
 
@@ -339,7 +344,6 @@ export function mount(root, ctx) {
     state.inFlight = true;
     state.messages = [...base, userMessage];
     app.transcript.appendMessage(userMessage);
-    app.transcript.showStarters(false);
     setSending(true);
     setNotice(null);
 
@@ -371,13 +375,10 @@ export function mount(root, ctx) {
       }
     }
 
-    const history = base
-      .filter((message) => message.id !== "welcome")
-      .slice(-6)
-      .map((message) => ({
-        role: message.role,
-        content: message.reply ? message.reply.directAnswer : message.content,
-      }));
+    const history = base.slice(-6).map((message) => ({
+      role: message.role,
+      content: message.reply ? message.reply.directAnswer : message.content,
+    }));
     const summary = summarizeConversation(
       base
         .slice(0, Math.max(0, base.length - 6))
@@ -406,6 +407,7 @@ export function mount(root, ctx) {
       );
 
       if (lifecycle.disposed) return;
+      if (abortController === controller) abortController = null;
 
       const assistant = {
         id: makeId(),
@@ -506,12 +508,16 @@ export function mount(root, ctx) {
     sendQuestion(topic ? `${prompt} (about ${topic})` : prompt);
   }
 
+  function beginDraft(text) {
+    app.composer.setDraft(text || "");
+  }
+
   /* ── Resume and history window ──────────────────────────────────────── */
 
   async function resumeSession(id) {
     if (!ctx.db || !user) return;
     state.loadingChat = true;
-    app.transcript.showStarters(false);
+    app.transcript.syncEmpty();
     if (els.loading) els.loading.hidden = false;
 
     try {
@@ -531,9 +537,7 @@ export function mount(root, ctx) {
       state.chatId = session.id;
       state.hasEarlier = session.hasMore;
       state.earlierCursor = session.nextCursor;
-      state.messages = session.messages.length
-        ? session.messages.map(toUiMessage)
-        : [welcomeMessage()];
+      state.messages = session.messages.map(toUiMessage);
       state.lastAttempt = null;
       setTitle(session.title);
       app.transcript.renderAll();
@@ -554,7 +558,7 @@ export function mount(root, ctx) {
       state.loadingChat = false;
       if (!lifecycle.disposed) {
         if (els.loading) els.loading.hidden = true;
-        app.transcript.showStarters(state.messages.length === 1 && !state.chatId);
+        app.transcript.syncEmpty();
         app.transcript.updateQuickbar();
       }
     }
