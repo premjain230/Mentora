@@ -3,7 +3,7 @@ import { Metadata } from "next";
 import { AdminDashboardClient } from "./AdminDashboardClient";
 
 export const metadata: Metadata = {
-  title: "Admin & Growth Dashboard | Learning Allied",
+  title: "Admin & Growth Dashboard",
   robots: {
     index: false,
     follow: false,

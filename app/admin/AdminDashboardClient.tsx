@@ -5,66 +5,82 @@ import { useAuth } from "../../components/AuthContext";
 import { AppShell } from "../../components/AppShell";
 import { useRouter } from "next/navigation";
 
-export function AdminDashboardClient() {
+function Centered({ children }: { children: React.ReactNode }) {
+  return (
+    <div style={{ padding: 40, textAlign: "center", color: "var(--text-muted)" }}>
+      {children}
+    </div>
+  );
+}
+
+function AdminDashboardInner() {
   const router = useRouter();
   const { user, isAdmin, loading } = useAuth();
   const [stats, setStats] = useState<any>(null);
   const [fetching, setFetching] = useState(true);
 
   useEffect(() => {
-    if (!loading && (!user || !isAdmin)) {
-      // Non-admins redirected to home
-      if (user && !isAdmin) {
-        router.push("/home");
-      }
-    } else if (user && isAdmin) {
-      // Fetch admin growth stats
-      user.getIdToken().then(async (token) => {
-        try {
-          const res = await fetch("/api/growth?route=admin", {
-            headers: { Authorization: `Bearer ${token}` },
-          });
-          if (res.ok) {
-            const data = await res.json();
-            setStats(data);
-          }
-        } catch (err) {
-          console.warn("Could not fetch admin metrics:", err);
-        } finally {
-          setFetching(false);
-        }
-      });
+    if (loading) return;
+
+    if (!user) {
+      setFetching(false);
+      router.replace("/login");
+      return;
     }
+
+    if (!isAdmin) {
+      setFetching(false);
+      router.replace("/home");
+      return;
+    }
+
+    let cancelled = false;
+    setFetching(true);
+
+    (async () => {
+      try {
+        const token = await user.getIdToken();
+        const res = await fetch("/api/growth?route=admin", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (res.ok && !cancelled) {
+          const data = await res.json();
+          setStats(data);
+        }
+      } catch (err) {
+        console.warn("Could not fetch admin metrics:", err);
+      } finally {
+        if (!cancelled) setFetching(false);
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
   }, [user, loading, isAdmin, router]);
 
-  if (loading || fetching) {
-    return (
-      <AppShell>
-        <div style={{ padding: 40, textAlign: "center", color: "var(--text-muted)" }}>
-          Loading admin growth analytics…
-        </div>
-      </AppShell>
-    );
+  if (loading) {
+    return <Centered>Checking your access…</Centered>;
+  }
+
+  if (!user) {
+    return <Centered>Redirecting to sign in…</Centered>;
+  }
+
+  if (fetching) {
+    return <Centered>Loading admin growth analytics…</Centered>;
   }
 
   if (!isAdmin) {
-    return (
-      <AppShell>
-        <div style={{ padding: 40, textAlign: "center", color: "var(--text-muted)" }}>
-          Access restricted to administrators.
-        </div>
-      </AppShell>
-    );
+    return <Centered>Access restricted to administrators.</Centered>;
   }
 
   return (
-    <AppShell>
-      <div className="topbar">
-        <div className="topbar-left">
-          <div className="brand-mark">
-            <img src="/learningallied-white.svg" alt="" width={24} height={24} />
-            <span>Admin Growth Dashboard</span>
-          </div>
+    <div className="topbar">
+      <div className="topbar-left">
+        <div className="brand-mark">
+          <img src="/learningallied-white.svg" alt="" width={24} height={24} />
+          <span>Admin Growth Dashboard</span>
         </div>
       </div>
 
@@ -105,6 +121,14 @@ export function AdminDashboardClient() {
           </div>
         </div>
       </div>
+    </div>
+  );
+}
+
+export function AdminDashboardClient() {
+  return (
+    <AppShell>
+      <AdminDashboardInner />
     </AppShell>
   );
 }
