@@ -132,11 +132,14 @@ export function mount(root, ctx) {
     loadEarlier,
   };
 
-  Object.assign(app, createContext(app));
-  Object.assign(app, createTranscript(app));
-  Object.assign(app, createCheck(app));
-  Object.assign(app, createRail(app));
-  Object.assign(app, createComposer(app));
+  // Namespaces are kept intact because the transcript and the orchestrator call
+  // `app.transcript.*`, `app.check.*` and friends; flattening them onto `app`
+  // leaves every `app.<namespace>` undefined at mount time.
+  app.context = createContext(app);
+  app.transcript = createTranscript(app);
+  app.check = createCheck(app);
+  app.rail = createRail(app);
+  app.composer = createComposer(app);
 
   app.context.hydrateTopbar();
   app.context.readSavedContext();

@@ -13,7 +13,7 @@ export function ChatMarkup() {
             className="chat-icon-btn chat-rail-toggle-btn"
             aria-label="Open conversations"
             aria-controls="chatRail"
-            aria-expanded="true"
+            aria-expanded="false"
           >
             <svg viewBox="0 0 20 20" aria-hidden="true">
               <path

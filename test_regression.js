@@ -770,6 +770,21 @@ test("chat controller preserves tutor, persistence and learning-event flows", ()
   assert(!chatFlowsSource.includes("question.answer"), "controller must not read answer keys");
 });
 
+test("chat controller exposes factory namespaces instead of flattening them", () => {
+  // Regression: Object.assign(app, createX(app)) left every `app.<namespace>`
+  // undefined, so the shell crashed on hydrateTopbar and never mounted.
+  for (const ns of ["context", "transcript", "check", "rail", "composer"]) {
+    assert(
+      chatControllerSource.includes(`app.${ns} = create`),
+      `chat controller must keep the ${ns} namespace`
+    );
+  }
+  assert(
+    !chatControllerSource.includes("Object.assign(app, create"),
+    "factory output must not be flattened onto app"
+  );
+});
+
 test("chat rail ships search, grouping, rename, pin and confirmed delete", () => {
   const railSource = fs.readFileSync(path.join(chatModulesDir, "rail.js"), "utf8");
   for (const token of [

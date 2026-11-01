@@ -168,6 +168,8 @@
   --chat-user-border: rgba(255, 255, 255, 0.09);
   --chat-hover: rgba(255, 255, 255, 0.05);
   --chat-rule: rgba(255, 255, 255, 0.08);
+  /* Secondary chat chrome text that must still clear WCAG AA 4.5:1. */
+  --chat-text-quiet: #7a7a7a;
 }
 
 .light-mode {
@@ -255,4 +257,5 @@
   --chat-user-border: rgba(0, 0, 0, 0.08);
   --chat-hover: rgba(0, 0, 0, 0.04);
   --chat-rule: rgba(0, 0, 0, 0.08);
+  --chat-text-quiet: #6a6a6a;
 }

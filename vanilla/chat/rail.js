@@ -56,7 +56,12 @@ export function createRail(app) {
       collapsed ? "Expand conversations" : "Collapse conversations"
     );
     if (els.railToggle) {
-      els.railToggle.setAttribute("aria-expanded", String(!collapsed));
+      // On mobile the same button opens the drawer, so it must report the
+      // drawer state rather than whether the desktop rail is collapsed.
+      els.railToggle.setAttribute(
+        "aria-expanded",
+        String(isMobile() ? els.rail?.classList.contains("is-open") : !collapsed)
+      );
     }
     if (!collapsed) closeMenu();
   }
@@ -82,10 +87,7 @@ export function createRail(app) {
   function closeDrawer() {
     els.rail?.classList.remove("is-open");
     if (els.scrim) els.scrim.hidden = true;
-    els.railToggle?.setAttribute(
-      "aria-expanded",
-      String(!els.workspace?.classList.contains("is-rail-collapsed"))
-    );
+    els.railToggle?.setAttribute("aria-expanded", "false");
   }
 
   async function refresh() {
@@ -472,6 +474,9 @@ export function createRail(app) {
       const media = window.matchMedia(MOBILE_QUERY);
       lifecycle.on(media, "change", () => {
         if (!media.matches) closeDrawer();
+        applyCollapsed(
+          els.workspace?.classList.contains("is-rail-collapsed") || false
+        );
       });
     }
   }
