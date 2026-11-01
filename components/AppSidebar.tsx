@@ -320,7 +320,7 @@ export function AppSidebar() {
               style={
                 isPro
                   ? {
-                      boxShadow: "0 0 0 2px #ff8a1f, 0 0 12px rgba(255,138,31,0.4)",
+                      boxShadow: "0 0 0 2px var(--accent), 0 0 12px var(--accent-soft)",
                     }
                   : undefined
               }
@@ -334,7 +334,7 @@ export function AppSidebar() {
               <div
                 className="user-plan"
                 id="userPlan"
-                style={isPro ? { color: "#ff8a1f", fontWeight: 600 } : undefined}
+                style={isPro ? { color: "var(--accent)", fontWeight: 600 } : undefined}
               >
                 {planLabel}
               </div>

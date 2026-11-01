@@ -1,8 +1,9 @@
 import Link from "next/link";
 
 /**
- * Structural transcription of the legacy home.html dashboard. React owns the
- * markup; vanilla/home.js only hydrates the data widgets inside it.
+ * Structural transcription of the home.html dashboard with elevated
+ * quick-access shortcuts, cohesive design system cards, and complete
+ * preservation of vanilla/home.js hydration hooks.
  */
 export function HomeMarkup() {
   return (
@@ -74,9 +75,62 @@ export function HomeMarkup() {
 
       <div className="chat-area" id="homeChatArea">
         <div id="homeHub" className="hub-grid">
+          {/* Quick-Action Hero Strip */}
+          <div className="hub-action-strip">
+            <Link href="/arena" className="hub-quick-action hub-action-primary">
+              <span className="hub-action-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="18" height="18" aria-hidden="true">
+                  <path d="M4 4l11 11M12.5 17.5l5-5M16 16l3.5 3.5M20 4 9 15M11.5 17.5l-5-5M8 16l-3.5 3.5" />
+                </svg>
+              </span>
+              <div className="hub-action-copy">
+                <strong>Arena Battle</strong>
+                <span>Conquer syllabus</span>
+              </div>
+            </Link>
+
+            <Link href="/chat" className="hub-quick-action">
+              <span className="hub-action-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="18" height="18" aria-hidden="true">
+                  <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+                </svg>
+              </span>
+              <div className="hub-action-copy">
+                <strong>AI Socratic Tutor</strong>
+                <span>Ask any question</span>
+              </div>
+            </Link>
+
+            <Link href="/study-session" className="hub-quick-action">
+              <span className="hub-action-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="18" height="18" aria-hidden="true">
+                  <circle cx="12" cy="12" r="10" />
+                  <polyline points="12 6 12 12 16 14" />
+                </svg>
+              </span>
+              <div className="hub-action-copy">
+                <strong>Study Session</strong>
+                <span>Deep focus timer</span>
+              </div>
+            </Link>
+
+            <Link href="/quiz" className="hub-quick-action">
+              <span className="hub-action-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="18" height="18" aria-hidden="true">
+                  <path d="M9 11l3 3L22 4" />
+                  <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" />
+                </svg>
+              </span>
+              <div className="hub-action-copy">
+                <strong>Adaptive Quiz</strong>
+                <span>Active recall test</span>
+              </div>
+            </Link>
+          </div>
+
           <div className="hub-row-head">
             <div>
-              <div className="hub-title">Today</div>
+              <div className="hub-title">Today&apos;s Learning Overview</div>
               <div id="hubSubtitle" className="hub-subtitle">
                 Your personalised progress — real, not demo
               </div>

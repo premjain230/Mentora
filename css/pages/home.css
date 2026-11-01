@@ -122,7 +122,7 @@
   flex-direction: column;
   gap: 14px;
   width: 100%;
-  max-width: 760px;
+  max-width: 980px;
 }
 
 .home-page .hub-row-head {
@@ -676,4 +676,101 @@
   opacity: 0.5;
   cursor: not-allowed;
   transform: none;
+}
+
+
+/* ── Quick-Action Hero Strip ──────────────────────────────────────────────── */
+.home-page .hub-action-strip {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.home-page .hub-quick-action {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  border-radius: var(--radius-card, 16px);
+  border: 1px solid var(--border);
+  background: var(--bg-card);
+  text-decoration: none;
+  color: var(--text-primary);
+  box-shadow: var(--card-shadow);
+  transition: all var(--dur-med) var(--ease-out);
+}
+
+.home-page .hub-quick-action:hover {
+  transform: translateY(-2px);
+  border-color: var(--border-hover);
+  background: var(--bg-card-hover);
+  box-shadow: var(--card-shadow-hover);
+}
+
+.home-page .hub-action-primary {
+  border-color: rgba(59, 130, 246, 0.35);
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.08) 0%, var(--bg-card) 100%);
+}
+
+.home-page .hub-action-primary:hover {
+  border-color: var(--accent);
+  box-shadow: 0 4px 20px rgba(59, 130, 246, 0.2);
+}
+
+.home-page .hub-action-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  display: grid;
+  place-items: center;
+  color: var(--accent);
+  flex-shrink: 0;
+  transition: all var(--dur-fast) ease;
+}
+
+.home-page .hub-quick-action:hover .hub-action-icon {
+  background: var(--accent);
+  color: #ffffff;
+  border-color: var(--accent);
+}
+
+.home-page .hub-action-copy {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.home-page .hub-action-copy strong {
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.25;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: var(--text-primary);
+}
+
+.home-page .hub-action-copy span {
+  font-size: 11px;
+  color: var(--text-muted);
+  line-height: 1.2;
+  margin-top: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+@media (max-width: 880px) {
+  .home-page .hub-action-strip {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 520px) {
+  .home-page .hub-action-strip {
+    grid-template-columns: 1fr;
+  }
 }

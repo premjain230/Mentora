@@ -91,7 +91,7 @@ export function UpgradeModal() {
         className="aum-card"
         style={{
           background: "#0f1117",
-          border: "1px solid rgba(255, 138, 31, 0.25)",
+          border: "1px solid rgba(59, 130, 246, 0.28)",
           borderRadius: "20px",
           padding: "36px 32px 32px",
           maxWidth: "440px",
@@ -130,9 +130,9 @@ export function UpgradeModal() {
             display: "inline-flex",
             alignItems: "center",
             gap: 5,
-            background: "rgba(255, 138, 31, 0.12)",
-            border: "1px solid rgba(255, 138, 31, 0.3)",
-            color: "#ff8a1f",
+            background: "rgba(59, 130, 246, 0.12)",
+            border: "1px solid rgba(59, 130, 246, 0.3)",
+            color: "var(--accent, #3b82f6)",
             fontSize: 11,
             fontWeight: 600,
             padding: "4px 10px",
@@ -197,7 +197,7 @@ export function UpgradeModal() {
             <span style={{ fontSize: 13, color: "#f0f0f8", fontWeight: 500 }}>
               {modalData.name}
             </span>
-            <span style={{ fontSize: 12, color: "#ff8a1f" }}>
+            <span style={{ fontSize: 12, color: "var(--accent, #3b82f6)" }}>
               {modalData.used} / {modalData.limit}
             </span>
           </div>
@@ -213,7 +213,7 @@ export function UpgradeModal() {
               style={{
                 height: "100%",
                 borderRadius: 10,
-                background: "linear-gradient(90deg, #ff8a1f, #ffa14d)",
+                background: "linear-gradient(90deg, #3b82f6, #60a5fa)",
                 width: `${modalData.pct}%`,
                 transition: "width 0.4s",
               }}
@@ -234,8 +234,7 @@ export function UpgradeModal() {
               gap: 8,
               padding: "14px 20px",
               borderRadius: 12,
-              background: "#ff8a1f",
-              color: "#0a0a0b",
+              background: "var(--accent, #3b82f6)", color: "#ffffff", boxShadow: "0 4px 16px rgba(59, 130, 246, 0.35)",
               fontWeight: 700,
             }}
             onClick={() => setIsOpen(false)}

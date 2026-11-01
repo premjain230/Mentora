@@ -113,9 +113,9 @@ export default function PlannerOnboardingPage() {
                   style={{
                     padding: "8px 14px",
                     borderRadius: 8,
-                    border: `1px solid ${active ? "var(--la-accent, #ff8a1f)" : "var(--la-line, rgba(255,255,255,0.12))"}`,
-                    background: active ? "rgba(255,138,31,0.14)" : "var(--la-surface-2, #17171a)",
-                    color: active ? "var(--la-accent, #ff8a1f)" : "#fff",
+                    border: `1px solid ${active ? "var(--la-accent, #3b82f6)" : "var(--la-line, rgba(255,255,255,0.12))"}`,
+                    background: active ? "rgba(59, 130, 246, 0.14)" : "var(--la-surface-2, #17171a)",
+                    color: active ? "var(--la-accent, #3b82f6)" : "#fff",
                     cursor: "pointer",
                     fontSize: 13,
                     fontWeight: 600,
@@ -131,7 +131,7 @@ export default function PlannerOnboardingPage() {
         <div style={{ marginBottom: 28 }}>
           <label style={{ display: "flex", justifyContent: "space-between", fontSize: 13, fontWeight: 500, marginBottom: 6, color: "var(--la-muted, #a1a1aa)" }}>
             <span>Target daily hours</span>
-            <span style={{ color: "var(--la-accent, #ff8a1f)", fontWeight: 700 }}>{hoursPerDay}h / day</span>
+            <span style={{ color: "var(--la-accent, #3b82f6)", fontWeight: 700 }}>{hoursPerDay}h / day</span>
           </label>
           <input
             type="range"
@@ -139,7 +139,7 @@ export default function PlannerOnboardingPage() {
             max={12}
             value={hoursPerDay}
             onChange={(e) => setHoursPerDay(Number(e.target.value))}
-            style={{ width: "100%", accentColor: "var(--la-accent, #ff8a1f)" }}
+            style={{ width: "100%", accentColor: "var(--la-accent, #3b82f6)" }}
           />
         </div>
 

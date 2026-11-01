@@ -89,7 +89,7 @@ export default function OnboardingPage() {
     <div style={{ minHeight: "100vh", display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", padding: 24, background: "#000" }}>
       <div style={{ width: "100%", maxWidth: 520, background: "var(--la-surface, #111113)", border: "1px solid var(--la-line, rgba(255,255,255,0.09))", borderRadius: 20, padding: 36 }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20 }}>
-          <span style={{ fontSize: 12, fontWeight: 700, color: "var(--la-accent, #ff8a1f)", textTransform: "uppercase" }}>
+          <span style={{ fontSize: 12, fontWeight: 700, color: "var(--la-accent, #3b82f6)", textTransform: "uppercase" }}>
             Personalize Learning Allied
           </span>
           <span style={{ fontSize: 13, color: "var(--la-muted, #a1a1aa)" }}>Step {step + 1} of 3</span>
@@ -113,9 +113,9 @@ export default function OnboardingPage() {
                   style={{
                     padding: "14px 18px",
                     borderRadius: 12,
-                    border: `1px solid ${targetExam === exam ? "var(--la-accent, #ff8a1f)" : "var(--la-line, rgba(255,255,255,0.09))"}`,
-                    background: targetExam === exam ? "rgba(255,138,31,0.12)" : "var(--la-surface-2, #17171a)",
-                    color: targetExam === exam ? "var(--la-accent, #ff8a1f)" : "#fff",
+                    border: `1px solid ${targetExam === exam ? "var(--la-accent, #3b82f6)" : "var(--la-line, rgba(255,255,255,0.09))"}`,
+                    background: targetExam === exam ? "rgba(59, 130, 246, 0.14)" : "var(--la-surface-2, #17171a)",
+                    color: targetExam === exam ? "var(--la-accent, #3b82f6)" : "#fff",
                     fontWeight: 600,
                     textAlign: "left",
                     cursor: "pointer",
@@ -222,9 +222,9 @@ export default function OnboardingPage() {
                     style={{
                       padding: "8px 16px",
                       borderRadius: 999,
-                      border: `1px solid ${isSelected ? "var(--la-accent, #ff8a1f)" : "var(--la-line, rgba(255,255,255,0.12))"}`,
-                      background: isSelected ? "rgba(255,138,31,0.14)" : "var(--la-surface-2, #17171a)",
-                      color: isSelected ? "var(--la-accent, #ff8a1f)" : "#fff",
+                      border: `1px solid ${isSelected ? "var(--la-accent, #3b82f6)" : "var(--la-line, rgba(255,255,255,0.12))"}`,
+                      background: isSelected ? "rgba(59, 130, 246, 0.14)" : "var(--la-surface-2, #17171a)",
+                      color: isSelected ? "var(--la-accent, #3b82f6)" : "#fff",
                       cursor: "pointer",
                       fontSize: 13,
                       fontWeight: 600,
@@ -239,7 +239,7 @@ export default function OnboardingPage() {
             <div style={{ marginBottom: 28 }}>
               <label style={{ display: "flex", justifyContent: "space-between", fontSize: 13, fontWeight: 500, marginBottom: 6, color: "var(--la-muted, #a1a1aa)" }}>
                 <span>Daily target study hours</span>
-                <span style={{ color: "var(--la-accent, #ff8a1f)", fontWeight: 700 }}>{dailyHours} hours / day</span>
+                <span style={{ color: "var(--la-accent, #3b82f6)", fontWeight: 700 }}>{dailyHours} hours / day</span>
               </label>
               <input
                 type="range"
@@ -247,7 +247,7 @@ export default function OnboardingPage() {
                 max={12}
                 value={dailyHours}
                 onChange={(e) => setDailyHours(Number(e.target.value))}
-                style={{ width: "100%", accentColor: "var(--la-accent, #ff8a1f)" }}
+                style={{ width: "100%", accentColor: "var(--la-accent, #3b82f6)" }}
               />
             </div>
 

@@ -51,7 +51,7 @@
 }
 
 .page-settings .settings-card:hover {
-  border-color: rgba(0, 212, 255, 0.15);
+  border-color: var(--border-hover);
 }
 
 .page-settings .card-header {
@@ -74,7 +74,7 @@
 }
 
 .page-settings .card-header-icon.cyan {
-  background: rgba(0, 212, 255, 0.12);
+  background: var(--accent-soft);
 }
 
 .page-settings .card-header-icon.purple {
@@ -349,8 +349,8 @@
 
 .page-settings .form-input:focus,
 .page-settings .form-textarea:focus {
-  border-color: rgba(0, 212, 255, 0.4);
-  box-shadow: 0 0 0 3px rgba(0, 212, 255, 0.08);
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-soft);
 }
 
 .page-settings .form-input::placeholder,
@@ -408,14 +408,16 @@
 
 .page-settings .btn-primary {
   background: var(--accent);
-  color: #06121a;
-  box-shadow: 0 4px 14px rgba(0, 212, 255, 0.3);
+  color: #ffffff;
+  font-weight: 600;
+  box-shadow: 0 2px 10px rgba(59, 130, 246, 0.28);
 }
 
 .page-settings .btn-primary:hover:not(:disabled) {
-  background: #33ddff;
+  background: var(--accent-strong);
+  color: #ffffff;
   transform: translateY(-1px);
-  box-shadow: 0 6px 18px rgba(0, 212, 255, 0.4);
+  box-shadow: 0 4px 16px rgba(59, 130, 246, 0.38);
 }
 
 .page-settings .btn-danger {

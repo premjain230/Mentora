@@ -11,38 +11,44 @@
 
 /* Public & marketing theme tokens (--la-*) and Next.js layout utilities */
 :root {
-  --la-bg: #000000;
-  --la-surface: #111113;
-  --la-surface-2: #17171a;
+  --la-bg: #08090d;
+  --la-surface: #0f1420;
+  --la-surface-2: #151a29;
   --la-line: rgba(255, 255, 255, 0.09);
   --la-line-strong: rgba(255, 255, 255, 0.16);
-  --la-text: #f4f4f5;
-  --la-muted: #a1a1aa;
-  --la-faint: #71717a;
-  --la-accent: #ff8a1f;
-  --la-accent-ink: #0a0a0b;
-  --la-accent-soft: rgba(255, 138, 31, 0.14);
-  --la-ok: #4ade80;
-  --la-warn: #fbbf24;
-  --la-r: 14px;
+  --la-text: #f8fafc;
+  --la-muted: #94a3b8;
+  --la-faint: #64748b;
+  --la-accent: #3b82f6;
+  --la-accent-ink: #ffffff;
+  --la-accent-soft: rgba(59, 130, 246, 0.14);
+  --la-cyan: #06b6d4;
+  --la-cyan-soft: rgba(6, 182, 212, 0.14);
+  --la-danger: #f43f5e;
+  --la-ok: #10b981;
+  --la-warn: #f59e0b;
+  --la-r: 16px;
   --la-r-sm: 10px;
   --la-font: var(--la-font-inter), "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 }
 
 .light-mode {
-  --la-bg: #fafaf9;
+  --la-bg: #f8fafc;
   --la-surface: #ffffff;
-  --la-surface-2: #f3f3f1;
+  --la-surface-2: #f1f5f9;
   --la-line: rgba(0, 0, 0, 0.09);
   --la-line-strong: rgba(0, 0, 0, 0.18);
-  --la-text: #18181b;
-  --la-muted: #52525b;
-  --la-faint: #71717a;
-  --la-accent: #ea6a00;
+  --la-text: #0f172a;
+  --la-muted: #475569;
+  --la-faint: #64748b;
+  --la-accent: #2563eb;
   --la-accent-ink: #ffffff;
-  --la-accent-soft: rgba(234, 106, 0, 0.10);
-  --la-ok: #15803d;
-  --la-warn: #b45309;
+  --la-accent-soft: rgba(37, 99, 235, 0.10);
+  --la-cyan: #0284c7;
+  --la-cyan-soft: rgba(2, 132, 199, 0.10);
+  --la-danger: #e11d48;
+  --la-ok: #059669;
+  --la-warn: #d97706;
 }
 
 /* Shared container for public marketing & content pages */

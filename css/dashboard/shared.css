@@ -108,10 +108,16 @@
 }
 
 .dashboard-page .dash-card {
-  padding: 18px;
+  padding: 20px 22px;
   border: 1px solid var(--border);
-  border-radius: 16px;
+  border-radius: var(--radius-card, 18px);
   background: var(--bg-card);
+  box-shadow: var(--card-shadow);
+  transition: border-color var(--dur-med) ease, transform var(--dur-med) var(--ease-out), box-shadow var(--dur-med) ease;
+}
+.dashboard-page .dash-card:hover {
+  border-color: var(--border-hover);
+  box-shadow: var(--card-shadow-hover);
 }
 
 .dashboard-page .dash-empty,
@@ -162,7 +168,13 @@
 .dashboard-page .dash-btn.primary {
   border-color: transparent;
   background: var(--accent);
-  color: #0a0a0b;
+  color: #ffffff;
+  box-shadow: 0 2px 10px rgba(59, 130, 246, 0.28);
+}
+.dashboard-page .dash-btn.primary:hover:not(:disabled) {
+  background: var(--accent-strong);
+  color: #ffffff;
+  box-shadow: 0 4px 14px rgba(59, 130, 246, 0.38);
 }
 
 .dashboard-page .dash-btn.ghost {
@@ -247,4 +259,58 @@
   .dashboard-page .dash-content {
     padding: 18px 12px 28px;
   }
+}
+
+
+/* ── Unified Dashboard Form Inputs ────────────────────────────────────────── */
+.dashboard-page .dash-input,
+.dashboard-page .dash-select,
+.dashboard-page .dash-textarea {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm, 10px);
+  background: var(--bg-input);
+  color: var(--text-primary);
+  font: inherit;
+  font-size: 13.5px;
+  line-height: 1.5;
+  transition: border-color var(--dur-fast) ease, box-shadow var(--dur-fast) ease, background var(--dur-fast) ease;
+}
+
+.dashboard-page .dash-input:hover,
+.dashboard-page .dash-select:hover,
+.dashboard-page .dash-textarea:hover {
+  border-color: var(--border-hover);
+  background: var(--bg-input-hover);
+}
+
+.dashboard-page .dash-input:focus,
+.dashboard-page .dash-select:focus,
+.dashboard-page .dash-textarea:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-soft);
+}
+
+.dashboard-page .dash-label {
+  display: block;
+  margin-bottom: 6px;
+  color: var(--text-secondary);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+
+/* ── Shimmer / Skeleton Animation ─────────────────────────────────────────── */
+@keyframes dashShimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.dash-skeleton {
+  background: linear-gradient(90deg, var(--bg-elevated) 25%, var(--bg-hover) 50%, var(--bg-elevated) 75%);
+  background-size: 200% 100%;
+  animation: dashShimmer 1.8s infinite ease-in-out;
+  border-radius: 6px;
 }
