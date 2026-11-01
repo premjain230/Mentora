@@ -7,6 +7,7 @@ const { applyCors, rateLimit, readJsonBody, sendError } = require("./_shared");
 const { verifyIdToken, firestore } = require("./_admin");
 const { groqComplete } = require("./_ai");
 const arena = require("./_arena");
+const chatManage = require("./chat-manage");
 
 const ALLOWED_TYPES = new Set([
   "lesson_started","lesson_completed","question_answered","question_correct","question_incorrect",
@@ -390,11 +391,15 @@ async function handleArena(req, res){
 }
 
 module.exports = async function handler(req, res){
-  // Support GET /api/learning-event?route=recommendations via rewrite /api/recommendations
-  // and GET /api/learning-event?route=arena via rewrite /api/arena (Hobby 12-function consolidation)
+  // Support GET /api/learning-event?route=recommendations via rewrite /api/recommendations,
+  // GET /api/learning-event?route=arena via rewrite /api/arena, and
+  // POST /api/learning-event?route=chat-manage via rewrite /api/chat/manage.
+  // All three share this function to stay within the Vercel Hobby 12-function limit.
   const url = (()=>{ try{ return new URL(req.url, `https://${req.headers.host||'localhost'}`); }catch{ return { searchParams:{ get:()=>null }}; }})();
   const route = url.searchParams.get("route") || req.query?.route;
   if(route==="arena") return handleArena(req,res);
+  // chat-manage keeps its own CORS, POST-only check, rate limit, auth and cascade.
+  if(route==="chat-manage") return chatManage(req,res);
   if(req.method==="GET" && route==="recommendations"){
     if(!applyCors(req, res, ["GET","OPTIONS"])) return;
     if(!rateLimit(req,res,{name:"recommendations", limit:30})) return;

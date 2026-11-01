@@ -818,6 +818,50 @@ test("chat module split keeps the owner-scoped delete path", () => {
   assert(manageServer.includes("users/${decoded.uid}/chats/"), "delete path must derive from the verified uid");
 });
 
+test("chat delete is consolidated into the learning-event function", () => {
+  const vercel = JSON.parse(fs.readFileSync(path.join(ROOT, "vercel.json"), "utf8"));
+  const rewrites = vercel.rewrites || [];
+  const mapped = (source, destination) =>
+    rewrites.some((r) => r.source === source && r.destination === destination);
+
+  assert(mapped("/api/chat/manage", "/api/learning-event?route=chat-manage"), "chat manage rewrite missing");
+  // The previously consolidated routes must stay mapped.
+  assert(mapped("/api/arena", "/api/learning-event?route=arena"), "arena rewrite missing");
+  assert(
+    mapped("/api/recommendations", "/api/learning-event?route=recommendations"),
+    "recommendations rewrite missing"
+  );
+  assert(mapped("/api/learn-hub", "/api/study-session?route=learn-hub"), "learn-hub rewrite missing");
+
+  assert(
+    !fs.existsSync(path.join(ROOT, "app/api/chat/manage/route.ts")),
+    "chat manage must not be generated as its own function"
+  );
+  assert(learningEventJs.includes('require("./chat-manage")'), "learning-event must host the chat manage handler");
+  assert(learningEventJs.includes('route==="chat-manage"'), "chat-manage dispatch missing");
+
+  const learningEventRoute = fs.readFileSync(
+    path.join(ROOT, "app/api/learning-event/route.ts"),
+    "utf8"
+  );
+  for (const method of ["GET", "POST", "OPTIONS"]) {
+    assert(
+      learningEventRoute.includes(`export async function ${method}`),
+      `learning-event must keep ${method}`
+    );
+  }
+
+  // Consolidated dispatches must run before the event pipeline's CORS/rate limit.
+  const eventPipeline = learningEventJs.indexOf('name:"learning-event"');
+  assert(eventPipeline > -1, "learning-event rate limit missing");
+  for (const route of ["arena", "chat-manage"]) {
+    assert(
+      learningEventJs.indexOf(`route==="${route}"`) < eventPipeline,
+      `${route} must dispatch before learning-event handling`
+    );
+  }
+});
+
 const learningBlocksSource = fs.readFileSync(
   path.join(ROOT, "vanilla/shared/learning-blocks.js"),
   "utf8"
