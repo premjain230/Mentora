@@ -15,6 +15,7 @@ import {
   writeBatch,
 } from "firebase/firestore";
 import { createLifecycle } from "./shared/lifecycle.js";
+import { el } from "./shared/dom.js";
 import { mountToast } from "./shared/toast.js";
 
 const SUBJECT_COLORS = [
@@ -78,13 +79,6 @@ export function mount(root, ctx) {
   const busyTasks = new Set();
   let replanBusy = false;
   let deleteBusy = false;
-
-  function el(tag, className, text) {
-    const node = document.createElement(tag);
-    if (className) node.className = className;
-    if (text != null) node.textContent = String(text);
-    return node;
-  }
 
   function subjectColor(index) {
     return SUBJECT_COLORS[Math.max(0, index) % SUBJECT_COLORS.length];

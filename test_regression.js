@@ -704,7 +704,7 @@ const chatMarkupSource = fs.readFileSync(
   "utf8"
 );
 const chatVisualSource = fs.readFileSync(
-  path.join(ROOT, "vanilla/chat/visual.js"),
+  path.join(ROOT, "vanilla/shared/visual-island.js"),
   "utf8"
 );
 const vanillaPageSource = fs.readFileSync(
@@ -760,8 +760,23 @@ test("chat controller preserves tutor, persistence and learning-event flows", ()
   assert(!chatControllerSource.includes("question.answer"), "controller must not read answer keys");
 });
 
+const learningBlocksSource = fs.readFileSync(
+  path.join(ROOT, "vanilla/shared/learning-blocks.js"),
+  "utf8"
+);
+
+test("chat and the hub share one lesson-content renderer", () => {
+  assert(chatControllerSource.includes('from "./shared/learning-blocks.js"'), "chat must import the shared renderer");
+  assert(learningBlocksSource.includes("export function renderTeaching"), "shared renderTeaching missing");
+  assert(learningBlocksSource.includes("export function renderExample"), "shared renderExample missing");
+  assert(learningBlocksSource.includes("generatedNotice"), "generated notice support missing");
+  assert(learningBlocksSource.includes("exampleFirst"), "example-first support missing");
+  assert(!chatControllerSource.includes("function renderTeaching"), "chat must not keep a duplicate renderer");
+});
+
 test("chat visuals mount on demand and unmount with the page", () => {
-  assert(chatControllerSource.includes('import("./chat/visual.js")'), "visual island must load on demand");
+  assert(chatControllerSource.includes('import("./shared/visual-island.js")'), "visual island must load on demand");
+  assert(chatControllerSource.includes("{ compact: true }"), "chat visuals must keep compact mode");
   assert(chatControllerSource.includes("clearVisuals"), "visual cleanup missing");
   assert(chatVisualSource.includes("mountVisual"), "visual island exporter missing");
   assert(chatVisualSource.includes("root.unmount()"), "visual island must unmount");
@@ -770,6 +785,107 @@ test("chat visuals mount on demand and unmount with the page", () => {
 test("chat CSS scopes hidden toggles and message spacing", () => {
   assert(chatCssSource.includes(".page-chat [hidden]"), "hidden rows need a scoped display rule");
   assert(chatCssSource.includes(".page-chat .chat-messages"), "message container spacing missing");
+});
+
+// ─────────────────────────────────────────────────────────────────────────────
+// SUITE 3E: LEARNING HUB VANILLA ARCHITECTURE
+// ─────────────────────────────────────────────────────────────────────────────
+console.log("\n[Suite 3E] Learning Hub vanilla architecture");
+
+const hubRouteSource = fs.readFileSync(
+  path.join(ROOT, "app/(dashboard)/learning-hub/page.tsx"),
+  "utf8"
+);
+const hubControllerSource = fs.readFileSync(
+  path.join(ROOT, "vanilla/learning-hub.js"),
+  "utf8"
+);
+const hubMarkupSource = fs.readFileSync(
+  path.join(ROOT, "components/pages/learning-hub/LearningHubMarkup.tsx"),
+  "utf8"
+);
+const hubCssSource = fs.readFileSync(
+  path.join(ROOT, "css/learning-hub.css"),
+  "utf8"
+);
+const globalsSource = fs.readFileSync(
+  path.join(ROOT, "app/globals.css"),
+  "utf8"
+);
+
+test("learning hub route uses the VanillaPage + markup pattern", () => {
+  assert(hubRouteSource.includes('from "@/components/vanilla/VanillaPage"'), "route must import VanillaPage");
+  assert(hubRouteSource.includes('from "@/components/pages/learning-hub/LearningHubMarkup"'), "route must import LearningHubMarkup");
+  assert(hubRouteSource.includes('<VanillaPage page="learning-hub">'), "route must render the learning-hub page key");
+  assert(hubRouteSource.includes("<LearningHubMarkup />"), "route must render the hub markup");
+  assert(!hubRouteSource.includes('"use client"'), "hub route must stay a server component");
+  assert(!hubRouteSource.includes("callTutor"), "hub route must not own tutor calls");
+});
+
+test("VanillaPage registers the learning hub controller", () => {
+  assert(vanillaPageSource.includes('| "learning-hub"'), "PageKey must include learning-hub");
+  assert(vanillaPageSource.includes('"learning-hub": () => import("@/vanilla/learning-hub")'), "learning-hub loader missing");
+});
+
+test("LearningHubMarkup keeps the shell hooks the controller hydrates", () => {
+  for (const id of [
+    "hubSession",
+    "hubSessionBody",
+    "hubSessionError",
+    "hubRail",
+    "hubMastery",
+    "hubTeaching",
+    "hubPractice",
+    "hubCheck",
+    "hubNextBtn",
+    "hubCompletion",
+    "hubVisual",
+    "hubPick",
+    "hubCatalog",
+    "hubChapters",
+    "hub-search-input",
+  ]) {
+    assert(hubMarkupSource.includes(`id="${id}"`), `LearningHubMarkup missing #${id}`);
+  }
+  assert(hubMarkupSource.includes("page-learning-hub"), "hub markup must keep the scoped root class");
+  assert(hubMarkupSource.includes('aria-labelledby="hub-known"'), "hub section labelling lost");
+});
+
+test("every learning hub controller hook exists in the markup", () => {
+  const ids = [
+    ...hubControllerSource.matchAll(/qs\(root, "#([^"]+)"\)/g),
+  ].map((match) => match[1]);
+  assert(ids.length >= 20, "expected the controller to bind the full shell");
+  for (const id of new Set(ids)) {
+    assert(hubMarkupSource.includes(`id="${id}"`), `markup missing #${id}`);
+  }
+});
+
+test("learning hub controller preserves tutor, progress and learning-event flows", () => {
+  assert(hubControllerSource.includes("export function mount(root, ctx)"), "mount export missing");
+  assert(hubControllerSource.includes("createLifecycle()"), "lifecycle missing");
+  assert(hubControllerSource.includes("lifecycle.dispose()"), "cleanup missing");
+  assert(hubControllerSource.includes('"catalog"'), "catalog call missing");
+  assert(hubControllerSource.includes('"lesson"'), "lesson call missing");
+  assert(hubControllerSource.includes('"evaluate"'), "evaluate call missing");
+  assert(hubControllerSource.includes('surface: "hub"'), "hub surface marker missing");
+  assert(hubControllerSource.includes('source: "study_session"'), "learning-event source missing");
+  assert(hubControllerSource.includes("formatRelativeRevision"), "revision formatting missing");
+  assert(!hubControllerSource.includes('"use client"'), "controller must stay framework-free");
+});
+
+test("learning hub reuses the shared teaching renderer and visual island", () => {
+  assert(hubControllerSource.includes('from "./shared/learning-blocks.js"'), "shared teaching renderer missing");
+  assert(hubControllerSource.includes("renderTeaching("), "renderTeaching not used");
+  assert(hubControllerSource.includes('import("./shared/visual-island.js")'), "visual island must load on demand");
+  assert(hubControllerSource.includes("clearVisual"), "visual cleanup missing");
+  assert(!hubControllerSource.includes("innerHTML"), "controller must not inject HTML");
+});
+
+test("learning hub CSS is route-scoped and no longer global", () => {
+  assert(hubRouteSource.includes('@/css/learning-hub.css'), "route must import the hub stylesheet");
+  assert(!globalsSource.includes('css/learning-hub.css'), "hub stylesheet must not be imported globally");
+  assert(hubCssSource.includes(".page-learning-hub [hidden]"), "hidden panes need a scoped display rule");
 });
 
 // ─────────────────────────────────────────────────────────────────────────────

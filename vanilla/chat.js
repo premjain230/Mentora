@@ -16,6 +16,8 @@ import {
   TutorError,
 } from "../lib/learning/types";
 import { createLifecycle } from "./shared/lifecycle.js";
+import { el } from "./shared/dom.js";
+import { renderTeaching } from "./shared/learning-blocks.js";
 
 const WELCOME_TEXT =
   "Hello! I am your Learning Allied tutor. Ask me to explain a concept, work through a problem, or check your reasoning. I will keep simple questions short and go deeper when a topic needs it.";
@@ -25,12 +27,6 @@ const STARTERS = [
   "Help me understand photosynthesis instead of memorising it.",
   "Give me a worked example of a quadratic with two real roots.",
 ];
-
-const LEVEL_LABEL = {
-  foundation: "Foundation",
-  intermediate: "Intermediate",
-  advanced: "Advanced",
-};
 
 const VERDICT_META = {
   correct: { label: "Correct", className: "verdict-good" },
@@ -82,13 +78,6 @@ function fallbackReply(text, source, retry = false) {
     source,
     ...(retry ? { retry: true } : {}),
   };
-}
-
-function el(tag, className, text) {
-  const node = document.createElement(tag);
-  if (className) node.className = className;
-  if (text != null) node.textContent = text;
-  return node;
 }
 
 function option(value, label) {
@@ -469,98 +458,13 @@ export function mount(root, ctx) {
     }
   }
 
-  function renderTeaching(reply) {
-    const wrap = el("div", "learn-teaching");
-
-    const head = el("div", "learn-teaching-head");
-    if (reply.title) head.appendChild(el("h3", "learn-title", reply.title));
-    const tags = el("div", "learn-teaching-tags");
-    if (reply.level) {
-      tags.appendChild(
-        el(
-          "span",
-          "learn-badge learn-badge--soft",
-          LEVEL_LABEL[reply.level] || reply.level
-        )
-      );
-    }
-    if (reply.source === "authored") {
-      tags.appendChild(el("span", "learn-badge learn-badge--ok", "Reviewed lesson"));
-    }
-    head.appendChild(tags);
-    wrap.appendChild(head);
-
-    if (reply.personalization) {
-      wrap.appendChild(el("p", "learn-personal", reply.personalization));
-    }
-    if (reply.fallbackNote) {
-      wrap.appendChild(
-        el("p", "learn-callout learn-callout--warn", reply.fallbackNote)
-      );
-    }
-    if (reply.directAnswer) {
-      wrap.appendChild(el("p", "learn-lead", reply.directAnswer));
-    }
-
-    for (const section of reply.sections || []) {
-      const block = el("section", "learn-section");
-      block.appendChild(el("h4", null, section.heading));
-      block.appendChild(el("p", null, section.body));
-      if (section.equation) {
-        const pre = el("pre", "learn-equation");
-        pre.appendChild(el("code", null, section.equation));
-        block.appendChild(pre);
-      }
-      wrap.appendChild(block);
-    }
-
-    wrap.appendChild(renderExample(reply.example));
-
-    if (reply.advanced) {
-      const details = el("details", "learn-advanced");
-      details.appendChild(
-        el("summary", null, reply.advanced.heading || "Go deeper")
-      );
-      details.appendChild(el("p", null, reply.advanced.body));
-      wrap.appendChild(details);
-    }
-
-    return wrap;
-  }
-
-  function renderExample(example) {
-    const block = el("div", "learn-example");
-    if (!example) {
-      block.hidden = true;
-      return block;
-    }
-    const head = el("div", "learn-example-head");
-    head.appendChild(el("span", "learn-badge learn-badge--soft", "Worked example"));
-    block.appendChild(head);
-    if (example.problem) {
-      block.appendChild(el("p", "learn-example-problem", example.problem));
-    }
-    if (Array.isArray(example.steps) && example.steps.length) {
-      const steps = el("ol", "learn-steps");
-      for (const step of example.steps) steps.appendChild(el("li", null, step));
-      block.appendChild(steps);
-    }
-    if (example.answer) {
-      const answer = el("p", "learn-answer");
-      answer.appendChild(el("strong", null, "Answer:"));
-      answer.appendChild(document.createTextNode(` ${example.answer}`));
-      block.appendChild(answer);
-    }
-    return block;
-  }
-
   function renderVisual(bubble, visual) {
     const slot = el("div", "chat-visual");
     bubble.appendChild(slot);
-    import("./chat/visual.js")
+    import("./shared/visual-island.js")
       .then((mod) => {
         if (lifecycle.disposed || !slot.isConnected) return;
-        const unmount = mod.mountVisual(slot, visual);
+        const unmount = mod.mountVisual(slot, visual, { compact: true });
         if (typeof unmount === "function") state.visualUnmounts.push(unmount);
       })
       .catch((err) => console.warn("Could not render visual:", err));

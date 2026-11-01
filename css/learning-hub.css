@@ -393,3 +393,8 @@ html.light-mode .lh-board-icon, html.light-mode .lh-sub-ico { background: rgba(v
 /* ---------- Dashboard shell alignment (React page) ---------- */
 .page-learning-hub { min-height: 0; overflow: hidden; }
 .page-learning-hub .lh-content { flex: 1 1 auto; min-height: 0; overflow-y: auto; }
+
+/* The vanilla controller toggles panes with [hidden]; keep it authoritative. */
+.page-learning-hub [hidden] {
+  display: none !important;
+}

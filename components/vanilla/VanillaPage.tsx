@@ -9,6 +9,7 @@ type PageKey =
   | "home"
   | "chat"
   | "chat-history"
+  | "learning-hub"
   | "review"
   | "study-session"
   | "quiz"
@@ -41,6 +42,7 @@ const loaders: Record<PageKey, () => Promise<VanillaModule>> = {
   home: () => import("@/vanilla/home"),
   chat: () => import("@/vanilla/chat"),
   "chat-history": () => import("@/vanilla/chat-history"),
+  "learning-hub": () => import("@/vanilla/learning-hub"),
   review: () => import("@/vanilla/review"),
   "study-session": () => import("@/vanilla/study-session"),
   quiz: () => import("@/vanilla/quiz"),
