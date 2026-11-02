@@ -71,6 +71,31 @@ function validate(body){
 const ARENA_VALID_ACTIONS = new Set(["init","get","heartbeat","start_battle","submit_answer","finish_battle"]);
 const ARENA_LEGACY_ACTIONS = new Set(["defeat_chapter","level_complete","final_boss_attempt"]);
 function isArenaSubjectKey(s){ return typeof s==="string" && s.length>=3 && s.length<=80 && /^[a-z0-9_]+$/.test(s); }
+
+function extractArenaJsonArray(text) {
+  if (!text || typeof text !== "string") return null;
+  const cleaned = text.replace(/```json|```/g, "").trim();
+  try {
+    const direct = JSON.parse(cleaned);
+    if (Array.isArray(direct)) return direct;
+    if (direct && Array.isArray(direct.questions)) return direct.questions;
+  } catch (_) {}
+  const match = text.match(/\[\s*\{[\s\S]*\}\s*\]/);
+  if (match) {
+    try {
+      const parsed = JSON.parse(match[0]);
+      if (Array.isArray(parsed)) return parsed;
+    } catch (_) {}
+  }
+  const objMatch = text.match(/\{[\s\S]*"questions"\s*:\s*(\[[\s\S]*\])[\s\S]*\}/);
+  if (objMatch && objMatch[1]) {
+    try {
+      const parsed = JSON.parse(objMatch[1]);
+      if (Array.isArray(parsed)) return parsed;
+    } catch (_) {}
+  }
+  return null;
+}
 async function handleArena(req, res){
   // GET ?route=arena&subjectKey=xxx  -> fetch progress
   if(req.method==="GET"){
@@ -195,16 +220,55 @@ async function handleArena(req, res){
       const topics = body.topics ? String(body.topics).trim().slice(0,400) : name;
       const count = mode==="final_boss" ? arena.BOSS_SIZE : arena.BATTLE_SIZE;
       if(!rateLimit(req,res,{name:"arena-generate",limit:10})) return;
-      let parsed;
-      try{
-        const prompt = mode==="final_boss"
-          ? `Generate ${count} MCQs covering ${subject} chapters: ${topics}. Mix difficulties. Return a JSON array [{"q":"","options":["A) ...","B) ...","C) ...","D) ..."],"answer":"B","explanation":"..."}]. Only JSON.`
-          : `Generate ${count} MCQs for ${subject} — ${name} (${topic}). Return a JSON array [{"q":"","options":["A) ...","B) ...","C) ...","D) ..."],"answer":"B","explanation":"..."}]. Only JSON.`;
-        const content = await groqComplete({ model: process.env.GROQ_MODEL || "openai/gpt-oss-120b", messages:[{role:"user",content:prompt}], temperature:0.7, maxTokens: mode==="final_boss" ? 1200 : 900 });
-        parsed = JSON.parse(String(content).replace(/```json|```/g,"").trim());
-      }catch(e){
-        console.error("[arena] question generation failed", e && e.message ? e.message : e);
-        return res.status(502).json({error:"Could not generate battle questions. Please retry."});
+      if (!process.env.GROQ_API_KEY) {
+        console.error("[arena] GROQ_API_KEY is not configured.");
+        return res.status(500).json({ error: "AI service is not configured. Please contact support." });
+      }
+      const prompt = mode === "final_boss"
+        ? `Generate ${count} MCQs covering ${subject} chapters: ${topics}. Mix difficulties. Return a JSON array [{"q":"","options":["A) ...","B) ...","C) ...","D) ..."],"answer":"B","explanation":"..."}]. Only JSON.`
+        : `Generate ${count} MCQs for ${subject} — ${name} (${topic}). Return a JSON array [{"q":"","options":["A) ...","B) ...","C) ...","D) ..."],"answer":"B","explanation":"..."}]. Only JSON.`;
+
+      const candidates = [
+        process.env.GROQ_MODEL,
+        "llama-3.3-70b-versatile",
+        "llama-3.1-8b-instant",
+        "qwen/qwen3.6-27b",
+      ].filter(Boolean);
+      const uniqueCandidates = [...new Set(candidates)];
+      let parsed = null;
+      let lastErr = null;
+      const startedAt = Date.now();
+      const ARENA_DEADLINE_MS = 24000;
+
+      for (const candidateModel of uniqueCandidates) {
+        if (Date.now() - startedAt > ARENA_DEADLINE_MS) {
+          console.warn("[arena] time budget exceeded before attempting model", candidateModel);
+          break;
+        }
+        try {
+          const controller = new AbortController();
+          const timer = setTimeout(() => controller.abort(), Math.max(3000, ARENA_DEADLINE_MS - (Date.now() - startedAt)));
+          const rawContent = await groqComplete({
+            model: candidateModel,
+            messages: [{ role: "user", content: prompt }],
+            temperature: 0.7,
+            maxTokens: mode === "final_boss" ? 1200 : 900,
+            signal: controller.signal,
+          });
+          clearTimeout(timer);
+          parsed = extractArenaJsonArray(rawContent);
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            break;
+          }
+        } catch (e) {
+          lastErr = e;
+          console.warn("[arena] generation attempt failed with model", candidateModel, e && e.message ? e.message : e);
+        }
+      }
+
+      if (!parsed) {
+        console.error("[arena] question generation failed for all models:", lastErr && lastErr.message ? lastErr.message : "No valid JSON output");
+        return res.status(502).json({ error: "Could not generate battle questions right now. Please retry." });
       }
       const questions = arena.normalizeQuestions(parsed, count);
       if(!questions.length) return res.status(502).json({error:"Could not generate battle questions. Please retry."});
@@ -397,7 +461,7 @@ module.exports = async function handler(req, res){
   // All three share this function to stay within the Vercel Hobby 12-function limit.
   const url = (()=>{ try{ return new URL(req.url, `https://${req.headers.host||'localhost'}`); }catch{ return { searchParams:{ get:()=>null }}; }})();
   const route = url.searchParams.get("route") || req.query?.route;
-  if(route==="arena") return handleArena(req,res);
+  if(route==="arena" || (url && url.pathname && url.pathname.endsWith("/arena"))) return handleArena(req,res);
   // chat-manage keeps its own CORS, POST-only check, rate limit, auth and cascade.
   if(route==="chat-manage") return chatManage(req,res);
   if(req.method==="GET" && route==="recommendations"){

@@ -729,13 +729,14 @@ Rules:
 - If the student is mistaken, correct the cause of the misconception kindly and concretely.
 - If the student writes in another language, reply in that language unless the requested language is explicit.`;
 
-function contextBlock({ concept, trackId, classNum, language, level, state, history, summary, question, candidates, photosAllowed }) {
+function contextBlock({ concept, trackId, classNum, language, level, state, history, summary, question, candidates, photosAllowed, stage, stageIndex }) {
   const track = getTrack(trackId);
   const lines = [];
   lines.push(`Board/exam: ${track ? track.label : "not specified"}`);
   if (classNum) lines.push(`Class: ${classNum}`);
   if (language) lines.push(`Language: ${language}`);
   lines.push(`Student level: ${level}`);
+  if (stage) lines.push(`Active learning stage: ${stage} (Stage ${(typeof stageIndex === "number" ? stageIndex : 0) + 1} of 7: Understand, Explain, Visualize, Practice, Evaluate, Adapt, Remember)`);
   if (concept) {
     lines.push(`Curriculum concept: ${concept.name} (${concept.subject}; id ${concept.conceptId}; difficulty ${concept.difficulty})`);
     const prereqs = getPrerequisiteInfo(concept).map((p) => p.name).join(", ");
@@ -1328,6 +1329,23 @@ async function lessonTutor({ uid, body, state }) {
   const pack = findPack(concept, body.focus || "", subject);
   const summary = completionFor(attempts, level);
   const trackLabel = track ? track.label : null;
+  const STAGES = ["Understand", "Explain", "Visualize", "Practice", "Evaluate", "Adapt", "Remember"];
+  const existingTopic = (state.hub && state.hub.topics) ? state.hub.topics[concept.conceptId] : null;
+  const initialStageIndex = summary.completed
+    ? 6
+    : typeof body.stageIndex === "number"
+    ? Math.max(0, Math.min(6, body.stageIndex))
+    : existingTopic && typeof existingTopic.stageIndex === "number"
+    ? Math.max(0, Math.min(6, existingTopic.stageIndex))
+    : 0;
+  const initialUnlockedStage = Math.max(
+    initialStageIndex,
+    summary.completed
+      ? 6
+      : existingTopic && typeof existingTopic.unlockedStage === "number"
+      ? existingTopic.unlockedStage
+      : 0
+  );
 
   let lesson;
   let aiCalls = 0;
@@ -1375,6 +1393,8 @@ async function lessonTutor({ uid, body, state }) {
         summary: "",
         question,
         candidates,
+        stage: STAGES[initialStageIndex],
+        stageIndex: initialStageIndex,
       });
       const result = await askJson(messages, { model: MODEL_STRONG, temperature: 0.45, maxTokens: 1700, timeoutMs: 22000 });
       aiCalls = 1;

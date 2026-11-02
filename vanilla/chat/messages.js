@@ -37,7 +37,7 @@ export const VERDICT_META = {
   unknown: { label: "Not evaluated", className: "verdict-unknown" },
 };
 
-export const NEW_CHAT_TITLE = "New study session";
+export const NEW_CHAT_TITLE = "New Study Session";
 
 export function makeId() {
   if (typeof crypto !== "undefined" && "randomUUID" in crypto) {

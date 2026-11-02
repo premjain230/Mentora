@@ -182,7 +182,19 @@ export function resolveEntitlement({
       bonusChats: referralBonusChats(bonusSource),
     };
   }
-  if (entitlement) {
+  const hasExplicitEntitlement =
+    entitlement &&
+    (entitlement.plan !== undefined ||
+      entitlement.isPro !== undefined ||
+      entitlement.pro !== undefined ||
+      entitlement.tier !== undefined ||
+      entitlement.subscriptionTier !== undefined ||
+      entitlement.subscriptionStatus !== undefined ||
+      entitlement.subscriptionExpiresAt !== undefined ||
+      entitlement.proExpiresAt !== undefined ||
+      entitlement.proUntil !== undefined);
+
+  if (hasExplicitEntitlement) {
     return {
       plan: entitlementDataIsPro(entitlement) ? "pro" : "free",
       source: "entitlement",

@@ -522,7 +522,7 @@
   justify-content: space-between;
   gap: 16px;
   width: 100%;
-  max-width: var(--chat-measure);
+  max-width: 100%; padding: 0 4px;
   height: var(--chat-header-h);
   margin: 0 auto;
   min-width: 0;
@@ -537,7 +537,7 @@
 }
 
 .page-chat .chat-topbar-left {
-  flex: 1 1 auto;
+  flex: 0 1 auto;
 }
 
 .page-chat .chat-topbar-right {
@@ -642,6 +642,8 @@
 }
 
 .page-chat .chat-context-btn {
+  flex-shrink: 1;
+  min-width: 0;
   display: inline-flex;
   align-items: center;
   gap: 7px;

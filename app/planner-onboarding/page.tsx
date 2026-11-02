@@ -44,6 +44,30 @@ export default function PlannerOnboardingPage() {
     }
   };
 
+  const handleSkip = async () => {
+    if (uid) {
+      try {
+        const { db } = await initFirebase();
+        if (db) {
+          await setDoc(
+            doc(db, "users", uid, "planner", "config"),
+            {
+              examDate: examDate || "2027-01-20",
+              studyDays: studyDays && studyDays.length ? studyDays : ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
+              hoursPerDay: hoursPerDay || 4,
+              configuredAt: serverTimestamp(),
+              skipped: true,
+            },
+            { merge: true }
+          );
+        }
+      } catch (err) {
+        console.error("Planner skip error:", err);
+      }
+    }
+    router.push("/planner");
+  };
+
   const handleSavePlan = async () => {
     if (!uid) return;
     setLoading(true);
@@ -200,7 +224,14 @@ export default function PlannerOnboardingPage() {
             </div>
           </div>
 
-          <div className="action-row">
+          <div className="action-row action-row-dual">
+            <button
+              type="button"
+              onClick={handleSkip}
+              className="btn-planner-skip"
+            >
+              Skip for now
+            </button>
             <button
               type="button"
               onClick={handleSavePlan}
@@ -442,6 +473,35 @@ export default function PlannerOnboardingPage() {
 
         .action-row {
           display: flex;
+        }
+
+        .action-row-dual {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+        }
+
+        .btn-planner-skip {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          font-family: inherit;
+          font-size: 14.5px;
+          font-weight: 600;
+          border-radius: 12px;
+          padding: 14px 20px;
+          cursor: pointer;
+          border: 1px solid var(--border-strong, #404040);
+          background: transparent;
+          color: var(--text-secondary, #A3A3A3);
+          transition: all 0.16s ease;
+          white-space: nowrap;
+        }
+
+        .btn-planner-skip:hover {
+          color: var(--text-primary, #FFFFFF);
+          border-color: var(--border-hover, rgba(255, 255, 255, 0.3));
+          background: rgba(255, 255, 255, 0.04);
         }
 
         .btn-planner-submit {

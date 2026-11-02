@@ -214,7 +214,7 @@ export function ChatMarkup() {
                       title="Start a conversation to name it"
                     >
                       <span className="chat-title-text">
-                        New study session
+                        New Study Session
                       </span>
                       <Icon
                         name="pencil"

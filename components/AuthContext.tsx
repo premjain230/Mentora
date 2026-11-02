@@ -2,7 +2,7 @@
 
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { User, onAuthStateChanged, signOut as firebaseSignOut } from "firebase/auth";
-import { doc, getDoc, Firestore } from "firebase/firestore";
+import { doc, onSnapshot, Firestore } from "firebase/firestore";
 import { initFirebase } from "../lib/firebase";
 import {
   resolveIsPro,
@@ -38,34 +38,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [entitlement, setEntitlement] = useState<EntitlementData | null>(null);
   const [loading, setLoading] = useState(true);
 
-  const fetchUserData = async (
-    currentUser: User,
-    firestoreDb?: Firestore,
-    forceRefreshToken = false
-  ) => {
-    try {
-      const { db } = await initFirebase();
-      const activeDb = firestoreDb || db;
-      if (!activeDb) return;
-      const [snap, entitlementSnap, tokenResult] = await Promise.all([
-        getDoc(doc(activeDb, "users", currentUser.uid)),
-        getDoc(doc(activeDb, "entitlements", currentUser.uid)),
-        currentUser
-          .getIdTokenResult(forceRefreshToken)
-          .catch(() => null),
-      ]);
-      setUserData(snap.exists() ? (snap.data() as UserPlanData) : null);
-      setEntitlement(
-        entitlementSnap.exists() ? (entitlementSnap.data() as EntitlementData) : null
-      );
-      setClaims((tokenResult?.claims as EntitlementClaims) || null);
-    } catch (e) {
-      console.warn("Could not fetch user profile:", e);
-    }
-  };
-
   useEffect(() => {
-    let unsubscribe: (() => void) | undefined;
+    let authUnsub: (() => void) | undefined;
+    let userDocUnsub: (() => void) | undefined;
+    let entDocUnsub: (() => void) | undefined;
 
     initFirebase().then(({ auth, db }) => {
       if (!auth) {
@@ -73,21 +49,73 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         return;
       }
 
-      unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
+      authUnsub = onAuthStateChanged(auth, async (currentUser) => {
         setUser(currentUser);
+        if (userDocUnsub) {
+          userDocUnsub();
+          userDocUnsub = undefined;
+        }
+        if (entDocUnsub) {
+          entDocUnsub();
+          entDocUnsub = undefined;
+        }
+
         if (currentUser) {
-          await fetchUserData(currentUser, db || undefined);
+          // Force-refresh claims to catch newly activated subscriptions
+          try {
+            const tokenResult = await currentUser.getIdTokenResult(true).catch(() => null);
+            setClaims((tokenResult?.claims as EntitlementClaims) || null);
+          } catch (_) {}
+
+          if (db) {
+            // Real-time synchronization with users/{uid}
+            try {
+              userDocUnsub = onSnapshot(
+                doc(db, "users", currentUser.uid),
+                (snap) => {
+                  setUserData(snap.exists() ? (snap.data() as UserPlanData) : null);
+                  setLoading(false);
+                },
+                (err) => {
+                  console.warn("User doc listener error:", err);
+                  setLoading(false);
+                }
+              );
+            } catch (err) {
+              console.warn("Could not attach user doc listener:", err);
+              setLoading(false);
+            }
+
+            // Real-time synchronization with entitlements/{uid}
+            try {
+              entDocUnsub = onSnapshot(
+                doc(db, "entitlements", currentUser.uid),
+                (snap) => {
+                  setEntitlement(snap.exists() ? (snap.data() as EntitlementData) : null);
+                },
+                (_) => {
+                  setEntitlement(null);
+                }
+              );
+            } catch (_) {
+              setEntitlement(null);
+            }
+          } else {
+            setLoading(false);
+          }
         } else {
           setUserData(null);
           setClaims(null);
           setEntitlement(null);
+          setLoading(false);
         }
-        setLoading(false);
       });
     });
 
     return () => {
-      if (unsubscribe) unsubscribe();
+      if (authUnsub) authUnsub();
+      if (userDocUnsub) userDocUnsub();
+      if (entDocUnsub) entDocUnsub();
     };
   }, []);
 
@@ -109,7 +137,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const refreshUserData = async () => {
     if (user) {
-      await fetchUserData(user, undefined, true);
+      try {
+        const tokenResult = await user.getIdTokenResult(true).catch(() => null);
+        setClaims((tokenResult?.claims as EntitlementClaims) || null);
+      } catch (_) {}
     }
   };
 

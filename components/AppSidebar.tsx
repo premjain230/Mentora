@@ -7,7 +7,8 @@ import { useAuth } from "./AuthContext";
 
 export function AppSidebar() {
   const pathname = usePathname();
-  const { user, userData, isPro, signOut } = useAuth();
+  const { user, userData, isPro, loading, signOut } = useAuth();
+  const [imgFailed, setImgFailed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
 
   useEffect(() => {
@@ -22,7 +23,8 @@ export function AppSidebar() {
     (user?.email ? user.email.split("@")[0] : "Student");
 
   const avatarInitial = (displayName.charAt(0) || "U").toUpperCase();
-  const planLabel = isPro ? "Pro Member" : "Free Plan";
+  const planLabel = loading ? "" : isPro ? "Pro Member" : "Free Plan";
+  const photoURL = user?.photoURL || (userData as any)?.photoURL || null;
 
   return (
     <>

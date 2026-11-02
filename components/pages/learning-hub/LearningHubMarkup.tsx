@@ -87,6 +87,7 @@ export function LearningHubMarkup() {
                   </section>
 
                   <div id="hubCompletion" />
+                  <div id="hubStageNav" className="hub-stage-nav" />
 
                   <div id="hubCompleteCallout" className="hub-complete-callout" hidden>
                     <p id="hubCompleteText" />

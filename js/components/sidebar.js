@@ -206,10 +206,11 @@ export function populateSidebarUser(user, plan, container) {
   if (planEl) planEl.textContent = plan === 'pro' ? '✨ Pro' : 'Free Plan';
 
   if (avatarEl) {
+    const initial = displayName.charAt(0).toUpperCase();
     if (user.photoURL) {
-      avatarEl.innerHTML = `<img src="${escAttr(user.photoURL)}" alt="${escAttr(displayName)}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;" />`;
+      avatarEl.innerHTML = `<img src="${escAttr(user.photoURL)}" alt="${escAttr(displayName)}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;display:block;" onerror="this.onerror=null;this.parentElement.textContent='${initial}'" />`;
     } else {
-      avatarEl.textContent = displayName.charAt(0).toUpperCase();
+      avatarEl.textContent = initial;
     }
   }
 

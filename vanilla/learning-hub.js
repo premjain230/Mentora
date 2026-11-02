@@ -113,6 +113,7 @@ export function mount(root, ctx) {
     nextBtn: qs(root, "#hubNextBtn"),
     nextNote: qs(root, "#hubNextNote"),
     completion: qs(root, "#hubCompletion"),
+    stageNav: qs(root, "#hubStageNav"),
     completeCallout: qs(root, "#hubCompleteCallout"),
     completeText: qs(root, "#hubCompleteText"),
     completeChoose: qs(root, "#hubCompleteChoose"),
@@ -176,7 +177,19 @@ export function mount(root, ctx) {
     if (greeting) greeting.textContent = displayName;
 
     const avatar = qs(host, "#topbarAvatar");
-    if (avatar && user.photoURL) avatar.src = user.photoURL;
+    if (avatar) {
+      avatar.alt = displayName;
+      const initial = (displayName.charAt(0) || "U").toUpperCase();
+      const initialSvg = `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64"><rect width="100%" height="100%" fill="%23262626"/><text x="50%" y="54%" font-family="system-ui,sans-serif" font-size="28" font-weight="700" fill="%23ffffff" dominant-baseline="middle" text-anchor="middle">${encodeURIComponent(initial)}</text></svg>`;
+      if (user.photoURL) {
+        avatar.src = user.photoURL;
+        avatar.onerror = () => {
+          avatar.src = initialSvg;
+        };
+      } else {
+        avatar.src = initialSvg;
+      }
+    }
   }
 
   function bindEvents() {
@@ -296,34 +309,155 @@ export function mount(root, ctx) {
     renderPractice();
     renderCompletion(revisionAt, revisionLabel);
     renderAside(revisionLabel);
+    renderStageNav();
+  }
+
+  function renderStageNav() {
+    if (!els.stageNav) return;
+    els.stageNav.replaceChildren();
+    if (!state.lesson) return;
+
+    const stage = state.currentStage ?? 0;
+    const unlocked = state.unlockedStage ?? 0;
+    const wrap = el("div", "hub-stage-nav-inner");
+
+    if (stage > 0) {
+      const prevLabels = [
+        "",
+        "← Back to Overview",
+        "← Back to Explanation",
+        "← Back to Visual Model",
+        "← Back to Practice",
+        "← Back to Evaluation",
+        "← Back to Adaptive Next Step",
+      ];
+      const prevBtn = el("button", "btn btn-secondary hub-stage-btn", prevLabels[stage] || "← Previous Stage");
+      prevBtn.type = "button";
+      prevBtn.addEventListener("click", () => goToStage(stage - 1));
+      wrap.appendChild(prevBtn);
+    }
+
+    if (stage === 0) {
+      const nextBtn = el("button", "btn btn-primary hub-stage-btn", "Continue to Explanation →");
+      nextBtn.type = "button";
+      nextBtn.addEventListener("click", () => {
+        state.unlockedStage = Math.max(unlocked, 1);
+        goToStage(1);
+      });
+      wrap.appendChild(nextBtn);
+    } else if (stage === 1) {
+      const nextBtn = el("button", "btn btn-primary hub-stage-btn", "Explore Visual Representation →");
+      nextBtn.type = "button";
+      nextBtn.addEventListener("click", () => {
+        state.unlockedStage = Math.max(unlocked, 2);
+        goToStage(2);
+      });
+      wrap.appendChild(nextBtn);
+    } else if (stage === 2) {
+      const nextBtn = el("button", "btn btn-primary hub-stage-btn", "Start Practice Questions →");
+      nextBtn.type = "button";
+      nextBtn.addEventListener("click", () => {
+        state.unlockedStage = Math.max(unlocked, 3);
+        goToStage(3);
+      });
+      wrap.appendChild(nextBtn);
+    } else if (stage === 3) {
+      if (unlocked >= 4) {
+        const nextBtn = el("button", "btn btn-primary hub-stage-btn", "View Evaluation →");
+        nextBtn.type = "button";
+        nextBtn.addEventListener("click", () => goToStage(4));
+        wrap.appendChild(nextBtn);
+      }
+    } else if (stage === 4) {
+      const nextBtn = el("button", "btn btn-primary hub-stage-btn", "View Adaptive Next Step →");
+      nextBtn.type = "button";
+      nextBtn.addEventListener("click", () => {
+        state.unlockedStage = Math.max(unlocked, 5);
+        goToStage(5);
+      });
+      wrap.appendChild(nextBtn);
+    } else if (stage === 5) {
+      const nextBtn = el("button", "btn btn-primary hub-stage-btn", "Lock into Memory (Retention) →");
+      nextBtn.type = "button";
+      nextBtn.addEventListener("click", () => {
+        state.unlockedStage = Math.max(unlocked, 6);
+        goToStage(6);
+      });
+      wrap.appendChild(nextBtn);
+    }
+
+    els.stageNav.appendChild(wrap);
   }
 
   function renderRail() {
     if (!els.rail) return;
-    const active = state.sessionSummary?.completed
-      ? 6
-      : state.evaluation
-      ? state.pendingNext && state.evaluation.verdict !== "correct"
-        ? 5
-        : 4
-      : state.check
-      ? 3
-      : state.lesson
-      ? 2
-      : 1;
+    const active = state.currentStage ?? 0;
 
     els.rail.replaceChildren();
     RAIL_STEPS.forEach((step, index) => {
+      const isCurrent = index === active;
+      const isPast = index < active;
+      const isUnlocked = index <= (state.unlockedStage ?? 0);
+
       const item = el(
         "li",
-        index === active ? "is-active" : index < active ? "is-done" : ""
+        isCurrent
+          ? "is-active"
+          : isPast
+          ? "is-done"
+          : isUnlocked
+          ? "is-unlocked"
+          : "is-locked"
       );
-      if (index === active) item.setAttribute("aria-current", "step");
-      const dot = el("span", "learn-rail-dot", index < active ? "✓" : String(index + 1));
+      if (isCurrent) item.setAttribute("aria-current", "step");
+
+      if (isUnlocked) {
+        item.setAttribute("role", "button");
+        item.setAttribute("tabindex", "0");
+        item.setAttribute(
+          "aria-label",
+          `Stage ${index + 1}: ${step}${isPast ? " (completed)" : isCurrent ? " (current)" : ""}`
+        );
+        item.addEventListener("click", () => {
+          goToStage(index);
+        });
+        item.addEventListener("keydown", (e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            goToStage(index);
+          }
+        });
+      }
+
+      const dot = el("span", "learn-rail-dot", isPast ? "✓" : String(index + 1));
       dot.setAttribute("aria-hidden", "true");
       item.append(dot, el("span", "learn-rail-text", step));
       els.rail.appendChild(item);
     });
+  }
+
+  function goToStage(targetStage) {
+    if (targetStage < 0 || targetStage > 6) return;
+    if (targetStage > (state.unlockedStage ?? 0)) return;
+    state.currentStage = targetStage;
+    state.unlockedStage = Math.max(state.unlockedStage ?? 0, targetStage);
+    renderSessionBody();
+    void persistStageProgress(state.currentStage, state.unlockedStage);
+  }
+
+  async function persistStageProgress(stageIndex, unlockedStage) {
+    if (!state.lesson || !state.lesson.conceptId) return;
+    try {
+      await callTutor(getToken, "state", {
+        conceptId: state.lesson.conceptId,
+        track: state.selection.track || undefined,
+        classNum: state.selection.classNum || undefined,
+        stageIndex,
+        unlockedStage,
+      });
+    } catch {
+      /* Stage persistence is best effort */
+    }
   }
 
   function renderMastery() {
@@ -419,7 +553,8 @@ export function mount(root, ctx) {
 
   function renderPractice() {
     const check = state.check;
-    if (els.practice) els.practice.hidden = !check;
+    const showPractice = Boolean(check) && (state.currentStage ?? 0) >= 3;
+    if (els.practice) els.practice.hidden = !showPractice;
     if (!check) {
       checkView = null;
       if (els.check) els.check.replaceChildren();

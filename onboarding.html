@@ -126,6 +126,7 @@ function isRequiredComplete(){
 async function load(){
  const snap = await getDoc(doc(db,"users",uid,"learning","profile"));
  profileRaw = snap.exists()? migrateLegacyProfile(snap.data()): migrateLegacyProfile({});
+ const skippedQuestions = new Set(Array.isArray(profileRaw.skippedQuestions) ? profileRaw.skippedQuestions : []);
  // reconstruct answers from profile
  const a = profileRaw.academic || {};
  if(a.grade) answers["academic.grade"]=""+a.grade;

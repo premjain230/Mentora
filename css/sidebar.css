@@ -172,9 +172,9 @@
 /* ── Footer: user card ────────────────────────────────────── */
 .sidebar-bottom { margin-top: auto; padding: 12px; }
 .user-card {
-  display: flex; align-items: center; gap: 10px;
-  padding: 10px;
-  border-radius: 22px;
+  display: flex; align-items: center; gap: 12px;
+  padding: 10px 14px;
+  border-radius: 18px;
   background: var(--bg-card);
   border: 1px solid var(--border);
 }
@@ -184,15 +184,26 @@
   background: var(--bg-elevated);
   border: 1px solid var(--border-strong);
   color: var(--text-primary);
-  display: grid; place-items: center;
+  display: flex; align-items: center; justify-content: center;
   font-size: var(--fs-sm); font-weight: 700;
   overflow: hidden;
+  position: relative;
 }
-.avatar img { width: 100%; height: 100%; object-fit: cover; }
-.user-info { min-width: 0; flex: 1; }
+.avatar img, .avatar-img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; display: block; }
+.user-info {
+  min-width: 0; flex: 1;
+  display: flex; flex-direction: column; justify-content: center; gap: 2px;
+}
 .user-meta { min-width: 0; flex: 1; }
-.user-name { font-size: 13.5px; font-weight: 700; color: var(--text-primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.user-plan { font-size: 11.5px; color: var(--text-muted); }
+.user-name {
+  font-size: 13.5px; font-weight: 700; color: var(--text-primary);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  line-height: 1.25; margin: 0;
+}
+.user-plan {
+  font-size: 11.5px; color: var(--text-muted);
+  line-height: 1.2; display: flex; align-items: center; gap: 4px;
+}
 
 /* Pro badge: flame accent, flat */
 .plan-badge {
