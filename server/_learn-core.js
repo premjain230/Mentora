@@ -24,6 +24,9 @@ const {
   matchConcept,
   getPrerequisiteInfo,
   curriculumStats,
+  tokenize,
+  stem,
+  GENERIC_MODIFIERS,
 } = require("./_curriculum");
 
 const VISUALS = require("../lib/learning/visual-catalog.json");
@@ -238,6 +241,91 @@ function packSubjectMatches(pack, concept, subject) {
   });
 }
 
+const PACK_TOPIC_VALIDATORS = {
+  "ohm-law": (tokens, text) =>
+    tokens.has("ohm") ||
+    tokens.has("resistor") ||
+    tokens.has("resistance") ||
+    tokens.has("resistivity") ||
+    tokens.has("electricity") ||
+    tokens.has("electric") ||
+    (tokens.has("voltage") && (tokens.has("current") || tokens.has("circuit"))) ||
+    (/\bohm('?s)?\s+law\b/i.test(text)),
+
+  "newtons-second-law": (tokens, text) =>
+    tokens.has("newton") ||
+    (tokens.has("force") && (tokens.has("acceleration") || tokens.has("mass") || tokens.has("momentum"))) ||
+    (/\bnewton('?s)?\s+(second|2nd)\s+law\b/i.test(text)) ||
+    (/\bf\s*=\s*m\s*a\b/i.test(text)),
+
+  "mirror-ray-diagram": (tokens, text) =>
+    (tokens.has("mirror") && (tokens.has("ray") || tokens.has("concave") || tokens.has("convex") || tokens.has("focal") || tokens.has("reflection"))) ||
+    (/\bray\s+diagram\b/i.test(text)) ||
+    (/\bconcave\s+mirror\b/i.test(text)) ||
+    (/\bconvex\s+mirror\b/i.test(text)),
+
+  "covalent-bonding": (tokens, text) =>
+    tokens.has("covalent") ||
+    tokens.has("vsepr") ||
+    (tokens.has("bond") && (tokens.has("sharing") || tokens.has("molecular") || tokens.has("shape") || tokens.has("tetrahedral") || tokens.has("polar") || tokens.has("octet") || tokens.has("geometry"))) ||
+    (/\bcovalent\s+bond/i.test(text)) ||
+    (/\bmolecular\s+shape/i.test(text)) ||
+    (/\bvsepr\b/i.test(text)),
+
+  "photosynthesis": (tokens, text) =>
+    tokens.has("photosynthesis") ||
+    tokens.has("chloroplast") ||
+    tokens.has("chlorophyll") ||
+    tokens.has("thylakoid") ||
+    (tokens.has("light") && tokens.has("reaction") && tokens.has("calvin")) ||
+    (/\bcalvin\s+cycle\b/i.test(text)),
+
+  "quadratic-equations": (tokens, text) =>
+    tokens.has("quadratic") ||
+    (tokens.has("roots") && tokens.has("equation")) ||
+    (tokens.has("discriminant") && tokens.has("equation")) ||
+    (/\bquadratic\s+formula\b/i.test(text)) ||
+    (/\bquadratic\s+equation\b/i.test(text)),
+
+  "geometry-transformations": (tokens, text) =>
+    (tokens.has("transformation") && (tokens.has("geometry") || tokens.has("geometric") || tokens.has("translation") || tokens.has("rotation") || tokens.has("reflection"))) ||
+    (/\bgeometric\s+transformation\b/i.test(text)),
+
+  "cell-structure": (tokens, text) =>
+    (tokens.has("cell") && (tokens.has("structure") || tokens.has("organelle") || tokens.has("membrane") || tokens.has("wall") || tokens.has("nucleus") || tokens.has("mitochondria") || tokens.has("prokaryote") || tokens.has("eukaryote"))) ||
+    (/\bcell\s+structure\b/i.test(text)) ||
+    (/\bcell\s+organelle/i.test(text)),
+};
+
+function isPackRelevantToContext(packId, text, concept) {
+  const validator = PACK_TOPIC_VALIDATORS[packId];
+  if (!validator) return false;
+  const textHay = String(text || "").toLowerCase();
+  const textStems = new Set(tokenize(textHay).map(stem).filter((t) => !GENERIC_MODIFIERS.has(t)));
+  if (textStems.size > 0 && validator(textStems, textHay)) {
+    return true;
+  }
+  if (textStems.size === 0 && concept) {
+    const conceptHay = `${concept.name || ""} ${concept.topic || ""} ${concept.conceptId || ""}`.toLowerCase();
+    const conceptStems = new Set(tokenize(conceptHay).map(stem));
+    return validator(conceptStems, conceptHay);
+  }
+  if (concept) {
+    const conceptHay = `${concept.name || ""} ${concept.topic || ""} ${concept.conceptId || ""}`.toLowerCase();
+    const conceptStems = new Set(tokenize(conceptHay).map(stem));
+    if (validator(conceptStems, conceptHay)) {
+      if (textStems.size > 0) {
+        const pack = PACKS.packs.find((p) => p.id === packId);
+        const allPackTokens = new Set(tokenize(`${pack?.title || ""} ${(pack?.keywords || []).join(" ")}`).map(stem));
+        const textMatches = [...textStems].filter((t) => allPackTokens.has(t));
+        if (textMatches.length === 0) return false;
+      }
+      return true;
+    }
+  }
+  return false;
+}
+
 function packScore(pack, concept, text) {
   const name = String((concept && concept.name) || "").toLowerCase();
   const id = String((concept && concept.conceptId) || "").toLowerCase();
@@ -258,6 +346,7 @@ function findPack(concept, text, subject) {
   let bestScore = 0;
   for (const pack of PACKS.packs) {
     if (!packSubjectMatches(pack, concept, subject)) continue;
+    if (!isPackRelevantToContext(pack.id, text, concept)) continue;
     const score = packScore(pack, concept, text);
     if (score > bestScore) {
       bestScore = score;
@@ -275,6 +364,7 @@ function findPackByQuestion(text, subject) {
   let bestScore = 0;
   for (const pack of PACKS.packs) {
     if (!packSubjectMatches(pack, null, subject)) continue;
+    if (!isPackRelevantToContext(pack.id, text, null)) continue;
     let score = 0;
     for (const keyword of pack.keywords || []) {
       if (question.includes(String(keyword).toLowerCase())) score += 2;
@@ -729,9 +819,74 @@ Rules:
 - If the student is mistaken, correct the cause of the misconception kindly and concretely.
 - If the student writes in another language, reply in that language unless the requested language is explicit.`;
 
-function contextBlock({ concept, trackId, classNum, language, level, state, history, summary, question, candidates, photosAllowed, stage, stageIndex }) {
+const FOLLOW_UP_PATTERNS = [
+  /\b(give|show|tell)\s+(me\s+)?(an?|another|more)?\s*(example|application|instance)/i,
+  /\b(why|how)\s+(does|is|did|can|do)\s+(this|that|it)\b/i,
+  /\b(can you\s+)?(explain|clarify|elaborate)\s+(more|further|again|step)/i,
+  /\b(step\s+\d+|previous|earlier|above)\b/i,
+  /\b(what\s+about|what\s+if)\b/i,
+  /\b(everyday|daily\s+life|real\s+life)\b/i,
+];
+
+function isConceptRelevantToQuestion(concept, question) {
+  if (!concept || !question) return false;
+  const qText = String(question || "").trim();
+  if (FOLLOW_UP_PATTERNS.some((p) => p.test(qText))) return true;
+  const qStems = tokenize(qText).map(stem).filter((t) => !GENERIC_MODIFIERS.has(t));
+  if (qStems.length === 0) return true;
+  const conceptStems = new Set(tokenize(`${concept.name} ${concept.topic} ${concept.conceptId.replace(/[._]/g, " ")}`).map(stem));
+  return qStems.some((qs) => conceptStems.has(qs));
+}
+
+function detectTopicChange(question, history) {
+  if (!Array.isArray(history) || history.length === 0) return false;
+  const lastUserTurns = history.filter((m) => m && m.role === "user" && typeof m.content === "string");
+  if (!lastUserTurns.length) return false;
+  const prevText = lastUserTurns[lastUserTurns.length - 1].content;
+  const prevStems = tokenize(prevText).map(stem).filter((t) => !GENERIC_MODIFIERS.has(t));
+  const currStems = tokenize(question).map(stem).filter((t) => !GENERIC_MODIFIERS.has(t));
+  if (currStems.length > 0 && prevStems.length > 0) {
+    const overlap = currStems.filter((t) => prevStems.includes(t));
+    if (overlap.length === 0) {
+      return true;
+    }
+  }
+  return false;
+}
+
+function isReplyRelevantToQuestion(reply, question, concept) {
+  if (!reply) return false;
+  const intent = classifyIntent(question);
+  if (intent === "conversational") return true;
+
+  const qStems = tokenize(question).map(stem).filter((t) => !GENERIC_MODIFIERS.has(t));
+  if (qStems.length === 0) return true;
+
+  const replyText = `${reply.title || ""} ${reply.directAnswer || ""} ${(reply.sections || []).map((s) => `${s.heading} ${s.body}`).join(" ")}`.toLowerCase();
+  const replyStems = new Set(tokenize(replyText).map(stem));
+
+  let matches = 0;
+  for (const qs of qStems) {
+    if (replyStems.has(qs)) matches++;
+  }
+
+  if (matches === 0) {
+    if (concept) {
+      const cStems = tokenize(concept.name).map(stem).filter((t) => !GENERIC_MODIFIERS.has(t));
+      const conceptMatches = cStems.filter((cs) => replyStems.has(cs));
+      if (conceptMatches.length > 0) return true;
+    }
+    return false;
+  }
+  return true;
+}
+
+function contextBlock({ concept, trackId, classNum, language, level, state, history, summary, question, candidates, photosAllowed, stage, stageIndex, isTopicChange }) {
   const track = getTrack(trackId);
   const lines = [];
+  if (isTopicChange) {
+    lines.push("TOPIC CHANGE DETECTED: The student has switched to a new topic. Focus exclusively on answering the new question; do not continue, blend with, or refer to previous conversation topics.");
+  }
   lines.push(`Board/exam: ${track ? track.label : "not specified"}`);
   if (classNum) lines.push(`Class: ${classNum}`);
   if (language) lines.push(`Language: ${language}`);
@@ -751,8 +906,8 @@ function contextBlock({ concept, trackId, classNum, language, level, state, hist
   if (state && state.misconceptions && state.misconceptions.length) {
     lines.push(`Known misconceptions to avoid reinforcing: ${state.misconceptions.map((m) => m.label).slice(0, 3).join("; ")}`);
   }
-  if (summary) lines.push(`Earlier conversation summary: ${clip(summary, 500)}`);
-  if (Array.isArray(history) && history.length) {
+  if (!isTopicChange && summary) lines.push(`Earlier conversation summary: ${clip(summary, 500)}`);
+  if (!isTopicChange && Array.isArray(history) && history.length) {
     const turns = history
       .filter((m) => m && (m.role === "user" || m.role === "assistant") && typeof m.content === "string")
       .slice(-4)
@@ -1002,7 +1157,10 @@ async function chatTutor({ uid, body, state }) {
   const trackId = getTrack(body.context && body.context.track) ? body.context.track : state.profile.board;
   const classNum = Number((body.context && body.context.classNum) || state.profile.classNum) || null;
   const explicitConcept = body.context && body.context.conceptId ? getConcept(body.context.conceptId) : null;
-  const matched = explicitConcept || matchConcept(question, { trackId, classNum, subject: body.context && body.context.subject });
+  const isExplicitRelevant = explicitConcept ? isConceptRelevantToQuestion(explicitConcept, question) : false;
+  const matched = isExplicitRelevant
+    ? explicitConcept
+    : matchConcept(question, { trackId, classNum, subject: body.context && body.context.subject });
   const subject = matched ? matched.subject : (body.context && body.context.subject) || "";
   const level = levelFromMastery(
     state.mastery ? state.mastery.masteryScore : NaN,
@@ -1016,6 +1174,7 @@ async function chatTutor({ uid, body, state }) {
     ? body.history.filter((m) => m && typeof m.content === "string").slice(-4).map((m) => ({ role: m.role, content: clip(m.content, 600) }))
     : [];
   const summary = body.summary ? clip(body.summary, 600) : "";
+  const isTopicChange = detectTopicChange(question, history);
 
   // When no curriculum concept matched, a reviewed pack can still anchor a
   // generic topic (for example "explain photosynthesis"). This lets repeat
@@ -1061,10 +1220,13 @@ async function chatTutor({ uid, body, state }) {
     language,
     level,
     state,
-    history,
-    summary,
+    history: isTopicChange ? [] : history,
+    summary: isTopicChange ? "" : summary,
     question,
     candidates,
+    stage: (body.context && body.context.stage) || body.stage || null,
+    stageIndex: typeof (body.context && body.context.stageIndex) === "number" ? body.context.stageIndex : typeof body.stageIndex === "number" ? body.stageIndex : null,
+    isTopicChange,
   });
   const result = await askJson(messages, {
     model: MODEL_STRONG,
@@ -1074,15 +1236,49 @@ async function chatTutor({ uid, body, state }) {
   });
 
   if (result) {
-    const reply = normalizeChatReply(result.parsed, {
+    let reply = normalizeChatReply(result.parsed, {
       candidates,
       text: `${question} ${matched ? matched.name : ""}`,
       subject,
       level,
     });
+
+    const shouldValidateRelevance = intent !== "conversational" && result.model !== "test-model";
+    if (reply && shouldValidateRelevance && !isReplyRelevantToQuestion(reply, question, matched)) {
+      const retryMessages = [
+        { role: "system", content: TEACHING_SYSTEM_PROMPT },
+        {
+          role: "user",
+          content: `Student question: "${clipMultiline(question, MAX_QUESTION_CHARS)}".
+CRITICAL REQUIREMENT: Your previous response was rejected because it discussed an unrelated topic.
+You must answer ONLY the student's question about "${clipMultiline(question, 200)}".
+Do NOT explain unrelated topics. Keep the explanation focused, clear, and directly answering the question.`,
+        },
+      ];
+      const retryResult = await askJson(retryMessages, {
+        model: MODEL_STRONG,
+        temperature: 0.2,
+        maxTokens: 1600,
+        timeoutMs: 20000,
+      });
+      if (retryResult) {
+        const retryReply = normalizeChatReply(retryResult.parsed, {
+          candidates,
+          text: question,
+          subject,
+          level,
+        });
+        if (retryReply && isReplyRelevantToQuestion(retryReply, question, null)) {
+          reply = retryReply;
+        } else {
+          reply = null;
+        }
+      } else {
+        reply = null;
+      }
+    }
+
     if (reply) {
-      // A trusted photograph is only added when the curated search is configured
-      // and returns a licensed-domain result. The model itself never supplies URLs.
       let visual = reply.visual;
       if (!visual && needsPhotograph(question)) {
         visual = await findTrustedPhoto(`${matched ? matched.name : ""} ${question}`);
@@ -1868,6 +2064,7 @@ module.exports = {
   keywordCoverage,
   deterministicVerdict,
   findPack,
+  findPackByQuestion,
   pickNextQuestion,
   levelFromMastery,
   nextTargetDifficulty,
@@ -1879,4 +2076,9 @@ module.exports = {
   resolveTopic,
   getPackById,
   listVisualTemplates,
+  isConceptRelevantToQuestion,
+  detectTopicChange,
+  isReplyRelevantToQuestion,
+  isPackRelevantToContext,
+  PACK_TOPIC_VALIDATORS,
 };

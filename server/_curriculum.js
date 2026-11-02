@@ -190,9 +190,12 @@ function listTracks() {
 }
 
 function matchesTrack(concept, track, classNum) {
+  if (!concept || !track) return false;
   const paths = concept.curriculumPaths || [];
   if (track.id === "maharashtra" || track.id === "cbse") {
-    if (!classNum) return false;
+    if (!classNum) {
+      return (track.classes || []).some((cls) => paths.some((p) => p.startsWith(`${track.id}.${cls}.`)));
+    }
     const prefix = `${track.id}.${classNum}.`;
     return paths.some((p) => p.startsWith(prefix));
   }
@@ -216,8 +219,7 @@ function matchesTrack(concept, track, classNum) {
 function filterConcepts({ trackId, classNum, subject, query }) {
   const track = getTrack(trackId);
   if (!track) return [];
-  const cls = track.grades ? Number(classNum) || null : null;
-  if (track.grades && !cls) return [];
+  const cls = track.grades ? (classNum ? Number(classNum) : null) : null;
   const q = String(query || "").trim().toLowerCase();
   return loadConcepts().filter((c) => {
     if (!matchesTrack(c, track, cls)) return false;
@@ -335,6 +337,60 @@ const STOPWORDS = new Set(
   "a an the is are was were be been being of in on at to for from with by about into through during before after above below between under and or but if then than that this these those it its as i you we they he she them what why how when where which who whom do does did can could should would will shall may might must not no yes please explain tell me give show find solve calculate help understand concept topic chapter question problem example definition meaning means".split(/\s+/)
 );
 
+const GENERIC_MODIFIERS = new Set([
+  "chemical",
+  "physical",
+  "biological",
+  "mathematical",
+  "science",
+  "general",
+  "introduction",
+  "properties",
+  "property",
+  "principles",
+  "principle",
+  "chapter",
+  "lesson",
+  "study",
+  "structure",
+  "system",
+  "systems",
+  "types",
+  "type",
+  "basic",
+  "basics",
+  "advanced",
+  "standard",
+  "element",
+  "elements",
+  "theory",
+  "concept",
+  "concepts",
+  "overview",
+  "part",
+  "unit",
+  "fundamentals",
+  "fundamental",
+]);
+
+function stem(word) {
+  if (!word || typeof word !== "string") return "";
+  let w = word.toLowerCase().trim();
+  if (w.length <= 3) return w;
+  if (w.endsWith("ies") && w.length > 4) return w.slice(0, -3) + "y";
+  if (w.endsWith("es") && (w.endsWith("shes") || w.endsWith("ches") || w.endsWith("sses") || w.endsWith("xes") || w.endsWith("zes"))) {
+    return w.slice(0, -2);
+  }
+  if (w.endsWith("ing") && w.length > 5) {
+    const base = w.slice(0, -3);
+    if (base.endsWith("ll") || base.endsWith("ss") || base.endsWith("ff")) return base;
+    return base;
+  }
+  if (w.endsWith("ed") && w.length > 4) return w.slice(0, -2);
+  if (w.endsWith("s") && !w.endsWith("ss") && !w.endsWith("us") && !w.endsWith("is")) return w.slice(0, -1);
+  return w;
+}
+
 function tokenize(text) {
   return String(text || "")
     .toLowerCase()
@@ -350,33 +406,71 @@ function tokenize(text) {
  * the tutor generate an answer without curriculum anchoring.
  */
 function matchConcept(text, opts = {}) {
-  const queryTokens = new Set(tokenize(text));
-  if (!queryTokens.size) return null;
+  const rawTokens = tokenize(text);
+  if (!rawTokens.length) return null;
+  const queryStems = rawTokens.map(stem);
+  const querySet = new Set(queryStems);
+  const distinctiveQueryStems = queryStems.filter((t) => !GENERIC_MODIFIERS.has(t));
+
   const candidates = opts.trackId
     ? filterConcepts({ trackId: opts.trackId, classNum: opts.classNum, subject: opts.subject })
     : loadConcepts();
   if (!candidates.length) return null;
+
   let best = null;
   let bestScore = 0;
+  const cleanQuery = String(text || "").toLowerCase().replace(/[^a-z0-9\s]+/g, " ").trim();
+
   for (const c of candidates) {
-    const nameTokens = tokenize(c.name);
-    const topicTokens = tokenize(c.topic);
+    const nameStems = tokenize(c.name).map(stem);
+    const candidateDistinctiveName = nameStems.filter((t) => !GENERIC_MODIFIERS.has(t));
+    const topicStems = tokenize(c.topic).map(stem);
+    const idStems = tokenize(c.conceptId.replace(/[._]/g, " ")).map(stem);
+
+    let matchedDistinctive = 0;
+    if (distinctiveQueryStems.length > 0) {
+      for (const dt of distinctiveQueryStems) {
+        if (nameStems.includes(dt) || idStems.includes(dt) || topicStems.includes(dt)) {
+          matchedDistinctive++;
+        }
+      }
+      if (matchedDistinctive === 0) continue;
+    }
+
+    const matchedCandDistinctive = candidateDistinctiveName.filter((t) => querySet.has(t)).length;
+    const cleanName = c.name.toLowerCase().replace(/[^a-z0-9\s]+/g, " ");
+    const isPhraseMatch = cleanName.includes(cleanQuery) || (cleanQuery.length > 8 && cleanQuery.includes(cleanName));
+    const candDistinctiveCoverage = candidateDistinctiveName.length > 0 ? (matchedCandDistinctive / candidateDistinctiveName.length) : 0;
+
+    // Require substantive connection to candidate topic
+    if (!isPhraseMatch && candDistinctiveCoverage < 0.4 && matchedDistinctive < 2) {
+      continue;
+    }
+
     let score = 0;
-    for (const t of nameTokens) if (queryTokens.has(t)) score += 3;
-    for (const t of topicTokens) if (queryTokens.has(t)) score += 1;
-    const idTokens = tokenize(c.conceptId.replace(/\./g, " "));
-    for (const t of idTokens) if (queryTokens.has(t)) score += 2;
+    for (const t of nameStems) {
+      if (querySet.has(t)) score += GENERIC_MODIFIERS.has(t) ? 2 : 6;
+    }
+    for (const t of topicStems) {
+      if (querySet.has(t)) score += GENERIC_MODIFIERS.has(t) ? 1 : 3;
+    }
+    for (const t of idStems) {
+      if (querySet.has(t)) score += GENERIC_MODIFIERS.has(t) ? 1 : 4;
+    }
+
+    if (isPhraseMatch) score += 15;
+    if (distinctiveQueryStems.length > 0) {
+      const coverage = matchedDistinctive / distinctiveQueryStems.length;
+      score += Math.round(coverage * 10);
+    }
+
     if (score > bestScore) {
       bestScore = score;
       best = c;
     }
   }
-  if (!best || bestScore < 4) return null;
-  const nameMatches = tokenize(best.name).filter((t) => queryTokens.has(t));
-  const longestMatch = nameMatches.reduce((max, t) => Math.max(max, t.length), 0);
-  // One generic word is not enough evidence of the topic. Accept a single match
-  // only when it is a distinctive word, and require two matches otherwise.
-  if (nameMatches.length < 2 && !(nameMatches.length === 1 && longestMatch >= 8 && bestScore >= 5)) return null;
+
+  if (!best || bestScore < 10) return null;
   return best;
 }
 
@@ -407,4 +501,6 @@ module.exports = {
   difficultyLabel,
   curriculumStats,
   tokenize,
+  stem,
+  GENERIC_MODIFIERS,
 };

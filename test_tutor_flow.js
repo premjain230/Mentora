@@ -10,24 +10,42 @@ let providerMode = "lesson";
 let providerCalls = 0;
 const providerPayloads = [];
 
-function fakeLesson() {
+function fakeLesson(prompt = "") {
+  const isPhotosynthesis = /photosynthesis/i.test(prompt);
+  const title = isPhotosynthesis ? "Photosynthesis in plants" : "Resistance in a circuit";
+  const directAnswer = isPhotosynthesis
+    ? "Photosynthesis is the process by which green plants convert light energy into chemical energy."
+    : "Resistance is how strongly a conductor opposes current.";
   return {
     kind: "lesson",
-    title: "Resistance in a circuit",
-    directAnswer: "Resistance is how strongly a conductor opposes current.",
-    sections: [
-      { heading: "What it is", body: "Resistance measures the opposition to charge flow and is measured in ohms." },
-      { heading: "What changes it", body: "A longer or thinner wire has more resistance." },
-    ],
-    example: {
-      problem: "A 6 V battery drives 2 A through a resistor. Find R.",
-      steps: ["Use R = V / I.", "Substitute: R = 6 / 2 = 3 Ω."],
-      answer: "3 Ω",
-    },
-    check: { prompt: "If the voltage doubles at constant resistance, what happens to the current?", hint: "Use I = V/R.", answerKey: "The current doubles." },
-    visualId: "circuit-series",
-    visualParams: { cells: 2, resistanceOhms: 6 },
-    visualObserve: "Watch the markers move faster when the current is larger.",
+    title,
+    directAnswer,
+    sections: isPhotosynthesis
+      ? [
+          { heading: "What it is", body: "Photosynthesis takes place in chloroplasts using chlorophyll." },
+          { heading: "The process", body: "Carbon dioxide and water produce glucose and oxygen." },
+        ]
+      : [
+          { heading: "What it is", body: "Resistance measures the opposition to charge flow and is measured in ohms." },
+          { heading: "What changes it", body: "A longer or thinner wire has more resistance." },
+        ],
+    example: isPhotosynthesis
+      ? {
+          problem: "Explain the light reaction in photosynthesis.",
+          steps: ["Light hits chlorophyll.", "Water is split into oxygen and protons."],
+          answer: "Oxygen is released.",
+        }
+      : {
+          problem: "A 6 V battery drives 2 A through a resistor. Find R.",
+          steps: ["Use R = V / I.", "Substitute: R = 6 / 2 = 3 Ω."],
+          answer: "3 Ω",
+        },
+    check: isPhotosynthesis
+      ? { prompt: "Where does photosynthesis occur in a plant cell?", hint: "Think of the green organelle.", answerKey: "In the chloroplasts." }
+      : { prompt: "If the voltage doubles at constant resistance, what happens to the current?", hint: "Use I = V/R.", answerKey: "The current doubles." },
+    visualId: isPhotosynthesis ? "cycle-photosynthesis" : "circuit-series",
+    visualParams: isPhotosynthesis ? { stage: "light" } : { cells: 2, resistanceOhms: 6 },
+    visualObserve: isPhotosynthesis ? "Observe the inputs and outputs of the cycle." : "Watch the markers move faster when the current is larger.",
     personalization: null,
   };
 }
@@ -44,8 +62,8 @@ function fakeEvaluation(overrides = {}) {
   };
 }
 
-const aiPath = require.resolve("./api/_ai");
-const adminPath = require.resolve("./api/_admin");
+const aiPath = require.resolve("./server/_ai");
+const adminPath = require.resolve("./server/_admin");
 
 const store = new Map();
 function fakeSnapshot(id, value) {
@@ -112,7 +130,8 @@ require.cache[aiPath] = {
       if (providerMode === "short") {
         return { kind: "short", title: null, directAnswer: "You are welcome. Ask me another question whenever you are ready.", sections: [] };
       }
-      return fakeLesson();
+      const prompt = (options.messages || []).map((m) => m.content).join(" ");
+      return fakeLesson(prompt);
     },
     MODEL: "test-model",
   },
@@ -127,7 +146,7 @@ require.cache[adminPath] = {
   },
 };
 
-const core = require("./api/_learn-core");
+const core = require("./server/_learn-core");
 
 const emptyState = {
   profile: { board: "cbse", classNum: 10, language: "en", prioritySubject: null, subjects: [], weakTopics: [] },

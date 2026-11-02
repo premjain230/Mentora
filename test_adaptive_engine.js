@@ -6,8 +6,8 @@
 const assert = require("assert");
 const fs = require("fs");
 const path = require("path");
-const curriculum = require("./api/_curriculum");
-const core = require("./api/_learn-core");
+const curriculum = require("./server/_curriculum");
+const core = require("./server/_learn-core");
 
 let passed = 0;
 let failed = 0;
@@ -237,6 +237,41 @@ test("a curriculum concept id resolves back to its track", () => {
   const resolved = core.resolveTopic({ conceptId: "cbse.10.science.electricity" });
   assert(resolved.concept && resolved.concept.conceptId === "cbse.10.science.electricity");
   assert.strictEqual(resolved.trackId, "cbse");
+});
+
+test("curriculum concept matching & pack fallback strictly isolate topics", () => {
+  const chemReaction = curriculum.matchConcept("What is a chemical reaction?", { trackId: "cbse" });
+  assert(chemReaction);
+  assert.strictEqual(chemReaction.conceptId, "cbse.10.science.chemical_reactions_and_equations");
+  assert(!chemReaction.conceptId.includes("bonding"));
+
+  const jeeReaction = curriculum.matchConcept("What is a chemical reaction?", { trackId: "jee_main" });
+  assert(!jeeReaction || !jeeReaction.conceptId.includes("bonding"));
+
+  const chemBonding = curriculum.matchConcept("What is chemical bonding?", { trackId: "jee_main" });
+  assert(chemBonding && chemBonding.conceptId === "jee.main.chemistry.chemical_bonding");
+  const bondingPack = core.findPack(chemBonding, "What is chemical bonding?", "Chemistry");
+  assert(bondingPack && bondingPack.id === "covalent-bonding");
+
+  const reactionPack = core.findPack(chemReaction, "What is a chemical reaction?", "Chemistry");
+  assert.strictEqual(reactionPack, null, "Must never return covalent-bonding for chemical reaction");
+  const reactionPackByQ = core.findPackByQuestion("What is a chemical reaction?", "Chemistry");
+  assert.strictEqual(reactionPackByQ, null);
+
+  assert.strictEqual(core.isConceptRelevantToQuestion(chemBonding, "Can you explain molecular shapes?"), true);
+  assert.strictEqual(core.isConceptRelevantToQuestion(chemBonding, "What is a chemical reaction?"), false);
+
+  const history = [{ role: "user", content: "What is a chemical reaction?" }];
+  assert.strictEqual(core.detectTopicChange("Explain Newton second law", history), true);
+  assert.strictEqual(core.detectTopicChange("Can you give me an example?", history), false);
+
+  const unrelatedReply = {
+    title: "Covalent bonding",
+    directAnswer: "Atoms share electrons in covalent bonds.",
+    sections: [{ heading: "Sharing", body: "Molecular shapes like tetrahedral methane." }],
+  };
+  assert.strictEqual(core.isReplyRelevantToQuestion(unrelatedReply, "What is a chemical reaction?", null), false);
+  assert.strictEqual(core.isReplyRelevantToQuestion(unrelatedReply, "What is covalent bonding?", null), true);
 });
 
 console.log(`\n${passed} passed, ${failed} failed\n`);
