@@ -82,8 +82,8 @@ export default function PlannerOnboardingPage() {
             min-height: 100dvh;
             display: grid;
             place-items: center;
-            background: var(--bg-base, #08090d);
-            color: var(--text-primary, #f8fafc);
+            background: var(--bg-base, #000000);
+            color: var(--text-primary, #FFFFFF);
             font-family: var(--font-main, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif);
           }
           .planner-onboard-loading {
@@ -221,8 +221,8 @@ export default function PlannerOnboardingPage() {
           justify-content: center;
           align-items: center;
           padding: 32px 20px;
-          background: var(--bg-base, #08090d);
-          color: var(--text-primary, #f8fafc);
+          background: var(--bg-base, #000000);
+          color: var(--text-primary, #FFFFFF);
           font-family: var(--font-main, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif);
           -webkit-font-smoothing: antialiased;
         }
@@ -244,7 +244,7 @@ export default function PlannerOnboardingPage() {
           align-items: center;
           gap: 10px;
           text-decoration: none;
-          color: var(--text-primary, #f8fafc);
+          color: var(--text-primary, #FFFFFF);
           font-weight: 700;
           font-size: 15px;
           letter-spacing: -0.02em;
@@ -266,16 +266,16 @@ export default function PlannerOnboardingPage() {
           gap: 7px;
           padding: 5px 12px;
           border-radius: 999px;
-          background: var(--bg-card, #0f1420);
-          border: 1px solid var(--border, rgba(255, 255, 255, 0.09));
+          background: var(--bg-card, #0A0A0A);
+          border: 1px solid var(--border, #262626);
           font-size: 12px;
           font-weight: 600;
           color: var(--accent, #3b82f6);
         }
 
         .planner-onboard-card {
-          background: var(--bg-card, #0f1420);
-          border: 1px solid var(--border, rgba(255, 255, 255, 0.09));
+          background: var(--bg-card, #0A0A0A);
+          border: 1px solid var(--border, #262626);
           border-radius: 24px;
           padding: 36px 32px;
           box-shadow: 0 16px 48px -12px rgba(0, 0, 0, 0.45);
@@ -283,8 +283,8 @@ export default function PlannerOnboardingPage() {
 
         :global(.light-mode) .planner-onboard-card {
           background: #ffffff;
-          border-color: rgba(0, 0, 0, 0.08);
-          box-shadow: 0 16px 48px -12px rgba(0, 0, 0, 0.08);
+          border-color: #E5E5E5;
+          box-shadow: 0 16px 48px -12px #E5E5E5;
         }
 
         .planner-tag {
@@ -302,18 +302,18 @@ export default function PlannerOnboardingPage() {
           font-weight: 700;
           letter-spacing: -0.03em;
           line-height: 1.25;
-          color: var(--text-primary, #f8fafc);
+          color: var(--text-primary, #FFFFFF);
           margin: 0 0 8px 0;
         }
 
         :global(.light-mode) .planner-title {
-          color: #0f172a;
+          color: #111111;
         }
 
         .planner-desc {
           font-size: 14px;
           line-height: 1.55;
-          color: var(--text-secondary, #94a3b8);
+          color: var(--text-secondary, #A3A3A3);
           margin: 0 0 28px 0;
         }
 
@@ -325,7 +325,7 @@ export default function PlannerOnboardingPage() {
           display: block;
           font-size: 12.5px;
           font-weight: 600;
-          color: var(--text-secondary, #94a3b8);
+          color: var(--text-secondary, #A3A3A3);
           margin-bottom: 8px;
         }
 
@@ -333,9 +333,9 @@ export default function PlannerOnboardingPage() {
           width: 100%;
           padding: 12px 16px;
           border-radius: 12px;
-          border: 1px solid var(--border-strong, rgba(255, 255, 255, 0.14));
-          background: var(--bg-elevated, #151a29);
-          color: var(--text-primary, #f8fafc);
+          border: 1px solid var(--border-strong, #404040);
+          background: var(--bg-elevated, #111111);
+          color: var(--text-primary, #FFFFFF);
           font-family: inherit;
           font-size: 14.5px;
           outline: none;
@@ -343,9 +343,9 @@ export default function PlannerOnboardingPage() {
         }
 
         :global(.light-mode) .planner-input {
-          background: #f8fafc;
+          background: #FFFFFF;
           border-color: rgba(0, 0, 0, 0.12);
-          color: #0f172a;
+          color: #111111;
         }
 
         .planner-input:focus {
@@ -363,8 +363,8 @@ export default function PlannerOnboardingPage() {
           padding: 10px 0;
           border-radius: 10px;
           border: 1px solid var(--border, rgba(255, 255, 255, 0.12));
-          background: var(--bg-elevated, #151a29);
-          color: var(--text-secondary, #94a3b8);
+          background: var(--bg-elevated, #111111);
+          color: var(--text-secondary, #A3A3A3);
           font-family: inherit;
           font-size: 13px;
           font-weight: 600;
@@ -374,14 +374,14 @@ export default function PlannerOnboardingPage() {
         }
 
         :global(.light-mode) .day-chip {
-          background: #f8fafc;
-          border-color: rgba(0, 0, 0, 0.08);
-          color: #475569;
+          background: #FFFFFF;
+          border-color: #E5E5E5;
+          color: #666666;
         }
 
         .day-chip:hover {
           border-color: var(--border-hover, rgba(255, 255, 255, 0.25));
-          color: var(--text-primary, #f8fafc);
+          color: var(--text-primary, #FFFFFF);
         }
 
         .day-chip.active {
@@ -393,14 +393,14 @@ export default function PlannerOnboardingPage() {
         .slider-card {
           padding: 18px 20px;
           border-radius: 16px;
-          background: var(--bg-elevated, #151a29);
-          border: 1px solid var(--border, rgba(255, 255, 255, 0.08));
+          background: var(--bg-elevated, #111111);
+          border: 1px solid var(--border, #262626);
           margin-bottom: 28px;
         }
 
         :global(.light-mode) .slider-card {
-          background: #f8fafc;
-          border-color: rgba(0, 0, 0, 0.06);
+          background: #FFFFFF;
+          border-color: #F0F0F0;
         }
 
         .slider-header {
@@ -413,7 +413,7 @@ export default function PlannerOnboardingPage() {
         .slider-label {
           font-size: 13px;
           font-weight: 600;
-          color: var(--text-secondary, #94a3b8);
+          color: var(--text-secondary, #A3A3A3);
         }
 
         .slider-val {
@@ -436,7 +436,7 @@ export default function PlannerOnboardingPage() {
           display: flex;
           justify-content: space-between;
           font-size: 11px;
-          color: var(--text-muted, #64748b);
+          color: var(--text-muted, #737373);
           margin-top: 8px;
         }
 

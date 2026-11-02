@@ -91,8 +91,8 @@ export default function OnboardingPage() {
             min-height: 100dvh;
             display: grid;
             place-items: center;
-            background: var(--bg-base, #08090d);
-            color: var(--text-primary, #f8fafc);
+            background: var(--bg-base, #000000);
+            color: var(--text-primary, #FFFFFF);
             font-family: var(--font-main, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif);
           }
           .onboard-loading-box {
@@ -111,7 +111,7 @@ export default function OnboardingPage() {
           }
           .onboard-loading-text {
             font-size: 14px;
-            color: var(--text-muted, #94a3b8);
+            color: var(--text-muted, #A3A3A3);
           }
           @keyframes spin {
             to { transform: rotate(360deg); }
@@ -335,8 +335,8 @@ export default function OnboardingPage() {
           justify-content: center;
           align-items: center;
           padding: 32px 20px;
-          background: var(--bg-base, #08090d);
-          color: var(--text-primary, #f8fafc);
+          background: var(--bg-base, #000000);
+          color: var(--text-primary, #FFFFFF);
           font-family: var(--font-main, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif);
           -webkit-font-smoothing: antialiased;
         }
@@ -358,7 +358,7 @@ export default function OnboardingPage() {
           align-items: center;
           gap: 10px;
           text-decoration: none;
-          color: var(--text-primary, #f8fafc);
+          color: var(--text-primary, #FFFFFF);
           font-weight: 700;
           font-size: 15px;
           letter-spacing: -0.02em;
@@ -380,11 +380,11 @@ export default function OnboardingPage() {
           gap: 7px;
           padding: 5px 12px;
           border-radius: 999px;
-          background: var(--bg-card, #0f1420);
-          border: 1px solid var(--border, rgba(255, 255, 255, 0.09));
+          background: var(--bg-card, #0A0A0A);
+          border: 1px solid var(--border, #262626);
           font-size: 12px;
           font-weight: 600;
-          color: var(--text-secondary, #94a3b8);
+          color: var(--text-secondary, #A3A3A3);
         }
 
         .step-dot {
@@ -395,8 +395,8 @@ export default function OnboardingPage() {
         }
 
         .onboard-card {
-          background: var(--bg-card, #0f1420);
-          border: 1px solid var(--border, rgba(255, 255, 255, 0.09));
+          background: var(--bg-card, #0A0A0A);
+          border: 1px solid var(--border, #262626);
           border-radius: 24px;
           padding: 40px 36px;
           box-shadow: 0 16px 48px -12px rgba(0, 0, 0, 0.45);
@@ -405,8 +405,8 @@ export default function OnboardingPage() {
 
         :global(.light-mode) .onboard-card {
           background: #ffffff;
-          border-color: rgba(0, 0, 0, 0.08);
-          box-shadow: 0 16px 48px -12px rgba(0, 0, 0, 0.08);
+          border-color: #E5E5E5;
+          box-shadow: 0 16px 48px -12px #E5E5E5;
         }
 
         .step-tag {
@@ -424,18 +424,18 @@ export default function OnboardingPage() {
           font-weight: 700;
           letter-spacing: -0.03em;
           line-height: 1.25;
-          color: var(--text-primary, #f8fafc);
+          color: var(--text-primary, #FFFFFF);
           margin: 0 0 8px 0;
         }
 
         :global(.light-mode) .step-title {
-          color: #0f172a;
+          color: #111111;
         }
 
         .step-desc {
           font-size: 14px;
           line-height: 1.55;
-          color: var(--text-secondary, #94a3b8);
+          color: var(--text-secondary, #A3A3A3);
           margin: 0 0 28px 0;
         }
 
@@ -452,9 +452,9 @@ export default function OnboardingPage() {
           gap: 14px;
           padding: 14px 16px;
           border-radius: 14px;
-          border: 1px solid var(--border, rgba(255, 255, 255, 0.08));
-          background: var(--bg-elevated, #151a29);
-          color: var(--text-primary, #f8fafc);
+          border: 1px solid var(--border, #262626);
+          background: var(--bg-elevated, #111111);
+          color: var(--text-primary, #FFFFFF);
           cursor: pointer;
           text-align: left;
           font-family: inherit;
@@ -462,9 +462,9 @@ export default function OnboardingPage() {
         }
 
         :global(.light-mode) .option-card {
-          background: #f8fafc;
-          border-color: rgba(0, 0, 0, 0.06);
-          color: #0f172a;
+          background: #FFFFFF;
+          border-color: #F0F0F0;
+          color: #111111;
         }
 
         .option-card:hover {
@@ -474,7 +474,7 @@ export default function OnboardingPage() {
 
         .option-card.selected {
           border-color: var(--accent, #3b82f6);
-          background: color-mix(in srgb, var(--accent, #3b82f6) 12%, var(--bg-elevated, #151a29));
+          background: color-mix(in srgb, var(--accent, #3b82f6) 12%, var(--bg-elevated, #111111));
           box-shadow: 0 0 0 1px var(--accent, #3b82f6);
         }
 
@@ -486,7 +486,7 @@ export default function OnboardingPage() {
           width: 20px;
           height: 20px;
           border-radius: 6px;
-          border: 1.5px solid var(--border-strong, rgba(255, 255, 255, 0.2));
+          border: 1.5px solid var(--border-strong, #525252);
           display: grid;
           place-items: center;
           font-size: 12px;
@@ -515,7 +515,7 @@ export default function OnboardingPage() {
 
         .option-sub {
           font-size: 12.5px;
-          color: var(--text-muted, #94a3b8);
+          color: var(--text-muted, #A3A3A3);
         }
 
         .field-group {
@@ -526,7 +526,7 @@ export default function OnboardingPage() {
           display: block;
           font-size: 12.5px;
           font-weight: 600;
-          color: var(--text-secondary, #94a3b8);
+          color: var(--text-secondary, #A3A3A3);
           margin-bottom: 8px;
         }
 
@@ -538,9 +538,9 @@ export default function OnboardingPage() {
           width: 100%;
           padding: 13px 16px;
           border-radius: 12px;
-          border: 1px solid var(--border-strong, rgba(255, 255, 255, 0.14));
-          background: var(--bg-elevated, #151a29);
-          color: var(--text-primary, #f8fafc);
+          border: 1px solid var(--border-strong, #404040);
+          background: var(--bg-elevated, #111111);
+          color: var(--text-primary, #FFFFFF);
           font-family: inherit;
           font-size: 14.5px;
           outline: none;
@@ -549,9 +549,9 @@ export default function OnboardingPage() {
         }
 
         :global(.light-mode) .onboard-select {
-          background: #f8fafc;
+          background: #FFFFFF;
           border-color: rgba(0, 0, 0, 0.12);
-          color: #0f172a;
+          color: #111111;
         }
 
         .onboard-select:focus {
@@ -573,8 +573,8 @@ export default function OnboardingPage() {
           padding: 10px 18px;
           border-radius: 999px;
           border: 1px solid var(--border, rgba(255, 255, 255, 0.12));
-          background: var(--bg-elevated, #151a29);
-          color: var(--text-secondary, #94a3b8);
+          background: var(--bg-elevated, #111111);
+          color: var(--text-secondary, #A3A3A3);
           font-family: inherit;
           font-size: 13.5px;
           font-weight: 600;
@@ -583,14 +583,14 @@ export default function OnboardingPage() {
         }
 
         :global(.light-mode) .subject-chip {
-          background: #f8fafc;
-          border-color: rgba(0, 0, 0, 0.08);
-          color: #475569;
+          background: #FFFFFF;
+          border-color: #E5E5E5;
+          color: #666666;
         }
 
         .subject-chip:hover {
           border-color: var(--border-hover, rgba(255, 255, 255, 0.25));
-          color: var(--text-primary, #f8fafc);
+          color: var(--text-primary, #FFFFFF);
         }
 
         .subject-chip.selected {
@@ -607,14 +607,14 @@ export default function OnboardingPage() {
         .slider-card {
           padding: 20px;
           border-radius: 16px;
-          background: var(--bg-elevated, #151a29);
-          border: 1px solid var(--border, rgba(255, 255, 255, 0.08));
+          background: var(--bg-elevated, #111111);
+          border: 1px solid var(--border, #262626);
           margin-bottom: 32px;
         }
 
         :global(.light-mode) .slider-card {
-          background: #f8fafc;
-          border-color: rgba(0, 0, 0, 0.06);
+          background: #FFFFFF;
+          border-color: #F0F0F0;
         }
 
         .slider-head {
@@ -627,7 +627,7 @@ export default function OnboardingPage() {
         .slider-label {
           font-size: 13px;
           font-weight: 600;
-          color: var(--text-secondary, #94a3b8);
+          color: var(--text-secondary, #A3A3A3);
         }
 
         .slider-value {
@@ -650,7 +650,7 @@ export default function OnboardingPage() {
           display: flex;
           justify-content: space-between;
           font-size: 11px;
-          color: var(--text-muted, #64748b);
+          color: var(--text-muted, #737373);
           margin-top: 8px;
         }
 
@@ -696,17 +696,17 @@ export default function OnboardingPage() {
         .btn-onboard.secondary {
           background: transparent;
           border: 1px solid var(--border-strong, rgba(255, 255, 255, 0.16));
-          color: var(--text-secondary, #94a3b8);
+          color: var(--text-secondary, #A3A3A3);
         }
 
         :global(.light-mode) .btn-onboard.secondary {
           border-color: rgba(0, 0, 0, 0.12);
-          color: #475569;
+          color: #666666;
         }
 
         .btn-onboard.secondary:hover {
-          border-color: var(--text-primary, #f8fafc);
-          color: var(--text-primary, #f8fafc);
+          border-color: var(--text-primary, #FFFFFF);
+          color: var(--text-primary, #FFFFFF);
         }
 
         @media (max-width: 600px) {

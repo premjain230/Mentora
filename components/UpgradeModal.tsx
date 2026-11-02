@@ -175,8 +175,8 @@ export function UpgradeModal() {
         }
 
         .aum-card {
-          background: var(--bg-card, #0f1420);
-          border: 1px solid var(--border-strong, rgba(255, 255, 255, 0.16));
+          background: var(--bg-card, #0A0A0A);
+          border: 1px solid var(--border-strong, #262626);
           border-radius: 24px;
           padding: 36px 32px 32px;
           max-width: 460px;
@@ -212,7 +212,7 @@ export function UpgradeModal() {
           border-radius: 50%;
           background: var(--bg-elevated, rgba(255, 255, 255, 0.05));
           border: 1px solid var(--border, rgba(255, 255, 255, 0.09));
-          color: var(--text-muted, #94a3b8);
+          color: var(--text-muted, #A3A3A3);
           cursor: pointer;
           display: grid;
           place-items: center;
@@ -222,11 +222,11 @@ export function UpgradeModal() {
         :global(.light-mode) .aum-close {
           background: #f1f5f9;
           border-color: rgba(0, 0, 0, 0.08);
-          color: #64748b;
+          color: #737373;
         }
 
         .aum-close:hover {
-          color: var(--text-primary, #f8fafc);
+          color: var(--text-primary, #FFFFFF);
           border-color: var(--border-hover, rgba(255, 255, 255, 0.25));
         }
 
@@ -253,18 +253,18 @@ export function UpgradeModal() {
           font-size: 23px;
           font-weight: 700;
           letter-spacing: -0.03em;
-          color: var(--text-primary, #f8fafc);
+          color: var(--text-primary, #FFFFFF);
           margin: 0 0 8px 0;
           line-height: 1.25;
         }
 
         :global(.light-mode) .aum-title {
-          color: #0f172a;
+          color: #111111;
         }
 
         .aum-subtitle {
           font-size: 14px;
-          color: var(--text-secondary, #94a3b8);
+          color: var(--text-secondary, #A3A3A3);
           line-height: 1.55;
           margin: 0 0 20px 0;
         }
@@ -278,7 +278,7 @@ export function UpgradeModal() {
         }
 
         :global(.light-mode) .aum-limit-card {
-          background: #f8fafc;
+          background: #FFFFFF;
           border-color: rgba(0, 0, 0, 0.06);
         }
 
@@ -291,12 +291,12 @@ export function UpgradeModal() {
 
         .aum-limit-name {
           font-size: 13px;
-          color: var(--text-primary, #f8fafc);
+          color: var(--text-primary, #FFFFFF);
           font-weight: 600;
         }
 
         :global(.light-mode) .aum-limit-name {
-          color: #0f172a;
+          color: #111111;
         }
 
         .aum-limit-count {
@@ -335,7 +335,7 @@ export function UpgradeModal() {
           align-items: center;
           gap: 10px;
           font-size: 13.5px;
-          color: var(--text-secondary, #94a3b8);
+          color: var(--text-secondary, #A3A3A3);
         }
 
         .aum-check {
@@ -376,7 +376,7 @@ export function UpgradeModal() {
 
         .aum-cancel-note {
           font-size: 12px;
-          color: var(--text-muted, #64748b);
+          color: var(--text-muted, #737373);
           margin: 0;
         }
       `}</style>

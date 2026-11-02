@@ -181,8 +181,8 @@ export default function VerifyEmailPage() {
           justify-content: center;
           align-items: center;
           padding: 32px 20px;
-          background: var(--bg-base, #08090d);
-          color: var(--text-primary, #f8fafc);
+          background: var(--bg-base, #000000);
+          color: var(--text-primary, #FFFFFF);
           font-family: var(--font-main, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif);
           -webkit-font-smoothing: antialiased;
         }
@@ -203,7 +203,7 @@ export default function VerifyEmailPage() {
           align-items: center;
           gap: 10px;
           text-decoration: none;
-          color: var(--text-primary, #f8fafc);
+          color: var(--text-primary, #FFFFFF);
           font-weight: 700;
           font-size: 16px;
           letter-spacing: -0.02em;
@@ -220,8 +220,8 @@ export default function VerifyEmailPage() {
         }
 
         .verify-card {
-          background: var(--bg-card, #0f1420);
-          border: 1px solid var(--border, rgba(255, 255, 255, 0.09));
+          background: var(--bg-card, #0A0A0A);
+          border: 1px solid var(--border, #262626);
           border-radius: 24px;
           padding: 40px 32px;
           box-shadow: 0 20px 48px -12px rgba(0, 0, 0, 0.45);
@@ -230,8 +230,8 @@ export default function VerifyEmailPage() {
 
         :global(.light-mode) .verify-card {
           background: #ffffff;
-          border-color: rgba(0, 0, 0, 0.08);
-          box-shadow: 0 20px 48px -12px rgba(0, 0, 0, 0.08);
+          border-color: #E5E5E5;
+          box-shadow: 0 20px 48px -12px #E5E5E5;
         }
 
         .verify-icon-box {
@@ -251,28 +251,28 @@ export default function VerifyEmailPage() {
           font-size: 22px;
           font-weight: 700;
           letter-spacing: -0.03em;
-          color: var(--text-primary, #f8fafc);
+          color: var(--text-primary, #FFFFFF);
           margin: 0 0 10px 0;
         }
 
         :global(.light-mode) .verify-title {
-          color: #0f172a;
+          color: #111111;
         }
 
         .verify-desc {
           font-size: 14px;
           line-height: 1.6;
-          color: var(--text-secondary, #94a3b8);
+          color: var(--text-secondary, #A3A3A3);
           margin: 0 0 24px 0;
         }
 
         .verify-email-text {
-          color: var(--text-primary, #f8fafc);
+          color: var(--text-primary, #FFFFFF);
           word-break: break-all;
         }
 
         :global(.light-mode) .verify-email-text {
-          color: #0f172a;
+          color: #111111;
         }
 
         .verify-alert {
@@ -343,7 +343,7 @@ export default function VerifyEmailPage() {
         .btn-verify.secondary {
           background: transparent;
           border: 1px solid var(--border-strong, rgba(255, 255, 255, 0.16));
-          color: var(--text-secondary, #94a3b8);
+          color: var(--text-secondary, #A3A3A3);
         }
 
         :global(.light-mode) .btn-verify.secondary {
@@ -352,8 +352,8 @@ export default function VerifyEmailPage() {
         }
 
         .btn-verify.secondary:hover:not(:disabled) {
-          border-color: var(--text-primary, #f8fafc);
-          color: var(--text-primary, #f8fafc);
+          border-color: var(--text-primary, #FFFFFF);
+          color: var(--text-primary, #FFFFFF);
         }
 
         .btn-verify:disabled {
@@ -366,13 +366,13 @@ export default function VerifyEmailPage() {
           border: none;
           font-family: inherit;
           font-size: 13px;
-          color: var(--text-muted, #64748b);
+          color: var(--text-muted, #737373);
           cursor: pointer;
           transition: color 0.15s ease;
         }
 
         .btn-signout:hover {
-          color: var(--text-primary, #f8fafc);
+          color: var(--text-primary, #FFFFFF);
           text-decoration: underline;
         }
       `}</style>

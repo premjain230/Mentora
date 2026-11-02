@@ -275,9 +275,9 @@
 
 /* ── Light Mode Refinement (Apple × Craft) ────────────────────────────────── */
 .light-mode .sidebar {
-  background: #ffffff;
-  border-color: rgba(0, 0, 0, 0.08);
-  box-shadow: 4px 0 24px -4px rgba(0,0,0,0.06), 0 20px 48px -16px rgba(0,0,0,0.08);
+  background: #FAFAFA;
+  border-color: #E5E5E5;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
 }
 
 .light-mode .logo-img {
@@ -285,22 +285,22 @@
 }
 
 .light-mode .logo-text {
-  color: #0f172a;
+  color: #111111;
 }
 
 .light-mode .nav-item {
-  color: #475569;
+  color: #666666;
 }
 
 .light-mode .nav-item:hover {
-  background: #f1f5f9;
-  color: #0f172a;
+  background: #F5F5F5;
+  color: #111111;
 }
 
 .light-mode .nav-item.active {
-  background: #f1f5f9;
-  border-color: rgba(0, 0, 0, 0.08);
-  color: #0f172a;
+  background: #F5F5F5;
+  border-color: #E5E5E5;
+  color: #111111;
 }
 
 .light-mode .nav-item.active .nav-icon {
@@ -308,31 +308,35 @@
 }
 
 .light-mode .nav-badge {
-  border-color: rgba(0, 0, 0, 0.12);
-  color: #64748b;
+  border-color: #E5E5E5;
+  color: #888888;
 }
 
 .light-mode .upgrade-nav-btn {
-  background: #0f172a;
+  background: #111111;
   color: #ffffff;
 }
 
 .light-mode .user-card {
-  background: #f8fafc;
-  border-color: rgba(0, 0, 0, 0.06);
+  background: #FFFFFF;
+  border-color: #E5E5E5;
 }
 
 .light-mode .avatar {
-  background: #e2e8f0;
-  border-color: rgba(0, 0, 0, 0.1);
-  color: #0f172a;
+  background: #F7F7F7;
+  border-color: #E5E5E5;
+  color: #111111;
 }
 
 .light-mode .user-name {
-  color: #0f172a;
+  color: #111111;
+}
+
+.light-mode .user-plan {
+  color: #888888;
 }
 
 .light-mode .signout-btn:hover {
-  background: #e2e8f0;
-  color: #0f172a;
+  background: #F5F5F5;
+  color: #111111;
 }
