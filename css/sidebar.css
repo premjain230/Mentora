@@ -271,3 +271,68 @@
 @media (prefers-reduced-motion: reduce) {
   * { animation: none !important; transition: none !important; }
 }
+
+
+/* ── Light Mode Refinement (Apple × Craft) ────────────────────────────────── */
+.light-mode .sidebar {
+  background: #ffffff;
+  border-color: rgba(0, 0, 0, 0.08);
+  box-shadow: 4px 0 24px -4px rgba(0,0,0,0.06), 0 20px 48px -16px rgba(0,0,0,0.08);
+}
+
+.light-mode .logo-img {
+  content: url("/learningallied-black.svg");
+}
+
+.light-mode .logo-text {
+  color: #0f172a;
+}
+
+.light-mode .nav-item {
+  color: #475569;
+}
+
+.light-mode .nav-item:hover {
+  background: #f1f5f9;
+  color: #0f172a;
+}
+
+.light-mode .nav-item.active {
+  background: #f1f5f9;
+  border-color: rgba(0, 0, 0, 0.08);
+  color: #0f172a;
+}
+
+.light-mode .nav-item.active .nav-icon {
+  color: #2563eb;
+}
+
+.light-mode .nav-badge {
+  border-color: rgba(0, 0, 0, 0.12);
+  color: #64748b;
+}
+
+.light-mode .upgrade-nav-btn {
+  background: #0f172a;
+  color: #ffffff;
+}
+
+.light-mode .user-card {
+  background: #f8fafc;
+  border-color: rgba(0, 0, 0, 0.06);
+}
+
+.light-mode .avatar {
+  background: #e2e8f0;
+  border-color: rgba(0, 0, 0, 0.1);
+  color: #0f172a;
+}
+
+.light-mode .user-name {
+  color: #0f172a;
+}
+
+.light-mode .signout-btn:hover {
+  background: #e2e8f0;
+  color: #0f172a;
+}

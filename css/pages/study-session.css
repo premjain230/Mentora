@@ -562,3 +562,58 @@
     transition: none;
   }
 }
+
+
+/* ── Light Mode Refinement (Apple × Craft) ────────────────────────────────── */
+.light-mode .page-study-session .study-card {
+  background: #ffffff;
+  border-color: rgba(0, 0, 0, 0.07);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 8px 24px -6px rgba(0, 0, 0, 0.05);
+}
+
+.light-mode .page-study-session .study-input,
+.light-mode .page-study-session .study-textarea {
+  background: #f8fafc;
+  border-color: rgba(0, 0, 0, 0.1);
+  color: #0f172a;
+}
+
+.light-mode .page-study-session .study-input:focus,
+.light-mode .page-study-session .study-textarea:focus {
+  background: #ffffff;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+}
+
+.light-mode .page-study-session .study-duration-chip {
+  background: #f1f5f9;
+  border-color: rgba(0, 0, 0, 0.08);
+  color: #475569;
+}
+
+.light-mode .page-study-session .study-duration-chip:hover {
+  background: #e2e8f0;
+  color: #0f172a;
+}
+
+.light-mode .page-study-session .study-duration-chip.active {
+  background: #0f172a;
+  color: #ffffff;
+}
+
+.light-mode .page-study-session .study-timer-ring::before {
+  background: #ffffff;
+}
+
+.light-mode .page-study-session .study-timer-sub {
+  color: #64748b;
+}
+
+.light-mode .page-study-session .study-btn-outline {
+  border-color: rgba(0, 0, 0, 0.12);
+  color: #0f172a;
+}
+
+.light-mode .page-study-session .study-btn-outline:hover {
+  background: #f1f5f9;
+}

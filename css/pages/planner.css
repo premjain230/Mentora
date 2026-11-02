@@ -861,3 +861,39 @@
     transition: none;
   }
 }
+
+
+/* ── Light Mode Refinement (Apple × Craft) ────────────────────────────────── */
+.light-mode .page-planner .planner-stat,
+.light-mode .page-planner .planner-card,
+.light-mode .page-planner .planner-task-item,
+.light-mode .page-planner .planner-day-col {
+  background: #ffffff;
+  border-color: rgba(0, 0, 0, 0.07);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 8px 24px -6px rgba(0, 0, 0, 0.05);
+}
+
+.light-mode .page-planner .planner-tab {
+  color: #64748b;
+}
+
+.light-mode .page-planner .planner-tab:hover {
+  color: #0f172a;
+}
+
+.light-mode .page-planner .planner-tab.active {
+  color: #2563eb;
+  border-bottom-color: #2563eb;
+}
+
+.light-mode .page-planner .planner-modal {
+  background: #ffffff;
+  border-color: rgba(0, 0, 0, 0.08);
+  box-shadow: 0 24px 64px -12px rgba(0, 0, 0, 0.15);
+}
+
+.light-mode .page-planner .planner-delete-warning {
+  background: rgba(244, 63, 94, 0.05);
+  border-color: rgba(244, 63, 94, 0.18);
+  color: #991b1b;
+}

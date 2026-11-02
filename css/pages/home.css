@@ -774,3 +774,63 @@
     grid-template-columns: 1fr;
   }
 }
+
+
+/* ── Light Mode Refinement (Apple × Craft) ────────────────────────────────── */
+.light-mode .home-page .aq-graph-card {
+  background: #ffffff;
+  border-color: rgba(0, 0, 0, 0.07);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 8px 24px -6px rgba(0, 0, 0, 0.05);
+}
+
+.light-mode .home-page .aq-graph-card:hover {
+  border-color: rgba(0, 0, 0, 0.14);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05), 0 16px 32px -8px rgba(0, 0, 0, 0.08);
+}
+
+.light-mode .home-page .hub-quick-action {
+  background: #ffffff;
+  border-color: rgba(0, 0, 0, 0.07);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 6px 18px -4px rgba(0, 0, 0, 0.05);
+}
+
+.light-mode .home-page .hub-quick-action:hover {
+  border-color: rgba(0, 0, 0, 0.14);
+  background: #f8fafc;
+}
+
+.light-mode .home-page .hub-action-primary {
+  border-color: rgba(37, 99, 235, 0.25);
+  background: linear-gradient(135deg, rgba(37, 99, 235, 0.06) 0%, #ffffff 100%);
+}
+
+.light-mode .home-page .hub-action-primary:hover {
+  border-color: #2563eb;
+  box-shadow: 0 4px 18px rgba(37, 99, 235, 0.15);
+}
+
+.light-mode .home-page .hub-action-icon {
+  background: #f1f5f9;
+  border-color: rgba(0, 0, 0, 0.06);
+  color: #2563eb;
+}
+
+.light-mode .home-page .hub-link-pill {
+  background: #ffffff;
+  border-color: rgba(0, 0, 0, 0.1);
+  color: #2563eb;
+}
+
+.light-mode .home-page .hub-link-pill:hover {
+  background: #f1f5f9;
+  border-color: rgba(0, 0, 0, 0.18);
+}
+
+.light-mode .home-page .hub-tag {
+  background: #f1f5f9;
+  color: #64748b;
+}
+
+.light-mode .home-page .hub-bar-strip {
+  background: #f1f5f9;
+}

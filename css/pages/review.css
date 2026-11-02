@@ -114,3 +114,18 @@
     gap: 4px;
   }
 }
+
+
+/* ── Light Mode Refinement (Apple × Craft) ────────────────────────────────── */
+.light-mode .page-review .review-card,
+.light-mode .page-review .review-graph {
+  background: #ffffff;
+  border-color: rgba(0, 0, 0, 0.07);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 8px 24px -6px rgba(0, 0, 0, 0.05);
+}
+
+.light-mode .page-review .review-stat {
+  background: #f1f5f9;
+  border-color: rgba(0, 0, 0, 0.08);
+  color: #475569;
+}

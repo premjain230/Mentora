@@ -1,9 +1,10 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { onAuthStateChanged } from "firebase/auth";
-import { doc, getDoc, setDoc, serverTimestamp } from "firebase/firestore";
+import { doc, setDoc, serverTimestamp } from "firebase/firestore";
 import { initFirebase } from "../../lib/firebase";
 
 export default function OnboardingPage() {
@@ -15,7 +16,7 @@ export default function OnboardingPage() {
   // Form states
   const [board, setBoard] = useState("CBSE");
   const [grade, setGrade] = useState("Class 12");
-  const [targetExam, setTargetExam] = useState("JEE Main");
+  const [targetExam, setTargetExam] = useState("JEE Main & Advanced");
   const [dailyHours, setDailyHours] = useState(4);
   const [prioritySubjects, setPrioritySubjects] = useState<string[]>(["Physics", "Chemistry"]);
 
@@ -79,199 +80,645 @@ export default function OnboardingPage() {
 
   if (loading) {
     return (
-      <div style={{ minHeight: "100vh", display: "grid", placeItems: "center", background: "#000", color: "#fff" }}>
-        <div>Loading your learning profile…</div>
+      <div className="onboard-viewport">
+        <div className="onboard-loading-box">
+          <div className="onboard-spinner" aria-hidden="true" />
+          <p className="onboard-loading-text">Preparing your learning environment…</p>
+        </div>
+        <style jsx>{`
+          .onboard-viewport {
+            min-height: 100vh;
+            min-height: 100dvh;
+            display: grid;
+            place-items: center;
+            background: var(--bg-base, #08090d);
+            color: var(--text-primary, #f8fafc);
+            font-family: var(--font-main, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif);
+          }
+          .onboard-loading-box {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 16px;
+          }
+          .onboard-spinner {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            border: 2px solid var(--border, rgba(255, 255, 255, 0.1));
+            border-top-color: var(--accent, #3b82f6);
+            animation: spin 0.8s linear infinite;
+          }
+          .onboard-loading-text {
+            font-size: 14px;
+            color: var(--text-muted, #94a3b8);
+          }
+          @keyframes spin {
+            to { transform: rotate(360deg); }
+          }
+        `}</style>
       </div>
     );
   }
 
   return (
-    <div style={{ minHeight: "100vh", display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", padding: 24, background: "#000" }}>
-      <div style={{ width: "100%", maxWidth: 520, background: "var(--la-surface, #111113)", border: "1px solid var(--la-line, rgba(255,255,255,0.09))", borderRadius: 20, padding: 36 }}>
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20 }}>
-          <span style={{ fontSize: 12, fontWeight: 700, color: "var(--la-accent, #3b82f6)", textTransform: "uppercase" }}>
-            Personalize Learning Allied
-          </span>
-          <span style={{ fontSize: 13, color: "var(--la-muted, #a1a1aa)" }}>Step {step + 1} of 3</span>
+    <div className="onboard-viewport">
+      <div className="onboard-container">
+        <div className="onboard-header">
+          <Link href="/" className="onboard-brand">
+            <img
+              src="/learningallied-white.svg"
+              alt="Learning Allied"
+              width={28}
+              height={28}
+              className="onboard-logo onboard-logo-dark"
+            />
+            <img
+              src="/learningallied-black.svg"
+              alt="Learning Allied"
+              width={28}
+              height={28}
+              className="onboard-logo onboard-logo-light"
+            />
+            <span className="onboard-brand-name">Learning Allied</span>
+          </Link>
+          <div className="onboard-step-badge">
+            <span className="step-dot" />
+            <span>Step {step + 1} of 3</span>
+          </div>
         </div>
 
-        {step === 0 && (
-          <div>
-            <h1 style={{ fontSize: 24, fontWeight: 800, marginBottom: 8, color: "#fff" }}>
-              What exam are you preparing for?
-            </h1>
-            <p style={{ fontSize: 14, color: "var(--la-muted, #a1a1aa)", marginBottom: 24 }}>
-              This tailors your syllabus, questions and study suggestions.
-            </p>
+        <div className="onboard-card">
+          {step === 0 && (
+            <div className="onboard-step-content">
+              <div className="step-tag">Step 1 — Foundation</div>
+              <h1 className="step-title">What exam are you preparing for?</h1>
+              <p className="step-desc">
+                Your syllabus, adaptive questions, and daily AI tutor hints will match this target.
+              </p>
 
-            <div style={{ display: "flex", flexDirection: "column", gap: 10, marginBottom: 28 }}>
-              {["JEE Main & Advanced", "NEET UG Medical", "CBSE Board", "Maharashtra State Board", "General Science & Maths"].map((exam) => (
+              <div className="option-list">
+                {[
+                  { id: "JEE Main & Advanced", title: "JEE Main & Advanced", sub: "Physics, Chemistry & Mathematics for Engineering" },
+                  { id: "NEET UG Medical", title: "NEET UG Medical", sub: "Physics, Chemistry & Biology for Medicine" },
+                  { id: "CBSE Board", title: "CBSE Board", sub: "Standardized NCERT Class 9-12 curriculum" },
+                  { id: "Maharashtra State Board", title: "Maharashtra State Board", sub: "State syllabus with full board alignment" },
+                  { id: "General Science & Maths", title: "Foundation & General Prep", sub: "Core STEM concepts and problem-solving skills" },
+                ].map((item) => {
+                  const selected = targetExam === item.id;
+                  return (
+                    <button
+                      key={item.id}
+                      type="button"
+                      onClick={() => setTargetExam(item.id)}
+                      className={`option-card ${selected ? "selected" : ""}`}
+                    >
+                      <div className="option-check">{selected ? "✓" : ""}</div>
+                      <div className="option-text">
+                        <span className="option-title">{item.title}</span>
+                        <span className="option-sub">{item.sub}</span>
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+
+              <div className="action-row">
                 <button
-                  key={exam}
                   type="button"
-                  onClick={() => setTargetExam(exam)}
-                  style={{
-                    padding: "14px 18px",
-                    borderRadius: 12,
-                    border: `1px solid ${targetExam === exam ? "var(--la-accent, #3b82f6)" : "var(--la-line, rgba(255,255,255,0.09))"}`,
-                    background: targetExam === exam ? "rgba(59, 130, 246, 0.14)" : "var(--la-surface-2, #17171a)",
-                    color: targetExam === exam ? "var(--la-accent, #3b82f6)" : "#fff",
-                    fontWeight: 600,
-                    textAlign: "left",
-                    cursor: "pointer",
-                    fontSize: 15,
-                  }}
+                  onClick={() => setStep(1)}
+                  className="btn-onboard primary"
                 >
-                  {exam}
+                  Continue →
                 </button>
-              ))}
+              </div>
             </div>
+          )}
 
-            <button
-              type="button"
-              onClick={() => setStep(1)}
-              className="btn btn-primary"
-              style={{ width: "100%", padding: 13, borderRadius: 10, fontSize: 15, fontWeight: 700 }}
-            >
-              Next Step →
-            </button>
-          </div>
-        )}
+          {step === 1 && (
+            <div className="onboard-step-content">
+              <div className="step-tag">Step 2 — Curriculum</div>
+              <h1 className="step-title">Select your grade and board</h1>
+              <p className="step-desc">
+                We calibrate difficulty, topic prerequisites, and question style according to your level.
+              </p>
 
-        {step === 1 && (
-          <div>
-            <h1 style={{ fontSize: 24, fontWeight: 800, marginBottom: 8, color: "#fff" }}>
-              Select your grade &amp; board
-            </h1>
-            <p style={{ fontSize: 14, color: "var(--la-muted, #a1a1aa)", marginBottom: 24 }}>
-              Helps us match the exact difficulty and curriculum guidelines.
-            </p>
-
-            <div style={{ marginBottom: 18 }}>
-              <label style={{ display: "block", fontSize: 13, fontWeight: 500, marginBottom: 6, color: "var(--la-muted, #a1a1aa)" }}>
-                Grade / Class
-              </label>
-              <select
-                value={grade}
-                onChange={(e) => setGrade(e.target.value)}
-                style={{ width: "100%", padding: 12, borderRadius: 10, background: "var(--la-surface-2, #17171a)", border: "1px solid var(--la-line, rgba(255,255,255,0.16))", color: "#fff" }}
-              >
-                <option>Class 9</option>
-                <option>Class 10</option>
-                <option>Class 11</option>
-                <option>Class 12</option>
-                <option>Dropper / Gap Year</option>
-                <option>College / Other</option>
-              </select>
-            </div>
-
-            <div style={{ marginBottom: 28 }}>
-              <label style={{ display: "block", fontSize: 13, fontWeight: 500, marginBottom: 6, color: "var(--la-muted, #a1a1aa)" }}>
-                Educational Board
-              </label>
-              <select
-                value={board}
-                onChange={(e) => setBoard(e.target.value)}
-                style={{ width: "100%", padding: 12, borderRadius: 10, background: "var(--la-surface-2, #17171a)", border: "1px solid var(--la-line, rgba(255,255,255,0.16))", color: "#fff" }}
-              >
-                <option>CBSE</option>
-                <option>Maharashtra State Board</option>
-                <option>ICSE / ISC</option>
-                <option>Other State Board</option>
-              </select>
-            </div>
-
-            <div style={{ display: "flex", gap: 10 }}>
-              <button
-                type="button"
-                onClick={() => setStep(0)}
-                className="btn btn-secondary"
-                style={{ flex: 1, padding: 12, borderRadius: 10 }}
-              >
-                ← Back
-              </button>
-              <button
-                type="button"
-                onClick={() => setStep(2)}
-                className="btn btn-primary"
-                style={{ flex: 2, padding: 12, borderRadius: 10, fontWeight: 700 }}
-              >
-                Next Step →
-              </button>
-            </div>
-          </div>
-        )}
-
-        {step === 2 && (
-          <div>
-            <h1 style={{ fontSize: 24, fontWeight: 800, marginBottom: 8, color: "#fff" }}>
-              Focus subjects &amp; study goals
-            </h1>
-            <p style={{ fontSize: 14, color: "var(--la-muted, #a1a1aa)", marginBottom: 20 }}>
-              Choose subjects to prioritize for practice questions.
-            </p>
-
-            <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 24 }}>
-              {["Physics", "Chemistry", "Mathematics", "Biology", "Computer Science"].map((sub) => {
-                const isSelected = prioritySubjects.includes(sub);
-                return (
-                  <button
-                    key={sub}
-                    type="button"
-                    onClick={() => toggleSubject(sub)}
-                    style={{
-                      padding: "8px 16px",
-                      borderRadius: 999,
-                      border: `1px solid ${isSelected ? "var(--la-accent, #3b82f6)" : "var(--la-line, rgba(255,255,255,0.12))"}`,
-                      background: isSelected ? "rgba(59, 130, 246, 0.14)" : "var(--la-surface-2, #17171a)",
-                      color: isSelected ? "var(--la-accent, #3b82f6)" : "#fff",
-                      cursor: "pointer",
-                      fontSize: 13,
-                      fontWeight: 600,
-                    }}
+              <div className="field-group">
+                <label className="field-label" htmlFor="onboard-grade">Grade / Year</label>
+                <div className="select-wrap">
+                  <select
+                    id="onboard-grade"
+                    value={grade}
+                    onChange={(e) => setGrade(e.target.value)}
+                    className="onboard-select"
                   >
-                    {isSelected ? "✓ " : "+ "}{sub}
-                  </button>
-                );
-              })}
-            </div>
+                    <option value="Class 9">Class 9</option>
+                    <option value="Class 10">Class 10</option>
+                    <option value="Class 11">Class 11</option>
+                    <option value="Class 12">Class 12</option>
+                    <option value="Dropper / Gap Year">Dropper / Gap Year</option>
+                    <option value="College / Other">College / Other</option>
+                  </select>
+                </div>
+              </div>
 
-            <div style={{ marginBottom: 28 }}>
-              <label style={{ display: "flex", justifyContent: "space-between", fontSize: 13, fontWeight: 500, marginBottom: 6, color: "var(--la-muted, #a1a1aa)" }}>
-                <span>Daily target study hours</span>
-                <span style={{ color: "var(--la-accent, #3b82f6)", fontWeight: 700 }}>{dailyHours} hours / day</span>
-              </label>
-              <input
-                type="range"
-                min={1}
-                max={12}
-                value={dailyHours}
-                onChange={(e) => setDailyHours(Number(e.target.value))}
-                style={{ width: "100%", accentColor: "var(--la-accent, #3b82f6)" }}
-              />
-            </div>
+              <div className="field-group">
+                <label className="field-label" htmlFor="onboard-board">Educational Board</label>
+                <div className="select-wrap">
+                  <select
+                    id="onboard-board"
+                    value={board}
+                    onChange={(e) => setBoard(e.target.value)}
+                    className="onboard-select"
+                  >
+                    <option value="CBSE">CBSE (Central Board)</option>
+                    <option value="Maharashtra State Board">Maharashtra State Board</option>
+                    <option value="ICSE / ISC">ICSE / ISC</option>
+                    <option value="Other State Board">Other State Board</option>
+                  </select>
+                </div>
+              </div>
 
-            <div style={{ display: "flex", gap: 10 }}>
-              <button
-                type="button"
-                onClick={() => setStep(1)}
-                className="btn btn-secondary"
-                style={{ flex: 1, padding: 12, borderRadius: 10 }}
-              >
-                ← Back
-              </button>
-              <button
-                type="button"
-                onClick={handleComplete}
-                className="btn btn-primary"
-                style={{ flex: 2, padding: 12, borderRadius: 10, fontWeight: 700 }}
-              >
-                Complete Onboarding →
-              </button>
+              <div className="action-row dual">
+                <button
+                  type="button"
+                  onClick={() => setStep(0)}
+                  className="btn-onboard secondary"
+                >
+                  ← Back
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setStep(2)}
+                  className="btn-onboard primary"
+                >
+                  Continue →
+                </button>
+              </div>
             </div>
-          </div>
-        )}
+          )}
+
+          {step === 2 && (
+            <div className="onboard-step-content">
+              <div className="step-tag">Step 3 — Schedule</div>
+              <h1 className="step-title">Priority subjects and daily focus</h1>
+              <p className="step-desc">
+                Choose the subjects you want to tackle first, and set an achievable daily study target.
+              </p>
+
+              <div className="subject-chip-cloud">
+                {["Physics", "Chemistry", "Mathematics", "Biology", "Computer Science"].map((sub) => {
+                  const isSelected = prioritySubjects.includes(sub);
+                  return (
+                    <button
+                      key={sub}
+                      type="button"
+                      onClick={() => toggleSubject(sub)}
+                      className={`subject-chip ${isSelected ? "selected" : ""}`}
+                    >
+                      <span className="chip-icon">{isSelected ? "✓" : "+"}</span>
+                      <span>{sub}</span>
+                    </button>
+                  );
+                })}
+              </div>
+
+              <div className="slider-card">
+                <div className="slider-head">
+                  <span className="slider-label">Daily target study time</span>
+                  <span className="slider-value">{dailyHours} hours / day</span>
+                </div>
+                <input
+                  type="range"
+                  min={1}
+                  max={12}
+                  value={dailyHours}
+                  onChange={(e) => setDailyHours(Number(e.target.value))}
+                  className="onboard-slider"
+                  aria-label="Daily target study hours"
+                />
+                <div className="slider-ticks">
+                  <span>1h</span>
+                  <span>4h (Recommended)</span>
+                  <span>8h</span>
+                  <span>12h</span>
+                </div>
+              </div>
+
+              <div className="action-row dual">
+                <button
+                  type="button"
+                  onClick={() => setStep(1)}
+                  className="btn-onboard secondary"
+                >
+                  ← Back
+                </button>
+                <button
+                  type="button"
+                  onClick={handleComplete}
+                  className="btn-onboard primary"
+                >
+                  Start Learning →
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
       </div>
+
+      <style jsx>{`
+        .onboard-viewport {
+          min-height: 100vh;
+          min-height: 100dvh;
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          align-items: center;
+          padding: 32px 20px;
+          background: var(--bg-base, #08090d);
+          color: var(--text-primary, #f8fafc);
+          font-family: var(--font-main, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif);
+          -webkit-font-smoothing: antialiased;
+        }
+
+        .onboard-container {
+          width: 100%;
+          max-width: 540px;
+        }
+
+        .onboard-header {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          margin-bottom: 24px;
+        }
+
+        .onboard-brand {
+          display: inline-flex;
+          align-items: center;
+          gap: 10px;
+          text-decoration: none;
+          color: var(--text-primary, #f8fafc);
+          font-weight: 700;
+          font-size: 15px;
+          letter-spacing: -0.02em;
+        }
+
+        .onboard-logo-light {
+          display: none;
+        }
+        :global(.light-mode) .onboard-logo-dark {
+          display: none;
+        }
+        :global(.light-mode) .onboard-logo-light {
+          display: block;
+        }
+
+        .onboard-step-badge {
+          display: inline-flex;
+          align-items: center;
+          gap: 7px;
+          padding: 5px 12px;
+          border-radius: 999px;
+          background: var(--bg-card, #0f1420);
+          border: 1px solid var(--border, rgba(255, 255, 255, 0.09));
+          font-size: 12px;
+          font-weight: 600;
+          color: var(--text-secondary, #94a3b8);
+        }
+
+        .step-dot {
+          width: 6px;
+          height: 6px;
+          border-radius: 50%;
+          background: var(--accent, #3b82f6);
+        }
+
+        .onboard-card {
+          background: var(--bg-card, #0f1420);
+          border: 1px solid var(--border, rgba(255, 255, 255, 0.09));
+          border-radius: 24px;
+          padding: 40px 36px;
+          box-shadow: 0 16px 48px -12px rgba(0, 0, 0, 0.45);
+          backdrop-filter: blur(16px);
+        }
+
+        :global(.light-mode) .onboard-card {
+          background: #ffffff;
+          border-color: rgba(0, 0, 0, 0.08);
+          box-shadow: 0 16px 48px -12px rgba(0, 0, 0, 0.08);
+        }
+
+        .step-tag {
+          font-size: 11.5px;
+          font-weight: 700;
+          text-transform: uppercase;
+          letter-spacing: 0.06em;
+          color: var(--accent, #3b82f6);
+          margin-bottom: 8px;
+        }
+
+        .step-title {
+          font-family: var(--font-display, "Space Grotesk", sans-serif);
+          font-size: 24px;
+          font-weight: 700;
+          letter-spacing: -0.03em;
+          line-height: 1.25;
+          color: var(--text-primary, #f8fafc);
+          margin: 0 0 8px 0;
+        }
+
+        :global(.light-mode) .step-title {
+          color: #0f172a;
+        }
+
+        .step-desc {
+          font-size: 14px;
+          line-height: 1.55;
+          color: var(--text-secondary, #94a3b8);
+          margin: 0 0 28px 0;
+        }
+
+        .option-list {
+          display: flex;
+          flex-direction: column;
+          gap: 10px;
+          margin-bottom: 32px;
+        }
+
+        .option-card {
+          display: flex;
+          align-items: flex-start;
+          gap: 14px;
+          padding: 14px 16px;
+          border-radius: 14px;
+          border: 1px solid var(--border, rgba(255, 255, 255, 0.08));
+          background: var(--bg-elevated, #151a29);
+          color: var(--text-primary, #f8fafc);
+          cursor: pointer;
+          text-align: left;
+          font-family: inherit;
+          transition: all 0.18s cubic-bezier(0.2, 0.7, 0.2, 1);
+        }
+
+        :global(.light-mode) .option-card {
+          background: #f8fafc;
+          border-color: rgba(0, 0, 0, 0.06);
+          color: #0f172a;
+        }
+
+        .option-card:hover {
+          border-color: var(--border-hover, rgba(255, 255, 255, 0.22));
+          transform: translateY(-1px);
+        }
+
+        .option-card.selected {
+          border-color: var(--accent, #3b82f6);
+          background: color-mix(in srgb, var(--accent, #3b82f6) 12%, var(--bg-elevated, #151a29));
+          box-shadow: 0 0 0 1px var(--accent, #3b82f6);
+        }
+
+        :global(.light-mode) .option-card.selected {
+          background: rgba(37, 99, 235, 0.08);
+        }
+
+        .option-check {
+          width: 20px;
+          height: 20px;
+          border-radius: 6px;
+          border: 1.5px solid var(--border-strong, rgba(255, 255, 255, 0.2));
+          display: grid;
+          place-items: center;
+          font-size: 12px;
+          font-weight: 700;
+          color: #ffffff;
+          flex-shrink: 0;
+          margin-top: 1px;
+        }
+
+        .option-card.selected .option-check {
+          background: var(--accent, #3b82f6);
+          border-color: var(--accent, #3b82f6);
+        }
+
+        .option-text {
+          display: flex;
+          flex-direction: column;
+          gap: 2px;
+        }
+
+        .option-title {
+          font-size: 14.5px;
+          font-weight: 600;
+          letter-spacing: -0.01em;
+        }
+
+        .option-sub {
+          font-size: 12.5px;
+          color: var(--text-muted, #94a3b8);
+        }
+
+        .field-group {
+          margin-bottom: 22px;
+        }
+
+        .field-label {
+          display: block;
+          font-size: 12.5px;
+          font-weight: 600;
+          color: var(--text-secondary, #94a3b8);
+          margin-bottom: 8px;
+        }
+
+        .select-wrap {
+          position: relative;
+        }
+
+        .onboard-select {
+          width: 100%;
+          padding: 13px 16px;
+          border-radius: 12px;
+          border: 1px solid var(--border-strong, rgba(255, 255, 255, 0.14));
+          background: var(--bg-elevated, #151a29);
+          color: var(--text-primary, #f8fafc);
+          font-family: inherit;
+          font-size: 14.5px;
+          outline: none;
+          cursor: pointer;
+          transition: border-color 0.16s ease;
+        }
+
+        :global(.light-mode) .onboard-select {
+          background: #f8fafc;
+          border-color: rgba(0, 0, 0, 0.12);
+          color: #0f172a;
+        }
+
+        .onboard-select:focus {
+          border-color: var(--accent, #3b82f6);
+          box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+        }
+
+        .subject-chip-cloud {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 10px;
+          margin-bottom: 28px;
+        }
+
+        .subject-chip {
+          display: inline-flex;
+          align-items: center;
+          gap: 7px;
+          padding: 10px 18px;
+          border-radius: 999px;
+          border: 1px solid var(--border, rgba(255, 255, 255, 0.12));
+          background: var(--bg-elevated, #151a29);
+          color: var(--text-secondary, #94a3b8);
+          font-family: inherit;
+          font-size: 13.5px;
+          font-weight: 600;
+          cursor: pointer;
+          transition: all 0.16s ease;
+        }
+
+        :global(.light-mode) .subject-chip {
+          background: #f8fafc;
+          border-color: rgba(0, 0, 0, 0.08);
+          color: #475569;
+        }
+
+        .subject-chip:hover {
+          border-color: var(--border-hover, rgba(255, 255, 255, 0.25));
+          color: var(--text-primary, #f8fafc);
+        }
+
+        .subject-chip.selected {
+          background: var(--accent, #3b82f6);
+          border-color: var(--accent, #3b82f6);
+          color: #ffffff;
+        }
+
+        .chip-icon {
+          font-weight: 700;
+          font-size: 13px;
+        }
+
+        .slider-card {
+          padding: 20px;
+          border-radius: 16px;
+          background: var(--bg-elevated, #151a29);
+          border: 1px solid var(--border, rgba(255, 255, 255, 0.08));
+          margin-bottom: 32px;
+        }
+
+        :global(.light-mode) .slider-card {
+          background: #f8fafc;
+          border-color: rgba(0, 0, 0, 0.06);
+        }
+
+        .slider-head {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          margin-bottom: 14px;
+        }
+
+        .slider-label {
+          font-size: 13px;
+          font-weight: 600;
+          color: var(--text-secondary, #94a3b8);
+        }
+
+        .slider-value {
+          font-size: 14px;
+          font-weight: 700;
+          color: var(--accent, #3b82f6);
+        }
+
+        .onboard-slider {
+          width: 100%;
+          height: 6px;
+          border-radius: 3px;
+          background: var(--border-strong, rgba(255, 255, 255, 0.16));
+          outline: none;
+          accent-color: var(--accent, #3b82f6);
+          cursor: pointer;
+        }
+
+        .slider-ticks {
+          display: flex;
+          justify-content: space-between;
+          font-size: 11px;
+          color: var(--text-muted, #64748b);
+          margin-top: 8px;
+        }
+
+        .action-row {
+          display: flex;
+        }
+
+        .action-row.dual {
+          gap: 12px;
+        }
+
+        .btn-onboard {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          font-family: inherit;
+          font-size: 14.5px;
+          font-weight: 600;
+          border-radius: 12px;
+          padding: 13px 24px;
+          cursor: pointer;
+          transition: all 0.16s cubic-bezier(0.2, 0.7, 0.2, 1);
+          border: none;
+        }
+
+        .btn-onboard.primary {
+          flex: 1;
+          background: var(--accent, #3b82f6);
+          color: #ffffff;
+          box-shadow: 0 4px 16px rgba(59, 130, 246, 0.32);
+        }
+
+        .btn-onboard.primary:hover {
+          background: var(--accent-strong, #60a5fa);
+          transform: translateY(-1px);
+          box-shadow: 0 6px 20px rgba(59, 130, 246, 0.42);
+        }
+
+        .btn-onboard.primary:active {
+          transform: translateY(0);
+        }
+
+        .btn-onboard.secondary {
+          background: transparent;
+          border: 1px solid var(--border-strong, rgba(255, 255, 255, 0.16));
+          color: var(--text-secondary, #94a3b8);
+        }
+
+        :global(.light-mode) .btn-onboard.secondary {
+          border-color: rgba(0, 0, 0, 0.12);
+          color: #475569;
+        }
+
+        .btn-onboard.secondary:hover {
+          border-color: var(--text-primary, #f8fafc);
+          color: var(--text-primary, #f8fafc);
+        }
+
+        @media (max-width: 600px) {
+          .onboard-card {
+            padding: 28px 20px;
+            border-radius: 20px;
+          }
+          .step-title {
+            font-size: 21px;
+          }
+        }
+      `}</style>
     </div>
   );
 }

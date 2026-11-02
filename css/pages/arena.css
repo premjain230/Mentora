@@ -957,3 +957,31 @@
     scroll-behavior: auto !important;
   }
 }
+
+
+/* ── Light Mode Refinement (Apple × Craft) ────────────────────────────────── */
+.light-mode .page-arena .track-card,
+.light-mode .page-arena .subject-card,
+.light-mode .page-arena .arena-continue-card,
+.light-mode .page-arena .map-header,
+.light-mode .page-arena .boss-card {
+  background: #ffffff;
+  border-color: rgba(0, 0, 0, 0.07);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 8px 24px -6px rgba(0, 0, 0, 0.05);
+}
+
+.light-mode .page-arena .track-card:hover,
+.light-mode .page-arena .subject-card:hover {
+  background: #f8fafc;
+  border-color: rgba(0, 0, 0, 0.14);
+}
+
+.light-mode .page-arena .stat-chip {
+  background: #f1f5f9;
+  border-color: rgba(0, 0, 0, 0.08);
+  color: #475569;
+}
+
+.light-mode .page-arena .stat-chip strong {
+  color: #0f172a;
+}

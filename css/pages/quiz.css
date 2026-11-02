@@ -460,3 +460,36 @@
     transition: none;
   }
 }
+
+
+/* ── Light Mode Refinement (Apple × Craft) ────────────────────────────────── */
+.light-mode .page-quiz .panel,
+.light-mode .page-quiz .option-btn {
+  background: #ffffff;
+  border-color: rgba(0, 0, 0, 0.07);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 8px 24px -6px rgba(0, 0, 0, 0.05);
+}
+
+.light-mode .page-quiz .option-btn:hover:not(:disabled) {
+  border-color: rgba(0, 0, 0, 0.16);
+  background: #f8fafc;
+}
+
+.light-mode .page-quiz .mode-toggle {
+  background: #f1f5f9;
+  border-color: rgba(0, 0, 0, 0.06);
+}
+
+.light-mode .page-quiz .field input,
+.light-mode .page-quiz .field select {
+  background: #f8fafc;
+  border-color: rgba(0, 0, 0, 0.1);
+  color: #0f172a;
+}
+
+.light-mode .page-quiz .field input:focus,
+.light-mode .page-quiz .field select:focus {
+  background: #ffffff;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+}
