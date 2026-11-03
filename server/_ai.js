@@ -102,6 +102,13 @@ async function geminiComplete({
     }
   }
 
+  // gemini-3.8-flash is an internal assistant preset and not an active public
+  // REST API model ID on generativelanguage.googleapis.com. Map it directly to
+  // gemini-2.5-flash to prevent 404 rejection and unwanted Groq fallback.
+  if (targetModel === "gemini-3.8-flash") {
+    targetModel = GEMINI_DEFAULT_MODEL;
+  }
+
   const { systemParts, contents } = convertMessagesToGemini(messages);
 
   const requestBody = {
@@ -163,6 +170,10 @@ async function geminiComplete({
   }
 
   if (!resp.ok) {
+    if (resp.status === 404 && targetModel !== GEMINI_DEFAULT_MODEL) {
+      console.warn(`[Gemini] Model ${targetModel} not found (404); retrying with ${GEMINI_DEFAULT_MODEL}.`);
+      return geminiComplete({ messages, json, temperature, maxTokens, model: GEMINI_DEFAULT_MODEL, signal, usageOut });
+    }
     const rawError = parsedResponse?.error?.message || responseText || `HTTP ${resp.status}`;
     const safeError = sanitizeKey(rawError, apiKey);
     const status = resp.status;
