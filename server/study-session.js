@@ -1,6 +1,7 @@
 const { applyCors, rateLimit, readJsonBody, sendError } = require("./_shared");
 const { verifyIdToken } = require("./_admin");
 const { handler: learnHub } = require("./_learn-hub");
+const { aiComplete } = require("./_ai");
 
 // api/study-session is also the mount point for the AI Learning Hub.
 //
@@ -57,11 +58,6 @@ async function studySession(req, res) {
 
     const minutes = Math.min(Math.max(parseInt(durationMinutes, 10) || 25, 5), 120);
 
-    const apiKey = process.env.GROQ_API_KEY;
-    if (!apiKey) {
-      return res.status(500).json({ error: "AI provider is not configured." });
-    }
-
     const curriculumNote = `Curriculum guard: Only use key points that are plausible for ${subject} → ${topic} within standard NCERT/JEE/NEET/Board scope. Do not invent chapters beyond standard syllabus. Keep practice questions solvable within ${minutes} minutes.`;
     const prompt = `Create an AI-guided study session for a ${subject} student preparing for JEE, NEET or board exams.
 
@@ -82,34 +78,20 @@ Return a strict JSON object (no markdown, no code fences) shaped exactly like:
 
 Make it specific to the topic, exam-relevant, and achievable within ${minutes} minutes. Do not hallucinate curriculum beyond the topic.`;
 
-    const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        "Authorization": `Bearer ${apiKey}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        model: process.env.GROQ_MODEL || "openai/gpt-oss-120b",
+    let plan;
+    try {
+      const parsed = await aiComplete({
         messages: [
           { role: "system", content: "You are an expert study coach. Always return valid JSON without markdown formatting." },
           { role: "user", content: prompt },
         ],
+        json: true,
         temperature: 0.6,
-        max_tokens: 1200,
-      }),
-    });
-
-    const data = await response.json();
-    if (!response.ok) {
-      throw new Error(data?.error?.message || `AI request failed (${response.status})`);
-    }
-
-    let plan;
-    try {
-      const content = data.choices?.[0]?.message?.content?.trim() || "{}";
-      plan = JSON.parse(content.replace(/```json?|```/g, "").trim());
+        maxTokens: 1200,
+      });
+      plan = parsed && typeof parsed === "object" ? parsed : {};
     } catch (e) {
-      console.error("Failed to parse study session from AI response:", e.message);
+      console.error("Failed to generate study session from AI provider:", e.message);
       plan = {};
     }
 

@@ -10,3 +10,4 @@ node_modules/
 !test_next_migration.js
 .env*.local
 audit-reports/
+.env*

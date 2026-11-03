@@ -5,7 +5,7 @@
 
 const { applyCors, rateLimit, readJsonBody, sendError } = require("./_shared");
 const { verifyIdToken, firestore } = require("./_admin");
-const { groqComplete } = require("./_ai");
+const { aiComplete, groqComplete } = require("./_ai");
 const arena = require("./_arena");
 const chatManage = require("./chat-manage");
 
@@ -248,7 +248,8 @@ async function handleArena(req, res){
         try {
           const controller = new AbortController();
           const timer = setTimeout(() => controller.abort(), Math.max(3000, ARENA_DEADLINE_MS - (Date.now() - startedAt)));
-          const rawContent = await groqComplete({
+          const runner = aiComplete || groqComplete;
+          const rawContent = await runner({
             model: candidateModel,
             messages: [{ role: "user", content: prompt }],
             temperature: 0.7,

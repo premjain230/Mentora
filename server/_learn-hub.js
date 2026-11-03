@@ -20,7 +20,7 @@
 
 const { applyCors, rateLimit, readJsonBody, sendError } = require("./_shared");
 const { verifyIdToken, firestore } = require("./_admin");
-const { groqComplete } = require("./_ai");
+const { aiComplete, groqComplete } = require("./_ai");
 
 /* ── Guard rails ───────────────────────────────────────────────────────────── */
 const PLAN_VERSION = 1; // bump to invalidate every cached lesson plan at once
@@ -477,7 +477,8 @@ async function askJson(messages, { temperature, maxTokens }, startedAt = Date.no
       break;
     }
     try {
-      const raw = await groqComplete({
+      const runner = aiComplete || groqComplete;
+      const raw = await runner({
         messages,
         json: true,
         temperature,

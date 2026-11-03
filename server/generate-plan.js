@@ -1,5 +1,6 @@
 const { applyCors, rateLimit, readJsonBody, sendError } = require("./_shared");
 const { verifyIdToken } = require("./_admin");
+const { aiComplete } = require("./_ai");
 
 module.exports = async function handler(req, res) {
   if (!applyCors(req, res, ["POST", "OPTIONS"])) return;
@@ -25,11 +26,6 @@ module.exports = async function handler(req, res) {
 
     if (!subjects || !Array.isArray(subjects) || subjects.length === 0) {
       return res.status(400).json({ error: "At least one subject is required." });
-    }
-
-    const apiKey = process.env.GROQ_API_KEY;
-    if (!apiKey) {
-      return res.status(500).json({ error: "AI provider is not configured." });
     }
 
     // Curriculum-aware prompt (full CBSE/JEE/NEET — 80+ topics, no hallucination)
@@ -76,34 +72,20 @@ Return a strict JSON array (no markdown, no code fences) where each element has:
 
 Generate 4-8 weeks.`;
 
-    const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        "Authorization": `Bearer ${apiKey}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        model: process.env.GROQ_MODEL || "openai/gpt-oss-120b",
+    let weeklyPlan;
+    try {
+      const parsed = await aiComplete({
         messages: [
           { role: "system", content: "You are an expert academic planner. Always return valid JSON arrays without markdown formatting." },
           { role: "user", content: prompt },
         ],
+        json: true,
         temperature: 0.4,
-        max_tokens: 4000,
-      }),
-    });
-
-    const data = await response.json();
-    if (!response.ok) {
-      throw new Error(data?.error?.message || `AI request failed (${response.status})`);
-    }
-
-    let weeklyPlan;
-    try {
-      const content = data.choices?.[0]?.message?.content?.trim() || "[]";
-      weeklyPlan = JSON.parse(content.replace(/```json?|```/g, "").trim());
+        maxTokens: 4000,
+      });
+      weeklyPlan = Array.isArray(parsed) ? parsed : (parsed?.plan || parsed?.weeklyPlan || []);
     } catch (e) {
-      console.error("Failed to parse plan from AI response:", e.message);
+      console.error("Failed to generate plan from AI provider:", e.message);
       weeklyPlan = [];
     }
 

@@ -21,7 +21,7 @@
 
 const { applyCors, rateLimit, readJsonBody, sendError } = require("./_shared");
 const { requireAdmin, requireCron, firestore, adminSdk, adminEmails } = require("./_admin");
-const { groqComplete } = require("./_ai");
+const { aiComplete, groqComplete } = require("./_ai");
 const {
   EVENT_TYPES,
   recordEvent,
@@ -346,7 +346,8 @@ async function adminContent(req, res, id, sub) {
     // generate (AI draft, not saved)
     if (req.method === "POST" && isGenerate) {
       const body = await readJsonBody(req);
-      const out = await groqComplete({
+      const runner = aiComplete || groqComplete;
+      const out = await runner({
         messages: contentPrompt(body.type, body.topic, body.audience, body.instructions),
         json: false,
       });
@@ -633,7 +634,8 @@ async function adminAnalyst(req, res) {
     const [ov30, ret30] = await Promise.all([overview(from30, to), retention(from30, to)]);
 
     const facts = buildFacts(ov30, ret30);
-    const report = await groqComplete({
+    const runner = aiComplete || groqComplete;
+    const report = await runner({
       json: true,
       temperature: 0.35,
       messages: [
@@ -906,7 +908,8 @@ async function doResearch(topic, n) {
     ? sources.map((s, i) => `${i + 1}. ${s.title} — ${s.snippet}\n   ${s.link}`).join("\n")
     : "(No search results — use general knowledge of common student pain points.)";
 
-  const out = await groqComplete({
+  const runner = aiComplete || groqComplete;
+  const out = await runner({
     json: true,
     temperature: 0.5,
     maxTokens: 4000,

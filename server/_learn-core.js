@@ -14,7 +14,7 @@
 //  * No retries, no background loops. The caller decides whether to retry.
 
 const crypto = require("crypto");
-const { groqComplete } = require("./_ai");
+const { aiComplete, groqComplete } = require("./_ai");
 const { firestore } = require("./_admin");
 const {
   getConcept,
@@ -744,8 +744,9 @@ async function askJson(messages, { model, temperature = 0.4, maxTokens = 1200, t
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), timeoutMs);
   const usage = {};
+  const complete = aiComplete || groqComplete;
   try {
-    const parsed = await groqComplete({
+    const parsed = await complete({
       messages,
       json: true,
       model,
@@ -759,9 +760,9 @@ async function askJson(messages, { model, temperature = 0.4, maxTokens = 1200, t
     const message = String((err && err.message) || "");
     // One bounded fallback when the fast model is unavailable to this key/region.
     // Anything else (rate limit, context length, network) is reported, not retried.
-    if (/Groq error \(404\)/.test(message) && model && model !== MODEL_STRONG) {
+    if (/error \(404\)/i.test(message) && model && model !== MODEL_STRONG) {
       try {
-        const parsed = await groqComplete({
+        const parsed = await complete({
           messages,
           json: true,
           model: MODEL_STRONG,
