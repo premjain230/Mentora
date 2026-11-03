@@ -42,13 +42,16 @@ export interface CheckQuestion {
 }
 
 export interface TeachingReply {
-  kind: "short" | "lesson" | "fallback";
+  kind: "short" | "lesson" | "guided" | "revision" | "fallback";
   title: string | null;
   directAnswer: string;
+  keyIdea?: string | null;
   sections: LessonSection[];
   example: WorkedExample | null;
   check: CheckQuestion | null;
   visual: LearningVisual | null;
+  teachingStrategy?: { id: string; label: string } | null;
+  crossSubjectLink?: { targetConceptId: string; targetSubject: string; rationale: string; relationship?: string } | null;
   personalization: string | null;
   advanced: { heading: string; body: string } | null;
   level: string;
@@ -69,6 +72,9 @@ export interface Lesson {
   reviewed: boolean;
   version: string;
   intro: string | null;
+  keyIdea?: string | null;
+  teachingStrategy?: { id: string; label: string } | null;
+  crossSubjectLink?: { targetConceptId: string; targetSubject: string; rationale: string; relationship?: string } | null;
   sections: LessonSection[];
   workedExample: WorkedExample | null;
   visual: LearningVisual | null;
@@ -92,6 +98,8 @@ export interface MasterySummary {
   evidence: number;
   attempts: number;
   nextReviewAt: string | null;
+  confidence?: number;
+  factors?: string[];
 }
 
 export interface SessionSummary {
@@ -107,6 +115,11 @@ export interface Evaluation {
   verdict: "correct" | "partially_correct" | "incorrect" | "unknown";
   whatWorked: string[];
   missing: string[];
+  actualMistake?: string | null;
+  misconceptionCategory?: string | null;
+  correctReasoning?: string | null;
+  calibratedMastery?: { masteryScore: number; confidenceScore: number; masteryState: string; factors: string[] } | null;
+  spacedRevision?: { intervalDays: number; nextReviewAtIso: string; urgencyScore: number; priorityLevel: string } | null;
   misconception: {
     id: string | null;
     label: string;
@@ -243,10 +256,15 @@ export interface StateResponse {
   ok: true;
   profile: LearningProfile;
   mastery: MasterySummary;
+  calibratedMastery?: { masteryScore: number; confidenceScore: number; masteryState: string; factors: string[] } | null;
   review: { state: string | null; nextReviewAt: string | null; intervalDays: number | null } | null;
+  spacedRevision?: { intervalDays: number; nextReviewAtIso: string; urgencyScore: number; priorityLevel: string } | null;
   misconceptions: Array<{ conceptId: string; label: string; correction: string }>;
   weakConcepts: Array<{ conceptId: string; subject: string; topic: string; score: number }>;
   hub: { last: HubLast | null; topics: Record<string, HubTopicProgress> };
+  conceptState?: Record<string, unknown> | null;
+  learningMemory?: Record<string, unknown> | null;
+  crossSubjectPrerequisites?: Array<{ targetConceptId: string; targetSubject: string; rationale: string }>;
   nextChapter: { conceptId: string; name: string; subject: string; difficultyLabel?: string } | null;
   meta: TutorMeta;
 }

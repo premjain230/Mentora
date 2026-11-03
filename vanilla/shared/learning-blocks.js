@@ -18,6 +18,11 @@ export function renderTeaching(content) {
   const head = el("div", "learn-teaching-head");
   if (content.title) head.appendChild(el("h3", "learn-title", content.title));
   const tags = el("div", "learn-teaching-tags");
+  if (content.teachingStrategy) {
+    tags.appendChild(
+      el("span", "learn-badge learn-badge--accent", content.teachingStrategy.label)
+    );
+  }
   if (content.level) {
     tags.appendChild(
       el(
@@ -45,6 +50,22 @@ export function renderTeaching(content) {
     wrap.appendChild(
       el("p", "learn-callout learn-callout--soft", content.generatedNotice)
     );
+  }
+
+  if (content.crossSubjectLink) {
+    const cs = el("div", "learn-cross-subject");
+    cs.appendChild(
+      el("span", "learn-badge learn-badge--soft", `Connected subject: ${content.crossSubjectLink.targetSubject}`)
+    );
+    cs.appendChild(el("p", null, content.crossSubjectLink.rationale));
+    wrap.appendChild(cs);
+  }
+
+  if (content.keyIdea) {
+    const ki = el("div", "learn-key-idea");
+    ki.appendChild(el("strong", null, "Key Takeaway: "));
+    ki.appendChild(document.createTextNode(content.keyIdea));
+    wrap.appendChild(ki);
   }
 
   const exampleBlock = renderExample(content.example);

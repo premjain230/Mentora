@@ -22,6 +22,9 @@ export function TeachingContent({
   reviewed,
   source,
   exampleFirst = false,
+  keyIdea,
+  teachingStrategy,
+  crossSubjectLink,
 }: {
   title?: string | null;
   directAnswer: string;
@@ -35,6 +38,9 @@ export function TeachingContent({
   reviewed?: boolean;
   source?: string;
   exampleFirst?: boolean;
+  keyIdea?: string | null;
+  teachingStrategy?: { id: string; label: string } | null;
+  crossSubjectLink?: { targetConceptId: string; targetSubject: string; rationale: string; relationship?: string } | null;
 }) {
   const exampleBlock = example ? (
     <div className="learn-example">
@@ -58,6 +64,7 @@ export function TeachingContent({
       <div className="learn-teaching-head">
         {title && <h3 className="learn-title">{title}</h3>}
         <div className="learn-teaching-tags">
+          {teachingStrategy && <span className="learn-badge learn-badge--accent">{teachingStrategy.label}</span>}
           {level && <span className="learn-badge learn-badge--soft">{LEVEL_LABEL[level] || level}</span>}
           {source === "authored" && reviewed && <span className="learn-badge learn-badge--ok">Reviewed lesson</span>}
         </div>
@@ -66,6 +73,19 @@ export function TeachingContent({
       {personalization && <p className="learn-personal">{personalization}</p>}
       {fallbackNote && <p className="learn-callout learn-callout--warn">{fallbackNote}</p>}
       {generatedNotice && <p className="learn-callout learn-callout--soft">{generatedNotice}</p>}
+
+      {crossSubjectLink && (
+        <div className="learn-cross-subject">
+          <span className="learn-badge learn-badge--soft">Connected subject: {crossSubjectLink.targetSubject}</span>
+          <p>{crossSubjectLink.rationale}</p>
+        </div>
+      )}
+
+      {keyIdea && (
+        <div className="learn-key-idea">
+          <strong>Key Takeaway:</strong> {keyIdea}
+        </div>
+      )}
 
       {exampleFirst && exampleBlock}
 
@@ -128,6 +148,13 @@ export function EvaluationCard({
         </div>
       )}
 
+      {evaluation.actualMistake && (
+        <div className="learn-feedback-group learn-mistake">
+          <span className="learn-feedback-label">What needs correction</span>
+          <p>{evaluation.actualMistake}</p>
+        </div>
+      )}
+
       {evaluation.missing.length > 0 && (
         <div className="learn-feedback-group">
           <span className="learn-feedback-label">What was missing</span>
@@ -136,6 +163,13 @@ export function EvaluationCard({
               <li key={index}>{item}</li>
             ))}
           </ul>
+        </div>
+      )}
+
+      {evaluation.correctReasoning && (
+        <div className="learn-feedback-group learn-correct-reasoning">
+          <span className="learn-feedback-label">Correct method</span>
+          <p>{evaluation.correctReasoning}</p>
         </div>
       )}
 

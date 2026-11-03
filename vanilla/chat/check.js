@@ -148,9 +148,21 @@ export function createCheck(app) {
     wrap.appendChild(
       renderFeedbackGroup("What worked", evaluation.whatWorked || [])
     );
+    if (evaluation.actualMistake) {
+      const mb = el("div", "learn-feedback-group learn-mistake");
+      mb.appendChild(el("span", "learn-feedback-label", "What needs correction"));
+      mb.appendChild(el("p", null, evaluation.actualMistake));
+      wrap.appendChild(mb);
+    }
     wrap.appendChild(
       renderFeedbackGroup("What was missing", evaluation.missing || [])
     );
+    if (evaluation.correctReasoning) {
+      const cr = el("div", "learn-feedback-group learn-correct-reasoning");
+      cr.appendChild(el("span", "learn-feedback-label", "Correct method"));
+      cr.appendChild(el("p", null, evaluation.correctReasoning));
+      wrap.appendChild(cr);
+    }
 
     const misconception = evaluation.misconception;
     if (misconception) {

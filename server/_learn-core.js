@@ -28,6 +28,22 @@ const {
   stem,
   GENERIC_MODIFIERS,
 } = require("./_curriculum");
+const {
+  TEACHING_STRATEGIES,
+  selectTeachingStrategy,
+  MISCONCEPTION_CATEGORIES,
+  classifyMisconception,
+  calculateCalibratedMastery,
+  PEDAGOGICAL_ACTIONS,
+  selectPedagogicalAction,
+  CROSS_SUBJECT_GRAPH,
+  getCrossSubjectPrerequisites,
+  SPACED_INTERVALS_DAYS,
+  calculateSpacedRevision,
+  createInitialLearningMemory,
+  recordTeachingAttempt,
+  normalizeAdaptiveReply,
+} = require("./_learn-adaptive");
 
 const VISUALS = require("../lib/learning/visual-catalog.json");
 const PACKS = require("../lib/learning/lesson-packs.json");
@@ -470,7 +486,7 @@ function normalizePackSections(pack, level) {
   return out;
 }
 
-function buildReusableLesson({ pack, concept, level, attempts, mastery, mode, trackLabel }) {
+function buildReusableLesson({ pack, concept, level, attempts, mastery, mode, trackLabel, strategy, crossSubject }) {
   const candidates = selectVisualCandidates(`${concept.name} ${concept.topic}`, concept.subject, 3);
   const packTemplate = getVisualTemplate(pack.visualId);
   const visual = packTemplate ? describeVisual(packTemplate, pack.visualParams) : validateVisualSelection(null, candidates, concept.name, concept.subject);
@@ -485,6 +501,7 @@ function buildReusableLesson({ pack, concept, level, attempts, mastery, mode, tr
       equation: null,
     });
   }
+  const assignedStrategy = strategy || (reteach ? TEACHING_STRATEGIES.real_world_analogy : TEACHING_STRATEGIES.simple_explanation);
   return {
     conceptId: concept.conceptId,
     name: clip(concept.name, 160),
@@ -503,6 +520,9 @@ function buildReusableLesson({ pack, concept, level, attempts, mastery, mode, tr
     ),
     sections,
     keyTerms: [],
+    keyIdea: pack.keyIdea || null,
+    teachingStrategy: assignedStrategy ? { id: assignedStrategy.id, label: assignedStrategy.label } : null,
+    crossSubjectLink: crossSubject || null,
     workedExample: pack.workedExample
       ? {
           problem: clipMultiline(pack.workedExample.problem, 500),
@@ -564,12 +584,41 @@ function emptyState() {
   return {
     profile: { board: null, classNum: null, language: "en", prioritySubject: null, subjects: [], weakTopics: [] },
     mastery: null,
+    calibratedMastery: null,
     review: null,
+    spacedRevision: null,
     misconceptions: [],
     weakConcepts: [],
     masteryByConcept: {},
+    conceptState: {},
+    learningMemory: createInitialLearningMemory(""),
+    crossSubjectPrerequisites: [],
     hub: { last: null, topics: {} },
   };
+}
+
+async function saveConceptLearningState(uid, conceptId, patch) {
+  const db = safeDb();
+  if (!db || !uid || !conceptId) return null;
+  try {
+    const ref = db.doc(`users/${uid}/conceptStates/${conceptId}`);
+    await ref.set({ ...patch, conceptId, updatedAt: Date.now() }, { merge: true });
+    return true;
+  } catch (_) {
+    return false;
+  }
+}
+
+async function saveLearningMemory(uid, patch) {
+  const db = safeDb();
+  if (!db || !uid) return null;
+  try {
+    const ref = db.doc(`users/${uid}/learning/memory`);
+    await ref.set({ ...patch, uid, updatedAt: Date.now() }, { merge: true });
+    return true;
+  } catch (_) {
+    return false;
+  }
 }
 
 async function loadStudentState(uid, { conceptId } = {}) {
@@ -577,17 +626,41 @@ async function loadStudentState(uid, { conceptId } = {}) {
   if (!db || !uid) return emptyState();
   try {
     const base = db.doc(`users/${uid}`);
-    const [profileSnap, masterySnap, reviewSnap, misconSnap, masteryList, hubSnap] = await Promise.all([
+    const [profileSnap, masterySnap, reviewSnap, misconSnap, masteryList, hubSnap, conceptStateSnap, memorySnap] = await Promise.all([
       base.collection("learning").doc("profile").get().catch(() => null),
       conceptId ? base.collection("mastery").doc(String(conceptId)).get().catch(() => null) : Promise.resolve(null),
       conceptId ? base.collection("reviews").doc(String(conceptId)).get().catch(() => null) : Promise.resolve(null),
       base.collection("misconceptions").where("resolved", "==", false).limit(10).get().catch(() => null),
       base.collection("mastery").limit(40).get().catch(() => null),
       base.collection("learning").doc(HUB_DOC).get().catch(() => null),
+      conceptId ? base.collection("conceptStates").doc(String(conceptId)).get().catch(() => null) : base.collection("conceptStates").limit(50).get().catch(() => null),
+      base.collection("learning").doc("memory").get().catch(() => null),
     ]);
     const profileData = profileSnap && profileSnap.exists ? profileSnap.data() : {};
     const masteryData = masterySnap && masterySnap.exists ? masterySnap.data() : null;
     const reviewData = reviewSnap && reviewSnap.exists ? reviewSnap.data() : null;
+    const conceptStateMap = {};
+    let conceptStateData = null;
+    if (conceptStateSnap) {
+      if (typeof conceptStateSnap.forEach === "function" && !conceptStateSnap.exists) {
+        conceptStateSnap.forEach((d) => {
+          const val = d.data() || {};
+          const id = val.conceptId || d.id;
+          if (id) conceptStateMap[id] = val;
+        });
+      } else if (conceptStateSnap.exists) {
+        conceptStateData = conceptStateSnap.data();
+        if (conceptId) conceptStateMap[conceptId] = conceptStateData;
+      }
+    }
+    const conceptState = {
+      ...conceptStateMap,
+      ...(conceptStateData || {}),
+    };
+    const memoryData = memorySnap && memorySnap.exists ? memorySnap.data() : {};
+    const learningMemory = memoryData.uid ? memoryData : createInitialLearningMemory(uid);
+    const crossSubjectPrerequisites = conceptId ? getCrossSubjectPrerequisites(conceptId) : [];
+
     const misconceptions = [];
     if (misconSnap) {
       misconSnap.forEach((d) => {
@@ -596,6 +669,7 @@ async function loadStudentState(uid, { conceptId } = {}) {
           conceptId: data.conceptId || d.id,
           label: clip(data.misconception, 180),
           correction: clip(data.correction, 300),
+          category: data.category || null,
         });
       });
     }
@@ -631,6 +705,26 @@ async function loadStudentState(uid, { conceptId } = {}) {
       normalizeBoardValue(profileData.exam) ||
       normalizeBoardValue(profileData.competitiveExam) ||
       null;
+
+    const calibratedMastery = calculateCalibratedMastery({
+      currentMastery: masteryData ? Number(masteryData.masteryScore) || 0.5 : 0.5,
+      currentConfidence: masteryData ? Number(masteryData.evidenceStrength) || 0 : 0,
+      evidenceList: masteryData && Array.isArray(masteryData.evidence) ? masteryData.evidence : [],
+      attempts: masteryData ? Number(masteryData.attempts) || 0 : 0,
+      lastReviewedAt: (reviewData && (reviewData.lastReviewed || reviewData.updatedAt)) || null,
+    });
+
+    const spacedRevision = calculateSpacedRevision({
+      conceptId,
+      masteryScore: calibratedMastery.masteryScore,
+      confidenceScore: calibratedMastery.confidenceScore,
+      difficulty: 0.5,
+      recentIncorrectCount: masteryData ? Number(masteryData.recentIncorrectCount) || 0 : 0,
+      lastReviewedAt: (reviewData && (reviewData.lastReviewed || reviewData.updatedAt)) || null,
+      reviewCount: reviewData ? Number(reviewData.reviewCount) || 0 : 0,
+      hasActiveMisconception: misconceptions.some((m) => m.conceptId === conceptId),
+    });
+
     return {
       profile: {
         board,
@@ -641,10 +735,15 @@ async function loadStudentState(uid, { conceptId } = {}) {
         weakTopics: strList(profileData.weakTopics, { maxItems: 10, maxLen: 80 }),
       },
       mastery: masteryData ? { ...masteryData } : null,
+      calibratedMastery,
       review: reviewData ? { ...reviewData } : null,
+      spacedRevision,
       misconceptions: misconceptions.slice(0, 6),
       weakConcepts: weakConcepts.slice(0, 5),
       masteryByConcept,
+      conceptState,
+      learningMemory,
+      crossSubjectPrerequisites,
       hub: {
         last: hubData.last || null,
         topics: hubData.topics && typeof hubData.topics === "object" ? hubData.topics : {},
@@ -793,9 +892,10 @@ Your job is to make ONE idea genuinely understood, not to write a long generic a
 
 Return ONLY a JSON object. No markdown fences, no prose outside the JSON. Shape:
 {
-  "kind": "short" | "lesson",
+  "kind": "short" | "lesson" | "guided" | "revision",
   "title": "short title",
   "directAnswer": "the actual answer, 1-4 sentences",
+  "keyIdea": "one clear sentence identifying the most important takeaway",
   "sections": [{ "heading": "short heading", "body": "2-5 sentences", "equation": "optional equation or null" }],
   "example": { "problem": "worked example or real application", "steps": ["step 1", "step 2"], "answer": "final answer" },
   "check": { "prompt": "one useful understanding-check question", "hint": "optional nudge", "answerKey": "a short model answer for the app's checker; never shown to the student" },
@@ -811,6 +911,7 @@ Rules:
 - Use kind "lesson" only when the concept genuinely needs explanation. 2-4 sections, each under ~90 words.
 - Answer the student's ACTUAL question first. Do not pad with unrelated syllabus content.
 - Adapt wording and depth to the supplied level, board, class and previously demonstrated understanding.
+- When an ASSIGNED TEACHING STRATEGY is provided (e.g. Real-World Analogy, Step-by-Step, Visual Demonstration), you MUST adhere strictly to that strategy. Do NOT default to a textbook definition.
 - For numerical problems show every step in example.steps and explain WHY each step is valid.
 - Include units and check the arithmetic. Do not state a result you have not verified.
 - Only choose a visualId from the supplied candidates. Use null if no visual helps. Never invent a visual id.
@@ -883,7 +984,26 @@ function isReplyRelevantToQuestion(reply, question, concept) {
   return true;
 }
 
-function contextBlock({ concept, trackId, classNum, language, level, state, history, summary, question, candidates, photosAllowed, stage, stageIndex, isTopicChange }) {
+function contextBlock({
+  concept,
+  trackId,
+  classNum,
+  language,
+  level,
+  state,
+  history,
+  summary,
+  question,
+  candidates,
+  photosAllowed,
+  stage,
+  stageIndex,
+  isTopicChange,
+  teachingStrategy,
+  pedagogicalAction,
+  crossSubjectPrereqs,
+  explanationAttempts = [],
+}) {
   const track = getTrack(trackId);
   const lines = [];
   if (isTopicChange) {
@@ -901,6 +1021,32 @@ function contextBlock({ concept, trackId, classNum, language, level, state, hist
   } else {
     lines.push("Curriculum concept: no exact match, answer from the question itself.");
   }
+
+  // Adaptive teaching strategy directive
+  if (teachingStrategy) {
+    lines.push(`ASSIGNED TEACHING STRATEGY: ${teachingStrategy.label} (${teachingStrategy.id})`);
+    lines.push(`STRATEGY DIRECTIVE: ${teachingStrategy.promptInstruction}`);
+  }
+
+  // Pedagogical action directive
+  if (pedagogicalAction) {
+    lines.push(`PEDAGOGICAL ACTION: ${pedagogicalAction.action} (${pedagogicalAction.reason})`);
+    if (pedagogicalAction.action === "reveal_with_reasoning") {
+      lines.push("CRITICAL DIRECTIVE: The student has explicitly requested the direct solution. Do NOT withhold it or respond with counter-questions. Reveal the answer immediately and follow with clear step-by-step reasoning.");
+    }
+  }
+
+  // Cross-subject links
+  if (Array.isArray(crossSubjectPrereqs) && crossSubjectPrereqs.length > 0) {
+    const cs = crossSubjectPrereqs[0];
+    lines.push(`CROSS-SUBJECT FOUNDATION: Connected to ${cs.targetSubject} (${cs.targetConceptId}). Rationale: ${cs.rationale}`);
+  }
+
+  // Prior attempted strategies
+  if (Array.isArray(explanationAttempts) && explanationAttempts.length > 0) {
+    lines.push(`EXPLANATION STRATEGIES PREVIOUSLY ATTEMPTED: ${explanationAttempts.join(", ")}. Do not repeat an already attempted strategy; use the assigned strategy.`);
+  }
+
   if (state && state.profile && state.profile.prioritySubject) lines.push(`Priority subject: ${state.profile.prioritySubject}`);
   if (state && state.weakConcepts && state.weakConcepts.length) {
     lines.push(`Recently weak topics: ${state.weakConcepts.map((w) => w.topic).join("; ")}`);
@@ -931,14 +1077,17 @@ function buildChatMessages(args) {
   ];
 }
 
-const TUTOR_EVALUATION_PROMPT = `You are evaluating a student's answer for Learning Allied. Be fair and specific.
+const TUTOR_EVALUATION_PROMPT = `You are evaluating a student's answer for Learning Allied. Be fair, encouraging, and pedagogically specific.
 
 Return ONLY JSON:
 {
   "verdict": "correct" | "partially_correct" | "incorrect",
   "whatWorked": ["specific thing the student got right"],
   "missing": ["specific idea that is missing or wrong"],
+  "actualMistake": "clear pinpoint of the exact error or null if correct",
+  "misconceptionCategory": "conceptual_misunderstanding" | "incorrect_formula_selection" | "incorrect_formula_application" | "calculation_error" | "unit_confusion" | "terminology_confusion" | "missing_prerequisite" | "incomplete_reasoning" | "misinterpretation_of_question" | "accidental_slip" | null,
   "misconception": null | { "label": "short name", "explanation": "why the student likely thinks this", "remediation": "what to do next" },
+  "correctReasoning": "demonstration of the correct method or formula",
   "feedback": "2-4 sentences addressed to the student",
   "next": { "difficulty": "easier" | "same" | "harder", "step": "retry" | "continue" | "explain_differently", "message": "one short instruction" }
 }
@@ -947,6 +1096,7 @@ Rules:
 - Judge correctness against the expected answer / rubric supplied, not against your own alternative method.
 - Accept a correct answer in different words. Ignore spelling and grammar.
 - "partially_correct" means the core idea is right but a key part is missing or an error remains; say exactly which part.
+- If the answer has an error, identify the underlying misconceptionCategory from the allowed list.
 - Only name a misconception when the answer actually shows that reasoning. Otherwise null.
 - Do not praise generically. Do not reveal the full answer before the student has tried.
 - Never claim to have run code, browsed, or viewed an image.`;
@@ -1051,7 +1201,7 @@ function normalizeCheck(value) {
   };
 }
 
-function normalizeChatReply(raw, { candidates, text, subject, level }) {
+function normalizeChatReply(raw, { candidates, text, subject, level, strategy, crossSubject }) {
   const o = raw && typeof raw === "object" && !Array.isArray(raw) ? raw : null;
   if (!o) return null;
   const sections = normalizeSections(o.sections);
@@ -1068,10 +1218,13 @@ function normalizeChatReply(raw, { candidates, text, subject, level }) {
     kind,
     title: clip(o.title, 120) || null,
     directAnswer,
+    keyIdea: o.keyIdea ? clipMultiline(o.keyIdea, 240) : null,
     sections: kind === "short" ? sections.slice(0, 2) : sections,
     example: kind === "short" ? null : normalizeExample(o.example),
     check: normalizeCheck(o.check),
     visual,
+    teachingStrategy: strategy ? { id: strategy.id, label: strategy.label } : (o.teachingStrategy || null),
+    crossSubjectLink: crossSubject || (o.crossSubjectLink || null),
     personalization: o.personalization ? clipMultiline(o.personalization, 260) : null,
     advanced: o.advanced && typeof o.advanced === "object" && o.advanced.body
       ? { heading: clip(o.advanced.heading, 90), body: clipMultiline(o.advanced.body, 800) }
@@ -1081,12 +1234,14 @@ function normalizeChatReply(raw, { candidates, text, subject, level }) {
   };
 }
 
-function normalizeGeneratedLesson(raw, { concept, level, candidates, trackLabel }) {
+function normalizeGeneratedLesson(raw, { concept, level, candidates, trackLabel, strategy, crossSubject }) {
   const reply = normalizeChatReply(raw, {
     candidates,
     text: concept ? `${concept.name} ${concept.topic}` : "",
     subject: concept ? concept.subject : "",
     level,
+    strategy,
+    crossSubject,
   });
   if (!reply) return null;
   const answerKey = clipMultiline(raw && raw.check && raw.check.answerKey, 600);
@@ -1103,6 +1258,9 @@ function normalizeGeneratedLesson(raw, { concept, level, candidates, trackLabel 
     version: `generated-v${GENERATION_VERSION}`,
     prerequisites: concept ? getPrerequisiteInfo(concept) : [],
     intro: reply.personalization || null,
+    keyIdea: reply.keyIdea || null,
+    teachingStrategy: reply.teachingStrategy || null,
+    crossSubjectLink: reply.crossSubjectLink || null,
     sections: reply.sections,
     keyTerms: [],
     workedExample: reply.example,
@@ -1152,7 +1310,11 @@ function chatCacheEligible({ question, intent, concept }) {
   return true;
 }
 
-async function chatTutor({ uid, body, state }) {
+async function chatTutor(params = {}) {
+  const uid = params.uid || params.userId || (params.body && (params.body.uid || params.body.userId)) || "anon";
+  const body = params.body || params || {};
+  const conceptId = body.conceptId || params.conceptId || null;
+  const state = params.state || (await loadStudentState(uid, { conceptId }));
   const startedAt = Date.now();
   const question = clipMultiline(body.question, MAX_QUESTION_CHARS);
   if (!question) throw fail(400, "A question is required.");
@@ -1177,6 +1339,28 @@ async function chatTutor({ uid, body, state }) {
     : [];
   const summary = body.summary ? clip(body.summary, 600) : "";
   const isTopicChange = detectTopicChange(question, history);
+
+  // Pedagogical action & teaching strategy selection
+  const explanationAttempts = (state.conceptState && state.conceptState.explanationAttempts) || [];
+  const lastStrategy = explanationAttempts.length > 0 ? explanationAttempts[explanationAttempts.length - 1] : null;
+
+  const pedagogicalAction = selectPedagogicalAction({
+    userPrompt: question,
+    concept: matched,
+    studentState: state,
+    history,
+  });
+
+  const teachingStrategy = selectTeachingStrategy({
+    studentState: state,
+    concept: matched,
+    query: question,
+    lastStrategy,
+    explanationAttempts,
+    explicitStrategy: body.strategy || (body.context && body.context.strategy) || null,
+  });
+
+  const crossSubjectPrereqs = matched ? getCrossSubjectPrerequisites(matched.conceptId) : [];
 
   // When no curriculum concept matched, a reviewed pack can still anchor a
   // generic topic (for example "explain photosynthesis"). This lets repeat
@@ -1229,6 +1413,10 @@ async function chatTutor({ uid, body, state }) {
     stage: (body.context && body.context.stage) || body.stage || null,
     stageIndex: typeof (body.context && body.context.stageIndex) === "number" ? body.context.stageIndex : typeof body.stageIndex === "number" ? body.stageIndex : null,
     isTopicChange,
+    teachingStrategy,
+    pedagogicalAction,
+    crossSubjectPrereqs,
+    explanationAttempts,
   });
   const result = await askJson(messages, {
     model: MODEL_STRONG,
@@ -1243,6 +1431,8 @@ async function chatTutor({ uid, body, state }) {
       text: `${question} ${matched ? matched.name : ""}`,
       subject,
       level,
+      strategy: teachingStrategy,
+      crossSubject: crossSubjectPrereqs.length > 0 ? crossSubjectPrereqs[0] : null,
     });
 
     const shouldValidateRelevance = intent !== "conversational" && result.model !== "test-model";
@@ -1269,6 +1459,8 @@ Do NOT explain unrelated topics. Keep the explanation focused, clear, and direct
           text: question,
           subject,
           level,
+          strategy: teachingStrategy,
+          crossSubject: crossSubjectPrereqs.length > 0 ? crossSubjectPrereqs[0] : null,
         });
         if (retryReply && isReplyRelevantToQuestion(retryReply, question, null)) {
           reply = retryReply;
@@ -1298,6 +1490,18 @@ Do NOT explain unrelated topics. Keep the explanation focused, clear, and direct
           usage: result.usage,
         });
       }
+
+      // Persist attempted strategy into concept state
+      if (matched && uid) {
+        const nextAttempts = [...explanationAttempts, teachingStrategy.id].slice(-8);
+        await saveConceptLearningState(uid, matched.conceptId, {
+          explanationAttempts: nextAttempts,
+          lastStrategy: teachingStrategy.id,
+          lastQuestion: question.slice(0, 200),
+          updatedAt: Date.now(),
+        });
+      }
+
       logMetric({
         event: "chat_generated",
         uid,
@@ -1346,6 +1550,8 @@ Do NOT explain unrelated topics. Keep the explanation focused, clear, and direct
       mastery: state.mastery,
       mode: "start",
       trackLabel: getTrack(trackId) ? getTrack(trackId).label : null,
+      strategy: teachingStrategy,
+      crossSubject: crossSubjectPrereqs.length > 0 ? crossSubjectPrereqs[0] : null,
     });
     const reply = {
       kind: "lesson",
@@ -1355,6 +1561,9 @@ Do NOT explain unrelated topics. Keep the explanation focused, clear, and direct
       example: lesson.workedExample,
       check: lesson.check,
       visual: lesson.visual,
+      keyIdea: lesson.keyIdea || null,
+      teachingStrategy: lesson.teachingStrategy || null,
+      crossSubjectLink: lesson.crossSubjectLink || null,
       personalization: null,
       advanced: null,
       level,
@@ -1377,6 +1586,8 @@ Do NOT explain unrelated topics. Keep the explanation focused, clear, and direct
       mastery: state.mastery,
       mode: "start",
       trackLabel: getTrack(trackId) ? getTrack(trackId).label : null,
+      strategy: teachingStrategy,
+      crossSubject: crossSubjectPrereqs.length > 0 ? crossSubjectPrereqs[0] : null,
     });
     const reply = {
       kind: "lesson",
@@ -1386,6 +1597,9 @@ Do NOT explain unrelated topics. Keep the explanation focused, clear, and direct
       example: lesson.workedExample,
       check: lesson.check,
       visual: lesson.visual,
+      keyIdea: lesson.keyIdea || null,
+      teachingStrategy: lesson.teachingStrategy || null,
+      crossSubjectLink: lesson.crossSubjectLink || null,
       personalization: null,
       advanced: null,
       level,
@@ -1454,9 +1668,10 @@ async function findTrustedPhoto(query) {
 
 /* ── adaptive lesson (Learning Hub) ──────────────────────────────────────── */
 
-function resolveTopic(body) {
-  const track = getTrack(body.track || body.trackId);
-  const concept = body.conceptId ? getConcept(body.conceptId) : null;
+function resolveTopic(body = {}) {
+  const b = body || {};
+  const track = getTrack(b.track || b.trackId);
+  const concept = b.conceptId ? getConcept(b.conceptId) : null;
   if (concept) {
     const derivedTrack = getTrack(concept.conceptId.split(".")[0] === "jee" ? `jee_${concept.conceptId.split(".")[1] === "advanced" ? "advanced" : "main"}` : concept.conceptId.split(".")[0]);
     const derivedClass = Number.parseInt(String(concept.conceptId.split(".")[1] || ""), 10);
@@ -1509,7 +1724,11 @@ function completionFor(attempts, level) {
   };
 }
 
-async function lessonTutor({ uid, body, state }) {
+async function lessonTutor(params = {}) {
+  const uid = params.uid || params.userId || (params.body && (params.body.uid || params.body.userId)) || "anon";
+  const body = params.body || params || {};
+  const conceptId = body.conceptId || params.conceptId || null;
+  const state = params.state || (await loadStudentState(uid, { conceptId }));
   const startedAt = Date.now();
   const { concept, trackId, classNum, subject } = resolveTopic(body);
   if (!concept) throw fail(404, "That chapter is not in the curriculum dataset for this selection.");
@@ -1550,8 +1769,33 @@ async function lessonTutor({ uid, body, state }) {
   let cached = false;
   let generatedCacheKey = null;
 
+  const explanationAttempts = (state.conceptState && state.conceptState.explanationAttempts) || [];
+  const lastStrategy = explanationAttempts.length > 0 ? explanationAttempts[explanationAttempts.length - 1] : null;
+
+  const teachingStrategy = selectTeachingStrategy({
+    studentState: state,
+    concept,
+    query: body.focus || "",
+    lastStrategy,
+    verdict: attempts.length ? attempts[attempts.length - 1].verdict : null,
+    explanationAttempts,
+    explicitStrategy: body.strategy || null,
+  });
+
+  const crossSubjectPrereqs = concept ? getCrossSubjectPrerequisites(concept.conceptId) : [];
+
   if (pack) {
-    lesson = buildReusableLesson({ pack, concept, level, attempts, mastery: state.mastery, mode, trackLabel });
+    lesson = buildReusableLesson({
+      pack,
+      concept,
+      level,
+      attempts,
+      mastery: state.mastery,
+      mode,
+      trackLabel,
+      strategy: teachingStrategy,
+      crossSubject: crossSubjectPrereqs.length > 0 ? crossSubjectPrereqs[0] : null,
+    });
     lesson.reviewed = true;
     lesson.scope = { trackId, classNum, subject };
   } else {
@@ -1593,11 +1837,22 @@ async function lessonTutor({ uid, body, state }) {
         candidates,
         stage: STAGES[initialStageIndex],
         stageIndex: initialStageIndex,
+        teachingStrategy,
+        pedagogicalAction: { action: "explain", reason: "Structured lesson instruction" },
+        crossSubjectPrereqs,
+        explanationAttempts,
       });
       const result = await askJson(messages, { model: MODEL_STRONG, temperature: 0.45, maxTokens: 1700, timeoutMs: 22000 });
       aiCalls = 1;
       if (result) {
-        const generated = normalizeGeneratedLesson(result.parsed, { concept, level, candidates, trackLabel });
+        const generated = normalizeGeneratedLesson(result.parsed, {
+          concept,
+          level,
+          candidates,
+          trackLabel,
+          strategy: teachingStrategy,
+          crossSubject: crossSubjectPrereqs.length > 0 ? crossSubjectPrereqs[0] : null,
+        });
         if (generated) {
           generated.scope = { trackId, classNum, subject };
           if (generatedCacheable) {
@@ -1732,13 +1987,16 @@ async function lessonTutor({ uid, body, state }) {
 
 /* ── evaluation (shared by Chat and Hub) ─────────────────────────────────── */
 
-function normalizeEvaluation(raw, { packQuestion, pack, verdictBasis }) {
+function normalizeEvaluation(raw, { packQuestion, pack, verdictBasis, studentAnswer, question, concept }) {
   const o = raw && typeof raw === "object" ? raw : {};
   const allowed = new Set(["correct", "partially_correct", "incorrect"]);
   const rawVerdict = String(o.verdict || "").toLowerCase();
   const verdict = allowed.has(rawVerdict) ? rawVerdict : "unknown";
   const whatWorked = strList(o.whatWorked, { maxItems: 4, maxLen: 220 });
   const missing = strList(o.missing, { maxItems: 4, maxLen: 220 });
+  const actualMistake = clipMultiline(o.actualMistake, 300) || null;
+  const correctReasoning = clipMultiline(o.correctReasoning, 600) || null;
+
   let misconception = null;
   if (o.misconception && typeof o.misconception === "object") {
     const label = clip(o.misconception.label, 160);
@@ -1755,6 +2013,30 @@ function normalizeEvaluation(raw, { packQuestion, pack, verdictBasis }) {
       };
     }
   }
+
+  // Fallback or enhance with 10-category classifier
+  const classified = (verdict !== "correct" && verdict !== "unknown")
+    ? classifyMisconception({
+        studentAnswer,
+        expected: packQuestion ? packQuestion.expected : "",
+        question,
+        concept,
+        rawMisconception: misconception,
+        verdict,
+      })
+    : null;
+
+  const misconceptionCategory = (classified && classified.category) || clip(o.misconceptionCategory, 60) || null;
+  if (classified && !misconception) {
+    misconception = {
+      id: classified.id,
+      label: classified.label,
+      explanation: classified.explanation,
+      remediation: classified.remediation,
+      verified: false,
+    };
+  }
+
   const next = o.next && typeof o.next === "object" ? o.next : {};
   const nextDifficulty = String(next.difficulty || "").toLowerCase();
   const nextStep = String(next.step || "").toLowerCase();
@@ -1762,7 +2044,10 @@ function normalizeEvaluation(raw, { packQuestion, pack, verdictBasis }) {
     verdict,
     whatWorked,
     missing,
+    actualMistake: actualMistake || (classified ? classified.explanation : null),
+    misconceptionCategory,
     misconception,
+    correctReasoning: correctReasoning || (classified ? classified.remediation : null) || (packQuestion ? packQuestion.explanation : null),
     feedback: clipMultiline(o.feedback, 900) || (verdict === "correct" ? "That is correct. " : ""),
     next: {
       difficulty: ["easier", "same", "harder"].includes(nextDifficulty) ? nextDifficulty : verdict === "correct" ? "harder" : "same",
@@ -1778,12 +2063,32 @@ function normalizeEvaluation(raw, { packQuestion, pack, verdictBasis }) {
   };
 }
 
-function authoredEvaluation({ verdict, packQuestion, misconception }) {
+function authoredEvaluation({ verdict, packQuestion, misconception, studentAnswer, question, concept }) {
+  const classified = (verdict !== "correct")
+    ? classifyMisconception({
+        studentAnswer,
+        expected: packQuestion ? packQuestion.expected : "",
+        question,
+        concept,
+        rawMisconception: misconception,
+        verdict,
+      })
+    : null;
+
   return {
     verdict,
-    whatWorked: [],
-    missing: [],
-    misconception: misconception || null,
+    whatWorked: verdict === "correct" ? ["Your answer matches the key idea for this question."] : [],
+    missing: verdict !== "correct" ? ["Key scientific reasoning is missing or incomplete."] : [],
+    actualMistake: classified ? classified.explanation : null,
+    misconceptionCategory: classified ? classified.category : null,
+    misconception: misconception || (classified ? {
+      id: classified.id,
+      label: classified.label,
+      explanation: classified.explanation,
+      remediation: classified.remediation,
+      verified: true,
+    } : null),
+    correctReasoning: packQuestion ? clipMultiline(packQuestion.explanation, 600) : null,
     feedback:
       verdict === "correct"
         ? `Correct. ${clipMultiline(packQuestion.explanation, 500)}`
@@ -1798,7 +2103,11 @@ function authoredEvaluation({ verdict, packQuestion, misconception }) {
   };
 }
 
-async function evaluateTutor({ uid, body, state }) {
+async function evaluateTutor(params = {}) {
+  const uid = params.uid || params.userId || (params.body && (params.body.uid || params.body.userId)) || "anon";
+  const body = params.body || params || {};
+  const conceptId = body.conceptId || params.conceptId || null;
+  const state = params.state || (await loadStudentState(uid, { conceptId }));
   const startedAt = Date.now();
   const { concept } = resolveTopic(body);
   const studentAnswer = clipMultiline(body.answer, MAX_ANSWER_CHARS);
@@ -1846,13 +2155,20 @@ async function evaluateTutor({ uid, body, state }) {
     const packMisconception = packQuestion.misconceptionId && pack
       ? (pack.misconceptions || []).find((m) => m.id === packQuestion.misconceptionId)
       : null;
-    const primary = authoredEvaluation({ verdict: "correct", packQuestion, misconception: packMisconception ? {
-      id: packMisconception.id,
-      label: packMisconception.label,
-      explanation: packMisconception.explanation,
-      remediation: packMisconception.remediation,
-      verified: true,
-    } : null });
+    const primary = authoredEvaluation({
+      verdict: "correct",
+      packQuestion,
+      misconception: packMisconception ? {
+        id: packMisconception.id,
+        label: packMisconception.label,
+        explanation: packMisconception.explanation,
+        remediation: packMisconception.remediation,
+        verified: true,
+      } : null,
+      studentAnswer,
+      question,
+      concept,
+    });
     evaluation = { ...primary, basis: deterministic.basis };
     evaluation.whatWorked = ["Your answer matches the key idea for this question."];
   }
@@ -1874,6 +2190,9 @@ async function evaluateTutor({ uid, body, state }) {
         packQuestion,
         pack,
         verdictBasis: "ai",
+        studentAnswer,
+        question,
+        concept,
       });
       evaluation.aiModel = result.model;
       evaluation.usage = result.usage;
@@ -1892,6 +2211,9 @@ async function evaluateTutor({ uid, body, state }) {
           misconception: packMisconception
             ? { id: packMisconception.id, label: packMisconception.label, explanation: packMisconception.explanation, remediation: packMisconception.remediation, verified: true }
             : null,
+          studentAnswer,
+          question,
+          concept,
         }),
         basis: deterministic.basis,
       };
@@ -1900,7 +2222,10 @@ async function evaluateTutor({ uid, body, state }) {
         verdict: "unknown",
         whatWorked: [],
         missing: [],
+        actualMistake: null,
+        misconceptionCategory: null,
         misconception: null,
+        correctReasoning: null,
         feedback:
           "I could not evaluate this answer automatically right now. I am not going to guess whether it is correct. Retry in a moment, or compare your reasoning with the key idea below.",
         next: { difficulty: "same", step: "retry", message: "Retry the evaluation." },
@@ -1927,6 +2252,56 @@ async function evaluateTutor({ uid, body, state }) {
   const summary = completionFor(nextAttempts, level);
   const nextLevel =
     evaluation.verdict === "correct" && summary.completed ? (level === "foundation" ? "intermediate" : level === "intermediate" ? "advanced" : "advanced") : level;
+
+  // Calibrated Concept Mastery & Spaced Revision updates
+  const currentEvidence = [
+    ...((state.mastery && state.mastery.evidence) || []),
+    ...nextAttempts.map((a) => ({ verdict: a.verdict, difficulty: a.difficulty, correct: a.verdict === "correct" }))
+  ];
+  const calibratedMastery = calculateCalibratedMastery({
+    currentMastery: state.mastery ? state.mastery.masteryScore : 0.5,
+    currentConfidence: state.mastery ? state.mastery.evidenceStrength : 0,
+    evidenceList: currentEvidence,
+    attempts: currentEvidence.length,
+    lastVerdict: evaluation.verdict,
+    difficulty: Number(body.difficulty) || difficultyTarget(level),
+    resolvedMisconception: evaluation.verdict === "correct" && state.misconceptions && state.misconceptions.some((m) => m.conceptId === (concept ? concept.conceptId : null)),
+    lastReviewedAt: (state.review && (state.review.lastReviewed || state.review.nextReviewAt)) || null,
+  });
+
+  const spacedRevision = calculateSpacedRevision({
+    conceptId: concept ? concept.conceptId : null,
+    masteryScore: calibratedMastery.masteryScore,
+    confidenceScore: calibratedMastery.confidenceScore,
+    difficulty: concept ? concept.difficulty : 0.5,
+    recentIncorrectCount: evaluation.verdict === "incorrect" ? 1 : 0,
+    hasActiveMisconception: !!evaluation.misconception,
+  });
+
+  evaluation.calibratedMastery = calibratedMastery;
+  evaluation.spacedRevision = spacedRevision;
+
+  // Persist updated concept state and memory
+  if (concept && uid) {
+    const priorAttempts = (state.conceptState && state.conceptState[concept.conceptId] && state.conceptState[concept.conceptId].attempts) || 0;
+    await saveConceptLearningState(uid, concept.conceptId, {
+      conceptId: concept.conceptId,
+      attempts: priorAttempts + 1,
+      lastVerdict: evaluation.verdict,
+      calibratedMastery,
+      spacedRevision,
+      lastStudiedAt: new Date().toISOString(),
+    });
+  }
+
+  // Record successful teaching approach if student recovered
+  if (concept && uid && evaluation.verdict === "correct" && state.conceptState && (state.conceptState.lastStrategy || (state.conceptState[concept.conceptId] && state.conceptState[concept.conceptId].lastStrategy))) {
+    await saveLearningMemory(uid, {
+      [`successfulTeachingApproaches.${concept.conceptId}`]: state.conceptState.lastStrategy,
+      [`preferredStrategies.${(concept.subject || "general").toLowerCase()}`]: state.conceptState.lastStrategy,
+      lastUpdated: new Date().toISOString(),
+    });
+  }
 
   if (concept && body.surface !== "chat" && evaluation.verdict !== "unknown") {
     const status = summary.completed ? "completed" : evaluation.verdict === "correct" ? "practising" : "needs_support";
@@ -1957,7 +2332,13 @@ async function evaluateTutor({ uid, body, state }) {
     session: summary,
     nextLevel,
     attempts: nextAttempts,
-    state: { mastery: masterySummary(state.mastery) },
+    calibratedMastery,
+    spacedRevision,
+    state: {
+      mastery: masterySummary(state.mastery),
+      calibratedMastery,
+      spacedRevision,
+    },
     meta: {
       aiCalls,
       model: evaluation.aiModel || null,
@@ -1965,9 +2346,6 @@ async function evaluateTutor({ uid, body, state }) {
       latencyMs: Date.now() - startedAt,
       source: evaluation.basis,
     },
-    // The client records this through the existing server-authoritative pipeline.
-    // An unevaluated answer is never recorded as wrong: that would punish the
-    // student for a provider outage.
     learningEvent:
       concept && evaluation.verdict !== "unknown"
         ? {
@@ -1990,7 +2368,10 @@ async function evaluateTutor({ uid, body, state }) {
 
 /* ── catalog + state actions ─────────────────────────────────────────────── */
 
-async function catalogAction({ uid, body, state }) {
+async function catalogAction(params = {}) {
+  const uid = params.uid || params.userId || (params.body && (params.body.uid || params.body.userId)) || "anon";
+  const body = params.body || params || {};
+  const state = params.state || (await loadStudentState(uid));
   const requestedTrack = body.track || null;
   const classNum = Number(body.classNum) || null;
   const requestedSubject = body.subject || null;
@@ -2006,6 +2387,7 @@ async function catalogAction({ uid, body, state }) {
   if (catalog.step === "chapter" && Array.isArray(catalog.chapters)) {
     catalog.chapters = catalog.chapters.map((c) => ({
       ...c,
+      crossSubjectPrerequisites: getCrossSubjectPrerequisites(c.conceptId),
       progress: topics[c.conceptId]
         ? { status: topics[c.conceptId].status || null, lastVerdict: topics[c.conceptId].lastVerdict || null }
         : null,
@@ -2020,7 +2402,11 @@ async function catalogAction({ uid, body, state }) {
   };
 }
 
-async function stateAction({ uid, body, state }) {
+async function stateAction(params = {}) {
+  const uid = params.uid || params.userId || (params.body && (params.body.uid || params.body.userId)) || "anon";
+  const body = params.body || params || {};
+  const conceptId = body.conceptId || params.conceptId || null;
+  const state = params.state || (await loadStudentState(uid, { conceptId }));
   const concept = body.conceptId ? getConcept(body.conceptId) : null;
   const resolved = concept ? resolveTopic({ conceptId: concept.conceptId, track: body.track, classNum: body.classNum }) : null;
   const trackId = getTrack(body.track) ? body.track : resolved && resolved.trackId ? resolved.trackId : null;
@@ -2029,6 +2415,7 @@ async function stateAction({ uid, body, state }) {
   return {
     profile: state.profile,
     mastery: masterySummary(state.mastery),
+    calibratedMastery: state.calibratedMastery || null,
     review: state.review
       ? {
           state: state.review.reviewState || null,
@@ -2036,9 +2423,13 @@ async function stateAction({ uid, body, state }) {
           intervalDays: state.review.intervalDays || null,
         }
       : null,
+    spacedRevision: state.spacedRevision || null,
     misconceptions: state.misconceptions,
     weakConcepts: state.weakConcepts,
     hub: state.hub,
+    conceptState: state.conceptState || null,
+    learningMemory: state.learningMemory || null,
+    crossSubjectPrerequisites: state.crossSubjectPrerequisites || [],
     nextChapter: next,
     meta: { aiCalls: 0, cached: false, latencyMs: 0 },
   };
@@ -2056,6 +2447,22 @@ module.exports = {
   loadStudentState,
   loadHubProgress,
   saveHubTopic,
+  saveConceptLearningState,
+  saveLearningMemory,
+  // Adaptive Intelligence Engine exports
+  TEACHING_STRATEGIES,
+  selectTeachingStrategy,
+  MISCONCEPTION_CATEGORIES,
+  classifyMisconception,
+  calculateCalibratedMastery,
+  PEDAGOGICAL_ACTIONS,
+  selectPedagogicalAction,
+  CROSS_SUBJECT_GRAPH,
+  getCrossSubjectPrerequisites,
+  SPACED_INTERVALS_DAYS,
+  calculateSpacedRevision,
+  createInitialLearningMemory,
+  normalizeAdaptiveReply,
   // exported for tests
   selectVisualCandidates,
   clampVisualParams,

@@ -618,3 +618,59 @@
   .learn-mastery-bar span { transition: none; }
   * { scroll-behavior: auto !important; }
 }
+
+/* ── Adaptive Intelligence additions ─────────────────────────────────────── */
+.learn-key-idea {
+  margin: 6px 0;
+  padding: 10px 14px;
+  background: var(--bg-elevated);
+  border-left: 3px solid var(--accent);
+  border-radius: 0 8px 8px 0;
+  font-size: 13.5px;
+  line-height: 1.6;
+  color: var(--text-primary);
+}
+.learn-key-idea strong {
+  color: var(--accent);
+  margin-right: 4px;
+}
+.learn-cross-subject {
+  margin: 6px 0;
+  padding: 10px 12px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.learn-cross-subject p {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--text-secondary);
+}
+.learn-mistake {
+  background: rgba(239, 68, 68, 0.06);
+  border-left: 3px solid #ef4444;
+  padding: 8px 12px;
+  border-radius: 0 6px 6px 0;
+  margin: 6px 0;
+}
+.learn-mistake p {
+  margin: 4px 0 0;
+  font-size: 13px;
+  color: var(--text-primary);
+}
+.learn-correct-reasoning {
+  background: rgba(34, 197, 94, 0.06);
+  border-left: 3px solid #22c55e;
+  padding: 8px 12px;
+  border-radius: 0 6px 6px 0;
+  margin: 6px 0;
+}
+.learn-correct-reasoning p {
+  margin: 4px 0 0;
+  font-size: 13px;
+  color: var(--text-primary);
+}
