@@ -39,6 +39,22 @@ const nextConfig = {
         destination: 'https://www.learningallied.world/:path*',
         permanent: true,
       },
+      // Permanent 308 redirects from legacy duplicate .html URLs to preferred canonical URLs
+      {
+        source: '/index.html',
+        destination: '/',
+        permanent: true,
+      },
+      {
+        source: '/blog/how-to-make-a-jee-study-plan.html',
+        destination: '/blog/how-to-make-a-jee-study-plan',
+        permanent: true,
+      },
+      {
+        source: '/:page(about|admin|arena|cbse-board|chat|chat-history|founder|home|jee-preparation|learning-hub|login|maharashtra-board|neet-preparation|onboarding|planner|planner-onboarding|profile|quiz|review|settings|signup|study-session|subscription|verify-email).html',
+        destination: '/:page',
+        permanent: true,
+      },
     ];
   },
   async rewrites() {

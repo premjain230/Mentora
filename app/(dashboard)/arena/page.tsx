@@ -5,7 +5,10 @@ import "@/css/pages/arena.css";
 
 export const metadata: Metadata = {
   title: "Arena",
-  robots: { index: false, follow: false },
+  robots: { index: false, follow: true },
+  alternates: {
+    canonical: "https://www.learningallied.world/arena",
+  },
 };
 
 export default function ArenaPage() {

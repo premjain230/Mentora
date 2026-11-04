@@ -5,7 +5,10 @@ import "@/css/learning-hub.css";
 
 export const metadata: Metadata = {
   title: "AI Learning Hub",
-  robots: { index: false, follow: false },
+  robots: { index: false, follow: true },
+  alternates: {
+    canonical: "https://www.learningallied.world/learning-hub",
+  },
 };
 
 export default function LearningHubPage() {

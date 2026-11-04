@@ -5,7 +5,10 @@ import "@/css/pages/settings.css";
 
 export const metadata: Metadata = {
   title: "Settings",
-  robots: { index: false, follow: false },
+  robots: { index: false, follow: true },
+  alternates: {
+    canonical: "https://www.learningallied.world/settings",
+  },
 };
 
 export default function SettingsPage() {

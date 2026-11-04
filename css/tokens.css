@@ -144,6 +144,32 @@
   --content-max: 1080px;
   --content-wide: 1200px;
 
+  /* ─── Page layout ─────────────────────────────────────────────────────────── */
+  --page-pad-x: 28px;
+  --page-pad-y: 32px;
+  --page-pad: var(--page-pad-y) var(--page-pad-x);
+  --content-pad: 32px 28px 48px;
+
+  /* ─── Typography weights ───────────────────────────────────────────────────── */
+  --fw-normal: 400;
+  --fw-medium: 500;
+  --fw-semibold: 600;
+  --fw-bold: 700;
+
+  /* ─── Transition shortcuts ─────────────────────────────────────────────────── */
+  --transition-fast: 0.15s ease;
+  --transition-med: 0.18s ease;
+  --transition-slow: 0.25s ease;
+
+  /* ─── Z-index scale ────────────────────────────────────────────────────────── */
+  --z-base: 1;
+  --z-raised: 10;
+  --z-overlay: 20;
+  --z-sidebar: 30;
+  --z-modal: 40;
+  --z-toast: 50;
+  --z-top: 100;
+
   /* ─── Ambient texture ─────────────────────────────────────────────────────── */
   --texture-veil: 0;
   --texture-island: 0;
@@ -229,6 +255,7 @@
 
   --accent-blue: #2563eb;
   --accent-blue-soft: rgba(37, 99, 235, 0.10);
+  --theme-icon: #d97706;
 
   /* ─── Pill buttons ────────────────────────────────────────────────────────── */
   --pill-bg: #111111;

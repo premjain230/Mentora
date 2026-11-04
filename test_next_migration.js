@@ -158,6 +158,30 @@ standalonePrivatePages.forEach((pagePath) => {
   });
 });
 
+// 5B. Verify Technical SEO & Redirects for .html duplicates and robots
+test('next.config.mjs configures permanent 308 redirects for .html routes', () => {
+  const nextConfig = fs.readFileSync(path.join(__dirname, 'next.config.mjs'), 'utf8');
+  assert(nextConfig.includes('/index.html'), 'Missing /index.html redirect');
+  assert(nextConfig.includes(':page('), 'Missing regex .html redirect pattern');
+});
+
+test('Standalone auth & onboarding layouts ensure noindex protection and canonical URLs', () => {
+  const authLayouts = [
+    'app/login/layout.tsx',
+    'app/signup/layout.tsx',
+    'app/onboarding/layout.tsx',
+    'app/planner-onboarding/layout.tsx',
+    'app/verify-email/layout.tsx',
+  ];
+  authLayouts.forEach((layoutPath) => {
+    assert(fs.existsSync(path.join(__dirname, layoutPath)), `Missing layout: ${layoutPath}`);
+    const content = fs.readFileSync(path.join(__dirname, layoutPath), 'utf8');
+    assert(content.includes('index: false'), `${layoutPath} must be noindex`);
+    assert(content.includes('follow: true'), `${layoutPath} must allow follow`);
+    assert(content.includes('canonical'), `${layoutPath} must define canonical URL`);
+  });
+});
+
 // 6. Verify API Route Handlers exist and preserve backend contracts
 const apiRoutes = [
   'app/api/firebase-config/route.ts',

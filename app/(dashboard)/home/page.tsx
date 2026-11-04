@@ -5,7 +5,10 @@ import "@/css/pages/home.css";
 
 export const metadata: Metadata = {
   title: "Home",
-  robots: { index: false, follow: false },
+  robots: { index: false, follow: true },
+  alternates: {
+    canonical: "https://www.learningallied.world/home",
+  },
 };
 
 export default function HomePage() {

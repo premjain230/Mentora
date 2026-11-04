@@ -5,7 +5,10 @@ import "@/css/pages/review.css";
 
 export const metadata: Metadata = {
   title: "Today's Review",
-  robots: { index: false, follow: false },
+  robots: { index: false, follow: true },
+  alternates: {
+    canonical: "https://www.learningallied.world/review",
+  },
 };
 
 export default function ReviewPage() {

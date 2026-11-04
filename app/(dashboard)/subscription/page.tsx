@@ -5,7 +5,10 @@ import "@/css/pages/subscription.css";
 
 export const metadata: Metadata = {
   title: "Subscription & Plans",
-  robots: { index: false, follow: false },
+  robots: { index: false, follow: true },
+  alternates: {
+    canonical: "https://www.learningallied.world/subscription",
+  },
 };
 
 export default function SubscriptionPage() {

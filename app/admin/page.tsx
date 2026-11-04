@@ -8,6 +8,9 @@ export const metadata: Metadata = {
     index: false,
     follow: false,
   },
+  alternates: {
+    canonical: "https://www.learningallied.world/admin",
+  },
 };
 
 export default function AdminPage() {

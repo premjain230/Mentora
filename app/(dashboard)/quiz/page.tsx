@@ -5,7 +5,10 @@ import "@/css/pages/quiz.css";
 
 export const metadata: Metadata = {
   title: "Adaptive Quiz",
-  robots: { index: false, follow: false },
+  robots: { index: false, follow: true },
+  alternates: {
+    canonical: "https://www.learningallied.world/quiz",
+  },
 };
 
 export default function QuizPage() {

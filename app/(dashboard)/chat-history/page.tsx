@@ -5,7 +5,10 @@ import "@/css/pages/chat-history.css";
 
 export const metadata: Metadata = {
   title: "Chat History",
-  robots: { index: false, follow: false },
+  robots: { index: false, follow: true },
+  alternates: {
+    canonical: "https://www.learningallied.world/chat-history",
+  },
 };
 
 export default function ChatHistoryPage() {

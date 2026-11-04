@@ -8,7 +8,7 @@
   flex: 1 1 auto;
   min-height: 0;
   overflow-y: auto;
-  padding: 48px 24px 72px;
+  padding: 32px 24px 64px;
 }
 
 .page-subscription .subscription-content::-webkit-scrollbar {
@@ -30,7 +30,7 @@
 }
 
 .page-subscription .page-header h1 {
-  font: 700 28px/1.2 var(--font-display);
+  font: 700 var(--fs-2xl, 24px)/1.2 var(--font-display);
   letter-spacing: -0.03em;
   margin-bottom: 8px;
   color: var(--text-primary);
@@ -595,6 +595,25 @@
   }
 }
 
+
+/* ── Responsive ─────────────────────────────────────────────────────────── */
+@media (max-width: 1024px) {
+  .page-subscription .subscription-content {
+    padding: 28px 20px 64px;
+  }
+}
+@media (max-width: 640px) {
+  .page-subscription .subscription-content {
+    padding: 20px 16px 56px;
+  }
+  .page-subscription .subscription-inner {
+    max-width: 100%;
+  }
+  .page-subscription .usage-grid {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+}
 
 /* ── Light Mode Refinement (Apple × Craft) ────────────────────────────────── */
 .light-mode .page-subscription .usage-card,

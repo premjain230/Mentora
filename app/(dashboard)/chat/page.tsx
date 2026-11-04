@@ -5,7 +5,10 @@ import "@/css/pages/chat.css";
 
 export const metadata: Metadata = {
   title: "AI Tutor Chat",
-  robots: { index: false, follow: false },
+  robots: { index: false, follow: true },
+  alternates: {
+    canonical: "https://www.learningallied.world/chat",
+  },
 };
 
 export default function ChatPage() {

@@ -167,6 +167,23 @@ p { color: var(--text-secondary); line-height: var(--lh-relaxed); }
   color: var(--text-secondary);
 }
 .btn-ghost:hover { background: var(--bg-hover); color: var(--text-primary); border-color: var(--border-hover); }
+/* Primary accent button (blue background) */
+.btn-accent {
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent);
+}
+.btn-accent:hover { background: var(--accent-strong); border-color: var(--accent-strong); opacity: 1; }
+
+/* Tertiary (text only) */
+.btn-text {
+  background: transparent;
+  color: var(--text-secondary);
+  border-color: transparent;
+  padding: 0 var(--space-2);
+  min-height: 36px;
+}
+.btn-text:hover { color: var(--text-primary); background: var(--bg-hover); opacity: 1; }
 
 .btn-danger {
   background: var(--pm-bad-soft, var(--accent3-soft, rgba(248, 113, 113, 0.10)));
@@ -214,6 +231,41 @@ textarea.field { padding: var(--space-3) var(--space-4); min-height: 96px; resiz
 .card:hover { border-color: var(--border-strong); }
 .light-mode .card:hover { box-shadow: var(--shadow-sm); }
 .card-pad { padding: var(--space-5); }
+/* Elevated card — slightly raised surface */
+.card-elevated {
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+}
+
+/* Interactive card */
+.card-interactive {
+  cursor: pointer;
+  text-decoration: none;
+  display: block;
+  color: inherit;
+}
+.card-interactive:hover {
+  border-color: var(--border-strong);
+}
+.light-mode .card-interactive:hover {
+  box-shadow: var(--shadow-sm);
+}
+
+/* Card sections */
+.card-header {
+  padding: var(--space-5);
+  border-bottom: 1px solid var(--border);
+}
+.card-body {
+  padding: var(--space-5);
+}
+.card-footer {
+  padding: var(--space-4) var(--space-5);
+  border-top: 1px solid var(--border);
+  background: var(--bg-elevated);
+  border-radius: 0 0 var(--radius-xl) var(--radius-xl);
+}
 
 /* ── Toasts ── */
 .toast {
@@ -236,6 +288,119 @@ textarea.field { padding: var(--space-3) var(--space-4); min-height: 96px; resiz
 .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 .toast.error { border-color: rgba(248, 113, 113, 0.5); }
 .toast.success { border-color: rgba(74, 222, 128, 0.5); }
+/* ── Badges & Tags ── */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  line-height: 1.6;
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+}
+.badge-blue { background: var(--accent-soft); color: var(--accent); }
+.badge-green { background: var(--green-soft); color: var(--green); }
+.badge-amber { background: rgba(245, 158, 11, 0.12); color: var(--amber); }
+.badge-red { background: rgba(239, 68, 68, 0.12); color: var(--rose); }
+.badge-neutral { background: var(--bg-elevated); color: var(--text-secondary); border: 1px solid var(--border); }
+
+/* ── Dividers ── */
+.divider {
+  height: 1px;
+  background: var(--border);
+  margin: var(--space-5) 0;
+}
+.divider-subtle {
+  height: 1px;
+  background: var(--border-subtle);
+  margin: var(--space-4) 0;
+}
+
+/* ── Progress bars ── */
+.progress-bar {
+  width: 100%;
+  height: 4px;
+  background: var(--border);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+}
+.progress-bar-fill {
+  height: 100%;
+  border-radius: var(--radius-full);
+  background: var(--accent);
+  transition: width 0.4s var(--ease-out);
+}
+.progress-bar-fill.green { background: var(--green); }
+.progress-bar-fill.amber { background: var(--amber); }
+.progress-bar-fill.red { background: var(--rose); }
+
+/* Circular progress */
+.progress-ring {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+/* ── Skeleton loaders ── */
+.skeleton {
+  background: var(--bg-elevated);
+  border-radius: var(--radius-sm);
+  position: relative;
+  overflow: hidden;
+}
+.skeleton::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.04),
+    transparent
+  );
+  animation: shimmer 1.5s ease infinite;
+}
+.light-mode .skeleton::after {
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.6),
+    transparent
+  );
+}
+@keyframes shimmer {
+  to { transform: translateX(100%); }
+}
+
+/* ── Page section header ── */
+.page-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-4);
+  margin-bottom: var(--space-6);
+  flex-wrap: wrap;
+}
+.page-title {
+  font-family: var(--font-display);
+  font-size: var(--fs-2xl);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: var(--lh-tight);
+  color: var(--text-primary);
+  margin: 0;
+}
+.page-sub {
+  margin: 6px 0 0;
+  font-size: var(--fs-base);
+  color: var(--text-secondary);
+  line-height: var(--lh-relaxed);
+}
 
 /* ── Loading & empty states ── */
 .loading-dots { display: inline-flex; gap: 5px; align-items: center; }

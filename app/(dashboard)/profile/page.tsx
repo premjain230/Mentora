@@ -5,7 +5,10 @@ import "@/css/pages/profile.css";
 
 export const metadata: Metadata = {
   title: "Profile",
-  robots: { index: false, follow: false },
+  robots: { index: false, follow: true },
+  alternates: {
+    canonical: "https://www.learningallied.world/profile",
+  },
 };
 
 export default function ProfilePage() {
