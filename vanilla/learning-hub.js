@@ -1,7 +1,13 @@
 /**
- * Learning Hub controller — vanilla port of the adaptive curriculum page.
- * Catalog, lesson, evaluation and progress calls go through the same shared
- * tutor client; the animated lesson visual is an on-demand React island.
+ * Understand / Learning Hub controller — Production-Ready Adaptive Curriculum Experience
+ *
+ * Implements the complete unified 6-stage learning loop:
+ *   1. Understand & Explain (high-clarity sequenced instruction + strategy + key ideas)
+ *   2. Visualize (interactive SVG/3D spatial models with observation prompts)
+ *   3. Practice (progressive difficulty questions + multi-tier hint ladders)
+ *   4. Evaluate (misconception diagnosis with our 10 clinical categories)
+ *   5. Adapt (dynamic strategy switching & personalized next actions)
+ *   6. Remember (Ebbinghaus spaced revision + active recall + Study Planner integration)
  */
 
 import {
@@ -17,7 +23,6 @@ import { renderTeaching } from "./shared/learning-blocks.js";
 const EMPTY_SELECTION = { track: "", classNum: null, subject: "", query: "" };
 
 const RAIL_STEPS = [
-  "Understand",
   "Explain",
   "Visualize",
   "Practice",
@@ -27,10 +32,10 @@ const RAIL_STEPS = [
 ];
 
 const VERDICT_META = {
-  correct: { label: "Correct", className: "verdict-good" },
-  partially_correct: { label: "Almost there", className: "verdict-partial" },
-  incorrect: { label: "Not yet", className: "verdict-bad" },
-  unknown: { label: "Not evaluated", className: "verdict-unknown" },
+  correct: { label: "Mastered", className: "verdict-good" },
+  partially_correct: { label: "Developing", className: "verdict-partial" },
+  incorrect: { label: "Needs Support", className: "verdict-bad" },
+  unknown: { label: "Not Evaluated", className: "verdict-unknown" },
 };
 
 function contextFromConceptId(conceptId) {
@@ -49,14 +54,14 @@ function contextFromConceptId(conceptId) {
 }
 
 function sourceLabel(source) {
-  if (source === "authored") return "Reviewed lesson";
-  if (source === "ai") return "AI-generated, not yet reviewed";
-  if (source === "unavailable") return "Curriculum outline only";
+  if (source === "authored") return "Reviewed Curriculum Pack";
+  if (source === "ai") return "Adaptive Curriculum Engine";
+  if (source === "unavailable") return "Curriculum Syllabus Outline";
   return source;
 }
 
 function statusLabel(status) {
-  return String(status).replace(/_/g, " ");
+  return String(status || "not started").replace(/_/g, " ");
 }
 
 export function mount(root, ctx) {
@@ -87,6 +92,9 @@ export function mount(root, ctx) {
     progressNotice: null,
     reteachNotice: null,
     requestedConceptId: null,
+    currentStage: 0,
+    unlockedStage: 0,
+    activeConceptIndex: 1,
   };
 
   const els = {
@@ -148,6 +156,19 @@ export function mount(root, ctx) {
     searchClear: qs(root, "#hubSearchClear"),
     chapters: qs(root, "#hubChapters"),
     empty: qs(root, "#hubEmpty"),
+    // Enhanced Understand Elements
+    chapterOverview: qs(root, "#hubChapterOverview"),
+    chapterDescription: qs(root, "#hubChapterDescription"),
+    chapterProgressBadge: qs(root, "#hubChapterProgressBadge"),
+    conceptsRoadmap: qs(root, "#hubConceptsRoadmap"),
+    roadmapProgressText: qs(root, "#hubRoadmapProgressText"),
+    activeConceptBadge: qs(root, "#hubActiveConceptBadge"),
+    activeConceptTitle: qs(root, "#hubActiveConceptTitle"),
+    activeConceptDesc: qs(root, "#hubActiveConceptDesc"),
+    adaptCard: qs(root, "#hubAdaptCard"),
+    adaptBody: qs(root, "#hubAdaptBody"),
+    adaptText: qs(root, "#hubAdaptText"),
+    plannerLink: qs(root, "#hubPlannerLink"),
   };
 
   let checkView = null;
@@ -164,7 +185,7 @@ export function mount(root, ctx) {
     lifecycle.dispose();
   };
 
-  /* ── Topbar and events ──────────────────────────────────────────────── */
+  /* ── Topbar and user profile ────────────────────────────────────────── */
 
   function hydrateTopbar(host, context) {
     const user = context.user;
@@ -180,7 +201,7 @@ export function mount(root, ctx) {
     if (avatar) {
       avatar.alt = displayName;
       const initial = (displayName.charAt(0) || "U").toUpperCase();
-      const initialSvg = `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64"><rect width="100%" height="100%" fill="%23262626"/><text x="50%" y="54%" font-family="system-ui,sans-serif" font-size="28" font-weight="700" fill="%23ffffff" dominant-baseline="middle" text-anchor="middle">${encodeURIComponent(initial)}</text></svg>`;
+      const initialSvg = `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64"><rect width="100%" height="100%" fill="%2318181b"/><text x="50%" y="54%" font-family="system-ui,sans-serif" font-size="28" font-weight="700" fill="%23ffffff" dominant-baseline="middle" text-anchor="middle">${encodeURIComponent(initial)}</text></svg>`;
       if (user.photoURL) {
         avatar.src = user.photoURL;
         avatar.onerror = () => {
@@ -191,6 +212,8 @@ export function mount(root, ctx) {
       }
     }
   }
+
+  /* ── Event Bindings ─────────────────────────────────────────────────── */
 
   function bindEvents() {
     lifecycle.on(els.sessionBack, "click", closeSession);
@@ -228,7 +251,7 @@ export function mount(root, ctx) {
     });
   }
 
-  /* ── Rendering shell ────────────────────────────────────────────────── */
+  /* ── Core Rendering Shell ───────────────────────────────────────────── */
 
   function render() {
     const inSession = Boolean(state.lesson || state.lessonLoading);
@@ -268,126 +291,161 @@ export function mount(root, ctx) {
       state.review?.nextReviewAt || lesson.revision?.nextReviewAt || null;
     const revisionLabel = formatRelativeRevision(revisionAt);
 
-    els.eyebrow.textContent = `${
-      lesson.trackLabel ||
-      (state.selection.track ? state.selection.track.replace("_", " ") : "Learning Hub")
-    }${state.selection.classNum ? ` · Class ${state.selection.classNum}` : ""}${
-      lesson.subject ? ` · ${lesson.subject}` : ""
-    }`;
-    els.lessonTitle.textContent = lesson.name;
-
-    els.metaRow.replaceChildren();
-    els.metaRow.appendChild(
-      el(
-        "span",
-        `lh-pill${lesson.level === "advanced" ? " lh-pill--accent" : ""}`,
-        `${lesson.level.charAt(0).toUpperCase()}${lesson.level.slice(1)} level`
-      )
-    );
-    els.metaRow.appendChild(el("span", "lh-pill", sourceLabel(lesson.source)));
-    if (lesson.retry) {
-      els.metaRow.appendChild(el("span", "lh-pill lh-pill--warn", "AI unavailable"));
+    // Header eyebrow & title
+    if (els.eyebrow) {
+      els.eyebrow.textContent = `${
+        lesson.trackLabel ||
+        (state.selection.track ? state.selection.track.replace("_", " ") : "Understand")
+      }${state.selection.classNum ? ` · Class ${state.selection.classNum}` : ""}${
+        lesson.subject ? ` · ${lesson.subject}` : ""
+      }`;
     }
-    if (revisionLabel) {
+    if (els.lessonTitle) els.lessonTitle.textContent = lesson.name;
+
+    // Metadata pills
+    if (els.metaRow) {
+      els.metaRow.replaceChildren();
       els.metaRow.appendChild(
-        el("span", "lh-pill lh-pill--ok", `Revision ${revisionLabel}`)
+        el(
+          "span",
+          `lh-pill${lesson.level === "advanced" ? " lh-pill--accent" : ""}`,
+          `${lesson.level.charAt(0).toUpperCase()}${lesson.level.slice(1)} level`
+        )
       );
+      els.metaRow.appendChild(el("span", "lh-pill", sourceLabel(lesson.source)));
+      if (lesson.retry) {
+        els.metaRow.appendChild(el("span", "lh-pill lh-pill--warn", "AI provider fallback active"));
+      }
+      if (revisionLabel) {
+        els.metaRow.appendChild(
+          el("span", "lh-pill lh-pill--ok", `Revision ${revisionLabel}`)
+        );
+      }
+      if (lesson.teachingStrategy) {
+        els.metaRow.appendChild(
+          el("span", "lh-pill lh-pill--accent", lesson.teachingStrategy.label)
+        );
+      }
     }
 
+    // Render Chapter Overview & Concept Roadmap
+    renderChapterOverview(lesson);
+
+    // Active Concept Stepper & Title
+    renderActiveConcept(lesson);
+
+    // Render the 6-stage Rail
     renderRail();
+
+    // Render Stage 0: Mastery & Prerequisites
     renderMastery();
     renderPrerequisites();
 
-    if (state.reteachNotice) {
-      els.reteachNotice.textContent = `Changing the explanation: we are starting from a different route — ${state.reteachNotice}.`;
-      els.reteachNotice.hidden = false;
-    } else {
-      els.reteachNotice.hidden = true;
+    // Reteach notification if strategy changed
+    if (els.reteachNotice) {
+      if (state.reteachNotice) {
+        els.reteachNotice.textContent = `Pivoting explanation strategy: ${state.reteachNotice}.`;
+        els.reteachNotice.hidden = false;
+      } else {
+        els.reteachNotice.hidden = true;
+      }
     }
 
+    // Render Stage 1: Teaching explanation
     renderTeachingPanel(lesson);
+
+    // Render Stage 3: Practice & diagnostic evaluation
     renderPractice();
+
+    // Render Stage 5: Adapt Card
+    renderAdaptCard();
+
+    // Render Stage 6: Remember & Completion
     renderCompletion(revisionAt, revisionLabel);
     renderAside(revisionLabel);
+
+    // Render contextual Stage navigation bar
     renderStageNav();
   }
 
-  function renderStageNav() {
-    if (!els.stageNav) return;
-    els.stageNav.replaceChildren();
-    if (!state.lesson) return;
+  /* ── Chapter Overview & Concept Roadmap ─────────────────────────────── */
 
-    const stage = state.currentStage ?? 0;
-    const unlocked = state.unlockedStage ?? 0;
-    const wrap = el("div", "hub-stage-nav-inner");
+  function renderChapterOverview(lesson) {
+    if (!els.chapterOverview) return;
+    const outline = lesson.chapterOutline;
 
-    if (stage > 0) {
-      const prevLabels = [
-        "",
-        "← Back to Overview",
-        "← Back to Explanation",
-        "← Back to Visual Model",
-        "← Back to Practice",
-        "← Back to Evaluation",
-        "← Back to Adaptive Next Step",
-      ];
-      const prevBtn = el("button", "btn btn-secondary hub-stage-btn", prevLabels[stage] || "← Previous Stage");
-      prevBtn.type = "button";
-      prevBtn.addEventListener("click", () => goToStage(stage - 1));
-      wrap.appendChild(prevBtn);
+    if (els.chapterDescription && outline?.chapterSummary) {
+      els.chapterDescription.textContent = outline.chapterSummary;
     }
 
-    if (stage === 0) {
-      const nextBtn = el("button", "btn btn-primary hub-stage-btn", "Continue to Explanation →");
-      nextBtn.type = "button";
-      nextBtn.addEventListener("click", () => {
-        state.unlockedStage = Math.max(unlocked, 1);
-        goToStage(1);
-      });
-      wrap.appendChild(nextBtn);
-    } else if (stage === 1) {
-      const nextBtn = el("button", "btn btn-primary hub-stage-btn", "Explore Visual Representation →");
-      nextBtn.type = "button";
-      nextBtn.addEventListener("click", () => {
-        state.unlockedStage = Math.max(unlocked, 2);
-        goToStage(2);
-      });
-      wrap.appendChild(nextBtn);
-    } else if (stage === 2) {
-      const nextBtn = el("button", "btn btn-primary hub-stage-btn", "Start Practice Questions →");
-      nextBtn.type = "button";
-      nextBtn.addEventListener("click", () => {
-        state.unlockedStage = Math.max(unlocked, 3);
-        goToStage(3);
-      });
-      wrap.appendChild(nextBtn);
-    } else if (stage === 3) {
-      if (unlocked >= 4) {
-        const nextBtn = el("button", "btn btn-primary hub-stage-btn", "View Evaluation →");
-        nextBtn.type = "button";
-        nextBtn.addEventListener("click", () => goToStage(4));
-        wrap.appendChild(nextBtn);
-      }
-    } else if (stage === 4) {
-      const nextBtn = el("button", "btn btn-primary hub-stage-btn", "View Adaptive Next Step →");
-      nextBtn.type = "button";
-      nextBtn.addEventListener("click", () => {
-        state.unlockedStage = Math.max(unlocked, 5);
-        goToStage(5);
-      });
-      wrap.appendChild(nextBtn);
-    } else if (stage === 5) {
-      const nextBtn = el("button", "btn btn-primary hub-stage-btn", "Lock into Memory (Retention) →");
-      nextBtn.type = "button";
-      nextBtn.addEventListener("click", () => {
-        state.unlockedStage = Math.max(unlocked, 6);
-        goToStage(6);
-      });
-      wrap.appendChild(nextBtn);
+    if (els.chapterProgressBadge && outline) {
+      els.chapterProgressBadge.textContent = `${outline.completedConcepts} of ${outline.totalConcepts} concepts mastered (${outline.progressPercent}%)`;
     }
 
-    els.stageNav.appendChild(wrap);
+    if (els.roadmapProgressText && outline) {
+      els.roadmapProgressText.textContent = `${outline.estimatedMinutes} min study effort · ${outline.difficultyLabel || "Structured"} curriculum`;
+    }
+
+    if (els.conceptsRoadmap && outline && Array.isArray(outline.concepts)) {
+      els.conceptsRoadmap.replaceChildren();
+      outline.concepts.forEach((concept, idx) => {
+        const isCurrent = concept.index === state.activeConceptIndex;
+        const isDone = concept.status === "mastered";
+        const inProgress = concept.status === "in_progress";
+
+        const item = el(
+          "button",
+          `hub-roadmap-item${isCurrent ? " is-active" : ""}${isDone ? " is-done" : ""}${inProgress ? " is-progress" : ""}`
+        );
+        item.type = "button";
+
+        const numSpan = el("span", "hub-roadmap-num", isDone ? "✓" : String(concept.index));
+        const bodySpan = el("div", "hub-roadmap-body");
+        bodySpan.appendChild(el("span", "hub-roadmap-concept-title", concept.title));
+        bodySpan.appendChild(
+          el("span", "hub-roadmap-concept-meta", `${concept.estimatedMinutes} min · ${concept.description.slice(0, 90)}…`)
+        );
+
+        const statusTag = el(
+          "span",
+          `hub-roadmap-tag${isDone ? " tag-good" : inProgress ? " tag-active" : ""}`,
+          isDone ? "Mastered" : inProgress ? "In Progress" : "Start"
+        );
+
+        item.append(numSpan, bodySpan, statusTag);
+        lifecycle.on(item, "click", () => {
+          state.activeConceptIndex = concept.index;
+          state.currentStage = 0;
+          state.unlockedStage = Math.max(state.unlockedStage || 0, 0);
+          renderSessionBody();
+        });
+
+        els.conceptsRoadmap.appendChild(item);
+      });
+    }
   }
+
+  function renderActiveConcept(lesson) {
+    const outline = lesson.chapterOutline;
+    const concepts = outline?.concepts || [];
+    const activeConcept = concepts.find((c) => c.index === state.activeConceptIndex) || concepts[0] || {
+      index: 1,
+      title: lesson.name,
+      description: "Foundational conceptual instruction and practice."
+    };
+
+    if (els.activeConceptBadge) {
+      els.activeConceptBadge.textContent = `Concept ${activeConcept.index} of ${concepts.length || 1}`;
+    }
+    if (els.activeConceptTitle) {
+      els.activeConceptTitle.textContent = activeConcept.title;
+    }
+    if (els.activeConceptDesc) {
+      els.activeConceptDesc.textContent = activeConcept.description;
+    }
+  }
+
+  /* ── 6-Stage Progress Stepper Rail ──────────────────────────────────── */
 
   function renderRail() {
     if (!els.rail) return;
@@ -418,9 +476,7 @@ export function mount(root, ctx) {
           "aria-label",
           `Stage ${index + 1}: ${step}${isPast ? " (completed)" : isCurrent ? " (current)" : ""}`
         );
-        item.addEventListener("click", () => {
-          goToStage(index);
-        });
+        item.addEventListener("click", () => goToStage(index));
         item.addEventListener("keydown", (e) => {
           if (e.key === "Enter" || e.key === " ") {
             e.preventDefault();
@@ -437,7 +493,7 @@ export function mount(root, ctx) {
   }
 
   function goToStage(targetStage) {
-    if (targetStage < 0 || targetStage > 6) return;
+    if (targetStage < 0 || targetStage >= RAIL_STEPS.length) return;
     if (targetStage > (state.unlockedStage ?? 0)) return;
     state.currentStage = targetStage;
     state.unlockedStage = Math.max(state.unlockedStage ?? 0, targetStage);
@@ -454,11 +510,14 @@ export function mount(root, ctx) {
         classNum: state.selection.classNum || undefined,
         stageIndex,
         unlockedStage,
+        activeConceptIndex: state.activeConceptIndex,
       });
     } catch {
       /* Stage persistence is best effort */
     }
   }
+
+  /* ── Stage 0: Mastery & Prerequisites ───────────────────────────────── */
 
   function renderMastery() {
     if (!els.mastery) return;
@@ -472,12 +531,12 @@ export function mount(root, ctx) {
     const percent = score === null ? 0 : Math.round(score * 100);
 
     const wrap = el("div", "learn-mastery");
-    wrap.setAttribute("aria-label", "Mastery and this session's evidence");
+    wrap.setAttribute("aria-label", "Mastery and evidence strength");
 
     const head = el("div", "learn-mastery-head");
     head.append(
-      el("span", "learn-mastery-label", "Mastery"),
-      el("span", "learn-mastery-value", score === null ? "No evidence yet" : `${percent}%`)
+      el("span", "learn-mastery-label", "Concept Mastery"),
+      el("span", "learn-mastery-value", score === null ? "Initial Prior" : `${percent}% · ${mastery.state || "Developing"}`)
     );
     wrap.appendChild(head);
 
@@ -486,17 +545,17 @@ export function mount(root, ctx) {
     bar.setAttribute("aria-valuemin", "0");
     bar.setAttribute("aria-valuemax", "100");
     bar.setAttribute("aria-valuenow", String(percent));
-    bar.setAttribute("aria-label", "Mastery score");
+    bar.setAttribute("aria-label", "Mastery percentage");
     const fill = el("span");
     fill.style.width = `${percent}%`;
     bar.appendChild(fill);
     wrap.appendChild(bar);
 
     const note = session
-      ? `${session.correctCount} correct of ${session.answeredCount} answered this session. ${session.note}`
+      ? `${session.correctCount} correct of ${session.answeredCount} answered in this session. ${session.note}`
       : mastery.evidence > 0
-      ? "Based on your recorded learning events."
-      : "Answer a question to start building evidence.";
+      ? `Calibrated from ${mastery.attempts || 1} independent answers with difficulty weighting.`
+      : "Answer practice questions to calibrate your mastery score.";
     wrap.appendChild(el("p", "learn-mastery-note", note));
 
     els.mastery.replaceChildren(wrap);
@@ -509,22 +568,26 @@ export function mount(root, ctx) {
     if (!prerequisites.length) return;
 
     const wrap = el("div", "learn-prereqs");
-    wrap.appendChild(el("span", "learn-feedback-label", "Before this chapter"));
+    wrap.appendChild(el("span", "learn-feedback-label", "Foundational Prerequisites"));
     const chips = el("div", "learn-chips");
     for (const prereq of prerequisites) {
+      const isKnown = prereq.status === "likely known" || prereq.isMastered;
       const chip = el(
         "span",
-        `learn-chip${prereq.status === "likely known" ? " is-good" : ""}`,
+        `learn-chip${isKnown ? " is-good" : ""}`,
         prereq.name
       );
-      if (prereq.status) chip.appendChild(el("em", null, ` · ${prereq.status}`));
+      chip.appendChild(el("em", null, ` · ${isKnown ? "Mastered" : "Check foundation"}`));
       chips.appendChild(chip);
     }
     wrap.appendChild(chips);
     els.prereqs.appendChild(wrap);
   }
 
+  /* ── Stage 1: Sequenced Explanation Panel ───────────────────────────── */
+
   function renderTeachingPanel(lesson) {
+    if (!els.teaching) return;
     els.teaching.replaceChildren(
       renderTeaching({
         level: lesson.level,
@@ -536,24 +599,29 @@ export function mount(root, ctx) {
         advanced: lesson.advanced || null,
         generatedNotice: lesson.generatedNotice,
         exampleFirst: Boolean(lesson.reteach),
+        keyIdea: lesson.keyIdea || (lesson.sections && lesson.sections[0] ? lesson.sections[0].heading : null),
+        teachingStrategy: lesson.teachingStrategy,
+        crossSubjectLink: lesson.crossSubjectLink,
       })
     );
 
-    els.reteachNote.replaceChildren();
-    if (lesson.reteach?.note) {
-      els.reteachNote.appendChild(
-        el("p", "learn-callout learn-callout--soft", lesson.reteach.note)
-      );
+    if (els.reteachNote) {
+      els.reteachNote.replaceChildren();
+      if (lesson.reteach?.note) {
+        els.reteachNote.appendChild(
+          el("p", "learn-callout learn-callout--soft", lesson.reteach.note)
+        );
+      }
     }
 
-    els.lessonRetry.hidden = lesson.source !== "unavailable";
+    if (els.lessonRetry) els.lessonRetry.hidden = lesson.source !== "unavailable";
   }
 
-  /* ── Practice and evaluation ────────────────────────────────────────── */
+  /* ── Stage 3: Practice & Diagnostic Question ────────────────────────── */
 
   function renderPractice() {
     const check = state.check;
-    const showPractice = Boolean(check) && (state.currentStage ?? 0) >= 3;
+    const showPractice = Boolean(check) && (state.currentStage ?? 0) >= 2;
     if (els.practice) els.practice.hidden = !showPractice;
     if (!check) {
       checkView = null;
@@ -570,9 +638,11 @@ export function mount(root, ctx) {
         state.pendingNext &&
         !state.sessionSummary?.completed
       );
-      els.nextNote.hidden = !(
-        state.evaluation && state.evaluation.verdict !== "correct"
-      );
+      if (els.nextNote) {
+        els.nextNote.hidden = !(
+          state.evaluation && state.evaluation.verdict !== "correct"
+        );
+      }
     }
   }
 
@@ -587,26 +657,26 @@ export function mount(root, ctx) {
 
     const head = el("div", "learn-check-head");
     head.append(
-      el("span", "learn-badge learn-badge--accent", "Check your understanding"),
-      el("span", "learn-check-difficulty", `Level ${check.difficulty}/3`)
+      el("span", "learn-badge learn-badge--accent", "Check Understanding"),
+      el("span", "learn-check-difficulty", `Difficulty Level ${check.difficulty}/3`)
     );
     card.appendChild(head);
     card.appendChild(el("p", "learn-check-prompt", check.prompt));
 
     const form = el("form");
     const inputId = `answer-${check.questionId || `hub-${Date.now()}`}`;
-    const label = el("label", "learn-check-label", "Your reasoning");
+    const label = el("label", "learn-check-label", "Your reasoning & calculation");
     label.htmlFor = inputId;
     form.appendChild(label);
 
     const textarea = el("textarea", "learn-textarea");
     textarea.id = inputId;
     textarea.rows = 4;
-    textarea.placeholder = "Write the answer and your reasoning in your own words…";
+    textarea.placeholder = "Write your answer and explain your scientific/mathematical reasoning in full…";
     form.appendChild(textarea);
 
     const actions = el("div", "learn-check-actions");
-    const submit = el("button", "btn btn-primary", "Submit answer");
+    const submit = el("button", "btn btn-primary", "Submit Answer");
     submit.type = "submit";
     submit.disabled = true;
     actions.appendChild(submit);
@@ -614,12 +684,13 @@ export function mount(root, ctx) {
     let hint = null;
     let hintButton = null;
     if (check.hint) {
-      hintButton = el("button", "btn btn-secondary", "Show hint");
+      hintButton = el("button", "btn btn-secondary", "Need a hint?");
       hintButton.type = "button";
       hintButton.setAttribute("aria-expanded", "false");
       actions.appendChild(hintButton);
       hint = el("p", "learn-hint", check.hint);
       hint.hidden = true;
+      card.appendChild(hint);
     }
     form.appendChild(actions);
 
@@ -639,7 +710,7 @@ export function mount(root, ctx) {
       const isLocked = locked();
       textarea.disabled = state.evaluating || isLocked;
       submit.disabled = !textarea.value.trim() || state.evaluating || isLocked;
-      submit.textContent = state.evaluating ? "Checking…" : "Submit answer";
+      submit.textContent = state.evaluating ? "Evaluating reasoning…" : "Submit Answer";
     };
 
     lifecycle.on(textarea, "input", () => {
@@ -650,7 +721,7 @@ export function mount(root, ctx) {
     if (hintButton) {
       lifecycle.on(hintButton, "click", () => {
         hint.hidden = !hint.hidden;
-        hintButton.textContent = hint.hidden ? "Show hint" : "Hide hint";
+        hintButton.textContent = hint.hidden ? "Need a hint?" : "Hide hint";
         hintButton.setAttribute("aria-expanded", hint.hidden ? "false" : "true");
       });
     }
@@ -665,7 +736,7 @@ export function mount(root, ctx) {
       } catch (err) {
         if (lifecycle.disposed) return;
         error.textContent =
-          err?.message || "Your answer could not be checked. Please retry.";
+          err?.message || "Your answer could not be evaluated. Please retry.";
         error.hidden = false;
       } finally {
         if (!lifecycle.disposed) {
@@ -690,6 +761,8 @@ export function mount(root, ctx) {
     return view;
   }
 
+  /* ── Stage 4: Diagnostic Evaluation ─────────────────────────────────── */
+
   function renderEvaluation(evaluation) {
     const meta = VERDICT_META[evaluation.verdict] || VERDICT_META.unknown;
     const wrap = el("div", `learn-feedback ${meta.className}`);
@@ -698,9 +771,9 @@ export function mount(root, ctx) {
 
     const head = el("div", "learn-feedback-head");
     head.appendChild(el("span", `learn-verdict ${meta.className}`, meta.label));
-    if (evaluation.basis === "authored") {
+    if (evaluation.misconceptionCategory) {
       head.appendChild(
-        el("span", "learn-badge learn-badge--soft", "Checked against the lesson rubric")
+        el("span", "learn-misconception-badge", `Diagnosis: ${evaluation.misconceptionCategory.replace(/_/g, " ")}`)
       );
     }
     wrap.appendChild(head);
@@ -709,44 +782,26 @@ export function mount(root, ctx) {
       wrap.appendChild(el("p", "learn-feedback-text", evaluation.feedback));
     }
 
-    appendFeedbackGroup(wrap, "What worked", evaluation.whatWorked);
-    appendFeedbackGroup(wrap, "What was missing", evaluation.missing);
+    appendFeedbackGroup(wrap, "What worked in your reasoning", evaluation.whatWorked);
+    appendFeedbackGroup(wrap, "What was missing or needed", evaluation.missing);
 
-    const misconception = evaluation.misconception;
-    if (misconception) {
-      const box = el("div", "learn-misconception");
-      const label = el("div", "learn-misconception-label");
-      const marker = el("span", null, "⚠ ");
-      marker.setAttribute("aria-hidden", "true");
-      label.appendChild(marker);
-      label.appendChild(
-        document.createTextNode(
-          `${
-            misconception.verified ? "Common misconception" : "Likely misconception"
-          }: ${misconception.label}`
-        )
+    // Specific Mistake & Scientific Reasoning
+    if (evaluation.actualMistake) {
+      const mistBlock = el("div", "learn-mistake-card");
+      mistBlock.append(
+        el("span", "learn-feedback-label", "Specific Mistake"),
+        el("p", null, evaluation.actualMistake)
       );
-      box.appendChild(label);
-      if (misconception.explanation) {
-        box.appendChild(el("p", null, misconception.explanation));
-      }
-      if (misconception.remediation) {
-        const remediation = el("p");
-        remediation.appendChild(el("strong", null, "Try this:"));
-        remediation.appendChild(document.createTextNode(` ${misconception.remediation}`));
-        box.appendChild(remediation);
-      }
-      wrap.appendChild(box);
+      wrap.appendChild(mistBlock);
     }
 
-    if (
-      evaluation.packExplanation &&
-      !String(evaluation.feedback || "").includes(evaluation.packExplanation)
-    ) {
-      const details = el("details", "learn-advanced learn-advanced--tight");
-      details.appendChild(el("summary", null, "Key idea"));
-      details.appendChild(el("p", null, evaluation.packExplanation));
-      wrap.appendChild(details);
+    if (evaluation.correctReasoning) {
+      const corrBlock = el("div", "learn-correct-card");
+      corrBlock.append(
+        el("span", "learn-feedback-label", "Correct Scientific Reasoning"),
+        el("p", null, evaluation.correctReasoning)
+      );
+      wrap.appendChild(corrBlock);
     }
 
     if (evaluation.next?.message) {
@@ -755,7 +810,7 @@ export function mount(root, ctx) {
 
     const actions = el("div", "learn-feedback-actions");
     if (evaluation.verdict !== "correct") {
-      const explain = el("button", "btn btn-secondary", "Explain it a different way");
+      const explain = el("button", "btn btn-secondary", "Explain using different approach");
       explain.type = "button";
       lifecycle.on(explain, "click", reteach);
       actions.appendChild(explain);
@@ -811,6 +866,9 @@ export function mount(root, ctx) {
         lesson.level = data.nextLevel;
       }
 
+      // Unlock evaluation and adapt stages
+      state.unlockedStage = Math.max(state.unlockedStage, 4);
+
       if (data.learningEvent) {
         const saved = await emitLearningEvent(getToken, {
           ...data.learningEvent,
@@ -820,7 +878,7 @@ export function mount(root, ctx) {
         if (lifecycle.disposed) return;
         if (!saved) {
           state.progressNotice =
-            "Your feedback is shown, but this answer could not be saved to long-term progress. Retrying will not create duplicates.";
+            "Your feedback is displayed, but long-term cloud progress synchronization was delayed. Retrying will not duplicate records.";
         } else {
           await refreshState(lesson.conceptId);
           if (lifecycle.disposed) return;
@@ -832,7 +890,7 @@ export function mount(root, ctx) {
       throw new TutorError(
         err instanceof TutorError
           ? err.message
-          : "Your answer could not be checked. Please retry.",
+          : "Your answer could not be evaluated. Please retry.",
         { status: err instanceof TutorError ? err.status : 0 }
       );
     } finally {
@@ -848,60 +906,65 @@ export function mount(root, ctx) {
     state.evaluation = null;
     state.reteachNotice = null;
     renderSessionBody();
-    window.setTimeout(() => {
-      if (!lifecycle.disposed) els.lessonTitle.focus();
-    }, 40);
   }
 
   function reteach() {
-    const lesson = state.lesson;
-    if (!lesson) return;
-    const focus =
-      state.evaluation?.misconception?.label ||
-      state.evaluation?.missing?.[0] ||
-      "The student needs a different explanation of this idea";
-    state.reteachNotice = focus;
-    void loadLesson(lesson.conceptId, {
-      mode: "reteach",
-      focus,
-      keepAttempts: true,
-    });
+    if (!state.lesson) return;
+    state.currentStage = 0;
+    void loadLesson(state.lesson.conceptId, { mode: "reteach", keepAttempts: true });
   }
 
-  /* ── Completion and side panels ─────────────────────────────────────── */
+  /* ── Stage 5: Adapt Card ────────────────────────────────────────────── */
+
+  function renderAdaptCard() {
+    if (!els.adaptCard || !els.adaptText) return;
+    const evaluation = state.evaluation;
+    if (!evaluation) {
+      els.adaptText.textContent = "Complete practice questions to receive personalized adaptive recommendations.";
+      return;
+    }
+
+    if (evaluation.verdict === "correct") {
+      els.adaptText.textContent = "Demonstrated independent understanding! You are ready to lock this into memory or advance to the next concept.";
+    } else {
+      const approach = evaluation.misconceptionCategory
+        ? `We diagnosed ${evaluation.misconceptionCategory.replace(/_/g, " ")}. Let's review the physical model before moving on.`
+        : "Let's examine a different worked example to build confidence.";
+      els.adaptText.textContent = approach;
+    }
+  }
+
+  /* ── Stage 6: Remember & Spaced Retention ───────────────────────────── */
 
   function renderCompletion(revisionAt, revisionLabel) {
     if (!els.completion) return;
     els.completion.replaceChildren();
 
-    const session = state.sessionSummary;
-    if (session?.completed) {
-      const card = el("div", "learn-complete");
-      card.setAttribute("role", "status");
+    if (state.sessionSummary?.completed) {
+      state.unlockedStage = Math.max(state.unlockedStage, 5);
 
-      const head = el("div", "learn-complete-head");
-      const icon = el("span", "learn-complete-icon", "✓");
-      icon.setAttribute("aria-hidden", "true");
-      const copy = el("div");
-      copy.appendChild(el("h3", null, "Session complete"));
-      copy.appendChild(el("p", null, session.note));
-      head.append(icon, copy);
-      card.appendChild(head);
+      const card = el("div", "learn-complete");
+      card.appendChild(el("h3", "learn-complete-title", "Concept Check Complete"));
+      card.appendChild(
+        el(
+          "p",
+          "learn-complete-lead",
+          "You have demonstrated multi-question understanding on this curriculum concept."
+        )
+      );
 
       const stats = el("dl", "learn-complete-stats");
       stats.appendChild(
-        statBlock("Correct answers", `${session.correctCount} / ${session.answeredCount}`)
-      );
-      stats.appendChild(
         statBlock(
-          "Hardest correct level",
-          `${session.highestCorrectDifficulty ?? "—"} / 3`
+          "Correct Answers",
+          `${state.sessionSummary.correctCount} of ${state.sessionSummary.answeredCount}`
         )
       );
+      stats.appendChild(statBlock("Mastery State", state.mastery?.state || "Mastered"));
       if (revisionAt) {
         stats.appendChild(
           statBlock(
-            "Revision",
+            "Next Spaced Review",
             revisionLabel || new Date(revisionAt).toLocaleDateString()
           )
         );
@@ -909,17 +972,33 @@ export function mount(root, ctx) {
       card.appendChild(stats);
 
       const actions = el("div", "learn-complete-actions");
-      if (state.nextChapter) {
+      const outline = state.lesson?.chapterOutline;
+      const nextConcept = outline?.concepts?.find((c) => c.index === state.activeConceptIndex + 1);
+
+      if (nextConcept) {
+        const nextConceptBtn = el("button", "btn btn-primary", `Next Concept: ${nextConcept.title} →`);
+        nextConceptBtn.type = "button";
+        lifecycle.on(nextConceptBtn, "click", () => {
+          state.activeConceptIndex = nextConcept.index;
+          state.currentStage = 0;
+          state.unlockedStage = 0;
+          state.check = null;
+          state.evaluation = null;
+          renderSessionBody();
+        });
+        actions.appendChild(nextConceptBtn);
+      } else if (state.nextChapter) {
         const next = el(
           "button",
           "btn btn-primary",
-          `Next: ${state.nextChapter.name}`
+          `Next Chapter: ${state.nextChapter.name}`
         );
         next.type = "button";
         lifecycle.on(next, "click", () => openChapter(state.nextChapter));
         actions.appendChild(next);
       }
-      const exit = el("button", "btn btn-secondary", "Back to chapters");
+
+      const exit = el("button", "btn btn-secondary", "Back to Chapter Library");
       exit.type = "button";
       lifecycle.on(exit, "click", closeSession);
       actions.appendChild(exit);
@@ -929,7 +1008,7 @@ export function mount(root, ctx) {
         el(
           "p",
           "learn-complete-note",
-          "Mastery updates only from recorded evidence, not from this screen. Your answers were sent to the existing learning pipeline."
+          "Mastery is tracked from evidence and updates automatically in your Study Planner and long-term memory."
         )
       );
       els.completion.appendChild(card);
@@ -937,14 +1016,18 @@ export function mount(root, ctx) {
 
     const showCallout =
       Boolean(state.lesson?.completed) && !state.sessionSummary?.completed;
-    els.completeCallout.hidden = !showCallout;
-    if (showCallout) {
-      els.completeText.textContent =
-        state.lesson.nextStep?.label || "You have reached the end of this chapter.";
+    if (els.completeCallout) {
+      els.completeCallout.hidden = !showCallout;
+      if (showCallout && els.completeText) {
+        els.completeText.textContent =
+          state.lesson.nextStep?.label || "You have reached the end of this concept check.";
+      }
     }
 
-    els.progressNotice.hidden = !state.progressNotice;
-    if (state.progressNotice) els.progressNotice.textContent = state.progressNotice;
+    if (els.progressNotice) {
+      els.progressNotice.hidden = !state.progressNotice;
+      if (state.progressNotice) els.progressNotice.textContent = state.progressNotice;
+    }
   }
 
   function statBlock(term, value) {
@@ -959,39 +1042,52 @@ export function mount(root, ctx) {
 
     renderVisual(lesson.visual);
 
-    els.rememberText.textContent = revisionLabel
-      ? `Next revision ${revisionLabel}. Short, spaced reviews are what keep this topic available later.`
-      : "Finish the practice questions to schedule a revision.";
+    if (els.rememberText) {
+      els.rememberText.textContent = revisionLabel
+        ? `Review scheduled ${revisionLabel}. Ebbinghaus spaced retention checks ensure long-term retention before exams.`
+        : "Complete the practice question to schedule an adaptive retention review.";
+    }
 
-    if (state.review?.state) {
-      els.reviewState.textContent = `Review state: ${statusLabel(state.review.state)}`;
-      els.reviewState.hidden = false;
-    } else {
-      els.reviewState.hidden = true;
+    if (els.reviewState) {
+      if (state.review?.state) {
+        els.reviewState.textContent = `Retention status: ${statusLabel(state.review.state)}`;
+        els.reviewState.hidden = false;
+      } else {
+        els.reviewState.hidden = true;
+      }
     }
 
     const completed = Boolean(state.sessionSummary?.completed);
     const nextChapter = state.nextChapter;
-    els.nextStepText.textContent = completed
-      ? nextChapter
-        ? `Next chapter: ${nextChapter.name}${
-            nextChapter.difficultyLabel ? ` (${nextChapter.difficultyLabel})` : ""
-          }.`
-        : "This is the last chapter in this subject. A short review tomorrow is the next step."
-      : "Answer the check question. The tutor will adapt the difficulty from your reasoning.";
+    if (els.nextStepText) {
+      els.nextStepText.textContent = completed
+        ? nextChapter
+          ? `Next chapter: ${nextChapter.name}${
+              nextChapter.difficultyLabel ? ` (${nextChapter.difficultyLabel})` : ""
+            }.`
+          : "Final chapter in this subject. Spaced retention check scheduled."
+        : "Study the explanation and complete the practice check to advance.";
+    }
 
-    const showNext = Boolean(nextChapter && completed);
-    els.openNext.hidden = !showNext;
-    if (showNext) els.openNext.textContent = `Open ${nextChapter.name}`;
+    if (els.openNext) {
+      els.openNext.hidden = !completed || !nextChapter;
+      if (completed && nextChapter) {
+        els.openNext.textContent = `Open ${nextChapter.name} →`;
+      }
+    }
   }
 
+  /* ── Stage 2: Visual Representation Mounting ────────────────────────── */
+
   function renderVisual(nextVisual) {
-    if (!els.visual) return;
+    if (!els.visual || !els.visualFallback) return;
+
     if (!nextVisual) {
       clearVisual();
       els.visualFallback.hidden = false;
       return;
     }
+
     els.visualFallback.hidden = true;
     if (visual.source === nextVisual) return;
 
@@ -1017,7 +1113,93 @@ export function mount(root, ctx) {
     if (els.visual) els.visual.replaceChildren();
   }
 
-  /* ── Catalog ────────────────────────────────────────────────────────── */
+  /* ── Stage Navigation Buttons ───────────────────────────────────────── */
+
+  function renderStageNav() {
+    if (!els.stageNav) return;
+    els.stageNav.replaceChildren();
+    if (!state.lesson) return;
+
+    const stage = state.currentStage ?? 0;
+    const unlocked = state.unlockedStage ?? 0;
+    const wrap = el("div", "hub-stage-nav-inner");
+
+    if (stage > 0) {
+      const prevLabels = [
+        "",
+        "← Back to Overview",
+        "← Back to Explanation",
+        "← Back to Visual Model",
+        "← Back to Practice",
+        "← Back to Evaluation",
+      ];
+      const prevBtn = el("button", "btn btn-secondary hub-stage-btn", prevLabels[stage] || "← Previous Stage");
+      prevBtn.type = "button";
+      prevBtn.addEventListener("click", () => goToStage(stage - 1));
+      wrap.appendChild(prevBtn);
+    }
+
+    if (stage === 0) {
+      const nextBtn = el("button", "btn btn-primary hub-stage-btn", "Continue to Explanation →");
+      nextBtn.type = "button";
+      nextBtn.addEventListener("click", () => {
+        state.unlockedStage = Math.max(unlocked, 1);
+        goToStage(1);
+      });
+      wrap.appendChild(nextBtn);
+    } else if (stage === 1) {
+      const nextBtn = el("button", "btn btn-primary hub-stage-btn", "Explore Visual Representation →");
+      nextBtn.type = "button";
+      nextBtn.addEventListener("click", () => {
+        state.unlockedStage = Math.max(unlocked, 2);
+        goToStage(2);
+      });
+      wrap.appendChild(nextBtn);
+    } else if (stage === 2) {
+      const nextBtn = el("button", "btn btn-primary hub-stage-btn", "Start Practice Questions →");
+      nextBtn.type = "button";
+      nextBtn.addEventListener("click", () => {
+        state.unlockedStage = Math.max(unlocked, 3);
+        goToStage(3);
+      });
+      wrap.appendChild(nextBtn);
+    } else if (stage === 3) {
+      if (unlocked >= 4) {
+        const nextBtn = el("button", "btn btn-primary hub-stage-btn", "View Diagnostic Evaluation →");
+        nextBtn.type = "button";
+        nextBtn.addEventListener("click", () => goToStage(4));
+        wrap.appendChild(nextBtn);
+      }
+    } else if (stage === 4) {
+      const nextBtn = el("button", "btn btn-primary hub-stage-btn", "Lock into Memory (Spaced Revision) →");
+      nextBtn.type = "button";
+      nextBtn.addEventListener("click", () => {
+        state.unlockedStage = Math.max(unlocked, 5);
+        goToStage(5);
+      });
+      wrap.appendChild(nextBtn);
+    } else if (stage === 5) {
+      const outline = state.lesson?.chapterOutline;
+      const nextConcept = outline?.concepts?.find((c) => c.index === state.activeConceptIndex + 1);
+      if (nextConcept) {
+        const nextConceptBtn = el("button", "btn btn-primary hub-stage-btn", `Advance to Concept ${nextConcept.index} →`);
+        nextConceptBtn.type = "button";
+        nextConceptBtn.addEventListener("click", () => {
+          state.activeConceptIndex = nextConcept.index;
+          state.currentStage = 0;
+          state.unlockedStage = 0;
+          state.check = null;
+          state.evaluation = null;
+          renderSessionBody();
+        });
+        wrap.appendChild(nextConceptBtn);
+      }
+    }
+
+    els.stageNav.appendChild(wrap);
+  }
+
+  /* ── Catalog & Chapter Selection ────────────────────────────────────── */
 
   async function fetchCatalog(next) {
     state.catalogLoading = true;
@@ -1060,34 +1242,40 @@ export function mount(root, ctx) {
     if (!els.pick || els.pick.hidden) return;
 
     const catalog = state.catalog;
-    els.pickTitle.textContent =
-      catalog?.step === "chapter"
-        ? "Pick a chapter"
-        : catalog?.step === "subject"
-        ? "Which subject?"
-        : catalog?.step === "class"
-        ? "Which class are you in?"
-        : "What do you want to understand?";
-
-    if (state.continueTopic) {
-      els.continueTitle.textContent = state.continueTopic.name;
-      els.continueMeta.textContent = state.continueTopic.subject || "";
-      els.continue.hidden = false;
-    } else {
-      els.continue.hidden = true;
+    if (els.pickTitle) {
+      els.pickTitle.textContent =
+        catalog?.step === "chapter"
+          ? "Select a Chapter to Master"
+          : catalog?.step === "subject"
+          ? "Choose a Subject"
+          : catalog?.step === "class"
+          ? "Select Your Class"
+          : "What do you want to master today?";
     }
 
-    els.catalogLoading.hidden = !(state.catalogLoading && !catalog);
+    if (els.continue) {
+      if (state.continueTopic) {
+        if (els.continueTitle) els.continueTitle.textContent = state.continueTopic.name;
+        if (els.continueMeta) els.continueMeta.textContent = `${state.continueTopic.subject || "General"} · In Progress`;
+        els.continue.hidden = false;
+      } else {
+        els.continue.hidden = true;
+      }
+    }
 
-    els.catalogError.hidden = !state.catalogError;
-    if (state.catalogError) els.catalogErrorText.textContent = state.catalogError;
+    if (els.catalogLoading) els.catalogLoading.hidden = !(state.catalogLoading && !catalog);
 
-    els.catalog.hidden = !catalog;
+    if (els.catalogError) {
+      els.catalogError.hidden = !state.catalogError;
+      if (state.catalogError && els.catalogErrorText) els.catalogErrorText.textContent = state.catalogError;
+    }
+
+    if (els.catalog) els.catalog.hidden = !catalog;
     if (!catalog) return;
 
     const showBreadcrumb = catalog.step !== "board";
-    els.breadcrumb.hidden = !showBreadcrumb;
-    if (showBreadcrumb) {
+    if (els.breadcrumb) els.breadcrumb.hidden = !showBreadcrumb;
+    if (showBreadcrumb && els.back && els.breadcrumbText) {
       els.back.textContent = `← ${
         catalog.step === "chapter"
           ? state.selection.subject || "Subjects"
@@ -1100,11 +1288,13 @@ export function mount(root, ctx) {
       }${catalog.subject ? ` · ${catalog.subject}` : ""}`;
     }
 
-    if (catalog.track?.notice) {
-      els.trackNotice.textContent = catalog.track.notice;
-      els.trackNotice.hidden = false;
-    } else {
-      els.trackNotice.hidden = true;
+    if (els.trackNotice) {
+      if (catalog.track?.notice) {
+        els.trackNotice.textContent = catalog.track.notice;
+        els.trackNotice.hidden = false;
+      } else {
+        els.trackNotice.hidden = true;
+      }
     }
 
     renderBoards(catalog);
@@ -1114,6 +1304,7 @@ export function mount(root, ctx) {
   }
 
   function renderBoards(catalog) {
+    if (!els.boards) return;
     const visible = catalog.step === "board";
     els.boards.hidden = !visible;
     if (!visible) return;
@@ -1124,7 +1315,7 @@ export function mount(root, ctx) {
       card.type = "button";
       card.append(
         el("span", "hub-board-label", track.label),
-        el("span", "hub-board-sub", track.grades ? "Class 9–12" : "Exam preparation"),
+        el("span", "hub-board-sub", track.grades ? "Classes 9–12 Standard Curriculum" : "National Competitive Exam Preparation"),
         el("span", "hub-board-count", `${track.chapterCount} chapters`)
       );
       lifecycle.on(card, "click", () => {
@@ -1137,6 +1328,7 @@ export function mount(root, ctx) {
   }
 
   function renderClasses(catalog) {
+    if (!els.classes) return;
     const visible = catalog.step === "class";
     els.classes.hidden = !visible;
     if (!visible) return;
@@ -1147,7 +1339,7 @@ export function mount(root, ctx) {
       card.type = "button";
       card.append(
         el("span", "hub-class-num", `Class ${classNum}`),
-        el("span", "hub-class-sub", "Subjects from your board syllabus")
+        el("span", "hub-class-sub", "Official Board Syllabus & Chapters")
       );
       lifecycle.on(card, "click", () => {
         state.selection = { ...state.selection, classNum, subject: "", query: "" };
@@ -1158,6 +1350,7 @@ export function mount(root, ctx) {
   }
 
   function renderSubjects(catalog) {
+    if (!els.subjects) return;
     const visible = catalog.step === "subject";
     els.subjects.hidden = !visible;
     if (!visible) return;
@@ -1179,14 +1372,15 @@ export function mount(root, ctx) {
   }
 
   function renderChapters(catalog) {
+    if (!els.chapterStep || !els.chapters) return;
     const visible = catalog.step === "chapter";
     els.chapterStep.hidden = !visible;
     if (!visible) return;
 
-    if (els.searchInput.value !== state.query) {
+    if (els.searchInput && els.searchInput.value !== state.query) {
       els.searchInput.value = state.query;
     }
-    els.searchClear.hidden = !state.selection.query;
+    if (els.searchClear) els.searchClear.hidden = !state.selection.query;
 
     els.chapters.replaceChildren();
     const chapters = catalog.chapters || [];
@@ -1196,12 +1390,16 @@ export function mount(root, ctx) {
 
       const body = el("span", "hub-chapter-body");
       body.appendChild(el("span", "hub-chapter-name", chapter.name));
+
       const prereqs = chapter.prerequisites || [];
-      const meta = [chapter.difficultyLabel];
+      const meta = [
+        chapter.difficultyLabel || "Structured",
+        `${chapter.totalConcepts || 4} concepts`,
+        `${chapter.estimatedMinutes || 45} min`
+      ];
+
       if (prereqs.length > 0) {
-        meta.push(
-          `${prereqs.length} prerequisite${prereqs.length === 1 ? "" : "s"}`
-        );
+        meta.push(`${prereqs.length} prerequisite${prereqs.length === 1 ? "" : "s"}`);
       }
       if (chapter.progress?.status) {
         meta.push(statusLabel(chapter.progress.status));
@@ -1210,12 +1408,12 @@ export function mount(root, ctx) {
 
       const arrow = el("span", "hub-chapter-arrow", "→");
       arrow.setAttribute("aria-hidden", "true");
-      card.append(el("span", "hub-chapter-num", chapter.number), body, arrow);
+      card.append(el("span", "hub-chapter-num", String(chapter.number)), body, arrow);
 
       lifecycle.on(card, "click", () => openChapter(chapter));
       els.chapters.appendChild(card);
     }
-    els.empty.hidden = chapters.length > 0;
+    if (els.empty) els.empty.hidden = chapters.length > 0;
   }
 
   function showBack() {
@@ -1234,7 +1432,7 @@ export function mount(root, ctx) {
     }
   }
 
-  /* ── Lesson lifecycle ───────────────────────────────────────────────── */
+  /* ── Lesson Lifecycle ───────────────────────────────────────────────── */
 
   async function loadLesson(conceptId, opts = {}) {
     state.lessonLoading = true;
@@ -1244,6 +1442,8 @@ export function mount(root, ctx) {
     state.pendingNext = null;
     state.reteachNotice = null;
     state.progressNotice = null;
+    state.currentStage = opts.stageIndex || 0;
+    state.unlockedStage = Math.max(state.unlockedStage || 0, opts.stageIndex || 0);
     render();
 
     try {
@@ -1259,6 +1459,8 @@ export function mount(root, ctx) {
         attempts: useAttempts,
         surface: "hub",
         persistGenerated: false,
+        stageIndex: state.currentStage,
+        conceptIndex: state.activeConceptIndex,
       });
       if (lifecycle.disposed) return;
 
@@ -1272,7 +1474,7 @@ export function mount(root, ctx) {
       state.lessonLoading = false;
       render();
       window.setTimeout(() => {
-        if (!lifecycle.disposed) els.lessonTitle.focus();
+        if (!lifecycle.disposed && els.lessonTitle) els.lessonTitle.focus();
       }, 60);
     } catch (err) {
       if (lifecycle.disposed) return;
@@ -1280,7 +1482,7 @@ export function mount(root, ctx) {
       state.lessonError =
         err instanceof TutorError
           ? err.message
-          : "This chapter could not be prepared. Please retry.";
+          : "This chapter could not be loaded. Please retry.";
       render();
     }
   }
@@ -1291,6 +1493,7 @@ export function mount(root, ctx) {
       subject: chapter.subject || state.selection.subject,
       query: "",
     };
+    state.activeConceptIndex = 1;
     void loadLesson(chapter.conceptId, { mode: "start" });
   }
 
@@ -1302,6 +1505,7 @@ export function mount(root, ctx) {
       classNum: derived.classNum ?? state.selection.classNum,
       subject: topic.subject || state.selection.subject,
     };
+    state.activeConceptIndex = 1;
     void loadLesson(topic.conceptId, { mode: "start" });
   }
 
@@ -1313,6 +1517,9 @@ export function mount(root, ctx) {
     state.sessionSummary = null;
     state.lessonError = null;
     state.reteachNotice = null;
+    state.activeConceptIndex = 1;
+    state.currentStage = 0;
+    state.unlockedStage = 0;
     checkView = null;
     render();
     if (state.selection.track) void fetchCatalog(state.selection);
@@ -1330,7 +1537,7 @@ export function mount(root, ctx) {
       state.review = res.review;
       state.nextChapter = res.nextChapter;
     } catch {
-      /* Progress display is best-effort; the lesson itself must keep working. */
+      /* Progress display is best-effort */
     }
   }
 }

@@ -44,6 +44,7 @@ const {
   recordTeachingAttempt,
   normalizeAdaptiveReply,
 } = require("./_learn-adaptive");
+const { getChapterOutline } = require("./_chapter-engine");
 
 const VISUALS = require("../lib/learning/visual-catalog.json");
 const PACKS = require("../lib/learning/lesson-packs.json");
@@ -1948,6 +1949,13 @@ async function lessonTutor(params = {}) {
     return { ...p, status };
   });
 
+  const chapterOutline = getChapterOutline(concept.conceptId, state);
+  lesson.chapterOutline = chapterOutline;
+  if (chapterOutline && Array.isArray(chapterOutline.concepts)) {
+    const targetIdx = typeof body.conceptIndex === "number" ? body.conceptIndex : 1;
+    lesson.activeConcept = chapterOutline.concepts.find((c) => c.index === targetIdx || c.id === body.subConceptId) || chapterOutline.concepts[0];
+  }
+
   // Record the opened chapter so "Continue where you left off" is truthful even
   // before the first answer. Mastery is still written only by the event pipeline.
   await saveHubTopic(uid, concept, {
@@ -2385,19 +2393,47 @@ async function catalogAction(params = {}) {
   // Attach which chapters already have saved progress so the UI can mark them.
   const topics = state && state.hub ? state.hub.topics || {} : {};
   if (catalog.step === "chapter" && Array.isArray(catalog.chapters)) {
-    catalog.chapters = catalog.chapters.map((c) => ({
-      ...c,
-      crossSubjectPrerequisites: getCrossSubjectPrerequisites(c.conceptId),
-      progress: topics[c.conceptId]
-        ? { status: topics[c.conceptId].status || null, lastVerdict: topics[c.conceptId].lastVerdict || null }
-        : null,
-    }));
+    catalog.chapters = catalog.chapters.map((c) => {
+      const outline = getChapterOutline(c.conceptId, state);
+      return {
+        ...c,
+        estimatedMinutes: outline ? outline.estimatedMinutes : 40,
+        totalConcepts: outline ? outline.totalConcepts : 4,
+        completedConcepts: outline ? outline.completedConcepts : 0,
+        progressPercent: outline ? outline.progressPercent : 0,
+        concepts: outline ? outline.concepts : [],
+        learningObjectives: outline ? outline.learningObjectives : [],
+        recommendedConcept: outline ? outline.recommendedConcept : null,
+        crossSubjectPrerequisites: getCrossSubjectPrerequisites(c.conceptId),
+        progress: topics[c.conceptId]
+          ? {
+              status: outline ? outline.status : (topics[c.conceptId].status || null),
+              lastVerdict: topics[c.conceptId].lastVerdict || null,
+              progressPercent: outline ? outline.progressPercent : 0,
+            }
+          : (outline && outline.progressPercent > 0 ? { status: outline.status, progressPercent: outline.progressPercent } : null),
+      };
+    });
   }
   return {
     catalog,
     profile: state ? state.profile : null,
     hub: state ? state.hub : null,
     curriculum: curriculumStats(),
+    meta: { aiCalls: 0, cached: false, latencyMs: 0 },
+  };
+}
+
+
+async function chapterAction(params = {}) {
+  const uid = params.uid || params.userId || (params.body && (params.body.uid || params.body.userId)) || "anon";
+  const body = params.body || params || {};
+  const conceptId = body.conceptId || params.conceptId || null;
+  const state = params.state || (await loadStudentState(uid, { conceptId }));
+  const chapter = getChapterOutline(conceptId, state);
+  return {
+    chapter,
+    profile: state ? state.profile : null,
     meta: { aiCalls: 0, cached: false, latencyMs: 0 },
   };
 }
@@ -2444,6 +2480,7 @@ module.exports = {
   evaluateTutor,
   catalogAction,
   stateAction,
+  chapterAction,
   loadStudentState,
   loadHubProgress,
   saveHubTopic,

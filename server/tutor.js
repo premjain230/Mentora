@@ -24,11 +24,12 @@ const {
 } = require("./_learn-core");
 const { getConcept } = require("./_curriculum");
 
-const ACTIONS = new Set(["catalog", "state", "lesson", "evaluate", "chat"]);
+const ACTIONS = new Set(["catalog", "state", "chapter", "lesson", "evaluate", "chat"]);
 
 const ACTION_LIMITS = {
   catalog: { name: "tutor-catalog", limit: 40 },
   state: { name: "tutor-state", limit: 40 },
+  chapter: { name: "tutor-chapter", limit: 40 },
   lesson: { name: "tutor-lesson", limit: 20 },
   evaluate: { name: "tutor-evaluate", limit: 30 },
   chat: { name: "tutor-chat", limit: 15 },
@@ -101,6 +102,10 @@ module.exports = async function handler(req, res) {
 
     if (action === "catalog") {
       const payload = await catalogAction({ uid, body, state });
+      return res.status(200).json({ ok: true, ...payload });
+    }
+    if (action === "chapter") {
+      const payload = await chapterAction({ uid, body: { ...body, conceptId: concept ? concept.conceptId : body.conceptId }, state });
       return res.status(200).json({ ok: true, ...payload });
     }
     if (action === "state") {

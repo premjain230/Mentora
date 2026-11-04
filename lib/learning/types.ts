@@ -6,7 +6,7 @@
  * the same types, so a teaching-logic change never needs to be made twice.
  */
 
-export type TutorAction = "catalog" | "state" | "lesson" | "evaluate" | "chat";
+export type TutorAction = "catalog" | "state" | "lesson" | "evaluate" | "chat" | "chapter";
 
 export interface LearningVisual {
   id: string;
@@ -59,6 +59,40 @@ export interface TeachingReply {
   fallbackNote?: string;
   fallback?: boolean;
   retry?: boolean;
+}
+
+
+export interface ChapterConcept {
+  id: string;
+  fullId: string;
+  index: number;
+  title: string;
+  description: string;
+  learningObjectives: string;
+  estimatedMinutes: number;
+  visualType?: string;
+  practiceType?: string;
+  status: "not_started" | "in_progress" | "mastered" | "needs_revision";
+  masteryScore?: number | null;
+}
+
+export interface ChapterOutline {
+  chapterId: string;
+  name: string;
+  subject: string;
+  topic: string;
+  difficulty: number;
+  estimatedMinutes: number;
+  chapterSummary: string;
+  learningObjectives: string[];
+  prerequisites: Array<{ conceptId: string; name: string; isMastered?: boolean; status?: string }>;
+  crossSubjectPrerequisites: Array<{ targetConceptId: string; targetSubject: string; rationale: string; relationship?: string }>;
+  totalConcepts: number;
+  completedConcepts: number;
+  progressPercent: number;
+  concepts: ChapterConcept[];
+  recommendedConcept?: { id: string; fullId: string; title: string; index: number };
+  status: "not_started" | "in_progress" | "mastered";
 }
 
 export interface Lesson {

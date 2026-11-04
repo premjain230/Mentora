@@ -444,3 +444,308 @@ html.light-mode .lh-board-icon, html.light-mode .lh-sub-ico { background: rgba(v
   opacity: 0.5;
   cursor: not-allowed;
 }
+
+/* ==========================================================================
+   Understand Experience — Apple / Linear Redesign (Production Ready)
+   ========================================================================== */
+
+.page-learning-hub .hub-session-nav-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.page-learning-hub .hub-chapter-overview-card {
+  background: var(--lh-surface);
+  border: 1px solid var(--lh-border);
+  border-radius: var(--lh-radius);
+  padding: 24px 28px;
+  margin-bottom: 24px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+  transition: border-color 0.2s ease;
+}
+
+.page-learning-hub .hub-chapter-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+}
+
+.page-learning-hub .hub-chapter-desc {
+  font-size: 14.5px;
+  line-height: 1.6;
+  color: var(--lh-text-2);
+  margin: 0 0 20px;
+  max-width: 72ch;
+}
+
+.page-learning-hub .hub-progress-badge {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--lh-ok);
+  background: var(--lh-ok-soft);
+  border: 1px solid rgba(74, 222, 128, 0.25);
+  padding: 6px 14px;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
+/* Roadmap Grid */
+.page-learning-hub .hub-roadmap-container {
+  border-top: 1px solid var(--lh-border);
+  padding-top: 18px;
+}
+
+.page-learning-hub .hub-roadmap-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.page-learning-hub .hub-roadmap-title {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--lh-text-3);
+}
+
+.page-learning-hub .hub-roadmap-progress-text {
+  font-size: 12.5px;
+  color: var(--lh-text-3);
+}
+
+.page-learning-hub .hub-concepts-roadmap {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 12px;
+}
+
+.page-learning-hub .hub-roadmap-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  border-radius: 10px;
+  background: var(--lh-raised);
+  border: 1px solid var(--lh-border);
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.16s ease;
+}
+
+.page-learning-hub .hub-roadmap-item:hover {
+  background: var(--lh-hover);
+  border-color: var(--lh-border-strong);
+  transform: translateY(-1px);
+}
+
+.page-learning-hub .hub-roadmap-item.is-active {
+  border-color: var(--lh-accent);
+  background: var(--lh-accent-soft);
+}
+
+.page-learning-hub .hub-roadmap-item.is-done {
+  border-color: rgba(74, 222, 128, 0.3);
+}
+
+.page-learning-hub .hub-roadmap-num {
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  font-size: 12px;
+  font-weight: 700;
+  background: var(--lh-surface);
+  border: 1px solid var(--lh-border);
+  flex-shrink: 0;
+}
+
+.page-learning-hub .hub-roadmap-item.is-done .hub-roadmap-num {
+  background: var(--lh-ok-soft);
+  color: var(--lh-ok);
+  border-color: var(--lh-ok);
+}
+
+.page-learning-hub .hub-roadmap-body {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  flex: 1;
+}
+
+.page-learning-hub .hub-roadmap-concept-title {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--lh-text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.page-learning-hub .hub-roadmap-concept-meta {
+  font-size: 11.5px;
+  color: var(--lh-text-3);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.page-learning-hub .hub-roadmap-tag {
+  font-size: 10.5px;
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: var(--lh-surface);
+  color: var(--lh-text-3);
+  border: 1px solid var(--lh-border);
+}
+
+.page-learning-hub .hub-roadmap-tag.tag-good {
+  color: var(--lh-ok);
+  background: var(--lh-ok-soft);
+  border-color: transparent;
+}
+
+.page-learning-hub .hub-roadmap-tag.tag-active {
+  color: var(--lh-accent);
+  background: var(--lh-accent-soft);
+  border-color: transparent;
+}
+
+/* Concept Stepper Header */
+.page-learning-hub .hub-concept-container {
+  margin-top: 20px;
+}
+
+.page-learning-hub .hub-concept-head-bar {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 20px;
+}
+
+.page-learning-hub .hub-active-concept-badge {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--lh-accent);
+}
+
+.page-learning-hub .hub-active-concept-title {
+  font: 700 24px/1.2 var(--lh-font-head);
+  letter-spacing: -0.02em;
+  margin: 0;
+  color: var(--lh-text);
+}
+
+.page-learning-hub .hub-active-concept-desc {
+  font-size: 14.5px;
+  line-height: 1.5;
+  color: var(--lh-text-2);
+  margin: 0;
+}
+
+/* Side Card Enhancements */
+.page-learning-hub .hub-card-header-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.page-learning-hub .hub-card-badge {
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--lh-text-3);
+  background: var(--lh-surface);
+  padding: 2px 7px;
+  border-radius: 6px;
+  border: 1px solid var(--lh-border);
+}
+
+.page-learning-hub .hub-planner-box {
+  margin-top: 14px;
+}
+
+.page-learning-hub .btn-sm {
+  font-size: 12px;
+  padding: 6px 12px;
+  border-radius: 8px;
+}
+
+/* Chapter Card Enhancements in Library Grid */
+.page-learning-hub .hub-chapter {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px 20px;
+  background: var(--lh-surface);
+  border: 1px solid var(--lh-border);
+  border-radius: var(--lh-radius);
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.16s ease;
+  margin-bottom: 10px;
+}
+
+.page-learning-hub .hub-chapter:hover {
+  background: var(--lh-raised);
+  border-color: var(--lh-border-strong);
+  transform: translateX(2px);
+}
+
+.page-learning-hub .hub-chapter-num {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 700;
+  background: var(--lh-raised);
+  border: 1px solid var(--lh-border);
+  color: var(--lh-text-2);
+  flex-shrink: 0;
+}
+
+.page-learning-hub .hub-chapter-body {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+  min-width: 0;
+}
+
+.page-learning-hub .hub-chapter-name {
+  font-size: 15.5px;
+  font-weight: 600;
+  color: var(--lh-text);
+  letter-spacing: -0.01em;
+}
+
+.page-learning-hub .hub-chapter-meta {
+  font-size: 12.5px;
+  color: var(--lh-text-3);
+}
+
+.page-learning-hub .hub-chapter-arrow {
+  font-size: 16px;
+  color: var(--lh-text-3);
+  transition: transform 0.16s ease;
+}
+
+.page-learning-hub .hub-chapter:hover .hub-chapter-arrow {
+  color: var(--lh-text);
+  transform: translateX(3px);
+}
