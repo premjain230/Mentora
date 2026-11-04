@@ -14,6 +14,15 @@ import {
   TransformScene,
   WaveScene,
 } from "./scenes2d";
+import {
+  MotionSimulationScene,
+  VectorDiagramScene,
+  ChemicalReactionScene,
+  LabelledDiagramScene,
+  HistoricalTimelineScene,
+  StepByStepDerivationScene,
+  GeographicMapScene,
+} from "./dedicatedScenes";
 
 // 3D is only downloaded when a lesson actually contains a 3D visual.
 const Model3D = dynamic(() => import("./Model3D"), {
@@ -86,10 +95,27 @@ function PhotoCard({ visual }: { visual: LearningVisual }) {
 function renderScene(visual: LearningVisual) {
   const params = visual.params || {};
   switch (visual.renderer) {
-    case "circuit":
-      return <CircuitScene params={params} />;
+    case "motion_simulation":
+      return <MotionSimulationScene params={params} />;
+    case "interactive_graph":
+      return <GraphScene params={params} />;
+    case "vector_diagram":
+      return <VectorDiagramScene params={params} />;
+    case "force_diagram":
     case "force":
       return <ForceScene params={params} />;
+    case "chemical_reaction":
+      return <ChemicalReactionScene params={params} />;
+    case "labelled_diagram":
+      return <LabelledDiagramScene params={params} />;
+    case "historical_timeline":
+      return <HistoricalTimelineScene params={params} />;
+    case "step_by_step_derivation":
+      return <StepByStepDerivationScene params={params} />;
+    case "geography_map":
+      return <GeographicMapScene params={params} />;
+    case "circuit":
+      return <CircuitScene params={params} />;
     case "ray":
       return <RayScene params={params} />;
     case "wave":
@@ -99,10 +125,12 @@ function renderScene(visual: LearningVisual) {
     case "transform":
       return <TransformScene params={params} />;
     case "cycle":
+    case "biological_process":
       return <CycleScene params={params} />;
     case "cell":
       return <CellScene params={params} />;
     case "atom":
+    case "molecular_viewer":
       return <AtomScene params={params} />;
     case "molecule3d":
     case "solid3d":
@@ -110,7 +138,7 @@ function renderScene(visual: LearningVisual) {
     case "photo":
       return <PhotoCard visual={visual} />;
     default:
-      return null;
+      return <GraphScene params={params} />;
   }
 }
 
@@ -119,7 +147,7 @@ export function VisualLesson({ visual, compact = false }: { visual: LearningVisu
   const body = renderScene(visual);
   if (!body) return null;
 
-  const badge = visual.dimension === "3d" ? "3D model" : visual.dimension === "image" ? "Photograph" : "Diagram";
+  const badge = visual.dimension === "3d" ? "3D model" : visual.dimension === "image" ? "Photograph" : "Interactive Visualizer";
 
   return (
     <figure className={`learn-figure ${compact ? "is-compact" : ""}`} aria-label={visual.title}>

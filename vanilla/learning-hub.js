@@ -177,8 +177,26 @@ export function mount(root, ctx) {
   hydrateTopbar(root, ctx);
   bindEvents();
 
+  // Read URL query parameters to enable direct deep-linking to dedicated concept pages
+  const urlParams = typeof window !== "undefined" && window.location ? new URLSearchParams(window.location.search) : null;
+  const initialConceptId = urlParams ? (urlParams.get("conceptId") || urlParams.get("chapter")) : null;
+  const initialSubConceptId = urlParams ? (urlParams.get("subConceptId") || urlParams.get("concept")) : null;
+  const initialTrack = urlParams ? urlParams.get("track") : null;
+  const initialClass = urlParams ? Number(urlParams.get("class") || urlParams.get("classNum")) : null;
+  const initialSubject = urlParams ? urlParams.get("subject") : null;
+
+  if (initialTrack) state.selection.track = initialTrack;
+  if (initialClass) state.selection.classNum = initialClass;
+  if (initialSubject) state.selection.subject = initialSubject;
+
   render();
-  void fetchCatalog(EMPTY_SELECTION);
+
+  if (initialConceptId) {
+    state.activeSubConceptId = initialSubConceptId;
+    void loadLesson(initialConceptId, { mode: "start", subConceptId: initialSubConceptId });
+  } else {
+    void fetchCatalog(EMPTY_SELECTION);
+  }
 
   return () => {
     clearVisual();
@@ -415,9 +433,10 @@ export function mount(root, ctx) {
         item.append(numSpan, bodySpan, statusTag);
         lifecycle.on(item, "click", () => {
           state.activeConceptIndex = concept.index;
+          state.activeSubConceptId = concept.id;
           state.currentStage = 0;
           state.unlockedStage = Math.max(state.unlockedStage || 0, 0);
-          renderSessionBody();
+          void loadLesson(state.lesson.chapterId || state.lesson.conceptId, { mode: "start", subConceptId: concept.id });
         });
 
         els.conceptsRoadmap.appendChild(item);
@@ -428,17 +447,18 @@ export function mount(root, ctx) {
   function renderActiveConcept(lesson) {
     const outline = lesson.chapterOutline;
     const concepts = outline?.concepts || [];
-    const activeConcept = concepts.find((c) => c.index === state.activeConceptIndex) || concepts[0] || {
+    const activeConcept = concepts.find((c) => c.index === state.activeConceptIndex || c.id === state.activeSubConceptId || c.fullId === state.activeSubConceptId) || concepts[0] || {
       index: 1,
       title: lesson.name,
       description: "Foundational conceptual instruction and practice."
     };
 
     if (els.activeConceptBadge) {
-      els.activeConceptBadge.textContent = `Concept ${activeConcept.index} of ${concepts.length || 1}`;
+      const subjectTag = lesson.subjectType ? `${lesson.subjectType.toUpperCase()} · ` : "";
+      els.activeConceptBadge.textContent = `${subjectTag}Concept ${activeConcept.index} of ${concepts.length || 1}`;
     }
     if (els.activeConceptTitle) {
-      els.activeConceptTitle.textContent = activeConcept.title;
+      els.activeConceptTitle.textContent = lesson.name || activeConcept.title;
     }
     if (els.activeConceptDesc) {
       els.activeConceptDesc.textContent = activeConcept.description;
@@ -980,11 +1000,12 @@ export function mount(root, ctx) {
         nextConceptBtn.type = "button";
         lifecycle.on(nextConceptBtn, "click", () => {
           state.activeConceptIndex = nextConcept.index;
+          state.activeSubConceptId = nextConcept.id;
           state.currentStage = 0;
           state.unlockedStage = 0;
           state.check = null;
           state.evaluation = null;
-          renderSessionBody();
+          void loadLesson(state.lesson.chapterId || state.lesson.conceptId, { mode: "start", subConceptId: nextConcept.id });
         });
         actions.appendChild(nextConceptBtn);
       } else if (state.nextChapter) {
@@ -1449,6 +1470,9 @@ export function mount(root, ctx) {
     try {
       const useAttempts =
         opts.mode === "reteach" && opts.keepAttempts ? state.attempts : [];
+      if (opts.subConceptId) {
+        state.activeSubConceptId = opts.subConceptId;
+      }
       const res = await callTutor(getToken, "lesson", {
         conceptId,
         track: state.selection.track || undefined,
@@ -1461,6 +1485,7 @@ export function mount(root, ctx) {
         persistGenerated: false,
         stageIndex: state.currentStage,
         conceptIndex: state.activeConceptIndex,
+        subConceptId: opts.subConceptId || state.activeSubConceptId || undefined,
       });
       if (lifecycle.disposed) return;
 
@@ -1471,6 +1496,24 @@ export function mount(root, ctx) {
       state.mastery = res.state.mastery;
       state.review = res.state.review;
       state.nextChapter = res.lesson.nextStep?.nextChapter || null;
+
+      if (res.lesson.subConceptId) {
+        state.activeSubConceptId = res.lesson.subConceptId;
+      } else if (res.lesson.activeConcept && res.lesson.activeConcept.id) {
+        state.activeSubConceptId = res.lesson.activeConcept.id;
+      }
+
+      // Sync browser URL so every concept is bookmarkable and shareable
+      if (typeof window !== "undefined" && window.history && window.history.replaceState) {
+        const url = new URL(window.location.href);
+        const chapterId = res.lesson.chapterId || res.lesson.conceptId;
+        url.searchParams.set("conceptId", chapterId);
+        if (state.activeSubConceptId) {
+          url.searchParams.set("subConceptId", state.activeSubConceptId);
+        }
+        window.history.replaceState({}, "", url.toString());
+      }
+
       state.lessonLoading = false;
       render();
       window.setTimeout(() => {
@@ -1510,6 +1553,7 @@ export function mount(root, ctx) {
   }
 
   function closeSession() {
+    clearVisual();
     state.lesson = null;
     state.check = null;
     state.evaluation = null;
@@ -1518,9 +1562,18 @@ export function mount(root, ctx) {
     state.lessonError = null;
     state.reteachNotice = null;
     state.activeConceptIndex = 1;
+    state.activeSubConceptId = null;
     state.currentStage = 0;
     state.unlockedStage = 0;
     checkView = null;
+    if (typeof window !== "undefined" && window.history && window.history.replaceState) {
+      const url = new URL(window.location.href);
+      url.searchParams.delete("conceptId");
+      url.searchParams.delete("subConceptId");
+      url.searchParams.delete("chapter");
+      url.searchParams.delete("concept");
+      window.history.replaceState({}, "", url.toString());
+    }
     render();
     if (state.selection.track) void fetchCatalog(state.selection);
   }

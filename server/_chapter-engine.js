@@ -306,6 +306,364 @@ const CURATED_CONCEPT_DECOMPOSITIONS = {
         practiceType: "problem_solving"
       }
     ]
+  },
+
+  // CBSE Class 9 Science — Motion (NCERT)
+  "cbse.9.science.motion": {
+    chapterSummary: "Motion in a straight line, uniform vs non-uniform motion, distance-time and velocity-time graphs, kinematic equations, and uniform circular motion.",
+    learningObjectives: [
+      "Distinguish scalar distance from vector displacement along rectilinear paths.",
+      "Interpret distance-time and velocity-time graphs to calculate speed, acceleration, and displacement.",
+      "Derive and apply kinematic equations of motion: v = u + at, s = ut + 1/2*at^2, and v^2 = u^2 + 2as.",
+      "Explain uniform circular motion as an accelerated motion with constant speed and continuously changing direction."
+    ],
+    estimatedMinutes: 45,
+    concepts: [
+      {
+        id: "describing_motion_and_reference_points",
+        title: "Describing Motion and Reference Points",
+        description: "Understanding origin, reference frames, and motion as a relative physical phenomenon.",
+        learningObjectives: "Explain how motion depends on the observer's frame of reference.",
+        estimatedMinutes: 7,
+        visualType: "motion_simulation",
+        practiceType: "conceptual"
+      },
+      {
+        id: "distance_and_displacement",
+        title: "Distance and Displacement in Straight-Line Motion",
+        description: "Total path length covered versus shortest straight-line distance from initial to final position.",
+        learningObjectives: "Compute distance and displacement for 1D and right-angle trajectories.",
+        estimatedMinutes: 8,
+        visualType: "motion_simulation",
+        practiceType: "numerical"
+      },
+      {
+        id: "uniform_motion_and_graphs",
+        title: "Uniform Motion, Non-Uniform Motion and Distance-Time Graphs",
+        description: "Equal distances in equal time intervals; calculating speed from slope of distance-time graph.",
+        learningObjectives: "Interpret linear and non-linear s-t graphs to deduce speed.",
+        estimatedMinutes: 8,
+        visualType: "interactive_graph",
+        practiceType: "numerical"
+      },
+      {
+        id: "velocity_and_acceleration",
+        title: "Velocity, Speed with Direction and Acceleration",
+        description: "Speed in a specified direction, rate of change of velocity, positive and negative acceleration.",
+        learningObjectives: "Calculate acceleration a = (v - u)/t and distinguish deceleration.",
+        estimatedMinutes: 10,
+        visualType: "interactive_graph",
+        practiceType: "numerical"
+      },
+      {
+        id: "equations_of_motion_graphical",
+        title: "Kinematic Equations of Motion by Graphical Method",
+        description: "Derivation of v = u + at, s = ut + 1/2*at^2, and v^2 = u^2 + 2as from velocity-time graphs.",
+        learningObjectives: "Derive and solve multi-step problems using Newton's three kinematic equations.",
+        estimatedMinutes: 12,
+        visualType: "interactive_graph",
+        practiceType: "problem_solving"
+      }
+    ]
+  },
+
+  // JEE Main Physics — Kinematics
+  "jee.main.physics.kinematics": {
+    chapterSummary: "Advanced kinematics covering 1D calculus-based motion, 2D projectile motion on horizontal and inclined surfaces, relative motion in 1D/2D, and circular kinematics.",
+    learningObjectives: [
+      "Apply differential and integral calculus to non-uniformly accelerated 1D motion: v = dx/dt, a = dv/dt = v*(dv/dx).",
+      "Decompose 2D projectile motion into independent orthogonal components and solve trajectory equations.",
+      "Analyze relative motion in 2D including river-boat shortest time/path and rain-man velocity vectors.",
+      "Calculate tangential, radial (centripetal), and total acceleration in circular motion."
+    ],
+    estimatedMinutes: 55,
+    concepts: [
+      {
+        id: "calculus_in_1d_motion",
+        title: "Variable Acceleration and Calculus in 1D Kinematics",
+        description: "Solving non-constant acceleration problems using v = dx/dt and a = v*(dv/dx).",
+        learningObjectives: "Integrate acceleration and velocity functions over time and position.",
+        estimatedMinutes: 12,
+        visualType: "step_by_step_derivation",
+        practiceType: "numerical"
+      },
+      {
+        id: "projectile_motion",
+        title: "Projectile Motion and Kinematics in Two Dimensions",
+        description: "Trajectory equation y = x*tan theta * (1 - x/R), time of flight, maximum height, and horizontal range.",
+        learningObjectives: "Derive and solve standard and inclined projectile trajectories in JEE Main.",
+        estimatedMinutes: 15,
+        visualType: "motion_simulation",
+        practiceType: "problem_solving"
+      },
+      {
+        id: "relative_motion_2d",
+        title: "Relative Motion in 1D and 2D (River-Boat & Rain-Man)",
+        description: "Vector relative velocity v_AB = v_A - v_B, drift minimization, and apparent rain angles.",
+        learningObjectives: "Solve river crossing minimum time, zero drift, and umbrella holding angle problems.",
+        estimatedMinutes: 14,
+        visualType: "vector_diagram",
+        practiceType: "problem_solving"
+      },
+      {
+        id: "circular_kinematics",
+        title: "Circular Motion Kinematics and Acceleration Vectors",
+        description: "Angular displacement, angular velocity omega, tangential acceleration a_t, and centripetal acceleration a_c = v^2/r.",
+        learningObjectives: "Calculate net acceleration vector magnitude sqrt(a_t^2 + a_c^2) and orientation in non-uniform circular motion.",
+        estimatedMinutes: 14,
+        visualType: "interactive_graph",
+        practiceType: "numerical"
+      }
+    ]
+  },
+
+  // JEE Advanced / Main — Laws of Motion
+  "jee.main.physics.laws_of_motion": {
+    chapterSummary: "Newtonian dynamics, free body diagrams, pulley-string constraint equations, non-inertial frames and pseudo forces, static and kinetic friction, and banked turn dynamics.",
+    learningObjectives: [
+      "Formulate string and wedge constraint relations: sum(T * a) = 0 and virtual work.",
+      "Solve dynamic equilibrium in accelerating reference frames using D'Alembert pseudo forces (F_pseudo = -m*a_frame).",
+      "Analyze static friction thresholds (f_s <= mu_s * N) and kinetic friction across multi-block systems.",
+      "Calculate optimum and maximum safe speeds on banked rough road turns."
+    ],
+    estimatedMinutes: 55,
+    concepts: [
+      {
+        id: "constraint_relations_pulleys",
+        title: "Pulley-Block Systems and String Constraint Relations",
+        description: "String length invariance, movable pulley velocity/acceleration ratios, and virtual work.",
+        learningObjectives: "Set up constraint equations relating accelerations of coupled multi-body systems.",
+        estimatedMinutes: 14,
+        visualType: "force_diagram",
+        practiceType: "problem_solving"
+      },
+      {
+        id: "pseudo_forces_non_inertial",
+        title: "Non-Inertial Reference Frames and Pseudo Forces",
+        description: "Applying Newton's second law inside accelerating elevators, wedges, and rotating frames.",
+        learningObjectives: "Apply pseudo forces F_p = -m*A to solve problems in accelerated reference frames.",
+        estimatedMinutes: 14,
+        visualType: "force_diagram",
+        practiceType: "problem_solving"
+      },
+      {
+        id: "static_kinetic_friction_blocks",
+        title: "Friction Laws and Two-Block System Dynamics",
+        description: "Static friction bounds, kinetic friction, critical threshold forces, and relative slipping on rough surfaces.",
+        learningObjectives: "Determine whether stacked blocks move together or slide relative to each other.",
+        estimatedMinutes: 14,
+        visualType: "force_diagram",
+        practiceType: "problem_solving"
+      },
+      {
+        id: "circular_dynamics_banking",
+        title: "Dynamics of Circular Motion and Road Banking",
+        description: "Centripetal force provider, conical pendulum, and safe speed limits on rough banked turns.",
+        learningObjectives: "Calculate maximum and minimum velocity on banked curves with friction.",
+        estimatedMinutes: 13,
+        visualType: "force_diagram",
+        practiceType: "numerical"
+      }
+    ]
+  },
+
+  // CBSE Class 10 Science — Chemical Reactions and Equations
+  "cbse.10.science.chemical_reactions_and_equations": {
+    chapterSummary: "Writing and balancing chemical equations, indicators of chemical change, classifications of chemical reactions, exothermic/endothermic effects, and real-world redox (corrosion and rancidity).",
+    learningObjectives: [
+      "Balance chemical equations using the Law of Conservation of Mass.",
+      "Classify combination, decomposition (thermal, electrolytic, photolytic), displacement, and double displacement reactions.",
+      "Identify oxidation and reduction in redox reactions in terms of oxygen/hydrogen transfer and electron loss/gain.",
+      "Explain the chemical basis of corrosion (rusting of iron) and rancidity of dietary fats."
+    ],
+    estimatedMinutes: 45,
+    concepts: [
+      {
+        id: "balancing_and_types",
+        title: "Balancing Chemical Equations and Reaction Types",
+        description: "Conservation of mass, stoichiometric coefficients, and identifying combination vs decomposition.",
+        learningObjectives: "Balance equations and classify combination, thermal decomposition, and precipitation.",
+        estimatedMinutes: 10,
+        visualType: "chemical_reaction",
+        practiceType: "numerical"
+      },
+      {
+        id: "displacement_and_reactivity_series",
+        title: "Displacement and Double Displacement Reactions",
+        description: "Single displacement governed by metal reactivity series; double displacement precipitation and ion exchange.",
+        learningObjectives: "Predict reaction products when metals react with aqueous salt solutions.",
+        estimatedMinutes: 11,
+        visualType: "chemical_reaction",
+        practiceType: "conceptual"
+      },
+      {
+        id: "oxidation_reduction_redox",
+        title: "Oxidation, Reduction and Redox Reactions",
+        description: "Oxygen/hydrogen transfer, electronic concept of redox, oxidizing and reducing agents.",
+        learningObjectives: "Identify the substance oxidized, substance reduced, oxidizing agent, and reducing agent.",
+        estimatedMinutes: 12,
+        visualType: "chemical_reaction",
+        practiceType: "problem_solving"
+      },
+      {
+        id: "corrosion_and_rancidity",
+        title: "Everyday Effects of Redox: Corrosion and Rancidity",
+        description: "Atmospheric oxidation of metals (rusting of iron) and oxidative spoilage of fatty foods.",
+        learningObjectives: "Explain prevention methods: galvanization, electroplating, antioxidants, and inert nitrogen packing.",
+        estimatedMinutes: 12,
+        visualType: "chemical_reaction",
+        practiceType: "application"
+      }
+    ]
+  },
+
+  // CBSE Class 10 Mathematics — Quadratic Equations
+  "cbse.10.mathematics.quadratic_equations": {
+    chapterSummary: "Standard form ax^2 + bx + c = 0, solution by factorization and quadratic formula, nature of roots via discriminant D = b^2 - 4ac, and applied word problems.",
+    learningObjectives: [
+      "Solve quadratic equations by factorization (splitting the middle term).",
+      "Derive and apply the Quadratic Formula x = (-b ± sqrt(b^2 - 4ac)) / (2a).",
+      "Determine the nature of roots using the discriminant D = b^2 - 4ac.",
+      "Formulate and solve real-world problems on speed-distance, geometry, and age relations."
+    ],
+    estimatedMinutes: 45,
+    concepts: [
+      {
+        id: "standard_form_and_factorization",
+        title: "Standard Form and Solution by Factorization",
+        description: "ax^2 + bx + c = 0 with a != 0; finding roots by splitting the middle term.",
+        learningObjectives: "Factorize quadratic expressions and find roots using the zero product rule.",
+        estimatedMinutes: 11,
+        visualType: "step_by_step_derivation",
+        practiceType: "numerical"
+      },
+      {
+        id: "roots_and_discriminant",
+        title: "Quadratic Formula and the Nature of Roots",
+        description: "Sridharacharya's formula, discriminant D = b^2 - 4ac, and conditions for distinct, equal, or non-real roots.",
+        learningObjectives: "Calculate discriminant and state the nature of roots without solving.",
+        estimatedMinutes: 10,
+        visualType: "step_by_step_derivation",
+        practiceType: "numerical"
+      },
+      {
+        id: "applied_quadratic_word_problems",
+        title: "Applied Word Problems on Speed, Time and Geometry",
+        description: "Translating word descriptions into quadratic equations (upstream/downstream boats, pipes filling cisterns).",
+        learningObjectives: "Formulate and solve real-world quadratic models, rejecting extraneous negative roots.",
+        estimatedMinutes: 14,
+        visualType: "step_by_step_derivation",
+        practiceType: "problem_solving"
+      },
+      {
+        id: "vieta_relations_roots",
+        title: "Relations Between Roots and Coefficients",
+        description: "Sum of roots alpha + beta = -b/a; product of roots alpha * beta = c/a; forming quadratic equations from roots.",
+        learningObjectives: "Construct quadratic equations given root relations or symmetric expressions.",
+        estimatedMinutes: 10,
+        visualType: "step_by_step_derivation",
+        practiceType: "conceptual"
+      }
+    ]
+  },
+
+  // Maharashtra Board Class 9 History — Sources of History
+  "maharashtra.9.history.sources_of_history": {
+    chapterSummary: "Modern Indian historical sources: written records, archives, material sources like coins and postage stamps, oral folk traditions (powadas), and audio-visual archives (FTII).",
+    learningObjectives: [
+      "Classify sources into Written, Material, Oral, and Audio-Visual categories.",
+      "Analyze the role of the National Archives of India and official gazettes.",
+      "Explain the historical significance of coins, postage stamps, and FTII Pune newsreels."
+    ],
+    estimatedMinutes: 35,
+    concepts: [
+      {
+        id: "primary_and_secondary_sources",
+        title: "Written, Material, Oral and Audio-Visual Historical Sources",
+        description: "The four pillars of modern historical evidence and the National Archives of India.",
+        learningObjectives: "Categorize modern sources and evaluate their historical authenticity.",
+        estimatedMinutes: 8,
+        visualType: "historical_timeline",
+        practiceType: "conceptual"
+      },
+      {
+        id: "written_sources_and_press",
+        title: "Written Sources, Newspapers and Official Archives",
+        description: "Periodicals, diaries, government gazettes, and the National Archives in New Delhi.",
+        learningObjectives: "Examine how modern print media and state archives record contemporary history.",
+        estimatedMinutes: 9,
+        visualType: "historical_timeline",
+        practiceType: "conceptual"
+      },
+      {
+        id: "material_sources_coins_stamps",
+        title: "Material Sources: Coins, Currency and Commemorative Stamps",
+        description: "Numismatics and philately as mirrors of changing socio-economic policies in independent India.",
+        learningObjectives: "Analyze messages, metals, and motifs on coins and postage stamps.",
+        estimatedMinutes: 9,
+        visualType: "historical_timeline",
+        practiceType: "application"
+      },
+      {
+        id: "oral_and_audiovisual_sources",
+        title: "Oral Traditions (Powadas) and Audio-Visual Media (FTII)",
+        description: "Folk ballads of the Samyukta Maharashtra Movement, Doordarshan, and FTII documentary archives.",
+        learningObjectives: "Assess how oral testimonies and film archives preserve verbatim voices of historical eras.",
+        estimatedMinutes: 9,
+        visualType: "historical_timeline",
+        practiceType: "conceptual"
+      }
+    ]
+  },
+
+  // Maharashtra Board Class 9 Geography — Distributional Maps
+  "maharashtra.9.geography.distributional_maps": {
+    chapterSummary: "Thematic mapping techniques: Dot Method for discrete counts, Choropleth Method for administrative densities, and Isopleth Method for continuous natural distributions.",
+    learningObjectives: [
+      "Explain the purpose of thematic distributional maps.",
+      "Apply the Dot Method to discrete population and livestock data.",
+      "Interpret the Choropleth Method using class intervals and graded shading.",
+      "Analyze the Isopleth Method (isohyets, isotherms, isobars) for continuous terrain variables."
+    ],
+    estimatedMinutes: 35,
+    concepts: [
+      {
+        id: "thematic_mapping_methods",
+        title: "Thematic Mapping: Dot Method, Choropleth Method and Isopleth Method",
+        description: "Comparative study of the three fundamental statistical mapping techniques in geography.",
+        learningObjectives: "Select the appropriate mapping method for discrete vs administrative vs continuous data.",
+        estimatedMinutes: 8,
+        visualType: "geographic_map",
+        practiceType: "conceptual"
+      },
+      {
+        id: "dot_method_principles",
+        title: "The Dot Method: Principles, Scaling and Precautions",
+        description: "Assigning uniform statistical values to dots and placing them according to physiography.",
+        learningObjectives: "Calculate dot scale and map rural population distribution accurately.",
+        estimatedMinutes: 9,
+        visualType: "geographic_map",
+        practiceType: "numerical"
+      },
+      {
+        id: "choropleth_shading_method",
+        title: "The Choropleth Method: Density Intervals and Shading",
+        description: "Classifying administrative regions into density brackets and applying color gradients.",
+        learningObjectives: "Read and construct choropleth maps for population density and literacy rates.",
+        estimatedMinutes: 9,
+        visualType: "geographic_map",
+        practiceType: "application"
+      },
+      {
+        id: "isopleth_contours_isolines",
+        title: "The Isopleth Method: Isolines, Isohyets and Isotherms",
+        description: "Interpolating continuous natural data across geographical terrain using lines of equal value.",
+        learningObjectives: "Interpret rainfall isohyets and temperature isotherms on regional maps.",
+        estimatedMinutes: 9,
+        visualType: "geographic_map",
+        practiceType: "conceptual"
+      }
+    ]
   }
 };
 

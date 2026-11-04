@@ -124,6 +124,16 @@ export interface Lesson {
   retry?: boolean;
   cacheKey?: string;
   advanced?: { heading: string; body: string } | null;
+  chapterOutline?: ChapterOutline;
+  activeConcept?: ChapterConcept;
+  subConceptId?: string | null;
+  chapterId?: string | null;
+  chapterTitle?: string | null;
+  subjectType?: string | null;
+  layoutType?: string | null;
+  adapt?: any;
+  remember?: any;
+  questions?: any[];
 }
 
 export interface MasterySummary {

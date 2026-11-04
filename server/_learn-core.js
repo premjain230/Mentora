@@ -45,6 +45,7 @@ const {
   normalizeAdaptiveReply,
 } = require("./_learn-adaptive");
 const { getChapterOutline } = require("./_chapter-engine");
+const { resolveDedicatedConceptPackage } = require("./_concept-engine");
 
 const VISUALS = require("../lib/learning/visual-catalog.json");
 const PACKS = require("../lib/learning/lesson-packs.json");
@@ -1785,7 +1786,85 @@ async function lessonTutor(params = {}) {
 
   const crossSubjectPrereqs = concept ? getCrossSubjectPrerequisites(concept.conceptId) : [];
 
-  if (pack) {
+  const chapterOutline = getChapterOutline(concept.conceptId, state);
+  let activeSub = null;
+  if (chapterOutline && Array.isArray(chapterOutline.concepts)) {
+    if (body.subConceptId) {
+      activeSub = chapterOutline.concepts.find((c) => c.id === body.subConceptId || c.fullId === body.subConceptId) || null;
+    }
+    if (!activeSub && typeof body.conceptIndex === "number") {
+      activeSub = chapterOutline.concepts.find((c) => c.index === body.conceptIndex) || null;
+    }
+    if (!activeSub) {
+      activeSub = chapterOutline.concepts[0];
+    }
+  }
+
+  const requestedSubId = activeSub ? activeSub.id : body.subConceptId;
+  const dedicatedPkg = resolveDedicatedConceptPackage(concept.conceptId, requestedSubId, { trackId, classNum, subject });
+
+  if (dedicatedPkg && dedicatedPkg.isReviewed) {
+    const q0 = dedicatedPkg.practice && dedicatedPkg.practice.questions ? dedicatedPkg.practice.questions[0] : null;
+    lesson = {
+      conceptId: dedicatedPkg.conceptId,
+      subConceptId: dedicatedPkg.subConceptId,
+      name: dedicatedPkg.conceptTitle,
+      title: dedicatedPkg.conceptTitle,
+      subject: dedicatedPkg.subject,
+      subjectType: dedicatedPkg.subjectType,
+      layoutType: dedicatedPkg.layoutType,
+      chapterId: dedicatedPkg.chapterId,
+      chapterTitle: dedicatedPkg.chapterTitle,
+      topic: concept.topic,
+      trackLabel,
+      level,
+      source: dedicatedPkg.source,
+      reviewed: dedicatedPkg.isReviewed,
+      version: "dedicated-v3",
+      prerequisites: (dedicatedPkg.prerequisites || []).map((p) => ({ conceptId: "", name: p, status: "likely known" })),
+      intro: dedicatedPkg.explain.conceptIntro,
+      keyIdea: dedicatedPkg.explain.keyTakeaway,
+      teachingStrategy: dedicatedPkg.explain.teachingStrategy || teachingStrategy,
+      crossSubjectLink: crossSubjectPrereqs.length > 0 ? crossSubjectPrereqs[0] : null,
+      sections: dedicatedPkg.explain.sections,
+      keyTerms: dedicatedPkg.explain.rulesOrFormulas || [],
+      workedExample: q0 ? {
+        problem: q0.prompt,
+        steps: q0.solutionSteps || [],
+        answer: q0.expectedAnswer || ""
+      } : null,
+      visual: {
+        renderer: dedicatedPkg.visualize.renderer || dedicatedPkg.visualize.visualType,
+        title: dedicatedPkg.visualize.title,
+        subtitle: dedicatedPkg.visualize.subtitle,
+        altText: dedicatedPkg.visualize.title,
+        observe: dedicatedPkg.visualize.observe,
+        dimension: "2d",
+        params: dedicatedPkg.visualize.visualProps || {},
+        interactiveControls: dedicatedPkg.visualize.interactiveControls || []
+      },
+      check: q0 ? {
+        questionId: q0.id,
+        prompt: q0.prompt,
+        hint: (q0.hints && q0.hints[0]) || "",
+        hints: q0.hints || [],
+        options: q0.options || null,
+        expectedAnswer: q0.expectedAnswer,
+        explanation: q0.explanation,
+        difficulty: q0.difficulty,
+        kind: q0.type
+      } : null,
+      questions: dedicatedPkg.practice ? dedicatedPkg.practice.questions : [],
+      adapt: dedicatedPkg.adapt,
+      remember: dedicatedPkg.remember,
+      evaluate: dedicatedPkg.evaluate,
+      completed: false,
+      reteach: null,
+      revision: { suggestedDays: (dedicatedPkg.remember && dedicatedPkg.remember.spacedIntervalDays) || [1, 3, 7], nextReviewAt: null },
+      mastery: masterySummary(state.mastery),
+      scope: { trackId, classNum, subject }
+    };
+  } else if (pack) {
     lesson = buildReusableLesson({
       pack,
       concept,
@@ -1800,9 +1879,10 @@ async function lessonTutor(params = {}) {
     lesson.reviewed = true;
     lesson.scope = { trackId, classNum, subject };
   } else {
+    const effectiveConceptId = activeSub ? `${concept.conceptId}.${activeSub.id}` : concept.conceptId;
     const cacheKey = lessonCacheKey({
       kind: "lesson",
-      conceptId: concept.conceptId,
+      conceptId: effectiveConceptId,
       trackId,
       classNum,
       language,
@@ -1819,12 +1899,14 @@ async function lessonTutor(params = {}) {
       }
     }
     if (!lesson) {
-      const candidates = selectVisualCandidates(`${concept.name} ${concept.topic}`, concept.subject, 3);
+      const activeTitle = activeSub ? activeSub.title : concept.name;
+      const activeDesc = activeSub ? activeSub.description : concept.topic;
+      const candidates = selectVisualCandidates(`${activeTitle} ${activeDesc}`, concept.subject, 3);
       const question = body.focus
-        ? `${body.focus}\n\nTeach this curriculum chapter: ${concept.name} (${concept.topic}), using a DIFFERENT explanation approach from a plain textbook definition.`
+        ? `${body.focus}\n\nTeach this specific curriculum concept: ${activeTitle} (${activeDesc}) in chapter ${concept.name}.`
         : mode === "reteach"
-        ? `The first explanation did not work. Teach ${concept.name} (${concept.topic}) again starting from a concrete everyday example and a different visual, then connect it to the formal idea. Do not repeat the same wording.`
-        : `Teach this curriculum chapter: ${concept.name} (${concept.topic}).`;
+        ? `The first explanation did not work. Teach ${activeTitle} again using a different concrete everyday example and visual.`
+        : `Teach this specific curriculum concept: ${activeTitle} (${activeDesc}) in chapter ${concept.name} (${concept.subject}).`;
       const messages = buildChatMessages({
         concept,
         trackId,
@@ -1863,7 +1945,7 @@ async function lessonTutor(params = {}) {
               kind: "lesson",
               lesson: cachedLesson,
               model: result.model,
-              conceptId: concept.conceptId,
+              conceptId: effectiveConceptId,
               level,
               language,
               usage: result.usage,
@@ -1873,7 +1955,69 @@ async function lessonTutor(params = {}) {
         }
       }
     }
-    if (!lesson) {
+    if (!lesson && dedicatedPkg) {
+      // Use synthesized syllabus package before resorting to empty fallback
+      const q0 = dedicatedPkg.practice && dedicatedPkg.practice.questions ? dedicatedPkg.practice.questions[0] : null;
+      lesson = {
+        conceptId: dedicatedPkg.conceptId,
+        subConceptId: dedicatedPkg.subConceptId,
+        name: dedicatedPkg.conceptTitle,
+        title: dedicatedPkg.conceptTitle,
+        subject: dedicatedPkg.subject,
+        subjectType: dedicatedPkg.subjectType,
+        layoutType: dedicatedPkg.layoutType,
+        chapterId: dedicatedPkg.chapterId,
+        chapterTitle: dedicatedPkg.chapterTitle,
+        topic: concept.topic,
+        trackLabel,
+        level,
+        source: dedicatedPkg.source,
+        reviewed: false,
+        version: "dedicated-v3-synth",
+        prerequisites: (dedicatedPkg.prerequisites || []).map((p) => ({ conceptId: "", name: p, status: "likely known" })),
+        intro: dedicatedPkg.explain.conceptIntro,
+        keyIdea: dedicatedPkg.explain.keyTakeaway,
+        teachingStrategy: dedicatedPkg.explain.teachingStrategy || teachingStrategy,
+        crossSubjectLink: crossSubjectPrereqs.length > 0 ? crossSubjectPrereqs[0] : null,
+        sections: dedicatedPkg.explain.sections,
+        keyTerms: dedicatedPkg.explain.rulesOrFormulas || [],
+        workedExample: q0 ? {
+          problem: q0.prompt,
+          steps: q0.solutionSteps || [],
+          answer: q0.expectedAnswer || ""
+        } : null,
+        visual: {
+          renderer: dedicatedPkg.visualize.renderer || dedicatedPkg.visualize.visualType,
+          title: dedicatedPkg.visualize.title,
+          subtitle: dedicatedPkg.visualize.subtitle,
+          altText: dedicatedPkg.visualize.title,
+          observe: dedicatedPkg.visualize.observe,
+          dimension: "2d",
+          params: dedicatedPkg.visualize.visualProps || {},
+          interactiveControls: dedicatedPkg.visualize.interactiveControls || []
+        },
+        check: q0 ? {
+          questionId: q0.id,
+          prompt: q0.prompt,
+          hint: (q0.hints && q0.hints[0]) || "",
+          hints: q0.hints || [],
+          options: q0.options || null,
+          expectedAnswer: q0.expectedAnswer,
+          explanation: q0.explanation,
+          difficulty: q0.difficulty,
+          kind: q0.type
+        } : null,
+        questions: dedicatedPkg.practice ? dedicatedPkg.practice.questions : [],
+        adapt: dedicatedPkg.adapt,
+        remember: dedicatedPkg.remember,
+        evaluate: dedicatedPkg.evaluate,
+        completed: false,
+        reteach: null,
+        revision: { suggestedDays: [1, 3, 7], nextReviewAt: null },
+        mastery: masterySummary(state.mastery),
+        retry: false,
+      };
+    } else if (!lesson) {
       // Honest fallback: curriculum metadata only, no fabricated teaching.
       lesson = {
         conceptId: concept.conceptId,
@@ -1949,7 +2093,6 @@ async function lessonTutor(params = {}) {
     return { ...p, status };
   });
 
-  const chapterOutline = getChapterOutline(concept.conceptId, state);
   lesson.chapterOutline = chapterOutline;
   if (chapterOutline && Array.isArray(chapterOutline.concepts)) {
     const targetIdx = typeof body.conceptIndex === "number" ? body.conceptIndex : 1;
@@ -2130,6 +2273,22 @@ async function evaluateTutor(params = {}) {
   if (pack && body.questionId) {
     packQuestion = (pack.questions || []).find((q) => q.id === body.questionId) || null;
     if (packQuestion) expected = packQuestion.expected || expected;
+  }
+
+  const dedicatedPkg = concept ? resolveDedicatedConceptPackage(concept.conceptId, body.subConceptId || body.activeSubConceptId) : null;
+  if (!packQuestion && dedicatedPkg && dedicatedPkg.practice && Array.isArray(dedicatedPkg.practice.questions) && body.questionId) {
+    const dq = dedicatedPkg.practice.questions.find((q) => q.id === body.questionId);
+    if (dq) {
+      expected = dq.expectedAnswer || expected;
+      packQuestion = {
+        id: dq.id,
+        prompt: dq.prompt,
+        expected: dq.expectedAnswer || "",
+        explanation: dq.explanation || "",
+        accept: [dq.expectedAnswer].filter(Boolean),
+        keywords: [],
+      };
+    }
   }
 
   // A generated lesson's answer key is stored server-side with the cached lesson,
