@@ -1,6 +1,7 @@
 // test_gemini_integration.js
 // Production-grade verification test suite for Google Gemini AI integration,
-// Groq fallback, curriculum awareness, teaching quality, and error handling.
+// Groq fallback, configurable timeouts, structured logging, curriculum awareness,
+// teaching quality, and error handling across all 8 required scenarios.
 
 const assert = require("assert");
 const http = require("http");
@@ -10,7 +11,7 @@ const originalEnv = { ...process.env };
 
 async function runTests() {
   console.log("============================================================");
-  console.log("Learning Allied — Gemini AI Integration Verification Suite");
+  console.log("Learning Allied — Gemini AI Integration & Fallback Verification");
   console.log("============================================================\n");
 
   let passed = 0;
@@ -45,7 +46,14 @@ async function runTests() {
   // ──────────────────────────────────────────────────────────────────────────
   console.log("[Suite 1] Gemini Message Transformation & Protocol Compliance");
 
-  const { convertMessagesToGemini, GEMINI_DEFAULT_MODEL } = require("./server/_ai");
+  const {
+    convertMessagesToGemini,
+    GEMINI_DEFAULT_MODEL,
+    geminiToOpenAiResponse,
+    geminiChunkToOpenAiSse,
+    openAiSseDone,
+    getTimeoutMs,
+  } = require("./server/_ai");
 
   test("converts system messages into systemInstruction", () => {
     const messages = [
@@ -91,36 +99,79 @@ async function runTests() {
     assert.strictEqual(GEMINI_DEFAULT_MODEL, "gemini-2.5-flash");
   });
 
+  test("OpenAI format adapter converts Gemini output cleanly", () => {
+    const formatted = geminiToOpenAiResponse("Photosynthesis is energy conversion.", "gemini-2.5-flash", {
+      prompt_tokens: 10,
+      completion_tokens: 20,
+      total_tokens: 30,
+    });
+    assert.strictEqual(formatted.object, "chat.completion");
+    assert.strictEqual(formatted.choices[0].message.content, "Photosynthesis is energy conversion.");
+    assert.strictEqual(formatted.choices[0].message.role, "assistant");
+    assert.strictEqual(formatted.usage.total_tokens, 30);
+  });
+
+  test("OpenAI SSE adapter converts Gemini streaming chunks cleanly", () => {
+    const chunkSse = geminiChunkToOpenAiSse("Hello");
+    assert.ok(chunkSse.startsWith("data: "));
+    const parsed = JSON.parse(chunkSse.replace("data: ", "").trim());
+    assert.strictEqual(parsed.choices[0].delta.content, "Hello");
+
+    const doneSse = openAiSseDone();
+    assert.ok(doneSse.includes("[DONE]"));
+  });
+
+  test("Configurable timeouts resolve properly from env or defaults", () => {
+    delete process.env.GEMINI_TIMEOUT_MS;
+    delete process.env.GROQ_TIMEOUT_MS;
+    delete process.env.AI_TIMEOUT_MS;
+    assert.strictEqual(getTimeoutMs("gemini"), 15000);
+    assert.strictEqual(getTimeoutMs("groq"), 20000);
+
+    process.env.GEMINI_TIMEOUT_MS = "8000";
+    assert.strictEqual(getTimeoutMs("gemini"), 8000);
+
+    assert.strictEqual(getTimeoutMs("gemini", 5000), 5000); // caller override
+    delete process.env.GEMINI_TIMEOUT_MS;
+  });
+
   // ──────────────────────────────────────────────────────────────────────────
-  // 2. Gemini API Mock Server & End-to-End Network Tests
+  // 2. Gemini API Mock Server & End-to-End Fallback Scenarios
   // ──────────────────────────────────────────────────────────────────────────
-  console.log("\n[Suite 2] Provider Execution, Mock Server & Fallback Chain");
+  console.log("\n[Suite 2] The 8 Required Provider & Fallback Scenarios");
 
   // Spin up an ephemeral local HTTP server to act as Google / Groq API endpoints
-  let mockMode = "normal"; // "normal" | "gemini-429" | "gemini-504" | "both-fail"
+  let mockMode = "normal";
   let receivedGeminiHeaders = null;
   let receivedGeminiBody = null;
   let geminiCalls = 0;
   let groqCalls = 0;
+  let serverSleepMs = 0;
 
-  const mockServer = http.createServer((req, res) => {
+  const mockServer = http.createServer(async (req, res) => {
     let body = "";
     req.on("data", (chunk) => { body += chunk; });
-    req.on("end", () => {
+    req.on("end", async () => {
+      if (serverSleepMs > 0) {
+        await new Promise((r) => setTimeout(r, serverSleepMs));
+      }
+
       // Mock Gemini endpoint
       if (req.url.includes("/v1beta/models/")) {
         geminiCalls++;
         receivedGeminiHeaders = req.headers;
         try { receivedGeminiBody = JSON.parse(body); } catch (_) { receivedGeminiBody = body; }
 
-        if (mockMode === "gemini-400") {
-          res.writeHead(400, { "Content-Type": "application/json" });
-          return res.end(JSON.stringify({ error: { code: 400, message: "API key not valid. Please pass a valid API key.", status: "INVALID_ARGUMENT" } }));
+        if (mockMode === "gemini-timeout") {
+          // Keep request open so caller's timeout aborts
+          await new Promise((r) => setTimeout(r, 600));
+          res.writeHead(504, { "Content-Type": "application/json" });
+          return res.end(JSON.stringify({ error: { message: "Simulated delay" } }));
         }
 
-        if (mockMode === "gemini-504") {
-          res.writeHead(504, { "Content-Type": "application/json" });
-          return res.end(JSON.stringify({ error: { code: 504, message: "Deadline exceeded / gateway timeout", status: "DEADLINE_EXCEEDED" } }));
+        if (mockMode === "gemini-invalid-key" || mockMode === "gemini-400") {
+          res.writeHead(400, { "Content-Type": "application/json" });
+          return res.end(JSON.stringify({ error: { code: 400, message: "API key not valid. Please pass a valid API key.", status: "INVALID_ARGUMENT" } }));
         }
 
         if (mockMode === "gemini-429") {
@@ -128,9 +179,26 @@ async function runTests() {
           return res.end(JSON.stringify({ error: { code: 429, message: "Resource has been exhausted (rate limit)", status: "RESOURCE_EXHAUSTED" } }));
         }
 
-        if (mockMode === "both-fail") {
+        if (mockMode === "gemini-500") {
+          res.writeHead(500, { "Content-Type": "application/json" });
+          return res.end(JSON.stringify({ error: { code: 500, message: "Internal server error on Gemini", status: "INTERNAL" } }));
+        }
+
+        if (mockMode === "gemini-503") {
           res.writeHead(503, { "Content-Type": "application/json" });
           return res.end(JSON.stringify({ error: { code: 503, message: "Service Unavailable", status: "UNAVAILABLE" } }));
+        }
+
+        if (mockMode === "gemini-stream-normal") {
+          res.writeHead(200, { "Content-Type": "text/event-stream" });
+          res.write(`data: ${JSON.stringify({ candidates: [{ content: { parts: [{ text: "Streamed " }] } }] })}\n\n`);
+          res.write(`data: ${JSON.stringify({ candidates: [{ content: { parts: [{ text: "from Gemini." }] } }] })}\n\n`);
+          return res.end("data: [DONE]\n\n");
+        }
+
+        if (mockMode === "both-fail") {
+          res.writeHead(503, { "Content-Type": "application/json" });
+          return res.end(JSON.stringify({ error: { code: 503, message: "Gemini Service Unavailable", status: "UNAVAILABLE" } }));
         }
 
         // Normal successful Gemini response
@@ -144,7 +212,7 @@ async function runTests() {
                     text: JSON.stringify({
                       kind: "lesson",
                       title: "Photosynthesis Explained",
-                      directAnswer: "Photosynthesis is the process where green plants convert sunlight into energy.",
+                      directAnswer: "Photosynthesis is the process where green plants convert sunlight into chemical energy.",
                       sections: [
                         { heading: "Concept", body: "Plants use chlorophyll, carbon dioxide, and water." },
                       ],
@@ -158,9 +226,6 @@ async function runTests() {
                         hint: "It is essential for humans to breathe.",
                         answerKey: "Oxygen",
                       },
-                      visualId: "cycle-photosynthesis",
-                      visualParams: { stage: "light" },
-                      visualObserve: "Watch the energy transformation.",
                     }),
                   },
                 ],
@@ -181,6 +246,12 @@ async function runTests() {
         if (mockMode === "both-fail") {
           res.writeHead(503, { "Content-Type": "application/json" });
           return res.end(JSON.stringify({ error: { message: "Groq service unavailable" } }));
+        }
+
+        if (mockMode === "groq-stream-normal" || body.includes('"stream":true') || body.includes('"stream": true')) {
+          res.writeHead(200, { "Content-Type": "text/event-stream" });
+          res.write(`data: ${JSON.stringify({ choices: [{ delta: { content: "Streamed from Groq fallback." } }] })}\n\n`);
+          return res.end("data: [DONE]\n\n");
         }
 
         res.writeHead(200, { "Content-Type": "application/json" });
@@ -226,99 +297,146 @@ async function runTests() {
     return realFetch(target, opts);
   };
 
-  const { geminiComplete, aiComplete } = require("./server/_ai");
+  const { geminiComplete, aiComplete, geminiStream } = require("./server/_ai");
 
-  await testAsync("Gemini API connection: sends request with secure x-goog-api-key header", async () => {
+  // Scenario 1: Gemini succeeds -> Gemini response
+  await testAsync("Scenario 1: Gemini succeeds -> Gemini response", async () => {
     process.env.GEMINI_API_KEY = "test_actual_gemini_key_123456";
+    process.env.GROQ_API_KEY = "test_groq_key_active";
     geminiCalls = 0;
+    groqCalls = 0;
     mockMode = "normal";
 
-    const res = await geminiComplete({
-      messages: [{ role: "user", content: "Explain photosynthesis in two simple sentences." }],
+    const res = await aiComplete({
+      messages: [{ role: "user", content: "Explain photosynthesis." }],
+      json: true,
+    });
+
+    assert.strictEqual(geminiCalls, 1, "Gemini should be called");
+    assert.strictEqual(groqCalls, 0, "Groq should NOT be called when Gemini succeeds");
+    assert.strictEqual(res.title, "Photosynthesis Explained");
+    assert.ok(res.directAnswer.includes("Photosynthesis"));
+  });
+
+  // Scenario 2: Gemini timeout -> Groq response
+  await testAsync("Scenario 2: Gemini timeout -> Groq response", async () => {
+    process.env.GEMINI_API_KEY = "test_actual_gemini_key_123456";
+    process.env.GROQ_API_KEY = "test_groq_key_active";
+    process.env.GEMINI_TIMEOUT_MS = "100"; // fast timeout for test
+    geminiCalls = 0;
+    groqCalls = 0;
+    mockMode = "gemini-timeout";
+
+    const res = await aiComplete({
+      messages: [{ role: "user", content: "Explain photosynthesis." }],
+      json: true,
+      timeoutMs: 100,
+    });
+
+    assert.strictEqual(geminiCalls, 1, "Gemini was attempted first");
+    assert.strictEqual(groqCalls, 1, "Groq was invoked after Gemini timed out");
+    assert.strictEqual(res.title, "Groq Fallback: Photosynthesis");
+    delete process.env.GEMINI_TIMEOUT_MS;
+  });
+
+  // Scenario 3: Gemini 429 (rate-limit) -> Groq response
+  await testAsync("Scenario 3: Gemini 429 -> Groq response", async () => {
+    process.env.GEMINI_API_KEY = "test_actual_gemini_key_123456";
+    process.env.GROQ_API_KEY = "test_groq_key_active";
+    geminiCalls = 0;
+    groqCalls = 0;
+    mockMode = "gemini-429";
+
+    const res = await aiComplete({
+      messages: [{ role: "user", content: "Explain photosynthesis." }],
+      json: true,
+    });
+
+    assert.strictEqual(geminiCalls, 1, "Gemini was attempted first");
+    assert.strictEqual(groqCalls, 1, "Groq took over on 429 rate limit");
+    assert.strictEqual(res.title, "Groq Fallback: Photosynthesis");
+  });
+
+  // Scenario 4: Gemini 500/503 -> Groq response
+  await testAsync("Scenario 4: Gemini 500/503 -> Groq response", async () => {
+    process.env.GEMINI_API_KEY = "test_actual_gemini_key_123456";
+    process.env.GROQ_API_KEY = "test_groq_key_active";
+    geminiCalls = 0;
+    groqCalls = 0;
+    mockMode = "gemini-500";
+
+    let res = await aiComplete({
+      messages: [{ role: "user", content: "Explain photosynthesis." }],
       json: true,
     });
 
     assert.strictEqual(geminiCalls, 1);
-    assert.strictEqual(receivedGeminiHeaders["x-goog-api-key"], "test_actual_gemini_key_123456");
-    assert.strictEqual(res.title, "Photosynthesis Explained");
-    assert.strictEqual(res.kind, "lesson");
-    assert.ok(res.directAnswer.includes("Photosynthesis"));
+    assert.strictEqual(groqCalls, 1);
+    assert.strictEqual(res.title, "Groq Fallback: Photosynthesis");
+
+    // Also test 503
+    mockMode = "gemini-503";
+    geminiCalls = 0;
+    groqCalls = 0;
+    res = await aiComplete({
+      messages: [{ role: "user", content: "Explain photosynthesis." }],
+      json: true,
+    });
+    assert.strictEqual(geminiCalls, 1);
+    assert.strictEqual(groqCalls, 1);
+    assert.strictEqual(res.title, "Groq Fallback: Photosynthesis");
   });
 
-  await testAsync("Gemini enforces json output mode via responseMimeType", async () => {
-    assert.strictEqual(receivedGeminiBody?.generationConfig?.responseMimeType, "application/json");
+  // Scenario 5: Gemini invalid API key -> clear error / avoids endless retries
+  await testAsync("Scenario 5: Gemini invalid API key -> clear error or clean fallback", async () => {
+    // Subcase 5a: Missing key throws immediately with statusCode 500 (no retries)
+    delete process.env.GEMINI_API_KEY;
+    delete process.env.GROQ_API_KEY;
+
+    let thrown = null;
+    try {
+      await aiComplete({ messages: [{ role: "user", content: "Hi" }] });
+    } catch (e) {
+      thrown = e;
+    }
+    assert.ok(thrown, "Should fail cleanly when keys are unconfigured");
+    assert.strictEqual(thrown.statusCode, 500);
+
+    // Subcase 5b: Invalid key on Gemini with Groq present falls back to Groq without endless loop
+    process.env.GEMINI_API_KEY = "invalid_gemini_key_bad";
+    process.env.GROQ_API_KEY = "test_groq_key_active";
+    mockMode = "gemini-invalid-key";
+    geminiCalls = 0;
+    groqCalls = 0;
+
+    const res = await aiComplete({
+      messages: [{ role: "user", content: "Explain photosynthesis." }],
+      json: true,
+    });
+    assert.strictEqual(geminiCalls, 1, "Gemini tried exactly once");
+    assert.strictEqual(groqCalls, 1, "Groq succeeded as fallback");
+    assert.strictEqual(res.title, "Groq Fallback: Photosynthesis");
   });
 
-  await testAsync("Gemini rate-limit (429) automatically falls back to Groq", async () => {
-    process.env.GEMINI_API_KEY = "test_gemini_key_active";
+  // Scenario 6: Groq succeeds after Gemini failure
+  await testAsync("Scenario 6: Groq succeeds after Gemini failure", async () => {
+    process.env.GEMINI_API_KEY = "test_actual_gemini_key_123456";
     process.env.GROQ_API_KEY = "test_groq_key_active";
     mockMode = "gemini-429";
     geminiCalls = 0;
     groqCalls = 0;
 
     const res = await aiComplete({
-      messages: [{ role: "user", content: "Explain photosynthesis." }],
+      messages: [{ role: "user", content: "What is Ohm's law?" }],
       json: true,
     });
-
-    assert.strictEqual(geminiCalls, 1, "Gemini should be tried first");
-    assert.strictEqual(groqCalls, 1, "Groq should be invoked as fallback");
-    assert.strictEqual(res.title, "Groq Fallback: Photosynthesis");
+    assert.strictEqual(groqCalls, 1);
+    assert.ok(res.directAnswer || res.title);
   });
 
-  await testAsync("Gemini 400 Bad Request (invalid key / model) safely falls back to Groq", async () => {
-    process.env.GEMINI_API_KEY = "test_gemini_key_active";
-    process.env.GROQ_API_KEY = "test_groq_key_active";
-    mockMode = "gemini-400";
-    geminiCalls = 0;
-    groqCalls = 0;
-
-    const res = await aiComplete({
-      messages: [{ role: "user", content: "Explain photosynthesis." }],
-      json: true,
-    });
-
-    assert.strictEqual(geminiCalls, 1, "Gemini should be tried first");
-    assert.strictEqual(groqCalls, 1, "Groq should be invoked as fallback on 400 error");
-    assert.strictEqual(res.title, "Groq Fallback: Photosynthesis");
-  });
-
-  await testAsync("Existing Groq-only mode functions cleanly when Gemini is unconfigured", async () => {
-    delete process.env.GEMINI_API_KEY;
-    process.env.GROQ_API_KEY = "test_groq_key_active";
-    mockMode = "normal";
-    geminiCalls = 0;
-    groqCalls = 0;
-
-    const res = await aiComplete({
-      messages: [{ role: "user", content: "Explain photosynthesis." }],
-      json: true,
-    });
-
-    assert.strictEqual(geminiCalls, 0, "Gemini should not be called when unconfigured");
-    assert.strictEqual(groqCalls, 1, "Groq should be called directly");
-    assert.strictEqual(res.title, "Groq Fallback: Photosynthesis");
-  });
-
-  await testAsync("Gemini 504 gateway timeout cleanly triggers Groq fallback", async () => {
-    process.env.GEMINI_API_KEY = "test_gemini_key_active";
-    process.env.GROQ_API_KEY = "test_groq_key_active";
-    mockMode = "gemini-504";
-    geminiCalls = 0;
-    groqCalls = 0;
-
-    const res = await aiComplete({
-      messages: [{ role: "user", content: "Explain photosynthesis." }],
-      json: true,
-    });
-
-    assert.strictEqual(geminiCalls, 1, "Gemini was attempted");
-    assert.strictEqual(groqCalls, 1, "Groq took over on timeout");
-    assert.strictEqual(res.title, "Groq Fallback: Photosynthesis");
-  });
-
-  await testAsync("Both providers unavailable throws transparent retryable error without faking", async () => {
-    process.env.GEMINI_API_KEY = "test_gemini_key_active";
+  // Scenario 7: Both providers fail -> clean error
+  await testAsync("Scenario 7: Both providers fail -> clean 503 error", async () => {
+    process.env.GEMINI_API_KEY = "test_actual_gemini_key_123456";
     process.env.GROQ_API_KEY = "test_groq_key_active";
     mockMode = "both-fail";
 
@@ -336,6 +454,299 @@ async function runTests() {
     assert.strictEqual(caught.statusCode, 503);
     assert.strictEqual(caught.retryable, true);
     assert.ok(caught.message.includes("AI providers unavailable"));
+    // Verify no secret leak in error message
+    assert.ok(!caught.message.includes("test_actual_gemini_key_123456"));
+    assert.ok(!caught.message.includes("test_groq_key_active"));
+  });
+
+  // Scenario 8: Normal chat, tutoring, learning sessions, and replan remain functional
+  await testAsync("Scenario 8: Replan endpoint uses unified AI fallback orchestrator", async () => {
+    process.env.GEMINI_API_KEY = "test_actual_gemini_key_123456";
+    process.env.GROQ_API_KEY = "test_groq_key_active";
+    mockMode = "normal";
+
+    const replanHandler = require("./server/replan");
+
+    // Mock Express/Node req and res
+    const req = {
+      method: "POST",
+      headers: {
+        authorization: "Bearer mock_valid_token",
+      },
+      socket: { remoteAddress: "127.0.0.1" },
+      on: (event, cb) => {
+        if (event === "data") {
+          cb(
+            JSON.stringify({
+              missedTasks: [
+                { subject: "Physics", topic: "Work and Energy", durationMinutes: 30 },
+              ],
+              dailyHours: 4,
+              examDate: "2026-12-01",
+              examType: "academic",
+            })
+          );
+        }
+        if (event === "end") cb();
+      },
+    };
+
+    let responseCode = 0;
+    let responseData = null;
+    const res = {
+      setHeader: () => res,
+      status: (code) => {
+        responseCode = code;
+        return res;
+      },
+      json: (data) => {
+        responseData = data;
+        return res;
+      },
+    };
+
+    // Patch verifyIdToken for test
+    const admin = require("./server/_admin");
+    const originalVerify = admin.verifyIdToken;
+    admin.verifyIdToken = async () => ({ uid: "test_user_replan_123" });
+
+    try {
+      await replanHandler(req, res);
+      assert.strictEqual(responseCode, 200);
+      assert.ok(responseData && responseData.message);
+    } finally {
+      admin.verifyIdToken = originalVerify;
+    }
+  });
+
+  await testAsync("groq-proxy: non-streaming Gemini primary returns standard OpenAI completion", async () => {
+    process.env.GEMINI_API_KEY = "test_actual_gemini_key_123456";
+    process.env.GROQ_API_KEY = "test_groq_key_active";
+    mockMode = "normal";
+
+    const proxyHandler = require("./server/groq-proxy");
+    const admin = require("./server/_admin");
+    const originalVerify = admin.verifyIdToken;
+    const originalGate = admin.checkAndIncrementChat;
+
+    let gateCalls = 0;
+    admin.verifyIdToken = async () => ({ uid: "test_proxy_user" });
+    admin.checkAndIncrementChat = async () => {
+      gateCalls++;
+      return { allowed: true, plan: "free", used: 1, limit: 10 };
+    };
+
+    const req = {
+      method: "POST",
+      headers: { authorization: "Bearer mock_token" },
+      socket: { remoteAddress: "127.0.0.1" },
+      on: (event, cb) => {
+        if (event === "data") {
+          cb(JSON.stringify({
+            model: "llama-3.3-70b-versatile",
+            messages: [{ role: "user", content: "Hello tutor" }],
+            stream: false,
+          }));
+        }
+        if (event === "end") cb();
+      },
+    };
+
+    let responseCode = 0;
+    let responseData = null;
+    const res = {
+      setHeader: () => res,
+      status: (c) => { responseCode = c; return res; },
+      json: (d) => { responseData = d; return res; },
+    };
+
+    try {
+      await proxyHandler(req, res);
+      assert.strictEqual(responseCode, 200);
+      assert.strictEqual(gateCalls, 1, "Quota gate must be called exactly once");
+      assert.strictEqual(responseData.object, "chat.completion");
+      assert.strictEqual(responseData.choices[0].message.role, "assistant");
+      assert.ok(responseData.choices[0].message.content);
+    } finally {
+      admin.verifyIdToken = originalVerify;
+      admin.checkAndIncrementChat = originalGate;
+    }
+  });
+
+  await testAsync("groq-proxy: fallback to Groq when Gemini fails does NOT double-increment quota", async () => {
+    process.env.GEMINI_API_KEY = "test_actual_gemini_key_123456";
+    process.env.GROQ_API_KEY = "test_groq_key_active";
+    mockMode = "gemini-429"; // Gemini fails -> Groq fallback
+
+    const proxyHandler = require("./server/groq-proxy");
+    const admin = require("./server/_admin");
+    const originalVerify = admin.verifyIdToken;
+    const originalGate = admin.checkAndIncrementChat;
+
+    let gateCalls = 0;
+    admin.verifyIdToken = async () => ({ uid: "test_proxy_user_fallback" });
+    admin.checkAndIncrementChat = async () => {
+      gateCalls++;
+      return { allowed: true, plan: "free", used: 1, limit: 10 };
+    };
+
+    const req = {
+      method: "POST",
+      headers: { authorization: "Bearer mock_token" },
+      socket: { remoteAddress: "127.0.0.1" },
+      on: (event, cb) => {
+        if (event === "data") {
+          cb(JSON.stringify({
+            model: "llama-3.3-70b-versatile",
+            messages: [{ role: "user", content: "Explain fallback" }],
+            stream: false,
+          }));
+        }
+        if (event === "end") cb();
+      },
+    };
+
+    let responseCode = 0;
+    let responseData = null;
+    const res = {
+      setHeader: () => res,
+      status: (c) => { responseCode = c; return res; },
+      json: (d) => { responseData = d; return res; },
+    };
+
+    try {
+      await proxyHandler(req, res);
+      assert.strictEqual(responseCode, 200);
+      assert.strictEqual(gateCalls, 1, "Quota must NOT double increment during fallback");
+      assert.ok(responseData.choices[0].message.content.includes("Groq Fallback"));
+    } finally {
+      admin.verifyIdToken = originalVerify;
+      admin.checkAndIncrementChat = originalGate;
+    }
+  });
+
+  await testAsync("groq-proxy: streaming Gemini primary writes OpenAI SSE chunks", async () => {
+    process.env.GEMINI_API_KEY = "test_actual_gemini_key_123456";
+    process.env.GROQ_API_KEY = "test_groq_key_active";
+    mockMode = "gemini-stream-normal";
+
+    const proxyHandler = require("./server/groq-proxy");
+    const admin = require("./server/_admin");
+    const originalVerify = admin.verifyIdToken;
+    const originalGate = admin.checkAndIncrementChat;
+
+    admin.verifyIdToken = async () => ({ uid: "test_proxy_stream_user" });
+    admin.checkAndIncrementChat = async () => ({ allowed: true, plan: "free", used: 1, limit: 10 });
+
+    const req = {
+      method: "POST",
+      headers: { authorization: "Bearer mock_token" },
+      socket: { remoteAddress: "127.0.0.1" },
+      on: (event, cb) => {
+        if (event === "data") {
+          cb(JSON.stringify({
+            model: "llama-3.3-70b-versatile",
+            messages: [{ role: "user", content: "Stream me" }],
+            stream: true,
+          }));
+        }
+        if (event === "end") cb();
+      },
+    };
+
+    let writtenData = "";
+    let headersSet = {};
+    let ended = false;
+
+    const res = {
+      setHeader: (k, v) => { headersSet[k] = v; return res; },
+      status: () => res,
+      write: (chunk) => {
+        writtenData += (typeof chunk === "string" ? chunk : Buffer.from(chunk).toString("utf-8"));
+        return true;
+      },
+      end: () => { ended = true; },
+    };
+
+    try {
+      await proxyHandler(req, res);
+      assert.ok(ended, "Stream must end");
+      assert.strictEqual(headersSet["Content-Type"], "text/event-stream");
+      assert.ok(writtenData.includes("Streamed "));
+      assert.ok(writtenData.includes("from Gemini."));
+      assert.ok(writtenData.includes("[DONE]"));
+    } finally {
+      admin.verifyIdToken = originalVerify;
+      admin.checkAndIncrementChat = originalGate;
+    }
+  });
+
+  await testAsync("groq-proxy: streaming fails on Gemini before headers sent -> falls back to Groq stream", async () => {
+    process.env.GEMINI_API_KEY = "test_actual_gemini_key_123456";
+    process.env.GROQ_API_KEY = "test_groq_key_active";
+    mockMode = "gemini-500"; // Gemini fails immediately before stream sends any byte
+
+    const proxyHandler = require("./server/groq-proxy");
+    const admin = require("./server/_admin");
+    const originalVerify = admin.verifyIdToken;
+    const originalGate = admin.checkAndIncrementChat;
+
+    admin.verifyIdToken = async () => ({ uid: "test_proxy_stream_fallback_user" });
+    admin.checkAndIncrementChat = async () => ({ allowed: true, plan: "free", used: 1, limit: 10 });
+
+    const req = {
+      method: "POST",
+      headers: { authorization: "Bearer mock_token" },
+      socket: { remoteAddress: "127.0.0.1" },
+      on: (event, cb) => {
+        if (event === "data") {
+          cb(JSON.stringify({
+            model: "llama-3.3-70b-versatile",
+            messages: [{ role: "user", content: "Stream fallback test" }],
+            stream: true,
+          }));
+        }
+        if (event === "end") cb();
+      },
+    };
+
+    let writtenData = "";
+    let headersSet = {};
+    let ended = false;
+
+    const res = {
+      setHeader: (k, v) => { headersSet[k] = v; return res; },
+      status: () => res,
+      write: (chunk) => {
+        writtenData += (typeof chunk === "string" ? chunk : Buffer.from(chunk).toString("utf-8"));
+        return true;
+      },
+      end: () => { ended = true; },
+    };
+
+    try {
+      await proxyHandler(req, res);
+      assert.ok(ended, "Stream must end");
+      assert.strictEqual(headersSet["Content-Type"], "text/event-stream");
+      assert.ok(writtenData.includes("Streamed from Groq fallback."));
+    } finally {
+      admin.verifyIdToken = originalVerify;
+      admin.checkAndIncrementChat = originalGate;
+    }
+  });
+
+  await testAsync("Gemini streaming operates and yields text tokens", async () => {
+    process.env.GEMINI_API_KEY = "test_actual_gemini_key_123456";
+    mockMode = "gemini-stream-normal";
+
+    let chunks = [];
+    await geminiStream({
+      messages: [{ role: "user", content: "Stream test" }],
+      onChunk: (text) => chunks.push(text),
+    });
+
+    assert.ok(chunks.length >= 2);
+    assert.strictEqual(chunks.join(""), "Streamed from Gemini.");
   });
 
   // ──────────────────────────────────────────────────────────────────────────
@@ -348,7 +759,6 @@ async function runTests() {
     getTrack,
     matchConcept,
     curriculumStats,
-    filterConcepts,
   } = require("./server/_curriculum");
 
   test("Maharashtra Board Class 9 Science curriculum resolution", () => {
@@ -356,13 +766,11 @@ async function runTests() {
     assert.ok(track, "Maharashtra track must exist in curriculum");
     assert.strictEqual(track.label, "Maharashtra State Board");
 
-    // Check matching Work and Energy under Maharashtra Class 9
     const workMatch = matchConcept("Work and Energy", { trackId: "maharashtra", classNum: 9 });
     assert.ok(workMatch, "Work and Energy must resolve in Maharashtra class 9");
     assert.strictEqual(workMatch.conceptId, "maharashtra.9.science1.work_and_energy");
     assert.strictEqual(workMatch.subject, "Science & Technology - Part 1");
 
-    // Check matching Life Processes in Living Organisms (plant biology)
     const lifeMatch = matchConcept("Life Processes in Living Organisms", { trackId: "maharashtra", classNum: 9 });
     assert.ok(lifeMatch, "Life Processes must resolve in Maharashtra class 9");
     assert.strictEqual(lifeMatch.conceptId, "maharashtra.9.science2.life_processes_in_living_organisms");

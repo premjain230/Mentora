@@ -1,21 +1,36 @@
 // api/groq-proxy.js
-// Server-side proxy: keeps your Groq API key secret and forwards chat requests.
+// Server-side AI proxy: manages Gemini primary and Groq automatic fallback.
 //
-// Security model:
+// Security & Architecture:
 //  1. Every request must present a valid Firebase ID token
 //     (Authorization: Bearer <token>); unauthenticated traffic is rejected.
 //  2. Requests are rate limited per IP (in-memory window).
-//  3. The free-plan daily chat limit is enforced AND incremented here, on the
-//     server, using the Admin SDK. The client Firestore counter is no longer
-//     writable by browsers (see firestore.rules), so limits cannot be reset by
-//     manipulating local state or DevTools.
-//  4. model / max_tokens / temperature / messages are validated server-side so
-//     callers cannot switch to arbitrary models or blow through token budgets.
-//  5. If Groq 404s the requested model (unavailable to this key/region), the
-//     proxy retries with a fallback model chain so chats never hard-fail.
+//  3. Server-enforced daily chat limit is checked and incremented ONCE here.
+//     Fallback between Gemini and Groq does NOT double-increment limits.
+//  4. Model / max_tokens / temperature / messages are validated server-side.
+//  5. Automatic Provider Priority:
+//     - Priority 1: Google Gemini (when GEMINI_API_KEY is configured).
+//     - Priority 2: Groq Fallback (when Gemini times out, hits 429 rate limit, 5xx, or fails).
+//  6. Streaming requests are handled safely:
+//     - If Gemini stream fails before sending headers, cleanly fall back to Groq stream.
+//     - If Gemini stream fails mid-stream after headers were sent, cleanly terminate
+//       without appending partial Groq output.
+//  7. Never expose API keys or secrets to the client.
 
 const { applyCors, rateLimit, readJsonBody, sendError } = require("./_shared");
-const { verifyIdToken, checkAndIncrementChat } = require("./_admin");
+const admin = require("./_admin");
+const {
+  geminiComplete,
+  geminiStream,
+  isUsableKey,
+  cleanEnvValue,
+  sanitizeKey,
+  logAiEvent,
+  geminiToOpenAiResponse,
+  geminiChunkToOpenAiSse,
+  openAiSseDone,
+  GEMINI_DEFAULT_MODEL,
+} = require("./_ai");
 
 const ALLOWED_MODELS = new Set([
   "llama-3.3-70b-versatile",
@@ -25,9 +40,6 @@ const ALLOWED_MODELS = new Set([
   "qwen/qwen3.6-27b",
 ]);
 
-// When Groq rejects the requested model (404: "does not exist or you do not
-// have access"), retry with these in order so a restricted/renamed account
-// catalog degrades gracefully instead of hard-failing the chat.
 const FALLBACK_MODELS = [
   "llama-3.3-70b-versatile",
   "llama-3.1-8b-instant",
@@ -39,7 +51,7 @@ const MAX_TOKENS = 4096;
 const MAX_MESSAGES = 200;
 const MAX_MSG_CHARS = 20000;
 const MAX_TOTAL_CHARS = 120000;
-const MAX_TEMPERATURE = 2; // Groq supports 0..2
+const MAX_TEMPERATURE = 2;
 
 function normalizeMessages(messages) {
   if (!Array.isArray(messages) || messages.length === 0 || messages.length > MAX_MESSAGES) {
@@ -60,6 +72,139 @@ function normalizeMessages(messages) {
   return out;
 }
 
+/**
+ * Executes a request against Groq with fallback model chain.
+ */
+async function executeGroq(req, res, { messages, max_tokens, temperature, stream, requestedModel }) {
+  const groqApiKey = cleanEnvValue(process.env.GROQ_API_KEY);
+  if (!isUsableKey(groqApiKey)) {
+    logAiEvent("error", "GROQ_KEY_MISSING", { endpoint: "groq-proxy" });
+    return res.status(503).json({
+      error: {
+        message: "AI service is temporarily unavailable. Please retry shortly.",
+        code: "provider_unavailable",
+      },
+    });
+  }
+
+  const modelCandidates = [
+    requestedModel,
+    ...FALLBACK_MODELS.filter((m) => m !== requestedModel),
+  ];
+
+  let groqRes = null;
+  let errBody = null;
+
+  for (const candidate of modelCandidates) {
+    let fetchRes;
+    const startTime = Date.now();
+    try {
+      fetchRes = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${groqApiKey}`,
+        },
+        body: JSON.stringify({
+          model: candidate,
+          messages,
+          max_tokens,
+          temperature,
+          stream,
+        }),
+      });
+    } catch (err) {
+      logAiEvent("warn", "GROQ_FETCH_ERROR", {
+        model: candidate,
+        durationMs: Date.now() - startTime,
+        error: sanitizeKey(err?.message, groqApiKey),
+      });
+      continue;
+    }
+
+    if (fetchRes.ok) {
+      groqRes = fetchRes;
+      logAiEvent("info", "GROQ_SUCCESS", {
+        model: candidate,
+        durationMs: Date.now() - startTime,
+        stream,
+      });
+      break;
+    }
+
+    try {
+      errBody = await fetchRes.json();
+    } catch {
+      errBody = { error: { message: `Groq API error ${fetchRes.status}` } };
+    }
+
+    const msg = String(((errBody && errBody.error) || {}).message || "");
+    const isModelNotFound =
+      fetchRes.status === 404 &&
+      (/does not exist/i.test(msg) ||
+        /do not have access/i.test(msg) ||
+        /decommissioned/i.test(msg) ||
+        /deprecat/i.test(msg));
+
+    if (!isModelNotFound) {
+      groqRes = fetchRes;
+      break;
+    }
+
+    logAiEvent("warn", "GROQ_MODEL_FALLBACK", {
+      candidate,
+      status: fetchRes.status,
+    });
+  }
+
+  if (!groqRes) {
+    return res.status(503).json({
+      error: {
+        message: "All AI providers temporarily unavailable. Please try again shortly.",
+        code: "all_providers_failed",
+      },
+    });
+  }
+
+  if (!groqRes.ok) {
+    return res.status(groqRes.status === 429 ? 429 : 502).json({
+      error: {
+        message:
+          errBody?.error?.message ||
+          "AI service temporarily unavailable. Please retry in a moment.",
+        code: "upstream_error",
+      },
+    });
+  }
+
+  // Handle Groq streaming
+  if (stream && groqRes.body) {
+    res.setHeader("Content-Type", "text/event-stream");
+    res.setHeader("Cache-Control", "no-cache");
+    res.setHeader("Connection", "keep-alive");
+
+    const reader = groqRes.body.getReader();
+    try {
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        res.write(value);
+      }
+    } catch (streamErr) {
+      logAiEvent("warn", "GROQ_STREAM_PIPE_ERROR", {
+        error: sanitizeKey(streamErr?.message, groqApiKey),
+      });
+    } finally {
+      res.end();
+    }
+    return;
+  }
+
+  // Non-streaming: Forward standard OpenAI JSON
+  const data = await groqRes.json();
+  return res.status(200).json(data);
+}
+
 module.exports = async function handler(req, res) {
   if (!applyCors(req, res, ["POST", "OPTIONS"])) return;
 
@@ -70,10 +215,12 @@ module.exports = async function handler(req, res) {
 
   if (!rateLimit(req, res, { name: "groq-proxy", limit: 30 })) return;
 
-  const apiKey = process.env.GROQ_API_KEY;
-  if (!apiKey) {
-    console.error("GROQ_API_KEY is not set in environment variables");
-    return res.status(500).json({ error: "Server misconfiguration: missing API key" });
+  const hasGemini = isUsableKey(process.env.GEMINI_API_KEY);
+  const hasGroq = isUsableKey(process.env.GROQ_API_KEY);
+
+  if (!hasGemini && !hasGroq) {
+    logAiEvent("error", "NO_API_KEYS", { endpoint: "groq-proxy" });
+    return res.status(500).json({ error: "Server misconfiguration: missing AI provider key" });
   }
 
   let body;
@@ -86,22 +233,20 @@ module.exports = async function handler(req, res) {
   // 1) Authentication — reject anonymous / forged requests up front.
   const authHeader = req.headers.authorization || "";
   const token = authHeader.startsWith("Bearer ") ? authHeader.slice(7).trim() : "";
-  const decoded = await verifyIdToken(token);
+  const decoded = await admin.verifyIdToken(token);
   if (!decoded || !decoded.uid) {
     return res.status(401).json({ error: "Not authenticated. Please sign in and try again." });
   }
 
-  // 2) Server-enforced daily limit (chat) — checked and incremented here.
-  // IMPORTANT: Never fall back to unlimited on error — that would let free users bypass limits via new chats/reloads.
+  // 2) Server-enforced daily limit (chat) — incremented exactly ONCE per user chat request.
   let gate;
   try {
-    gate = await checkAndIncrementChat(decoded.uid, decoded);
+    gate = await admin.checkAndIncrementChat(decoded.uid, decoded);
   } catch (err) {
     console.error("checkAndIncrementChat failed (fail-closed):", err && err.message ? err.message : err);
-    // Fail closed: do NOT grant unlimited. Return 503 so client shows retry, not a bypass.
-    // Pro users would also be blocked briefly if Firestore is down, but that's safer than free bypass.
     return res.status(503).json({ error: "Usage service temporarily unavailable. Please retry in a moment." });
   }
+
   if (!gate.allowed) {
     return res.status(gate.status || 429).json({
       error: {
@@ -130,84 +275,111 @@ module.exports = async function handler(req, res) {
   const max_tokens = Math.min(MAX_TOKENS, Math.max(1, Number(body.max_tokens) || 2048));
   const stream = body.stream === true;
 
-  // Try the requested model first, then fall back through FALLBACK_MODELS when
-  // Groq 404s because a model is unavailable to this key/region.
-  const modelCandidates = [body.model, ...FALLBACK_MODELS.filter((m) => m !== body.model)];
+  // 4) Execute Request: Priority 1 Gemini -> Priority 2 Groq Fallback
+  if (!stream) {
+    // ── NON-STREAMING MODE ──
+    if (hasGemini) {
+      const usageOut = {};
+      try {
+        logAiEvent("info", "PRIMARY_ATTEMPT", {
+          provider: "gemini",
+          endpoint: "groq-proxy",
+          stream: false,
+        });
 
-  let groqRes = null;
-  let errBody = null;
+        const content = await geminiComplete({
+          messages,
+          temperature,
+          maxTokens: max_tokens,
+          usageOut,
+        });
 
-  for (const candidate of modelCandidates) {
-    let fetchRes;
-    try {
-      fetchRes = await fetch("https://api.groq.com/openai/v1/chat/completions", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${apiKey}`,
-        },
-        body: JSON.stringify({ model: candidate, messages, max_tokens, temperature, stream }),
-      });
-    } catch (err) {
-      console.error("Network error calling Groq:", err);
-      return res.status(502).json({ error: "Failed to reach Groq API" });
-    }
-
-    if (fetchRes.ok) {
-      groqRes = fetchRes;
-      break;
-    }
-
-    try {
-      errBody = await fetchRes.json();
-    } catch {
-      errBody = { error: { message: `Groq API error ${fetchRes.status}` } };
-    }
-
-    const msg = String(((errBody && errBody.error) || {}).message || "");
-    const modelProblem =
-      fetchRes.status === 404 &&
-      (/does not exist/i.test(msg) || /do not have access/i.test(msg) || /decommissioned/i.test(msg) || /deprecat/i.test(msg));
-
-    if (!modelProblem) {
-      // Real failure (rate limit, auth, context too long, etc.) — surface it.
-      groqRes = fetchRes;
-      break;
-    }
-
-    console.warn(`Groq model ${candidate} unavailable (${fetchRes.status}); trying fallback.`);
-  }
-
-  if (!groqRes) {
-    return res.status(500).json({ error: "All Groq models failed" });
-  }
-
-  if (!groqRes.ok) {
-    return res.status(groqRes.status).json(errBody);
-  }
-
-  // If the client requested streaming, pipe the SSE stream straight through.
-  if (stream && groqRes.body) {
-    res.setHeader("Content-Type", "text/event-stream");
-    res.setHeader("Cache-Control", "no-cache");
-    res.setHeader("Connection", "keep-alive");
-
-    const reader = groqRes.body.getReader();
-    try {
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-        res.write(value);
+        const openAiFormat = geminiToOpenAiResponse(
+          content,
+          GEMINI_DEFAULT_MODEL,
+          usageOut.usage
+        );
+        return res.status(200).json(openAiFormat);
+      } catch (geminiErr) {
+        logAiEvent("warn", "FALLBACK_TRIGGERED", {
+          endpoint: "groq-proxy",
+          primary: "gemini",
+          fallback: "groq",
+          status: geminiErr.statusCode || 502,
+          reason: geminiErr.message?.slice(0, 150),
+        });
+        // Proceed to Groq fallback below
       }
-    } catch (err) {
-      console.error("Stream error:", err);
-    } finally {
-      res.end();
     }
-    return;
+
+    return await executeGroq(req, res, {
+      messages,
+      max_tokens,
+      temperature,
+      stream: false,
+      requestedModel: body.model,
+    });
   }
 
-  // Non-streaming: just forward the JSON.
-  const data = await groqRes.json();
-  return res.status(200).json(data);
+  // ── STREAMING MODE ──
+  let streamStarted = false;
+  if (hasGemini) {
+    try {
+      logAiEvent("info", "PRIMARY_ATTEMPT", {
+        provider: "gemini",
+        endpoint: "groq-proxy",
+        stream: true,
+      });
+
+      await geminiStream({
+        messages,
+        temperature,
+        maxTokens: max_tokens,
+        onChunk: (chunkText) => {
+          if (!streamStarted) {
+            streamStarted = true;
+            res.setHeader("Content-Type", "text/event-stream");
+            res.setHeader("Cache-Control", "no-cache");
+            res.setHeader("Connection", "keep-alive");
+          }
+          res.write(geminiChunkToOpenAiSse(chunkText));
+        },
+      });
+
+      if (streamStarted) {
+        res.write(openAiSseDone());
+        res.end();
+        return;
+      }
+    } catch (geminiStreamErr) {
+      logAiEvent("warn", "STREAM_ERROR", {
+        provider: "gemini",
+        streamStarted,
+        error: geminiStreamErr.message?.slice(0, 150),
+      });
+
+      // If bytes were already written to the client, terminate cleanly to avoid
+      // appending duplicate or corrupted Groq stream chunks.
+      if (streamStarted || res.headersSent) {
+        res.end();
+        return;
+      }
+
+      logAiEvent("warn", "FALLBACK_TRIGGERED", {
+        endpoint: "groq-proxy",
+        primary: "gemini",
+        fallback: "groq",
+        stream: true,
+      });
+      // Fall through to Groq streaming below!
+    }
+  }
+
+  return await executeGroq(req, res, {
+    messages,
+    max_tokens,
+    temperature,
+    stream: true,
+    requestedModel: body.model,
+  });
 };

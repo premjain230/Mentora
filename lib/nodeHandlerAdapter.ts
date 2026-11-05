@@ -23,9 +23,14 @@ export async function runNodeHandler(
     let statusCode = 200;
     const responseHeaders = new Headers();
     let isResolved = false;
+    let headersSent = false;
+    let streamWriter: WritableStreamDefaultWriter<Uint8Array> | null = null;
 
     const mockRes: any = {
       statusCode: 200,
+      get headersSent() {
+        return headersSent || isResolved;
+      },
       setHeader(name: string, value: string) {
         responseHeaders.set(name, value);
         return this;
@@ -38,19 +43,42 @@ export async function runNodeHandler(
         this.statusCode = code;
         return this;
       },
+      write(chunk: any) {
+        if (!streamWriter) {
+          headersSent = true;
+          isResolved = true;
+          const { readable, writable } = new TransformStream();
+          streamWriter = writable.getWriter();
+          resolve(new NextResponse(readable, { status: statusCode, headers: responseHeaders }));
+        }
+        const encoded = typeof chunk === "string" ? new TextEncoder().encode(chunk) : chunk;
+        streamWriter.write(encoded);
+        return true;
+      },
       json(data: any) {
         if (isResolved) return;
+        headersSent = true;
         isResolved = true;
         responseHeaders.set("Content-Type", "application/json");
         resolve(NextResponse.json(data, { status: statusCode, headers: responseHeaders }));
       },
       send(data: any) {
         if (isResolved) return;
+        headersSent = true;
         isResolved = true;
         resolve(new NextResponse(data, { status: statusCode, headers: responseHeaders }));
       },
       end(data?: any) {
+        if (streamWriter) {
+          if (data) {
+            const encoded = typeof data === "string" ? new TextEncoder().encode(data) : data;
+            streamWriter.write(encoded);
+          }
+          streamWriter.close();
+          return;
+        }
         if (isResolved) return;
+        headersSent = true;
         isResolved = true;
         resolve(new NextResponse(data || null, { status: statusCode, headers: responseHeaders }));
       },

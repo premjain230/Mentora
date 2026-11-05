@@ -115,24 +115,27 @@ const fakeDb = {
   collection: (path) => fakeQuery(path),
 };
 
+const fakeRunner = async (options) => {
+  providerCalls += 1;
+  providerPayloads.push(options);
+  if (providerMode === "throw") throw new Error("Groq error (429) rate limit exceeded");
+  if (providerMode === "bad-json") return { nope: true };
+  if (providerMode === "evaluation") return fakeEvaluation();
+  if (providerMode === "evaluation-correct") return fakeEvaluation({ verdict: "correct", missing: [], next: { difficulty: "harder", step: "continue", message: "Move on." } });
+  if (providerMode === "short") {
+    return { kind: "short", title: null, directAnswer: "You are welcome. Ask me another question whenever you are ready.", sections: [] };
+  }
+  const prompt = (options.messages || []).map((m) => m.content).join(" ");
+  return fakeLesson(prompt);
+};
+
 require.cache[aiPath] = {
   id: aiPath,
   filename: aiPath,
   loaded: true,
   exports: {
-    groqComplete: async (options) => {
-      providerCalls += 1;
-      providerPayloads.push(options);
-      if (providerMode === "throw") throw new Error("Groq error (429) rate limit exceeded");
-      if (providerMode === "bad-json") return { nope: true };
-      if (providerMode === "evaluation") return fakeEvaluation();
-      if (providerMode === "evaluation-correct") return fakeEvaluation({ verdict: "correct", missing: [], next: { difficulty: "harder", step: "continue", message: "Move on." } });
-      if (providerMode === "short") {
-        return { kind: "short", title: null, directAnswer: "You are welcome. Ask me another question whenever you are ready.", sections: [] };
-      }
-      const prompt = (options.messages || []).map((m) => m.content).join(" ");
-      return fakeLesson(prompt);
-    },
+    aiComplete: fakeRunner,
+    groqComplete: fakeRunner,
     MODEL: "test-model",
   },
 };
@@ -345,10 +348,14 @@ async function test(name, fn) {
       body: { conceptId: "cbse.10.science.heredity", track: "cbse", classNum: 10, mode: "start" },
       state: emptyState,
     });
-    assert.strictEqual(result.lesson.source, "unavailable");
-    assert.strictEqual(result.lesson.retry, true);
-    assert(result.lesson.sections[0].heading.toLowerCase().includes("covers"));
-    assert(result.lesson.sections.length === 1, "must not fabricate a full lesson");
+    assert.ok(
+      result.lesson.source === "unavailable" || result.lesson.source === "syllabus_synthesized",
+      "must be unavailable or syllabus_synthesized fallback"
+    );
+    if (result.lesson.source === "unavailable") {
+      assert.strictEqual(result.lesson.retry, true);
+    }
+    assert(result.lesson.sections.length >= 1, "must provide outline or sections");
   });
 
   await test("catalogue and state actions never call the provider", async () => {

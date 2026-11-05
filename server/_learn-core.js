@@ -1902,10 +1902,11 @@ async function lessonTutor(params = {}) {
       const activeTitle = activeSub ? activeSub.title : concept.name;
       const activeDesc = activeSub ? activeSub.description : concept.topic;
       const candidates = selectVisualCandidates(`${activeTitle} ${activeDesc}`, concept.subject, 3);
+      const reteachPrefix = mode === "reteach" ? "The first explanation did not work. Use a DIFFERENT pedagogical approach and different concrete analogy.\n\n" : "";
       const question = body.focus
-        ? `${body.focus}\n\nTeach this specific curriculum concept: ${activeTitle} (${activeDesc}) in chapter ${concept.name}.`
+        ? `${reteachPrefix}${body.focus}\n\nTeach this specific curriculum concept: ${activeTitle} (${activeDesc}) in chapter ${concept.name}.`
         : mode === "reteach"
-        ? `The first explanation did not work. Teach ${activeTitle} again using a different concrete everyday example and visual.`
+        ? `The first explanation did not work. Teach ${activeTitle} again using a DIFFERENT concrete everyday example and visual.`
         : `Teach this specific curriculum concept: ${activeTitle} (${activeDesc}) in chapter ${concept.name} (${concept.subject}).`;
       const messages = buildChatMessages({
         concept,
