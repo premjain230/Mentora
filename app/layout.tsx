@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
+import "@/lib/dom-guard";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -42,7 +43,7 @@ export default function RootLayout({
         />
         <script
           dangerouslySetInnerHTML={{
-            __html: `(function(){try{var v=localStorage.getItem('learning-allied-theme')||localStorage.getItem('aquila-theme');if(v==='dark'){document.documentElement.classList.remove('light-mode');}else{document.documentElement.classList.add('light-mode');}}catch(e){}})();`,
+            __html: `(function(){try{var v=localStorage.getItem('learning-allied-theme')||localStorage.getItem('aquila-theme');if(v==='dark'){document.documentElement.classList.remove('light-mode');}else{document.documentElement.classList.add('light-mode');}}catch(e){}})();(function(){try{if(typeof window!=='undefined'&&window.Node){var p=Node.prototype;if(!p.__react_dom_guard__){p.__react_dom_guard__=true;var rc=p.removeChild;p.removeChild=function(c){if(c&&c.parentNode!==this){return c.parentNode?c.parentNode.removeChild(c):c;}return rc.apply(this,arguments);};var ib=p.insertBefore;p.insertBefore=function(n,r){if(r&&r.parentNode!==this){return r.parentNode?r.parentNode.insertBefore(n,r):this.appendChild(n);}return ib.apply(this,arguments);};var rep=p.replaceChild;p.replaceChild=function(n,o){if(o&&o.parentNode!==this){return o.parentNode?o.parentNode.replaceChild(n,o):this.appendChild(n);}return rep.apply(this,arguments);};}}}catch(e){}})();`,
           }}
         />
       </head>

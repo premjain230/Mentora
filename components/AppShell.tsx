@@ -1,5 +1,6 @@
 "use client";
 
+import "@/lib/dom-guard";
 import React, { useEffect, useState } from "react";
 import { AuthProvider, useAuth } from "./AuthContext";
 import { AppSidebar } from "./AppSidebar";

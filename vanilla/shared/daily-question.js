@@ -99,7 +99,13 @@ function showModal(payload, lifecycle) {
       </div>
     </div>
   `;
-  document.body.appendChild(modal);
+  let portal = document.getElementById("daily-question-portal");
+  if (!portal) {
+    portal = document.createElement("div");
+    portal.id = "daily-question-portal";
+    document.body.appendChild(portal);
+  }
+  portal.appendChild(modal);
 
   const textarea = modal.querySelector("#dqAnswer");
   const counter = modal.querySelector("#dqCounter");
@@ -108,6 +114,9 @@ function showModal(payload, lifecycle) {
 
   const close = () => {
     if (modal.isConnected) modal.remove();
+    if (portal && portal.childNodes.length === 0 && portal.isConnected) {
+      portal.remove();
+    }
   };
 
   lifecycle.on(textarea, "input", () => {
