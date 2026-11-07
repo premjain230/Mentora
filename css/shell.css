@@ -47,7 +47,7 @@ body:has(> #sidebarMount),
      clear it. This MUST be padding, not margin: with margin the 12px gutter
      between the card and .main would expose whatever paints behind .main
      instead of .main's own background spanning the full viewport. */
-  padding-left: var(--sidebar-w);
+  padding-left: calc(var(--sidebar-w) + 24px);
 }
 
 .main > :not(.topbar):not(.scroll-progress) {
