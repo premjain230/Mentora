@@ -1,4 +1,4 @@
-/* Learning Allied — mobile navigation (mnav). Matches the auth/home design system.
+﻿/* Learning Allied — mobile navigation (mnav). Matches the auth/home design system.
    Works with both token sets (--border/--text-primary/... and the older --line/--text/--muted). */
 .mnav-btn,.mnav-overlay,.mnav-panel{--m-line:var(--border,var(--line,#23262d));--m-bg:var(--bg-card,#0e1013);--m-tx:var(--text-primary,var(--text,#ececf0));--m-tx2:var(--text-secondary,#a3a8b3);--m-tx3:var(--text-muted,var(--muted-2,#6f7480));--m-ac:var(--accent,#4cb8ee);--m-ink:#04141d}
 .light-mode .mnav-btn,.light-mode .mnav-overlay,.light-mode .mnav-panel{--m-bg:#fff;--m-ink:#fff;--m-ac:var(--accent,#0a78b8)}
@@ -32,8 +32,8 @@
 .mnav-btn:focus-visible,.mnav-close:focus-visible,.mnav-links a:focus-visible{outline:2px solid var(--m-ac);outline-offset:2px}
 @media(prefers-reduced-motion:reduce){.mnav-panel,.mnav-overlay,.mnav-btn{transition:none!important}}
 /* Orbit theme */
-.mnav-btn,.mnav-close{border-radius:999px}
-.mnav-panel{border-radius:28px 0 0 28px}
-.mnav-links a{border-radius:999px}
+.mnav-btn,.mnav-close{border-radius:6px;width:36px;height:36px}
+.mnav-panel{border-radius:12px 0 0 12px}
+.mnav-links a{border-radius:6px;min-height:38px}
 .mnav-links a.mnav-cta{background:var(--pill-bg,#fff);color:var(--pill-fg,#000)}
 .mnav-links a.mnav-cta:hover{background:var(--pill-bg,#fff);opacity:.88}

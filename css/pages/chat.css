@@ -1,4 +1,4 @@
-/* Learning Allied — Chat study desk.
+﻿/* Learning Allied — Chat study desk.
    Everything here is scoped to .page-chat so the Learning Hub keeps its own
    layout. Base chat primitives live in css/learning-experience.css; this file
    owns the workspace frame, rail, editorial transcript and composer. */
@@ -83,7 +83,7 @@
   width: var(--chat-rail-w);
   min-height: 0;
   border: 1px solid var(--chat-hairline);
-  border-radius: var(--radius-2xl);
+  border-radius: var(--radius-lg, 10px);
   background: var(--chat-surface-solid);
   box-shadow: var(--chat-card-shadow);
   transition: width var(--dur-med) var(--ease-out);
@@ -408,10 +408,9 @@
   width: 180px;
   padding: 5px;
   border: 1px solid var(--chat-hairline-strong);
-  border-radius: 14px;
-  background: var(--chat-surface-translucent);
-  box-shadow: var(--chat-pill-shadow);
-  backdrop-filter: blur(18px);
+  border-radius: var(--radius-md, 8px);
+  background: var(--chat-surface-solid);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
   -webkit-backdrop-filter: blur(18px);
 }
 
@@ -562,7 +561,7 @@
   margin-left: -12px;
   padding: 7px 12px;
   border: 1px solid transparent;
-  border-radius: 999px;
+  border-radius: var(--radius-sm, 6px);
   background: transparent;
   color: var(--text-primary);
   font: 600 14px/1.3 var(--font-display);
@@ -628,7 +627,7 @@
   height: 24px;
   padding: 0 9px;
   border: 1px solid var(--chat-hairline);
-  border-radius: 999px;
+  border-radius: var(--radius-xs, 4px);
   background: var(--accent-muted);
   color: var(--accent);
   font: 600 9.75px/1 var(--font-main);
@@ -651,7 +650,7 @@
   height: 34px;
   padding: 0 13px;
   border: 1px solid var(--chat-hairline);
-  border-radius: 999px;
+  border-radius: var(--radius-sm, 6px);
   background: transparent;
   color: var(--text-secondary);
   font: 500 11.5px var(--font-main);
@@ -717,9 +716,9 @@
   width: 288px;
   padding: 14px;
   border: 1px solid var(--chat-hairline-strong);
-  border-radius: 18px;
+  border-radius: var(--radius-md, 8px);
   background: var(--chat-surface-solid);
-  box-shadow: var(--chat-pill-shadow);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
 }
 
 .page-chat .chat-context-label {
@@ -1203,7 +1202,7 @@
   min-height: 30px;
   padding: 0 13px;
   border: 1px solid var(--chat-hairline);
-  border-radius: 999px;
+  border-radius: var(--radius-sm, 6px);
   background: transparent;
   color: var(--text-secondary);
   font: 500 11.5px/1.2 var(--font-main);
@@ -1272,7 +1271,7 @@
   height: 32px;
   transform: translateX(-50%);
   border: 1px solid var(--chat-hairline-strong);
-  border-radius: 999px;
+  border-radius: var(--radius-sm, 6px);
   background: var(--chat-surface-translucent);
   color: var(--text-secondary);
   box-shadow: var(--chat-pill-shadow);
@@ -1329,21 +1328,16 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  min-height: var(--chat-pill-h);
-  padding: 7px 8px 7px 20px;
+  min-height: 48px;
+  padding: 6px 8px 6px 16px;
   border: 1px solid var(--chat-hairline);
-  border-radius: 999px;
-  background: var(--chat-surface-translucent);
-  box-shadow: var(--chat-pill-shadow);
-  backdrop-filter: blur(20px) saturate(1.15);
-  -webkit-backdrop-filter: blur(20px) saturate(1.15);
-  transition: border-color var(--dur-fast) ease,
-    border-radius var(--dur-fast) ease, box-shadow var(--dur-fast) ease;
+  border-radius: var(--radius-lg, 10px);
+  background: var(--chat-surface-solid);
+  transition: border-color var(--dur-fast) ease;
 }
 
 .page-chat .chat-composer-box.is-expanded {
   align-items: flex-end;
-  border-radius: 26px;
 }
 
 .page-chat .chat-composer-box:focus-within {
@@ -1375,19 +1369,15 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 38px;
-  height: 38px;
+  width: 34px;
+  height: 34px;
   flex: none;
   border: 0;
-  border-radius: 999px;
+  border-radius: var(--radius-sm, 6px);
   background: var(--accent);
   color: #ffffff;
   cursor: pointer;
-  box-shadow: 0 6px 18px
-    color-mix(in srgb, var(--accent) 34%, transparent);
-  transition: opacity var(--dur-fast) ease,
-    transform var(--dur-fast) var(--ease-out), background var(--dur-fast) ease,
-    box-shadow var(--dur-fast) ease;
+  transition: opacity var(--dur-fast) ease;
 }
 
 .page-chat .chat-send-glyph {
@@ -1425,13 +1415,10 @@
 }
 
 .page-chat .chat-send:not(:disabled):hover {
-  transform: translateY(-1px);
-  filter: brightness(1.04);
+  opacity: 0.88;
 }
 
-.page-chat .chat-send:not(:disabled):active {
-  transform: scale(0.96);
-}
+
 
 .page-chat .chat-send:disabled {
   background: var(--chat-hover);
@@ -1728,14 +1715,31 @@
   }
 
   .page-chat .chat-composer-box {
-    min-height: 52px;
-    padding: 6px 7px 6px 16px;
-  }
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 48px;
+  padding: 6px 8px 6px 16px;
+  border: 1px solid var(--chat-hairline);
+  border-radius: var(--radius-lg, 10px);
+  background: var(--chat-surface-solid);
+  transition: border-color var(--dur-fast) ease;
+}
 
   .page-chat .chat-send {
-    width: 36px;
-    height: 36px;
-  }
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  flex: none;
+  border: 0;
+  border-radius: var(--radius-sm, 6px);
+  background: var(--accent);
+  color: #ffffff;
+  cursor: pointer;
+  transition: opacity var(--dur-fast) ease;
+}
 
   .page-chat #topbarAvatar {
     width: 30px;

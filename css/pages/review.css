@@ -1,4 +1,4 @@
-@import "../graphs.css";
+﻿@import "../graphs.css";
 
 /* Review page — scoped to .page-review. */
 
@@ -34,7 +34,7 @@
 .page-review .review-stat {
   padding: 6px 11px;
   border: 1px solid var(--border);
-  border-radius: 999px;
+  border-radius: var(--radius-xs, 4px);
   background: var(--bg-input, var(--bg-card));
   color: var(--text-secondary);
   font-size: 12px;
@@ -57,7 +57,7 @@
 .page-review .review-card {
   padding: 16px;
   border: 1px solid var(--border);
-  border-radius: 14px;
+  border-radius: var(--radius-md, 8px);
   background: var(--bg-card);
 }
 
@@ -102,7 +102,7 @@
 .page-review .review-empty {
   padding: 26px 20px;
   border: 1px dashed var(--border);
-  border-radius: 14px;
+  border-radius: var(--radius-md, 8px);
   color: var(--text-secondary);
   font-size: 13px;
   line-height: 1.6;

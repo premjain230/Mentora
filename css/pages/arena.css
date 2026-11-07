@@ -1,4 +1,4 @@
-/* Arena page — scoped to .page-arena.
+﻿/* Arena page — scoped to .page-arena.
    Ports the legacy arena.html inline styles on top of the shared premium
    arena layer (css/arena.css), which stays global. */
 
@@ -135,7 +135,7 @@
   min-height: 140px;
   background: var(--bg-card);
   border: 1px solid var(--border);
-  border-radius: var(--radius-xl);
+  border-radius: var(--radius-lg, 10px);
 }
 
 .page-arena .battle-card .bg-glow {
@@ -205,7 +205,7 @@
   justify-content: space-between;
   gap: 12px;
   flex-wrap: wrap;
-  background: linear-gradient(180deg, var(--pm-surface-2), var(--pm-surface));
+  background: var(--bg-card);
   border: 1px solid var(--pm-border);
   border-radius: var(--pm-r);
 }
@@ -253,7 +253,7 @@
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  border-radius: 999px;
+  border-radius: var(--radius-sm, 6px);
 }
 
 .page-arena .pill-row {
@@ -267,7 +267,7 @@
   font-family: inherit;
   font-size: 14px;
   cursor: pointer;
-  border-radius: 999px;
+  border-radius: var(--radius-sm, 6px);
 }
 
 .page-arena .subject-grid {
@@ -283,7 +283,7 @@
   font-family: inherit;
   background: var(--bg-card);
   border: 1px solid var(--border);
-  border-radius: var(--radius-xl);
+  border-radius: var(--radius-lg, 10px);
 }
 
 .page-arena .subject-card h4 {
@@ -330,7 +330,7 @@
   gap: 6px;
   padding: 6px 12px;
   font-size: 13px;
-  border-radius: 999px;
+  border-radius: var(--radius-xs, 4px);
 }
 
 .page-arena .progress-track {
@@ -363,7 +363,7 @@
 
 .page-arena .arena-map-loading .skeleton {
   height: 72px;
-  border-radius: var(--radius-xl);
+  border-radius: var(--radius-lg, 10px);
 }
 
 .page-arena .map-stage {
@@ -393,7 +393,7 @@
   align-self: flex-start;
   font-size: 12px;
   padding: 3px 10px;
-  border-radius: 999px;
+  border-radius: var(--radius-xs, 4px);
 }
 
 .page-arena .start-chip {
@@ -429,7 +429,7 @@
   color: var(--text-primary);
   background: var(--bg-card);
   border: 1px solid var(--border);
-  border-radius: var(--radius-xl);
+  border-radius: var(--radius-lg, 10px);
 }
 
 .page-arena .node-card.locked,
@@ -597,7 +597,7 @@
   overflow-y: auto;
   background: var(--bg-card);
   border: 1px solid var(--border);
-  border-radius: var(--radius-xl);
+  border-radius: var(--radius-lg, 10px);
   animation: arena-rise 0.25s var(--ease-out);
 }
 
@@ -734,7 +734,7 @@
   font-family: inherit;
   background: var(--bg-card);
   border: 1px solid var(--border);
-  border-radius: var(--radius-xl);
+  border-radius: var(--radius-lg, 10px);
 }
 
 .page-arena .option .key {

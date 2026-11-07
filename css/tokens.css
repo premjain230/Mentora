@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Sora:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&family=Space+Mono:wght@400;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap");
 
 /* Learning Allied — Final Colour & Visual System
    Design Philosophy: Apple + Craft
@@ -49,11 +49,16 @@
   --accent-blue: #3b82f6;
   --accent-blue-soft: rgba(59, 130, 246, 0.12);
 
-  /* ─── Pill buttons (white on dark, black on light) ────────────────────────── */
+  /* ─── Button surfaces (white on dark, black on light) ─────────────────────── */
   --pill-bg: #FFFFFF;
   --pill-fg: #000000;
   --pill-soft-bg: #1A1A1A;
   --pill-soft-fg: #FFFFFF;
+  /* Semantic aliases */
+  --btn-primary-bg: #FFFFFF;
+  --btn-primary-fg: #000000;
+  --btn-secondary-bg: #1A1A1A;
+  --btn-secondary-fg: #FFFFFF;
 
   --glass: rgba(10, 10, 10, 0.9);
   --glass-strong: rgba(5, 5, 5, 0.96);
@@ -81,10 +86,10 @@
   --text-accent: #3b82f6;
 
   /* ─── Typography ──────────────────────────────────────────────────────────── */
-  --font-display: 'Space Grotesk', 'Sora', sans-serif;
+  --font-display: 'Space Grotesk', system-ui, -apple-system, sans-serif;
   --font-main: 'Inter', system-ui, -apple-system, sans-serif;
   --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
-  --font-mono: 'JetBrains Mono', 'Space Mono', ui-monospace, monospace;
+  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
   --font-size-body: 13.5px;
   --fs-xs: 11px;
   --fs-sm: 12.5px;
@@ -111,15 +116,16 @@
   --space-7: 44px;
   --space-8: 64px;
 
-  /* ─── Radii (10–14px for components) ───────────────────────────────────────── */
-  --radius-xs: 8px;
-  --radius-sm: 10px;
-  --radius-md: 12px;
-  --radius-lg: 14px;
-  --radius-xl: 14px;
-  --radius-2xl: 16px;
-  --radius-full: 9999px;
-  --radius-card: 14px;
+  /* ─── Radii — intentional, not over-rounded ────────────────────────────── */
+  --radius-xs: 4px;
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 10px;
+  --radius-xl: 10px;
+  --radius-2xl: 12px;
+  --radius-full: 9999px;  /* only for progress bars and avatars */
+  --radius-card: 10px;
+  --radius-btn: 6px;
 
   /* ─── Shadows (Extremely limited, no excessive glow) ───────────────────────── */
   --shadow-xs: none;
@@ -257,11 +263,16 @@
   --accent-blue-soft: rgba(37, 99, 235, 0.10);
   --theme-icon: #d97706;
 
-  /* ─── Pill buttons ────────────────────────────────────────────────────────── */
+  /* ─── Button surfaces ─────────────────────────────────────────────────────── */
   --pill-bg: #111111;
   --pill-fg: #FFFFFF;
   --pill-soft-bg: #F5F5F5;
   --pill-soft-fg: #111111;
+  /* Semantic aliases */
+  --btn-primary-bg: #111111;
+  --btn-primary-fg: #FFFFFF;
+  --btn-secondary-bg: #F5F5F5;
+  --btn-secondary-fg: #111111;
 
   /* ─── Legacy aliases ──────────────────────────────────────────────────────── */
   --blue: #2563eb;

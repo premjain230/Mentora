@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <script>(function(){try{var v=localStorage.getItem('learning-allied-theme')||localStorage.getItem('aquila-theme');document.documentElement.className=v==='dark'?'':'light-mode'}catch(e){document.documentElement.className=''}})();</script>
 <head>
@@ -41,7 +41,7 @@ body{min-height:100vh;display:flex;flex-direction:column;align-items:center;padd
 .field input,.field select{width:100%;padding:0 14px;font-family:inherit;outline:none;border-radius:var(--radius-md)}
 .row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:42px;padding:0 20px;font-family:inherit;font-size:14px;cursor:pointer;text-decoration:none}
-.ai-badge{display:inline-block;font-size:11px;padding:2px 8px;border-radius:999px;margin-left:6px;vertical-align:middle}
+.ai-badge{display:inline-block;font-size:11px;padding:2px 8px;border-radius:6px;margin-left:6px;vertical-align:middle}
 .mode-toggle{display:flex;margin-bottom:24px}
 .mode-btn{flex:1;padding:9px 14px;font-family:inherit;font-weight:500;border:0;cursor:pointer;background:transparent}
 .ai-setup{animation:rise .25s var(--pm-ease)}
@@ -66,7 +66,7 @@ body{min-height:100vh;display:flex;flex-direction:column;align-items:center;padd
 .rstat{padding:14px;text-align:center}
 .rstat .l{font-size:13px;color:var(--pm-text-3);margin-top:2px}
 .saving{font-size:13px;color:var(--pm-text-3);text-align:center;margin-top:14px}
-@media(max-width:480px){.row2{grid-template-columns:1fr}.result-stats{grid-template-columns:1fr}.topbar{padding-right:52px}.panel{padding:22px!important}.btn{height:44px;border-radius:999px}}
+@media(max-width:480px){.row2{grid-template-columns:1fr}.result-stats{grid-template-columns:1fr}.topbar{padding-right:52px}.panel{padding:22px!important}.btn{height:44px;border-radius:6px}}
 </style>
 </head>
 <body>
@@ -140,7 +140,7 @@ body{min-height:100vh;display:flex;flex-direction:column;align-items:center;padd
   <div class="q-meta">
    <span id="qCounter">Question 1 / 10</span>
    <span id="qTopicLabel">Subject · Topic</span>
-   <span id="aiIndicator" style="display:none;font-size:11px;padding:2px 8px;border-radius:999px;">AI</span>
+   <span id="aiIndicator" style="display:none;font-size:11px;padding:2px 8px;border-radius:6px;">AI</span>
   </div>
   <div class="progress-track"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
   <div class="answer-mode-toggle" id="answerModeRow" style="display:none;">

@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <script>(function(){try{var v=localStorage.getItem('learning-allied-theme')||localStorage.getItem('aquila-theme');document.documentElement.className=v==='dark'?'':'light-mode'}catch(e){document.documentElement.className=''}})();</script>
 <head>
@@ -55,9 +55,9 @@ section{animation:rise .3s var(--ease-out) both}
 /* Select views */
 .select-head,.map-header,.map-toolbar{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
 .select-head{margin-bottom:20px}.select-head h2{margin:0;font-size:22px;font-weight:600;letter-spacing:-0.03em}
-.back-btn,.resume-btn{height:36px;padding:0 14px;font-family:inherit;font-size:13px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;border-radius:999px}
+.back-btn,.resume-btn{height:36px;padding:0 14px;font-family:inherit;font-size:13px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;border-radius:6px}
 .pill-row{display:flex;flex-wrap:wrap;gap:10px}
-.class-pill{padding:10px 20px;font-family:inherit;font-size:14px;cursor:pointer;border-radius:999px}
+.class-pill{padding:10px 20px;font-family:inherit;font-size:14px;cursor:pointer;border-radius:6px}
 .subject-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
 .subject-card{text-align:left;padding:18px 20px;cursor:pointer;font-family:inherit;background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-xl)}
 .subject-card h4{margin:0 0 4px;font-size:16px;font-weight:600;letter-spacing:-0.03em}.subject-card p{margin:0;font-size:13px}
@@ -66,20 +66,20 @@ section{animation:rise .3s var(--ease-out) both}
 .map-header{margin-bottom:14px;align-items:flex-start}
 .map-title h2{margin:0;font-size:26px;font-weight:600;letter-spacing:-0.03em}.map-title p{margin:4px 0 0;font-size:13px}
 .map-stats{display:flex;gap:8px;flex-wrap:wrap}
-.stat-chip{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;font-size:13px;border-radius:999px}
+.stat-chip{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;font-size:13px;border-radius:6px}
 .progress-track{margin-bottom:18px}.progress-fill{height:100%;transition:width .4s var(--ease-out);width:0}
 .map-toolbar{margin-bottom:20px}.search-input{flex:1;min-width:180px;padding:0 14px;font-family:inherit}
 .map-stage{position:relative}
 .path-line,.path-progress{display:none!important}
 .map-path{display:flex;flex-direction:column;align-items:stretch}
 .node{display:flex;flex-direction:column;gap:6px;animation:rise .3s var(--ease-out) both}
-.node-chip,.start-chip{align-self:flex-start;font-size:12px;padding:3px 10px;border-radius:999px}
+.node-chip,.start-chip{align-self:flex-start;font-size:12px;padding:3px 10px;border-radius:6px}
 .node-card,.boss-card{display:flex;align-items:center;gap:14px;width:100%;text-align:left;padding:14px 16px;cursor:pointer;font-family:inherit;color:var(--text-primary);background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-xl)}
 .node-card.locked,.boss-card.locked{cursor:not-allowed}
 .node-icon,.boss-icon{width:40px;height:40px;display:grid;place-items:center;font-size:18px;flex-shrink:0;border-radius:var(--radius-md)}
 .node-main{flex:1;min-width:0}.node-main h4{margin:0 0 2px;font-size:15px;font-weight:600;letter-spacing:-0.03em}.node-main p{margin:0;font-size:13px}
 .node-meta{display:flex;align-items:center;gap:8px;flex-shrink:0}
-.diff-badge{font-size:12px;padding:2px 9px;border-radius:999px}
+.diff-badge{font-size:12px;padding:2px 9px;border-radius:6px}
 .weak-dot{width:7px;height:7px;border-radius:50%;display:inline-block}
 .connector{width:2px;height:16px;margin:2px 0 2px 33px;background:var(--border-strong);border-radius:2px}
 .connector.active{background:var(--accent)}
@@ -96,13 +96,13 @@ section{animation:rise .3s var(--ease-out) both}
 .arena-modal .sheet{position:relative;width:100%;max-width:520px;max-height:90vh;overflow-y:auto;background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-xl);animation:rise .25s var(--ease-out)}
 .sheet-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding:22px 24px 14px}
 .sheet-head h3{margin:0;font-size:18px;font-weight:600;letter-spacing:-0.03em}.sheet-head p{margin:4px 0 0;font-size:13px}
-.close-btn{width:32px;height:32px;cursor:pointer;flex-shrink:0;font-family:inherit;border-radius:999px}
+.close-btn{width:32px;height:32px;cursor:pointer;flex-shrink:0;font-family:inherit;border-radius:6px}
 .sheet-body{padding:6px 24px 24px}
 .kv{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
 .kv .k{font-size:12px}.kv .v{font-size:14px;font-weight:600;margin-top:2px}
 .level-row{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}
-.level-pill{padding:5px 12px;font-size:12px;border-radius:999px}
-.battle-btn{width:100%;height:44px;font-family:inherit;font-size:14px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:8px;margin-top:8px;border-radius:999px}
+.level-pill{padding:5px 12px;font-size:12px;border-radius:6px}
+.battle-btn{width:100%;height:44px;font-family:inherit;font-size:14px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:8px;margin-top:8px;border-radius:6px}
 .q-meta{display:flex;justify-content:space-between;margin-bottom:10px}
 .q-progress{overflow:hidden;margin-bottom:20px}.q-progress .fill{height:100%;transition:width .3s var(--ease-out)}
 .q-text{font-size:17px;line-height:1.55;margin-bottom:18px}
@@ -111,7 +111,7 @@ section{animation:rise .3s var(--ease-out) both}
 .option .key{width:26px;height:26px;display:grid;place-items:center;font-size:12px;font-weight:600;flex-shrink:0;border-radius:var(--radius-md)}
 .feedback{margin-top:14px;padding:12px 14px;font-size:13px;line-height:1.55;animation:rise .2s var(--ease-out)}
 .victory{text-align:center;padding:32px 24px 24px;position:relative}
-.victory .burst{width:56px;height:56px;border-radius:999px;margin:0 auto 12px;display:grid;place-items:center;font-size:24px}
+.victory .burst{width:56px;height:56px;border-radius:6px;margin:0 auto 12px;display:grid;place-items:center;font-size:24px}
 .confetti{position:absolute;inset:0;pointer-events:none;overflow:hidden}
 .confetti i{position:absolute;width:7px;height:11px;background:var(--c);border-radius:2px;animation:fall 1.4s ease-in forwards}
 @keyframes fall{to{transform:translateY(340px) rotate(360deg);opacity:0}}

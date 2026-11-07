@@ -1,4 +1,4 @@
-/* ─────────────────────────────────────────────────────────────────────────────
+﻿/* ─────────────────────────────────────────────────────────────────────────────
    Learning Allied — interface system (v2)
 
    One coherent layer for the public site and the signed-in app. It only uses
@@ -163,17 +163,7 @@
   opacity: 0.55;
 }
 
-/* A single warm glow behind the product preview. */
-.home-hero::after {
-  top: -220px;
-  right: -140px;
-  width: 720px;
-  height: 720px;
-  border-radius: 50%;
-  background: radial-gradient(circle, var(--la-accent-soft) 0%, transparent 62%);
-  filter: blur(10px);
-  opacity: 0.9;
-}
+
 
 .hero-grid {
   grid-template-columns: minmax(0, 1.04fr) minmax(0, 0.96fr);
@@ -195,7 +185,7 @@
   margin-bottom: 22px;
   padding: 5px 12px 5px 6px;
   border: 1px solid var(--la-line);
-  border-radius: 999px;
+  border-radius: 4px;
   background: color-mix(in srgb, var(--la-surface) 70%, transparent);
   color: var(--la-muted);
   font-size: 12px;
@@ -205,7 +195,7 @@
 
 .hero-badge b {
   padding: 3px 8px;
-  border-radius: 999px;
+  border-radius: 3px;
   background: var(--la-accent-soft);
   color: var(--la-accent);
   font-weight: 600;
@@ -314,7 +304,7 @@
   width: 100%;
   border: 1px solid var(--la-line-strong);
   border-radius: var(--ui-radius);
-  background: linear-gradient(180deg, var(--la-surface-2), var(--la-surface));
+  background: var(--la-surface);
   box-shadow: var(--ui-shadow);
   overflow: hidden;
 }
@@ -361,7 +351,7 @@
   align-items: center;
   gap: 5px;
   padding: 3px 8px;
-  border-radius: 999px;
+  border-radius: 4px;
   background: var(--la-accent-soft);
   color: var(--la-accent);
   font-size: 10px;
@@ -566,7 +556,6 @@
 .exam-card:hover {
   border-color: var(--la-line-strong);
   background: var(--la-surface-2);
-  transform: translateY(-2px);
   box-shadow: var(--ui-shadow);
 }
 
@@ -678,18 +667,7 @@
   text-align: center;
 }
 
-.home-cta::before {
-  content: "";
-  position: absolute;
-  z-index: -1;
-  top: -60%;
-  left: 50%;
-  width: 620px;
-  height: 460px;
-  transform: translateX(-50%);
-  border-radius: 50%;
-  background: radial-gradient(circle, var(--la-accent-soft) 0%, transparent 66%);
-}
+
 
 .home-cta h2 {
   margin: 0 auto 12px;

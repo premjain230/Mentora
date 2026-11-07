@@ -1,4 +1,4 @@
-/* Learning Allied — base styles (Orbit theme: reset, type, shared components)
+﻿/* Learning Allied — base styles (Orbit theme: reset, type, shared components)
    Canvas: true black. Panels: #0a0a0a with hairline border. No shadows, no glows.
    One accent: flame orange #ff8a1f. Space Grotesk headings, Inter body. */
 
@@ -123,47 +123,47 @@ p { color: var(--text-secondary); line-height: var(--lh-relaxed); }
   align-items: center;
   justify-content: center;
   gap: var(--space-2);
-  min-height: 44px;
-  padding: 0 var(--space-5);
-  border-radius: var(--radius-full);
+  min-height: 36px;
+  padding: 0 var(--space-4);
+  border-radius: var(--radius-btn, 6px);
   font-family: var(--font-main);
   font-size: var(--fs-sm);
-  font-weight: 600;
-  letter-spacing: -0.01em;
+  font-weight: 500;
+  letter-spacing: -0.005em;
   line-height: 1;
   cursor: pointer;
   border: 1px solid transparent;
-  transition: opacity var(--dur-fast) ease, transform var(--dur-fast) var(--ease-out);
+  transition: background var(--dur-fast) ease, border-color var(--dur-fast) ease, color var(--dur-fast) ease, opacity var(--dur-fast) ease;
   user-select: none;
   white-space: nowrap;
   background: var(--pill-bg);
   color: var(--pill-fg);
 }
-.btn:hover { opacity: 0.88; }
-.btn:active { transform: scale(0.98); }
-.btn:disabled { opacity: 0.45; cursor: not-allowed; transform: none !important; }
+.btn:hover { opacity: 0.85; }
+.btn:active { opacity: 0.7; }
+.btn:disabled { opacity: 0.4; cursor: not-allowed; }
 
 /* Primary = white pill, black text (dark mode). Black pill, white text (light mode). */
 .btn-primary {
   background: var(--pill-bg);
   color: var(--pill-fg);
   border: 1px solid transparent;
-  font-weight: 600;
+  font-weight: 500;
 }
-.btn-primary:hover { opacity: 0.88; }
+.btn-primary:hover { opacity: 0.85; }
 
 /* Secondary = light-grey pill or outline pill */
 .btn-secondary {
   background: var(--pill-soft-bg);
   color: var(--pill-soft-fg);
-  border: 1px solid transparent;
+  border: 1px solid var(--border);
 }
-.btn-secondary:hover { background: var(--pill-soft-bg); opacity: 0.88; }
+.btn-secondary:hover { border-color: var(--border-strong); opacity: 1; background: var(--bg-hover); }
 
 /* Ghost / outline button */
 .btn-ghost {
   background: transparent;
-  border: 1px solid var(--border-strong);
+  border: 1px solid var(--border);
   color: var(--text-secondary);
 }
 .btn-ghost:hover { background: var(--bg-hover); color: var(--text-primary); border-color: var(--border-hover); }
@@ -189,23 +189,23 @@ p { color: var(--text-secondary); line-height: var(--lh-relaxed); }
   background: var(--pm-bad-soft, var(--accent3-soft, rgba(248, 113, 113, 0.10)));
   border: 1px solid color-mix(in srgb, var(--accent3, #f87171) 35%, transparent);
   color: var(--accent3, #f87171);
-  border-radius: var(--radius-full);
+  border-radius: var(--radius-btn, 6px);
 }
 .btn-danger:hover { background: var(--pm-bad-soft, rgba(248, 113, 113, 0.14)); }
 
-.btn-sm { min-height: 40px; padding: 0 var(--space-3); font-size: var(--fs-sm); border-radius: var(--radius-full); }
-.btn-lg { min-height: 48px; padding: 0 var(--space-6); font-size: var(--fs-md); border-radius: var(--radius-full); }
+.btn-sm { min-height: 30px; padding: 0 var(--space-3); font-size: var(--fs-sm); border-radius: var(--radius-btn, 6px); }
+.btn-lg { min-height: 42px; padding: 0 var(--space-5); font-size: var(--fs-base); border-radius: var(--radius-btn, 6px); }
 .btn-block { width: 100%; }
-.btn-icon { width: 44px; height: 44px; padding: 0; border-radius: var(--radius-full); }
+.btn-icon { width: 32px; height: 32px; padding: 0; border-radius: var(--radius-btn, 6px); min-height: unset; }
 
 /* ── Inputs — ~14px radius ── */
 .field {
   width: 100%;
-  min-height: 44px;
-  padding: 0 var(--space-4);
+  min-height: 38px;
+  padding: 0 var(--space-3);
   background: var(--bg-input);
   border: 1px solid var(--border);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-sm, 6px);
   color: var(--text-primary);
   font-size: var(--fs-sm);
   font-weight: 450;
@@ -225,7 +225,7 @@ textarea.field { padding: var(--space-3) var(--space-4); min-height: 96px; resiz
 .card {
   background: var(--bg-card);
   border: 1px solid var(--border);
-  border-radius: var(--radius-xl);
+  border-radius: var(--radius-lg, 10px);
   transition: border-color var(--dur-fast) var(--ease-out), box-shadow var(--dur-fast) var(--ease-out);
 }
 .card:hover { border-color: var(--border-strong); }
@@ -235,7 +235,7 @@ textarea.field { padding: var(--space-3) var(--space-4); min-height: 96px; resiz
 .card-elevated {
   background: var(--bg-elevated);
   border: 1px solid var(--border);
-  border-radius: var(--radius-xl);
+  border-radius: var(--radius-lg, 10px);
 }
 
 /* Interactive card */
@@ -264,7 +264,7 @@ textarea.field { padding: var(--space-3) var(--space-4); min-height: 96px; resiz
   padding: var(--space-4) var(--space-5);
   border-top: 1px solid var(--border);
   background: var(--bg-elevated);
-  border-radius: 0 0 var(--radius-xl) var(--radius-xl);
+  border-radius: 0 0 var(--radius-lg, 10px) var(--radius-lg, 10px);
 }
 
 /* ── Toasts ── */
@@ -277,7 +277,7 @@ textarea.field { padding: var(--space-3) var(--space-4); min-height: 96px; resiz
   padding: var(--space-3) var(--space-4);
   background: var(--bg-card);
   border: 1px solid var(--border-strong);
-  border-radius: var(--radius-full);
+  border-radius: var(--radius-md, 8px);
   color: var(--text-primary);
   font-size: var(--fs-sm);
   opacity: 0;
@@ -294,9 +294,9 @@ textarea.field { padding: var(--space-3) var(--space-4); min-height: 96px; resiz
   align-items: center;
   gap: 4px;
   padding: 2px 8px;
-  border-radius: var(--radius-full);
+  border-radius: var(--radius-xs, 4px);
   font-size: var(--fs-xs);
-  font-weight: 600;
+  font-weight: 500;
   line-height: 1.6;
   letter-spacing: 0.01em;
   white-space: nowrap;
@@ -444,13 +444,4 @@ textarea.field { padding: var(--space-3) var(--space-4); min-height: 96px; resiz
 .u-hide-sm { }
 @media (max-width: 640px) { .u-hide-sm { display: none !important; } }
 
-/* Navbar profile picture — blue-purple gradient area */
-#topbarAvatar {
-  border-radius: 50% !important;
-  background: conic-gradient(from var(--ring-a, 0deg), #4f8cff, #9b7bff, #4f8cff);
-  animation: ring-spin 6s linear infinite;
-}
-@keyframes ring-spin { to { --ring-a: 360deg; } }
-@media (prefers-reduced-motion: reduce) {
-  #topbarAvatar { animation: none !important; }
-}
+

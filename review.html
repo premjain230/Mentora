@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <script>(function(){try{var v=localStorage.getItem('learning-allied-theme')||localStorage.getItem('aquila-theme');document.documentElement.className=v==='dark'?'':'light-mode'}catch(e){document.documentElement.className=''}})();</script>
 <head>
@@ -28,7 +28,7 @@ onAuthStateChanged(auth, async (user)=>{
   const snap = await getDocs(collection(db,"users",user.uid,"reviews"));
   const reviews = snap.docs.map(d=>d.data());
   const counts = {due: reviews.filter(r=>r.reviewState==="due").length, overdue: reviews.filter(r=>r.reviewState==="overdue").length, practice: reviews.filter(r=>r.reviewState==="practice").length, reviewSoon: reviews.filter(r=>r.reviewState==="review_soon").length, stable: reviews.filter(r=>r.reviewState==="stable").length, notReady: reviews.filter(r=>r.reviewState==="not_ready").length };
-  document.getElementById("stats").innerHTML = Object.entries(counts).map(([k,v])=>`<span style="padding:6px 10px;background:var(--bg-input);border:1px solid var(--border);border-radius:999px;font-size:12px;">${k}: ${v}</span>`).join("");
+  document.getElementById("stats").innerHTML = Object.entries(counts).map(([k,v])=>`<span style="padding:6px 10px;background:var(--bg-input);border:1px solid var(--border);border-radius:4px;font-size:12px;">${k}: ${v}</span>`).join("");
   const listEl=document.getElementById("list");
   const display = reviews.filter(r=>["due","overdue","practice"].includes(r.reviewState)).slice(0,10);
   function humanState(r){

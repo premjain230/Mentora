@@ -1,4 +1,4 @@
-/* Learning Allied — auth pages (login, signup). Orbit theme: true black,
+﻿/* Learning Allied — auth pages (login, signup). Orbit theme: true black,
    hairline-bordered cards, flame orange accent, Space Grotesk headings.
    Self-contained: does not load tokens.css. */
 
@@ -57,13 +57,7 @@ body {
   transition: background 0.25s, color 0.25s;
 }
 body:before { content: none; }
-.light-mode body:before {
-  content: "";
-  position: fixed; inset: 0; z-index: -1;
-  background: radial-gradient(circle, var(--dot) 1px, transparent 1.5px) 0 0/24px 24px;
-  -webkit-mask: radial-gradient(60% 55% at 50% 38%, #000, transparent);
-  mask: radial-gradient(60% 55% at 50% 38%, #000, transparent);
-}
+.light-mode body:before { content: none; }
 img[src$="learningallied-white.svg"] { content: url("/learningallied-white.svg"); }
 .light-mode img[src$="learningallied-white.svg"] { content: url("/learningallied-black.svg"); }
 .skip { position: absolute; left: -999px; }
@@ -79,7 +73,7 @@ img[src$="learningallied-white.svg"] { content: url("/learningallied-white.svg")
 }
 .brand img { height: 28px; width: auto; }
 .tg {
-  width: 36px; height: 36px; border-radius: 999px; border: 1px solid var(--line);
+  width: 36px; height: 36px; border-radius: 6px; border: 1px solid var(--line);
   background: var(--surf); color: var(--tx2); display: grid; place-items: center;
   cursor: pointer; transition: color 0.15s, border-color 0.15s;
 }
@@ -106,7 +100,7 @@ h1 {
 .f > label, .lr label { display: block; font-weight: 500; font-size: 13px; margin-bottom: 6px; }
 .lr { display: flex; justify-content: space-between; align-items: baseline; }
 input:not([type=checkbox]), select {
-  width: 100%; height: 44px; padding: 0 14px; border-radius: 14px;
+  width: 100%; height: 40px; padding: 0 12px; border-radius: 6px;
   border: 1px solid var(--line2); background: var(--surf); color: var(--tx);
   font: inherit; font-size: 14px; outline: 0; appearance: none; -webkit-appearance: none;
   transition: border-color 0.15s, box-shadow 0.15s;
@@ -133,7 +127,7 @@ input:-webkit-autofill:focus {
 .eye {
   position: absolute; right: 4px; top: 50%; transform: translateY(-50%);
   width: 36px; height: 36px; border: 0; background: 0; color: var(--tx3);
-  border-radius: 999px; display: grid; place-items: center; cursor: pointer;
+  border-radius: 6px; display: grid; place-items: center; cursor: pointer;
   transition: color 0.15s;
 }
 .eye:hover { color: var(--tx); }
@@ -150,10 +144,10 @@ input:-webkit-autofill:focus {
 .ck input:checked { background-color: var(--ac); border-color: var(--ac); }
 .ck.s { margin: 4px 0 20px; }
 .btn {
-  width: 100%; height: 44px; border-radius: 999px;
-  font: 600 14px Inter, sans-serif;
+  width: 100%; height: 40px; border-radius: 6px;
+  font: 500 13.5px Inter, sans-serif;
   display: flex; align-items: center; justify-content: center; gap: 8px;
-  cursor: pointer; transition: opacity 0.15s, transform 0.1s, border-color 0.15s; margin-top: 0;
+  cursor: pointer; transition: opacity 0.15s, border-color 0.15s; margin-top: 0;
   background: var(--pill-bg, #ffffff);
   color: var(--pill-fg, #000000);
   border: 1px solid transparent;
@@ -174,7 +168,7 @@ input:-webkit-autofill:focus {
   color: var(--tx);
   border: 1px solid var(--line2);
   font-weight: 500;
-  border-radius: 999px;
+  border-radius: 6px;
 }
 .g:hover:not(:disabled) { background: var(--bg-hover, #161616); color: var(--tx); border-color: var(--line2); }
 .g svg { width: 18px; height: 18px; }
@@ -229,7 +223,7 @@ input:-webkit-autofill:focus {
 .ft { text-align: center; color: var(--tx2); margin-top: 24px; font-size: 13px; }
 .ft .l { font-size: 13px; }
 @media (max-width: 480px) {
-  input:not([type=checkbox]), select, .btn { height: 48px; font-size: 16px; }
+  input:not([type=checkbox]), select, .btn { height: 44px; font-size: 16px; }
   h1 { font-size: 26px; }
   .r2 { grid-template-columns: 1fr; }
 }

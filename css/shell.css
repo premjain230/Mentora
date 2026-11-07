@@ -1,4 +1,4 @@
-/* Learning Allied — app shell (page frame, topbar, ambient background)
+﻿/* Learning Allied — app shell (page frame, topbar, ambient background)
 
    Sidebar styles live in sidebar.css. This file must NOT style .sidebar. */
 
@@ -47,7 +47,7 @@ body:has(> #sidebarMount),
      clear it. This MUST be padding, not margin: with margin the 12px gutter
      between the card and .main would expose whatever paints behind .main
      instead of .main's own background spanning the full viewport. */
-  padding-left: calc(var(--sidebar-w) + 24px);
+  padding-left: var(--sidebar-w);
 }
 
 .main > :not(.topbar):not(.scroll-progress) {
@@ -76,29 +76,7 @@ body:has(> #sidebarMount),
   }
 }
 
-/* Ambient background */
-
-.ambient-orb {
-  display: none;
-  position: fixed;
-  border-radius: 50%;
-  pointer-events: none;
-  z-index: 0;
-  filter: blur(90px);
-  opacity: 0.16;
-}
-
-.orb-1 { width: 400px; height: 400px; background: var(--accent); top: -12%; left: -8%; animation: orbFloat1 20s ease-in-out infinite; }
-
-.orb-2 { width: 360px; height: 360px; background: var(--accent2); bottom: -10%; right: -6%; animation: orbFloat2 25s ease-in-out infinite; }
-
-@keyframes orbFloat1 { 0%, 100% { transform: translate(0, 0); } 33% { transform: translate(30px, -20px); } 66% { transform: translate(-15px, 30px); } }
-
-@keyframes orbFloat2 { 0%, 100% { transform: translate(0, 0); } 33% { transform: translate(-20px, 15px); } 66% { transform: translate(40px, -30px); } }
-
-body::before {
-  content: none;
-}
+/* Ambient background removed */
 
 /* Scroll progress */
 
@@ -126,9 +104,7 @@ body::before {
   min-height: calc(var(--topbar-h) + env(safe-area-inset-top));
   padding: env(safe-area-inset-top) var(--space-5) 0;
   border-bottom: 1px solid var(--border);
-  background: color-mix(in srgb, var(--bg-base) 85%, transparent);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  background: var(--bg-base);
   flex-shrink: 0;
   position: sticky;
   top: 0;
@@ -199,9 +175,7 @@ body::before {
 
 .menu-btn {
   display: none;
-  width: 38px;
-  height: 38px;
-  border-radius: var(--radius-full);
+  width: 34px; height: 34px; border-radius: var(--radius-sm, 6px);
   border: 1px solid var(--border);
   background: var(--bg-card);
   color: var(--text-secondary);
@@ -224,7 +198,7 @@ body::before {
 
 .scroll-control {
   width: 36px; height: 36px;
-  border-radius: 999px;
+  border-radius: var(--radius-sm, 6px);
   background: var(--bg-card);
   border: 1px solid var(--border);
   color: var(--text-muted);
@@ -256,8 +230,7 @@ body::before {
   display: flex; align-items: center; gap: 7px;
   background: var(--bg-card);
   border: 1px solid var(--border);
-  border-radius: var(--radius-full);
-  padding: 7px 13px;
+  border-radius: var(--radius-sm, 6px); padding: 5px 10px;
   font-size: var(--fs-sm);
   color: var(--text-secondary);
   user-select: none;
@@ -340,9 +313,8 @@ body::before {
 
 /* ── Topbar backdrop on scroll ───────────────────────────────────────────── */
 .topbar.is-scrolled {
-  background: color-mix(in srgb, var(--bg-base) 90%, transparent);
-  backdrop-filter: saturate(140%) blur(16px);
-  -webkit-backdrop-filter: saturate(140%) blur(16px);
+  background: var(--bg-base);
+  border-bottom-color: var(--border-strong);
 }
 
 /* ── Page entrance animation ─────────────────────────────────────────────── */

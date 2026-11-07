@@ -1,4 +1,4 @@
-/* Quiz page — scoped to .page-quiz. */
+﻿/* Quiz page — scoped to .page-quiz. */
 
 .page-quiz [hidden] {
   display: none !important;
@@ -76,7 +76,7 @@
   display: inline-block;
   margin-left: 6px;
   padding: 2px 8px;
-  border-radius: 999px;
+  border-radius: var(--radius-xs, 4px);
   background: var(--accent-soft);
   color: var(--accent);
   font-size: 11px;
@@ -101,7 +101,7 @@
   height: 42px;
   padding: 0 14px;
   border: 1px solid var(--border-strong);
-  border-radius: 10px;
+  border-radius: var(--radius-sm, 6px);
   background: var(--bg-card);
   color: var(--text-primary);
   font-family: inherit;
@@ -134,7 +134,7 @@
   height: 42px;
   padding: 0 20px;
   border: 1px solid var(--border-strong);
-  border-radius: 10px;
+  border-radius: var(--radius-sm, 6px);
   background: transparent;
   color: var(--text-primary);
   font-family: inherit;
@@ -158,14 +158,12 @@
   border-color: transparent;
   background: var(--accent);
   color: #ffffff;
-  box-shadow: 0 2px 10px rgba(59, 130, 246, 0.28);
 }
 
 .page-quiz .btn.quiz-primary:hover:not(:disabled) {
   background: var(--accent-strong);
   color: #ffffff;
-  box-shadow: 0 4px 16px rgba(59, 130, 246, 0.38);
-  opacity: 1;
+  opacity: 0.9;
 }
 
 .page-quiz #startBtn,
@@ -190,7 +188,7 @@
 
 .page-quiz #aiIndicator {
   padding: 2px 8px;
-  border-radius: 999px;
+  border-radius: var(--radius-xs, 4px);
   background: var(--accent-soft);
   color: var(--accent);
   font-size: 11px;
@@ -200,14 +198,14 @@
   height: 4px;
   margin-bottom: 28px;
   overflow: hidden;
-  border-radius: 999px;
+  border-radius: var(--radius-xs, 4px);
   background: var(--border);
 }
 
 .page-quiz .progress-fill {
   height: 100%;
   width: 0;
-  border-radius: 999px;
+  border-radius: var(--radius-xs, 4px);
   background: var(--accent);
   transition: width 0.3s ease;
 }
@@ -220,7 +218,7 @@
   margin-bottom: 16px;
   padding: 9px 14px;
   border: 1px solid var(--border);
-  border-radius: 10px;
+  border-radius: var(--radius-sm, 6px);
   color: var(--text-secondary);
   font-size: 13px;
 }
@@ -310,7 +308,7 @@
   min-height: 96px;
   padding: 12px 14px;
   border: 1px solid var(--border-strong);
-  border-radius: 10px;
+  border-radius: var(--radius-sm, 6px);
   background: var(--bg-card);
   color: var(--text-primary);
   font-family: inherit;
@@ -329,7 +327,7 @@
   margin-top: 16px;
   padding: 14px 16px;
   border: 1px solid var(--border);
-  border-radius: 10px;
+  border-radius: var(--radius-sm, 6px);
   color: var(--text-primary);
   font-size: 14px;
   line-height: 1.6;
@@ -445,7 +443,7 @@
 
   .page-quiz .btn {
     height: 44px;
-    border-radius: 999px;
+    border-radius: var(--radius-xs, 4px);
   }
 }
 

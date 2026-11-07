@@ -1,11 +1,11 @@
-/* Learning Allied: About and Founder pages.
+﻿/* Learning Allied: About and Founder pages.
    Uses the same --la-* tokens, theme classes and component patterns as index.html. */
 :root{
   --la-bg:#000000; --la-surface:#111113; --la-surface-2:#17171a;
   --la-line:rgba(255,255,255,.09); --la-line-strong:rgba(255,255,255,.16);
   --la-text:#f4f4f5; --la-muted:#a1a1aa; --la-faint:#71717a;
   --la-accent:#6b95ff; --la-accent-ink:#0a0a0b; --la-accent-soft:rgba(107,149,255,.14);
-  --la-r:14px; --la-r-sm:10px;
+  --la-r:10px; --la-r-sm:6px;
   --la-font:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
 }
 .light-mode{
@@ -25,7 +25,7 @@ img{display:block;max-width:100%}
 /* Buttons */
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;font:600 14px/1 var(--la-font);padding:12px 20px;border-radius:var(--la-r-sm);border:1px solid transparent;cursor:pointer;transition:background .2s,border-color .2s,transform .2s}
 .btn-primary{background:var(--la-accent);color:var(--la-accent-ink)}
-.btn-primary:hover{filter:brightness(1.08);transform:translateY(-1px)}
+.btn-primary:hover{filter:brightness(1.08);}
 .btn-secondary{background:transparent;color:var(--la-text);border-color:var(--la-line-strong)}
 .btn-secondary:hover{background:var(--la-surface-2)}
 .btn-lg{padding:15px 26px;font-size:15px}
@@ -33,7 +33,7 @@ img{display:block;max-width:100%}
 .btn-quiet:hover{color:var(--la-text)}
 
 /* Navbar */
-.navbar{position:fixed;top:12px;left:50%;transform:translateX(-50%);width:calc(100% - 32px);max-width:1160px;height:60px;padding:0 10px 0 18px;display:flex;align-items:center;justify-content:space-between;z-index:100;border:1px solid transparent;border-radius:16px;transition:background .3s,border-color .3s,backdrop-filter .3s}
+.navbar{position:fixed;top:12px;left:50%;transform:translateX(-50%);width:calc(100% - 32px);max-width:1160px;height:60px;padding:0 10px 0 18px;display:flex;align-items:center;justify-content:space-between;z-index:100;border:1px solid transparent;border-radius:10px;transition:background .3s,border-color .3s,backdrop-filter .3s}
 .navbar.scrolled{background:color-mix(in srgb,var(--la-bg) 82%,transparent);border-color:var(--la-line);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px)}
 .logo{display:flex;align-items:center;gap:10px;font-weight:600;font-size:16px;letter-spacing:-.01em}
 .logo-img{height:28px;width:auto}
@@ -78,7 +78,7 @@ img{display:block;max-width:100%}
 @media(max-width:760px){.point{grid-template-columns:1fr;gap:8px;padding:22px 0}}
 
 /* CTA */
-.cta{background:var(--la-surface);border:1px solid var(--la-line);border-radius:22px;padding:64px 32px;text-align:center}
+.cta{background:var(--la-surface);border:1px solid var(--la-line);border-radius:12px;padding:64px 32px;text-align:center}
 .cta h2{font-size:clamp(28px,4vw,42px);letter-spacing:-.03em;line-height:1.1;margin-bottom:14px}
 .cta p{color:var(--la-muted);font-size:17px;max-width:440px;margin:0 auto 30px}
 .cta .hero-ctas{justify-content:center;margin-top:0}

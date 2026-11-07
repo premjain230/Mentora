@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
@@ -38,7 +38,7 @@
   .gate-card{max-width:420px;width:calc(100% - 40px);background:linear-gradient(180deg,var(--surface),var(--surface2));border:1px solid var(--line);border-radius:var(--r-lg);padding:34px;text-align:center}
   .gate-card h2{font-size:20px;font-weight:700;margin:14px 0 6px}
   .gate-card p{color:var(--muted);font-size:13px;margin-bottom:20px}
-  .gate-badge{display:inline-block;font-family:var(--mono);font-size:11px;letter-spacing:2px;color:var(--blue);border:1px solid var(--blueSoft);background:var(--blueSoft);border-radius:999px;padding:4px 14px}
+  .gate-badge{display:inline-block;font-family:var(--mono);font-size:11px;letter-spacing:2px;color:var(--blue);border:1px solid var(--blueSoft);background:var(--blueSoft);border-radius:4px;padding:4px 14px}
   .btn{display:inline-flex;align-items:center;gap:8px;border:none;border-radius:var(--r-sm);padding:10px 18px;font-weight:600;font-size:13px;background:var(--blue);color:#06121a}
   .btn.ghost{background:transparent;color:var(--muted);border:1px solid var(--line)}
   .btn.sm{padding:6px 12px;font-size:12px}
@@ -91,7 +91,7 @@
   td{padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:middle}
   tr:hover td{background:rgba(255,255,255,.02)}
 
-  .pill{display:inline-block;font-family:var(--mono);font-size:10px;padding:3px 9px;border-radius:999px;border:1px solid var(--line2);color:var(--muted)}
+  .pill{display:inline-block;font-family:var(--mono);font-size:10px;padding:3px 9px;border-radius:4px;border:1px solid var(--line2);color:var(--muted)}
   .pill.draft{color:var(--muted);border-color:var(--line2)}
   .pill.review{color:var(--spark);border-color:var(--spark)}
   .pill.approved{color:var(--violet);border-color:var(--violet)}
@@ -245,7 +245,7 @@
         <div style="font-size:10px;color:rgba(255,255,255,0.55);" id="syllabusSub">JPG, PNG, PDF — personalises plan</div>
       </div>
       <input type="file" id="syllabusFile" accept=".jpg,.jpeg,.png,.pdf" hidden />
-      <button id="syllabusUploadBtn" style="background:#10b981;color:#fff;border:none;border-radius:999px;padding:6px 12px;font-size:11px;font-weight:600;cursor:pointer;flex-shrink:0;">Upload</button>
+      <button id="syllabusUploadBtn" style="background:#10b981;color:#fff;border:none;border-radius:4px;padding:6px 12px;font-size:11px;font-weight:600;cursor:pointer;flex-shrink:0;">Upload</button>
     </div>
     <div id="syllabusProgress" style="display:none;margin-top:6px;font-size:10px;color:var(--text-muted);"></div>
   </div>
@@ -257,7 +257,7 @@
         <div style="font-size:11px;font-weight:700;color:#fff;">AIConsole</div>
         <div style="font-size:10px;color:rgba(255,255,255,0.55);">Study assistant</div>
       </div>
-      <button onclick="window.location.href='chat.html'" style="background:#2563eb;color:#fff;border:none;border-radius:999px;padding:6px 12px;font-size:11px;font-weight:600;cursor:pointer;flex-shrink:0;position:relative;">Ask</button>
+      <button onclick="window.location.href='chat.html'" style="background:#2563eb;color:#fff;border:none;border-radius:4px;padding:6px 12px;font-size:11px;font-weight:600;cursor:pointer;flex-shrink:0;position:relative;">Ask</button>
     </div>
   </div>
   <div class="sidebar-bottom">
@@ -282,7 +282,7 @@ const input = document.getElementById("syllabusFile");
 const prog = document.getElementById("syllabusProgress");
 const label = document.getElementById("syllabusLabel");
 const sub = document.getElementById("syllabusSub");
-function toast(msg){ const t=document.createElement("div"); t.textContent=msg; t.style.cssText="position:fixed;bottom:16px;left:50%;transform:translateX(-50%);background:#0f172a;color:#fff;border:1px solid var(--border);padding:8px 14px;border-radius:999px;font-size:12px;z-index:9999;"; document.body.appendChild(t); setTimeout(()=>t.remove(),2500); }
+function toast(msg){ const t=document.createElement("div"); t.textContent=msg; t.style.cssText="position:fixed;bottom:16px;left:50%;transform:translateX(-50%);background:#0f172a;color:#fff;border:1px solid var(--border);padding:8px 14px;border-radius:4px;font-size:12px;z-index:9999;"; document.body.appendChild(t); setTimeout(()=>t.remove(),2500); }
 if(btn && input){
   btn.addEventListener("click", ()=> input.click());
   // also clicking card triggers upload (except button)

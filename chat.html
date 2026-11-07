@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
 <script>(function(){try{var v=localStorage.getItem('learning-allied-theme')||localStorage.getItem('aquila-theme');document.documentElement.className=v==='dark'?'':'light-mode'}catch(e){document.documentElement.className=''}})();</script>
@@ -33,7 +33,7 @@
 .chat-area { flex: 1 1 auto; width: 100%; min-height: 0; overflow-y: auto; overflow-x: hidden; padding: 28px clamp(16px, 4vw, 40px) calc(24px + env(safe-area-inset-bottom)); display: flex; flex-direction: column; gap: 24px; scroll-behavior: smooth; background: transparent; }
 .chat-area.chat-empty > #welcomeScreen { margin-top: auto; margin-bottom: auto; }
 .chat-area::-webkit-scrollbar { width: 6px; }
-.chat-area::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: var(--radius-full); }
+.chat-area::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: var(--radius-sm, 6px); }
 
 /* ── Welcome ───────────────────────────────────────────── */
 .welcome { display: flex; flex-direction: column; align-items: center; text-align: center; padding: 24px 16px 12px; gap: 12px; max-width: 680px; margin: 0 auto; width: 100%; }
@@ -52,12 +52,12 @@
 
 /* ── Composer ──────────────────────────────────────────── */
 .input-area { width: 100%; padding: 12px clamp(12px, 3vw, 28px) 16px; background: transparent; }
-.input-box { width: 100%; max-width: 760px; min-width: 0; min-height: 56px; margin: 0 auto; background: var(--bg-card); border: 1px solid var(--border-strong); border-radius: 28px; padding: 9px 10px 9px 20px; display: flex; align-items: flex-end; gap: 8px; transition: border-color var(--dur-fast) var(--ease-out), box-shadow var(--dur-fast) var(--ease-out); }
+.input-box { width: 100%; max-width: 760px; min-width: 0; min-height: 56px; margin: 0 auto; background: var(--bg-card); border: 1px solid var(--border-strong); border-radius: 10px; padding: 9px 10px 9px 20px; display: flex; align-items: flex-end; gap: 8px; transition: border-color var(--dur-fast) var(--ease-out), box-shadow var(--dur-fast) var(--ease-out); }
 .input-box:focus-within { border-color: var(--border-active); box-shadow: 0 0 0 4px var(--bg-active); }
 .input-box textarea { flex: 1 1 auto; min-width: 0; background: transparent; border: none; outline: none; color: var(--text-primary); font-family: var(--font-main); font-size: 14.5px; font-weight: 450; resize: none; line-height: 1.6; min-height: 24px; max-height: 160px; overflow-y: auto; padding: 8px 0; }
 .input-box textarea::placeholder { color: var(--text-muted); }
 .input-actions { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
-.search-toggle-btn, .send-btn { width: 38px; height: 38px; border-radius: 999px; display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; transition: all var(--dur-fast) var(--ease-out); }
+.search-toggle-btn, .send-btn { width: 38px; height: 38px; border-radius: 6px; display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; transition: all var(--dur-fast) var(--ease-out); }
 .search-toggle-btn { border: 1px solid var(--border-strong); background: transparent; color: var(--text-muted); }
 .search-toggle-btn:hover { color: var(--text-primary); border-color: var(--border-hover); background: var(--bg-hover); }
 .search-toggle-btn.active { color: var(--accent); border-color: color-mix(in srgb, var(--accent) 45%, transparent); background: var(--accent-soft); }
@@ -74,7 +74,7 @@
 .message-row { display: flex; padding: 0 8px; max-width: 780px; margin: 0 auto; width: 100%; }
 .message-row.user { justify-content: flex-end; }
 .message-row.assistant { align-items: flex-start; }
-.user-bubble { background: var(--bg-elevated); border: 1px solid var(--border); border-radius: 24px 24px 8px 24px; padding: 12px 18px; max-width: 76%; font-size: 14px; line-height: 1.6; color: var(--text-primary); font-weight: 450; word-break: break-word; white-space: pre-wrap; }
+.user-bubble { background: var(--bg-elevated); border: 1px solid var(--border); border-radius: 12px 12px 4px 12px; padding: 12px 18px; max-width: 76%; font-size: 14px; line-height: 1.6; color: var(--text-primary); font-weight: 450; word-break: break-word; white-space: pre-wrap; }
 .ai-bubble { flex: 1; font-size: 14px; line-height: 1.75; color: var(--text-primary); word-break: break-word; min-width: 0; font-weight: 400; }
 .ai-bubble h1 { font-family: var(--font-display); font-size: 20px; font-weight: 700; margin: 18px 0 8px; letter-spacing: -0.03em; }
 .ai-bubble h2 { font-family: var(--font-display); font-size: 16px; font-weight: 700; margin: 16px 0 6px; color: var(--text-primary); padding-bottom: 6px; border-bottom: 1px solid var(--border-subtle); letter-spacing: -0.02em; }
@@ -96,7 +96,7 @@
 .ai-bubble a { color: var(--accent); font-weight: 500; border-bottom: 1px solid transparent; transition: border-color var(--dur-fast) ease; }
 .ai-bubble a:hover { border-bottom-color: var(--accent); }
 .ai-actions { display: flex; align-items: center; gap: 6px; margin-top: 14px; flex-wrap: wrap; }
-.ai-action-btn { display: flex; align-items: center; gap: 5px; padding: 7px 12px; font-size: 12px; font-weight: 500; font-family: var(--font-main); border-radius: var(--radius-full); border: 1px solid var(--border); background: transparent; color: var(--text-muted); cursor: pointer; transition: all var(--dur-fast) var(--ease-out); line-height: 1; }
+.ai-action-btn { display: flex; align-items: center; gap: 5px; padding: 7px 12px; font-size: 12px; font-weight: 500; font-family: var(--font-main); border-radius: var(--radius-sm, 6px); border: 1px solid var(--border); background: transparent; color: var(--text-muted); cursor: pointer; transition: all var(--dur-fast) var(--ease-out); line-height: 1; }
 .ai-action-btn:hover { color: var(--text-primary); border-color: var(--border-strong); background: var(--bg-hover); }
 .ai-action-btn.active-good, .ai-action-btn.active-copy { color: var(--accent); border-color: color-mix(in srgb, var(--accent) 40%, transparent); background: var(--accent-soft); }
 .ai-action-btn.active-bad { color: var(--accent3, #f87171); border-color: color-mix(in srgb, var(--accent3, #f87171) 30%, transparent); background: color-mix(in srgb, var(--accent3, #f87171) 10%, transparent); }
@@ -123,7 +123,7 @@
 .history-btn {
   display: inline-flex; align-items: center; gap: 6px;
   height: 34px; padding: 0 14px;
-  border-radius: 999px;
+  border-radius: 6px;
   border: 1px solid var(--border);
   background: var(--bg-card);
   color: var(--text-secondary);
