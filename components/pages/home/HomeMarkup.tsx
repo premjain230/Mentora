@@ -8,8 +8,6 @@ import Link from "next/link";
 export function HomeMarkup() {
   return (
     <div className="home-page">
-      <div className="ambient-orb orb-1" aria-hidden="true" />
-      <div className="ambient-orb orb-2" aria-hidden="true" />
       <div id="scrollProgress" className="scroll-progress" />
 
       <div className="topbar">
@@ -75,7 +73,7 @@ export function HomeMarkup() {
 
       <div className="chat-area" id="homeChatArea">
         <div id="homeHub" className="hub-grid">
-          {/* Quick-Action Hero Strip */}
+          {/* Quick-Action Command Strip */}
           <div className="hub-action-strip">
             <Link href="/arena" className="hub-quick-action hub-action-primary">
               <span className="hub-action-icon">

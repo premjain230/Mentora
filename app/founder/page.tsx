@@ -40,92 +40,103 @@ export default function FounderPage() {
       />
       <PublicNavbar />
 
-      <main id="main">
+      <main id="main" className="editorial-page">
         <article>
-          <section className="page-hero" style={{ padding: "120px 0 64px" }}>
+          {/* Hero */}
+          <section className="page-hero">
             <div className="wrap">
-              <h1
-                id="founder-title"
-                style={{
-                  fontSize: "clamp(34px, 4.5vw, 52px)",
-                  fontWeight: 800,
-                  letterSpacing: "-0.035em",
-                  marginBottom: 16,
-                  color: "var(--la-text)",
-                }}
-              >
-                Prem Jain — Founder of Learning Allied
+              <p className="ui-eyebrow">Founder Profile</p>
+              <h1 id="founder-title" className="ui-display page-hero-title">
+                Prem Jain
               </h1>
-              <p
-                style={{
-                  fontSize: 20,
-                  color: "var(--la-muted, #a1a1aa)",
-                  lineHeight: 1.6,
-                  maxWidth: 720,
-                  marginBottom: 32,
-                }}
-              >
-                Prem Jain is the founder of Learning Allied, an AI-powered study platform for students preparing for JEE, NEET and Board exams. He is building it so that AI helps students genuinely understand what they study, rather than simply providing answers.
+              <p className="ui-lede page-hero-lede">
+                Student entrepreneur and founder of Learning Allied. Dedicated to
+                re-architecting how Indian students prepare for rigorous exams through
+                active cognition, deliberate practice, and cognitive psychology.
               </p>
-              <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
+              <div className="page-hero-actions">
                 <Link href="/" className="btn btn-primary btn-lg">
                   Visit Learning Allied
                 </Link>
                 <Link href="/about" className="btn btn-secondary btn-lg">
-                  About Learning Allied
+                  About the platform
                 </Link>
               </div>
             </div>
           </section>
 
-          <section style={{ padding: "40px 0" }}>
+          {/* Narrative sections */}
+          <section className="ui-section">
             <div className="wrap">
-              <h2 style={{ fontSize: 26, fontWeight: 700, marginBottom: 14, color: "var(--la-text)" }}>
-                Role at Learning Allied
-              </h2>
-              <div style={{ color: "var(--la-muted, #a1a1aa)", fontSize: 16.5, lineHeight: 1.7, maxWidth: 720 }}>
-                <p>
-                  Prem Jain founded Learning Allied and is actively building the platform. Learning Allied helps students understand concepts, practise effectively, and become more independent learners.
-                </p>
+              <div className="editorial-grid">
+                <div className="editorial-label">
+                  <span className="ui-kicker">Origin &amp; Purpose</span>
+                </div>
+                <div className="editorial-prose">
+                  <h2 className="editorial-headline">
+                    Why I am building Learning Allied
+                  </h2>
+                  <p>
+                    Every year in India, millions of students sit for competitive exams like JEE and NEET.
+                    The standard regime is grueling: endless coaching lectures, massive question banks, and
+                    hours spent copying down solutions. Yet despite studying 12 hours a day, students often
+                    feel unprepared when faced with novel questions in the actual examination hall.
+                  </p>
+                  <p>
+                    The issue isn&apos;t effort—it&apos;s cognitive encoding. When AI models were popularized,
+                    most platforms simply built chatbots that immediately output answers to homework questions.
+                    This made the problem worse by accelerating passive consumption.
+                  </p>
+                  <p>
+                    I built Learning Allied on a strict premise: <strong>AI must never rob the student of the struggle to understand.</strong> By acting as a patient Socratic partner that prompts, guides, and tests retention, Learning Allied helps students build genuine problem-solving stamina.
+                  </p>
+                </div>
               </div>
             </div>
           </section>
 
-          <section style={{ padding: "40px 0" }}>
+          <section className="ui-section editorial-divider">
             <div className="wrap">
-              <h2 style={{ fontSize: 26, fontWeight: 700, marginBottom: 14, color: "var(--la-text)" }}>
-                Why he is building it
-              </h2>
-              <div style={{ color: "var(--la-muted, #a1a1aa)", fontSize: 16.5, lineHeight: 1.7, maxWidth: 720 }}>
-                <p style={{ marginBottom: 16 }}>
-                  The idea behind Learning Allied is that AI should help students genuinely learn, not just hand them answers.
-                </p>
-                <p>
-                  The product reflects that. The tutor asks questions before it explains, practice is built around active recall, and progress tracking shows which topics are strong and which need review.
-                </p>
+              <div className="editorial-grid">
+                <div className="editorial-label">
+                  <span className="ui-kicker">Background</span>
+                </div>
+                <div className="editorial-prose">
+                  <h2 className="editorial-headline">
+                    Independent, bootstrapped, and mission-aligned
+                  </h2>
+                  <p>
+                    As an independent builder, I have total freedom to prioritize educational rigor over
+                    superficial growth gimmicks. Learning Allied does not include random gaming gimmicks,
+                    misleading statistics, or high-pressure countdowns. Every feature—from the adaptive
+                    spaced review queue to the interactive physics simulations—is grounded in peer-reviewed
+                    cognitive science.
+                  </p>
+                  <p>
+                    I welcome thoughts, suggestions, and feedback from students, educators, and parents.
+                    You can explore our methodology on the <Link href="/about" className="editorial-link">About page</Link> or start learning directly.
+                  </p>
+                </div>
               </div>
             </div>
           </section>
 
-          <section style={{ padding: "40px 0 80px" }}>
+          {/* Call to action */}
+          <section className="ui-section">
             <div className="wrap">
-              <h2 style={{ fontSize: 26, fontWeight: 700, marginBottom: 14, color: "var(--la-text)" }}>
-                Biography
-              </h2>
-              <div style={{ color: "var(--la-muted, #a1a1aa)", fontSize: 16.5, lineHeight: 1.7, maxWidth: 720 }}>
-                <p style={{ marginBottom: 16 }}>
-                  Prem Jain is a student entrepreneur and the founder of Learning Allied. He is building the platform to help students understand what they study and learn more independently.
-                </p>
+              <div className="ui-panel home-cta">
+                <h2>Experience Socratic learning today</h2>
                 <p>
-                  Read more about the platform on the{" "}
-                  <Link href="/about" style={{ color: "var(--la-accent, #ff8a1f)" }}>
-                    About Learning Allied
-                  </Link>{" "}
-                  page, or{" "}
-                  <Link href="/signup" style={{ color: "var(--la-accent, #ff8a1f)" }}>
-                    try it for free
-                  </Link>.
+                  Create an account, select your target exam, and begin your first guided study session.
                 </p>
+                <div className="hero-actions">
+                  <Link href="/signup" className="btn btn-primary btn-lg">
+                    Create free account
+                  </Link>
+                  <Link href="/login" className="btn btn-secondary btn-lg">
+                    Student login
+                  </Link>
+                </div>
               </div>
             </div>
           </section>

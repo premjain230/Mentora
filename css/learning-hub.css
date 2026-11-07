@@ -386,9 +386,8 @@ html.light-mode .lh-board-icon, html.light-mode .lh-sub-ico { background: rgba(v
 .lh-btn--primary { background: var(--pill-bg, #fff); color: var(--pill-fg, #000); }
 .lh-btn--primary:hover:not(:disabled) { filter: brightness(0.9); }
 .lh-ghost-btn, .lh-chip, .lh-pick-crumb { border-radius: 999px; }
-.lh-card, .lh-quiz, .lh-learn, .lh-final, .lh-score, .lh-continue,
-.lh-pick .lh-chapters { border-radius: 24px; }
-.lh-option, .lh-wrong, .lh-alert, .lh-formula { border-radius: 16px; }
+.lh-card, .lh-quiz, .lh-learn, .lh-final, .lh-score, .lh-continue, .lh-pick .lh-chapters { border-radius: 12px; }
+.lh-option, .lh-wrong, .lh-alert, .lh-formula { border-radius: 8px; }
 .lh-hero-title, .lh-h2, .lh-title { letter-spacing: -0.03em; }
 /* ---------- Dashboard shell alignment (React page) ---------- */
 .page-learning-hub { min-height: 0; overflow: hidden; }

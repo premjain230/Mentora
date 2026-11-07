@@ -5,9 +5,9 @@ import { PublicNavbar } from "../../components/PublicNavbar";
 import { PublicFooter } from "../../components/PublicFooter";
 
 export const metadata = constructMetadata({
-  title: "NEET UG Preparation — Free Study Hub | Learning Allied",
+  title: "NEET UG Preparation — Free High-Yield Study Hub | Learning Allied",
   description:
-    "Prepare for NEET UG with free practice quizzes, AI tutoring, study plans and chapter-wise resources from Learning Allied. Designed for Class 11 and 12 Biology, Chemistry and Physics aspirants.",
+    "Free NEET practice quizzes, NCERT-focused AI tutoring, study plans and chapter-wise resources from Learning Allied. Designed for medical aspirants.",
   path: "/neet-preparation",
 });
 
@@ -18,7 +18,7 @@ const JSON_LD = {
       "@type": "WebPage",
       "name": "NEET UG Preparation — Learning Allied",
       "description":
-        "Free NEET practice quizzes, AI tutoring, study plans and chapter-wise resources for Biology, Chemistry and Physics aspirants.",
+        "Free NEET practice quizzes, NCERT-focused AI tutoring, study plans and chapter-wise resources for medical aspirants.",
       "url": `${SITE_URL}/neet-preparation`,
       "breadcrumb": {
         "@type": "BreadcrumbList",
@@ -30,9 +30,9 @@ const JSON_LD = {
     },
     {
       "@type": "Course",
-      "name": "NEET UG Preparation",
+      "name": "NEET UG Medical Preparation",
       "description":
-        "Free NEET UG preparation with chapter-wise practice quizzes, AI tutoring, study plans and mastery tracking across Physics, Chemistry and Biology (Botany and Zoology) for NCERT Class 11 and 12 aspirants.",
+        "Free NEET UG medical preparation with chapter-wise practice quizzes, NCERT line-by-line active recall, AI tutoring, and spaced revision across Biology, Chemistry, and Physics.",
       "provider": { "@type": "Organization", "name": "Learning Allied", "url": `${SITE_URL}/` },
       "audience": { "@type": "EducationalAudience", "educationalLevel": "Senior Secondary" },
       "educationalLevel": "Class 11 & Class 12",
@@ -43,9 +43,66 @@ const JSON_LD = {
 };
 
 const CHAPTERS = [
-  { subject: "Biology (Botany & Zoology)", topics: ["Diversity in the Living World", "Structural Organisation in Animals & Plants", "Cell Structure & Function", "Plant Physiology & Photosynthesis", "Human Physiology & Neural Control", "Reproduction in Organisms & Humans", "Genetics & Molecular Basis of Inheritance", "Evolution & Ecology", "Biotechnology Principles & Processes"] },
-  { subject: "Chemistry", topics: ["Basic Concepts of Chemistry", "Structure of Atom & Periodic Table", "Chemical Bonding & Molecular Structure", "Thermodynamics & Equilibrium", "Solutions & Electrochemistry", "Coordination Compounds & d-Block", "Hydrocarbons & Haloalkanes", "Oxygen & Nitrogen Organic Compounds", "Biomolecules & Principles of Practical Chem"] },
-  { subject: "Physics", topics: ["Units, Dimensions & Error Analysis", "Laws of Motion & Work-Power-Energy", "System of Particles & Rotational Motion", "Thermodynamics & Kinetic Theory of Gases", "Oscillations & Waves", "Electrostatics & Current Electricity", "Magnetic Effects of Current & AC", "Ray & Wave Optics", "Dual Nature of Matter & Atoms/Nuclei", "Semiconductor Electronics"] },
+  {
+    subject: "Biology",
+    topics: [
+      "Diversity in the Living World",
+      "Structural Organisation in Animals & Plants",
+      "Cell Structure & Cell Division",
+      "Plant Physiology (Photosynthesis, Respiration)",
+      "Human Physiology (Circulation, Neural, Endocrine)",
+      "Reproduction in Organisms & Humans",
+      "Genetics & Principles of Inheritance",
+      "Molecular Basis of Inheritance",
+      "Biotechnology Principles & Applications",
+      "Ecology, Environment & Biodiversity",
+    ],
+  },
+  {
+    subject: "Chemistry",
+    topics: [
+      "Atomic Structure & Periodic Classification",
+      "Chemical Bonding & Molecular Structure",
+      "States of Matter & Thermodynamics",
+      "Equilibrium & Redox Reactions",
+      "Coordination Compounds & d/f-Block Elements",
+      "General Organic Chemistry (Purification, IUPAC)",
+      "Hydrocarbons & Environmental Chemistry",
+      "Haloalkanes, Alcohols, Phenols & Ethers",
+      "Aldehydes, Ketones & Amines",
+      "Biomolecules & Polymers",
+    ],
+  },
+  {
+    subject: "Physics",
+    topics: [
+      "Physical World & Units of Measurement",
+      "Kinematics & Laws of Motion",
+      "Work, Energy and Power",
+      "System of Particles & Rotational Motion",
+      "Gravitation & Properties of Bulk Matter",
+      "Thermodynamics & Kinetic Theory of Gases",
+      "Oscillations and Waves",
+      "Electrostatics & Current Electricity",
+      "Magnetic Effects of Current & EMI",
+      "Optics & Modern Physics (Dual Nature, Atoms)",
+    ],
+  },
+];
+
+const HIGHLIGHTS = [
+  {
+    title: "100% NCERT Biology Alignment",
+    desc: "Practise assertion-reason, diagram interpretation, and line-by-line NCERT questions crafted to mirror the NTA NEET pattern.",
+  },
+  {
+    title: "Spaced Repetition for Anatomical Taxa",
+    desc: "Memorising plant examples, taxonomic classifications, and hormone feedback loops requires timely recall reviews to prevent decay.",
+  },
+  {
+    title: "Step-by-Step Numerical Physics",
+    desc: "Overcome calculation anxiety with AI tutor breakdowns of numerical problems without giving away the answer upfront.",
+  },
 ];
 
 export default function NeetPrepPage() {
@@ -57,61 +114,77 @@ export default function NeetPrepPage() {
       />
       <PublicNavbar />
 
-      <main id="main">
-        <section className="hero" style={{ padding: "120px 0 64px" }}>
+      <main id="main" className="editorial-page">
+        {/* Hero */}
+        <section className="page-hero">
           <div className="wrap">
-            <h1 style={{ fontSize: "clamp(32px, 5vw, 56px)", fontWeight: 800, letterSpacing: "-0.03em", marginBottom: 20, color: "var(--la-text)" }}>
-              NEET UG Preparation
+            <p className="ui-eyebrow">Medical Track</p>
+            <h1 className="ui-display page-hero-title">
+              NEET UG Medical Preparation
             </h1>
-            <p style={{ fontSize: 18, color: "var(--la-muted, #a1a1aa)", maxWidth: 640, lineHeight: 1.6, marginBottom: 28 }}>
-              Free high-yield NEET practice quizzes, NCERT-focused AI tutoring and study schedules. Master line-by-line NCERT Biology, Organic Chemistry mechanisms and Physics numericals.
+            <p className="ui-lede page-hero-lede">
+              High-yield NCERT line-by-line active recall, AI Socratic tutoring, and spaced revision across Biology, Chemistry, and Physics. Designed to build the speed and precision required for 680+ scores.
             </p>
-            <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
+            <div className="page-hero-actions">
               <Link href="/signup" className="btn btn-primary btn-lg">
                 Start NEET prep free
               </Link>
               <a href="#chapters" className="btn btn-secondary btn-lg">
-                Explore Syllabus
+                Explore syllabus
               </a>
             </div>
           </div>
         </section>
 
-        <section style={{ padding: "64px 0" }}>
+        {/* Highlights */}
+        <section className="ui-section">
           <div className="wrap">
-            <h2 style={{ fontSize: 28, fontWeight: 700, marginBottom: 14, color: "var(--la-text)" }}>
-              Why NEET aspirants use Learning Allied
-            </h2>
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", gap: 20, marginTop: 24 }}>
-              <div style={{ background: "var(--la-surface, #111113)", border: "1px solid var(--la-line, rgba(255,255,255,0.09))", borderRadius: 16, padding: 24 }}>
-                <h3 style={{ fontSize: 18, fontWeight: 700, marginBottom: 10, color: "var(--la-text)" }}>100% NCERT Biology Alignment</h3>
-                <p style={{ fontSize: 14.5, color: "var(--la-muted, #a1a1aa)", lineHeight: 1.6 }}>Practise assertion-reason, diagram-based, and line-by-line NCERT questions crafted to mirror the NTA NEET pattern.</p>
-              </div>
-              <div style={{ background: "var(--la-surface, #111113)", border: "1px solid var(--la-line, rgba(255,255,255,0.09))", borderRadius: 16, padding: 24 }}>
-                <h3 style={{ fontSize: 18, fontWeight: 700, marginBottom: 10, color: "var(--la-text)" }}>Spaced Repetition for Taxa & Dates</h3>
-                <p style={{ fontSize: 14.5, color: "var(--la-muted, #a1a1aa)", lineHeight: 1.6 }}>Memorising hundreds of plant examples, anatomical structures, and scientific names requires timely recall reviews.</p>
-              </div>
-              <div style={{ background: "var(--la-surface, #111113)", border: "1px solid var(--la-line, rgba(255,255,255,0.09))", borderRadius: 16, padding: 24 }}>
-                <h3 style={{ fontSize: 18, fontWeight: 700, marginBottom: 10, color: "var(--la-text)" }}>Step-by-step Physics Guidance</h3>
-                <p style={{ fontSize: 14.5, color: "var(--la-muted, #a1a1aa)", lineHeight: 1.6 }}>Overcome calculation anxiety with AI tutor breakdowns of numerical problems without giving away the answer upfront.</p>
-              </div>
+            <div className="ui-section-head">
+              <p className="ui-eyebrow">High Yield</p>
+              <h2 className="ui-display ui-section-title">
+                Why medical aspirants rely on Learning Allied
+              </h2>
+              <p className="ui-lede ui-section-lede">
+                Speed and precision determine your NEET rank. We combine rigorous retrieval practice with Socratic clarity.
+              </p>
+            </div>
+
+            <div className="curriculum-highlights-grid">
+              {HIGHLIGHTS.map((h, i) => (
+                <div key={i} className="curriculum-highlight-card">
+                  <h3>{h.title}</h3>
+                  <p>{h.desc}</p>
+                </div>
+              ))}
             </div>
           </div>
         </section>
 
-        <section id="chapters" style={{ padding: "64px 0" }}>
+        {/* Chapters */}
+        <section id="chapters" className="ui-section editorial-divider">
           <div className="wrap">
-            <h2 style={{ fontSize: 28, fontWeight: 700, marginBottom: 14, color: "var(--la-text)" }}>
-              NEET UG syllabus coverage
-            </h2>
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: 24, marginTop: 24 }}>
+            <div className="ui-section-head">
+              <p className="ui-eyebrow">Full Coverage</p>
+              <h2 className="ui-display ui-section-title">
+                NEET UG syllabus coverage
+              </h2>
+              <p className="ui-lede ui-section-lede">
+                Every chapter structured for rapid diagnosis, active recall quizzes, and formula mastery.
+              </p>
+            </div>
+
+            <div className="syllabus-grid">
               {CHAPTERS.map((col, idx) => (
-                <div key={idx} style={{ background: "var(--la-surface, #111113)", border: "1px solid var(--la-line, rgba(255,255,255,0.09))", borderRadius: 16, padding: 24 }}>
-                  <h3 style={{ fontSize: 20, fontWeight: 700, marginBottom: 16, color: "var(--la-accent, #ff8a1f)" }}>{col.subject}</h3>
-                  <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "flex", flexDirection: "column", gap: 10, fontSize: 14, color: "var(--la-muted, #a1a1aa)" }}>
+                <div key={idx} className="syllabus-column">
+                  <div className="syllabus-col-head">
+                    <span className="syllabus-badge">{col.subject}</span>
+                    <span className="syllabus-count">{col.topics.length} core units</span>
+                  </div>
+                  <ul className="syllabus-list">
                     {col.topics.map((t, i) => (
-                      <li key={i} style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                        <span style={{ color: "#4ade80" }}>✓</span> {t}
+                      <li key={i} className="syllabus-item">
+                        <span className="syllabus-check" aria-hidden="true">✓</span>
+                        <span>{t}</span>
                       </li>
                     ))}
                   </ul>
@@ -121,12 +194,22 @@ export default function NeetPrepPage() {
           </div>
         </section>
 
-        <section style={{ padding: "40px 0 80px" }}>
+        {/* CTA */}
+        <section className="ui-section">
           <div className="wrap">
-            <div style={{ background: "var(--la-surface, #111113)", border: "1px solid var(--la-line-strong, rgba(255,255,255,0.16))", borderRadius: 24, padding: "48px 32px", textAlign: "center" }}>
-              <h2 style={{ fontSize: 28, fontWeight: 800, marginBottom: 12, color: "var(--la-text)" }}>Targeting 680+ in NEET UG?</h2>
-              <p style={{ color: "var(--la-muted, #a1a1aa)", fontSize: 16, maxWidth: 440, margin: "0 auto 24px" }}>Start your active recall practice sessions now.</p>
-              <Link href="/signup" className="btn btn-primary btn-lg">Create Free NEET Account</Link>
+            <div className="ui-panel home-cta">
+              <h2>Targeting 680+ in NEET UG?</h2>
+              <p>
+                Begin active recall practice and master line-by-line NCERT Biology today.
+              </p>
+              <div className="hero-actions">
+                <Link href="/signup" className="btn btn-primary btn-lg">
+                  Create free NEET account
+                </Link>
+                <Link href="/login" className="btn btn-secondary btn-lg">
+                  Student login
+                </Link>
+              </div>
             </div>
           </div>
         </section>

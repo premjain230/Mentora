@@ -43,9 +43,66 @@ const JSON_LD = {
 };
 
 const CHAPTERS = [
-  { subject: "Physics", topics: ["Kinematics & Vectors", "Newton's Laws of Motion", "Work, Energy & Power", "Rotational Dynamics", "Gravitation", "Thermodynamics", "Electrostatics & Capacitance", "Current Electricity", "Magnetism & EMI", "Wave Optics & Modern Physics"] },
-  { subject: "Chemistry", topics: ["Mole Concept & Stoichiometry", "Chemical Thermodynamics", "Chemical & Ionic Equilibrium", "Periodic Properties & Chemical Bonding", "Coordination Compounds", "General Organic Chemistry (GOC)", "Hydrocarbons", "Alcohols, Phenols & Ethers", "Aldehydes, Ketones & Carboxylic Acids", "Electrochemistry & Chemical Kinetics"] },
-  { subject: "Mathematics", topics: ["Quadratic Equations & Complex Numbers", "Sequences & Series", "Matrices & Determinants", "Limits, Continuity & Differentiability", "Application of Derivatives", "Definite & Indefinite Integration", "Differential Equations", "Coordinate Geometry (Circles & Conics)", "Vectors & 3D Geometry", "Probability & Statistics"] },
+  {
+    subject: "Physics",
+    topics: [
+      "Kinematics & Vectors",
+      "Newton's Laws of Motion",
+      "Work, Energy & Power",
+      "Rotational Dynamics",
+      "Gravitation",
+      "Thermodynamics",
+      "Electrostatics & Capacitance",
+      "Current Electricity",
+      "Magnetism & EMI",
+      "Wave Optics & Modern Physics",
+    ],
+  },
+  {
+    subject: "Chemistry",
+    topics: [
+      "Mole Concept & Stoichiometry",
+      "Chemical Thermodynamics",
+      "Chemical & Ionic Equilibrium",
+      "Periodic Properties & Chemical Bonding",
+      "Coordination Compounds",
+      "General Organic Chemistry (GOC)",
+      "Hydrocarbons",
+      "Alcohols, Phenols & Ethers",
+      "Aldehydes, Ketones & Carboxylic Acids",
+      "Electrochemistry & Chemical Kinetics",
+    ],
+  },
+  {
+    subject: "Mathematics",
+    topics: [
+      "Quadratic Equations & Complex Numbers",
+      "Sequences & Series",
+      "Matrices & Determinants",
+      "Limits, Continuity & Differentiability",
+      "Application of Derivatives",
+      "Definite & Indefinite Integration",
+      "Differential Equations",
+      "Coordinate Geometry (Circles & Conics)",
+      "Vectors & 3D Geometry",
+      "Probability & Statistics",
+    ],
+  },
+];
+
+const HIGHLIGHTS = [
+  {
+    title: "Socratic Problem Breakdowns",
+    desc: "Stuck on multi-concept JEE numericals? The AI tutor guides you step-by-step through free-body diagrams, calculus substitutions, and reaction mechanisms without spoiling the final answer.",
+  },
+  {
+    title: "Spaced Retention for Inorganic Chemistry",
+    desc: "Inorganic trends and coordination isomerism require regular retrieval practice. Automated decay algorithms schedule targeted revision slots right before memory fades.",
+  },
+  {
+    title: "Targeted Mock Analytics",
+    desc: "Discover whether mistakes in Mathematics were conceptual gaps, calculation errors, or time mismanagement so you can refine your exam strategy.",
+  },
 ];
 
 export default function JeePrepPage() {
@@ -57,16 +114,18 @@ export default function JeePrepPage() {
       />
       <PublicNavbar />
 
-      <main id="main">
-        <section className="hero" style={{ padding: "120px 0 64px" }}>
+      <main id="main" className="editorial-page">
+        {/* Hero */}
+        <section className="page-hero">
           <div className="wrap">
-            <h1 style={{ fontSize: "clamp(32px, 5vw, 56px)", fontWeight: 800, letterSpacing: "-0.03em", marginBottom: 20, color: "var(--la-text)" }}>
+            <p className="ui-eyebrow">Engineering Track</p>
+            <h1 className="ui-display page-hero-title">
               JEE Main &amp; Advanced Preparation
             </h1>
-            <p style={{ fontSize: 18, color: "var(--la-muted, #a1a1aa)", maxWidth: 640, lineHeight: 1.6, marginBottom: 28 }}>
-              Free chapter-wise practice quizzes, AI tutoring and study plans for JEE Main and Advanced aspirants. Build your syllabus plan, practise with AI-generated questions and track your mastery across Physics, Chemistry and Mathematics.
+            <p className="ui-lede page-hero-lede">
+              Deliberate practice, AI Socratic guidance, and spaced memory revision across Physics, Chemistry, and Mathematics. Built specifically for Class 11 and 12 aspirants targeting top percentiles.
             </p>
-            <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
+            <div className="page-hero-actions">
               <Link href="/signup" className="btn btn-primary btn-lg">
                 Start preparing free
               </Link>
@@ -77,53 +136,55 @@ export default function JeePrepPage() {
           </div>
         </section>
 
-        <section style={{ padding: "64px 0" }}>
+        {/* Why Learning Allied */}
+        <section className="ui-section">
           <div className="wrap">
-            <h2 style={{ fontSize: 28, fontWeight: 700, marginBottom: 14, color: "var(--la-text)" }}>
-              How Learning Allied helps JEE aspirants
-            </h2>
-            <p style={{ fontSize: 16, color: "var(--la-muted, #a1a1aa)", maxWidth: 640, marginBottom: 36 }}>
-              Learning Allied combines AI tutoring with spaced repetition and active recall to help you retain concepts longer and practise smarter.
-            </p>
+            <div className="ui-section-head">
+              <p className="ui-eyebrow">Pedagogy</p>
+              <h2 className="ui-display ui-section-title">
+                Engineered for JEE numerical mastery
+              </h2>
+              <p className="ui-lede ui-section-lede">
+                Standard coaching gives thousands of questions without diagnostics. We focus on deep conceptual models and cognitive stamina.
+              </p>
+            </div>
 
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", gap: 20 }}>
-              <div style={{ background: "var(--la-surface, #111113)", border: "1px solid var(--la-line, rgba(255,255,255,0.09))", borderRadius: 16, padding: 24 }}>
-                <h3 style={{ fontSize: 18, fontWeight: 700, marginBottom: 10, color: "var(--la-text)" }}>Chapter-wise quizzes</h3>
-                <p style={{ fontSize: 14.5, color: "var(--la-muted, #a1a1aa)", lineHeight: 1.6 }}>Practise JEE Main and Advanced chapters with AI-generated multiple-choice questions. Get instant feedback and explanations for every answer.</p>
-              </div>
-              <div style={{ background: "var(--la-surface, #111113)", border: "1px solid var(--la-line, rgba(255,255,255,0.09))", borderRadius: 16, padding: 24 }}>
-                <h3 style={{ fontSize: 18, fontWeight: 700, marginBottom: 10, color: "var(--la-text)" }}>Adaptive Study planner</h3>
-                <p style={{ fontSize: 14.5, color: "var(--la-muted, #a1a1aa)", lineHeight: 1.6 }}>Build a weekly study plan tied to your syllabus. Track which chapters you&apos;ve mastered and which need revision.</p>
-              </div>
-              <div style={{ background: "var(--la-surface, #111113)", border: "1px solid var(--la-line, rgba(255,255,255,0.09))", borderRadius: 16, padding: 24 }}>
-                <h3 style={{ fontSize: 18, fontWeight: 700, marginBottom: 10, color: "var(--la-text)" }}>Socratic AI tutor</h3>
-                <p style={{ fontSize: 14.5, color: "var(--la-muted, #a1a1aa)", lineHeight: 1.6 }}>Ask conceptual questions in plain language and get Socratic explanations that help you work out derivations yourself.</p>
-              </div>
-              <div style={{ background: "var(--la-surface, #111113)", border: "1px solid var(--la-line, rgba(255,255,255,0.09))", borderRadius: 16, padding: 24 }}>
-                <h3 style={{ fontSize: 18, fontWeight: 700, marginBottom: 10, color: "var(--la-text)" }}>Mastery & Retention tracking</h3>
-                <p style={{ fontSize: 14.5, color: "var(--la-muted, #a1a1aa)", lineHeight: 1.6 }}>See your confidence level per chapter and topic. Know exactly what to revise before mock tests.</p>
-              </div>
+            <div className="curriculum-highlights-grid">
+              {HIGHLIGHTS.map((h, i) => (
+                <div key={i} className="curriculum-highlight-card">
+                  <h3>{h.title}</h3>
+                  <p>{h.desc}</p>
+                </div>
+              ))}
             </div>
           </div>
         </section>
 
-        <section style={{ padding: "64px 0" }}>
+        {/* Syllabus Matrix */}
+        <section className="ui-section editorial-divider">
           <div className="wrap">
-            <h2 style={{ fontSize: 28, fontWeight: 700, marginBottom: 14, color: "var(--la-text)" }}>
-              JEE chapters you can practise
-            </h2>
-            <p style={{ fontSize: 16, color: "var(--la-muted, #a1a1aa)", maxWidth: 640, marginBottom: 36 }}>
-              Comprehensive coverage across all 3 subjects tested in JEE Main and Advanced.
-            </p>
+            <div className="ui-section-head">
+              <p className="ui-eyebrow">Curriculum Coverage</p>
+              <h2 className="ui-display ui-section-title">
+                High-yield chapters &amp; core concepts
+              </h2>
+              <p className="ui-lede ui-section-lede">
+                Mapped against the official NTA JEE syllabus and previous ten years of question patterns.
+              </p>
+            </div>
 
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: 24 }}>
+            <div className="syllabus-grid">
               {CHAPTERS.map((col, idx) => (
-                <div key={idx} style={{ background: "var(--la-surface, #111113)", border: "1px solid var(--la-line, rgba(255,255,255,0.09))", borderRadius: 16, padding: 24 }}>
-                  <h3 style={{ fontSize: 20, fontWeight: 700, marginBottom: 16, color: "var(--la-accent, #ff8a1f)" }}>{col.subject}</h3>
-                  <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "flex", flexDirection: "column", gap: 10, fontSize: 14, color: "var(--la-muted, #a1a1aa)" }}>
+                <div key={idx} className="syllabus-column">
+                  <div className="syllabus-col-head">
+                    <span className="syllabus-badge">{col.subject}</span>
+                    <span className="syllabus-count">{col.topics.length} core units</span>
+                  </div>
+                  <ul className="syllabus-list">
                     {col.topics.map((t, i) => (
-                      <li key={i} style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                        <span style={{ color: "#4ade80" }}>✓</span> {t}
+                      <li key={i} className="syllabus-item">
+                        <span className="syllabus-check" aria-hidden="true">✓</span>
+                        <span>{t}</span>
                       </li>
                     ))}
                   </ul>
@@ -133,12 +194,22 @@ export default function JeePrepPage() {
           </div>
         </section>
 
-        <section style={{ padding: "40px 0 80px" }}>
+        {/* CTA */}
+        <section className="ui-section">
           <div className="wrap">
-            <div style={{ background: "var(--la-surface, #111113)", border: "1px solid var(--la-line-strong, rgba(255,255,255,0.16))", borderRadius: 24, padding: "48px 32px", textAlign: "center" }}>
-              <h2 style={{ fontSize: 28, fontWeight: 800, marginBottom: 12, color: "var(--la-text)" }}>Ready to boost your JEE rank?</h2>
-              <p style={{ color: "var(--la-muted, #a1a1aa)", fontSize: 16, maxWidth: 440, margin: "0 auto 24px" }}>Start practising chapter-wise questions for free today.</p>
-              <Link href="/signup" className="btn btn-primary btn-lg">Create Free JEE Account</Link>
+            <div className="ui-panel home-cta">
+              <h2>Aiming for IIT JEE?</h2>
+              <p>
+                Build your personalised syllabus timetable and start testing your recall today. No card required.
+              </p>
+              <div className="hero-actions">
+                <Link href="/signup" className="btn btn-primary btn-lg">
+                  Start JEE practice free
+                </Link>
+                <Link href="/login" className="btn btn-secondary btn-lg">
+                  Student login
+                </Link>
+              </div>
             </div>
           </div>
         </section>

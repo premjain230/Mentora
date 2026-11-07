@@ -397,7 +397,7 @@ export default function OnboardingPage() {
         .onboard-card {
           background: var(--bg-card, #0A0A0A);
           border: 1px solid var(--border, #262626);
-          border-radius: 24px;
+          border-radius: 14px;
           padding: 40px 36px;
           box-shadow: 0 16px 48px -12px rgba(0, 0, 0, 0.45);
           backdrop-filter: blur(16px);

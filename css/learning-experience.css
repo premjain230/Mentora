@@ -90,7 +90,7 @@
 .chat-bubble.is-user {
   max-width: min(80%, 620px);
   background: var(--accent-soft);
-  border: 1px solid rgba(255, 138, 31, 0.28);
+  border: 1px solid var(--border-strong);
   border-bottom-right-radius: 4px;
   white-space: pre-wrap;
 }
@@ -224,7 +224,7 @@
 }
 .learn-badge--soft { color: var(--text-secondary); }
 .learn-badge--ok { color: var(--lh-ok, #4ade80); border-color: rgba(74, 222, 128, 0.3); background: rgba(74, 222, 128, 0.08); }
-.learn-badge--accent { color: var(--accent); border-color: rgba(255, 138, 31, 0.35); background: var(--accent-soft); }
+.learn-badge--accent { color: var(--accent); border-color: rgba(59, 130, 246, 0.35); background: var(--accent-soft); }
 
 .learn-personal {
   margin: 0;

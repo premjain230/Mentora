@@ -4,55 +4,46 @@
    Every value below is a token so .light-mode can override it; do not add
    literal colours here (see the theme notes at the bottom of this file). */
 :root{
-  --arena-bg: #070a14;
-  --arena-card: #0f1324;
-  --arena-card-hover: #141a33;
-  --arena-border: rgba(255,255,255,0.06);
-  --arena-border-strong: rgba(255,255,255,0.12);
-  --arena-glow: rgba(14,165,233,0.18);
-  /* Overlays that were literal rgba(255,255,255,x) — invisible on white. */
-  --arena-sheen: rgba(255,255,255,0.06);
-  --arena-hover-wash: rgba(255,255,255,0.04);
-  --arena-panel-wash: rgba(255,255,255,0.02);
-  /* Elevation. Black shadows read as smudges on a light canvas. */
-  --arena-shadow-1: 0 4px 14px rgba(0,0,0,0.25);
-  --arena-shadow-2: 0 8px 28px rgba(0,0,0,0.35);
-  --arena-shadow-3: 0 20px 60px rgba(0,0,0,0.55);
-  --arena-scrim: rgba(0,0,0,0.58);
-  /* Modal sheet + the locked-node tile, which were literal dark hex. */
-  --arena-sheet-a: #0f1324;
-  --arena-sheet-b: #0b0e1a;
-  --arena-tile-locked: #1e2436;
-  /* Status colours for text/icons on a themed surface. */
+  --arena-bg: #000000;
+  --arena-card: #0A0A0A;
+  --arena-card-hover: #121212;
+  --arena-border: #222222;
+  --arena-border-strong: #333333;
+  --arena-glow: transparent;
+  --arena-sheen: rgba(255,255,255,0.04);
+  --arena-hover-wash: rgba(255,255,255,0.03);
+  --arena-panel-wash: rgba(255,255,255,0.015);
+  --arena-shadow-1: none;
+  --arena-shadow-2: 0 4px 16px rgba(0,0,0,0.4);
+  --arena-shadow-3: 0 16px 40px rgba(0,0,0,0.7);
+  --arena-scrim: rgba(0,0,0,0.75);
+  --arena-sheet-a: #0A0A0A;
+  --arena-sheet-b: #050505;
+  --arena-tile-locked: #141414;
   --arena-amber-text: #f59e0b;
-  --arena-red-text: #f87171;
+  --arena-red-text: #ef4444;
   --arena-green-text: #10b981;
-  /* Solid accent fills that carry #fff text. #0ea5e9 gives only 2.77:1 against
-     white, which fails AA in BOTH themes; sky-700 gives 5.9:1. Tokenised so the
-     brighter brand blue can be restored in one place if the contrast is traded
-     away on purpose. */
-  --arena-accent-solid: #0369a1;
+  --arena-accent-solid: #2563eb;
 }
 
 /* Light theme. Overrides the Arena surface tokens AND the literal-derived
    tokens above so every component adapts without per-component rules. */
 .light-mode{
-  --arena-card: #ffffff;
-  --arena-card-hover: #f7f8fb;
-  --arena-border: rgba(15,23,42,0.10);
-  --arena-border-strong: rgba(15,23,42,0.20);
-  --arena-glow: rgba(14,165,233,0.14);
-  --arena-sheen: rgba(15,23,42,0.05);
-  --arena-hover-wash: rgba(15,23,42,0.04);
-  --arena-panel-wash: rgba(15,23,42,0.025);
-  --arena-shadow-1: 0 1px 3px rgba(15,23,42,0.08);
-  --arena-shadow-2: 0 8px 24px rgba(15,23,42,0.10);
-  --arena-shadow-3: 0 20px 50px rgba(15,23,42,0.18);
-  --arena-scrim: rgba(15,23,42,0.42);
-  --arena-sheet-a: #ffffff;
-  --arena-sheet-b: #fbfcfe;
-  --arena-tile-locked: #e8ebf2;
-  /* Darkened so amber/red text clears 4.5:1 on white. */
+  --arena-card: #FFFFFF;
+  --arena-card-hover: #F7F7F7;
+  --arena-border: #E5E5E5;
+  --arena-border-strong: #D4D4D4;
+  --arena-glow: transparent;
+  --arena-sheen: rgba(0,0,0,0.02);
+  --arena-hover-wash: rgba(0,0,0,0.02);
+  --arena-panel-wash: rgba(0,0,0,0.01);
+  --arena-shadow-1: 0 1px 2px rgba(0,0,0,0.04);
+  --arena-shadow-2: 0 4px 12px rgba(0,0,0,0.06);
+  --arena-shadow-3: 0 12px 32px rgba(0,0,0,0.10);
+  --arena-scrim: rgba(0,0,0,0.4);
+  --arena-sheet-a: #FFFFFF;
+  --arena-sheet-b: #F9F9F9;
+  --arena-tile-locked: #F0F0F0;
   --arena-amber-text: #b45309;
   --arena-red-text: #b91c1c;
   --arena-green-text: #047857;

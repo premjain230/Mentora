@@ -181,7 +181,7 @@ export function mount(root, ctx) {
 
       const icon = document.createElement("span");
       icon.innerHTML =
-        '<svg viewBox="0 0 24 24" fill="none" stroke="var(--accent, #ff8a1f)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>';
+        '<svg viewBox="0 0 24 24" fill="none" stroke="var(--accent, #3b82f6)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>';
       if (icon.firstElementChild) icon.firstElementChild.style.display = "block";
 
       const text = document.createElement("div");

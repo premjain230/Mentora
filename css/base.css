@@ -1,6 +1,6 @@
 ﻿/* Learning Allied — base styles (Orbit theme: reset, type, shared components)
    Canvas: true black. Panels: #0a0a0a with hairline border. No shadows, no glows.
-   One accent: flame orange #ff8a1f. Space Grotesk headings, Inter body. */
+   One accent: classic royal blue #3b82f6. Space Grotesk headings, Inter body. */
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 

@@ -42,6 +42,29 @@ const JSON_LD = {
   ],
 };
 
+const CLASSES = [
+  {
+    grade: "Class 10",
+    title: "CBSE Board Examination",
+    desc: "NCERT-aligned Science (Physics, Chemistry, Biology), Mathematics (Standard & Basic), Social Science, and English with step-by-step problem walkthroughs.",
+  },
+  {
+    grade: "Class 12",
+    title: "Senior Secondary Board",
+    desc: "Physics, Chemistry, Mathematics, Biology, and Computer Science. Master NCERT exemplars, derivations, and board-format long answers.",
+  },
+  {
+    grade: "Class 11",
+    title: "Conceptual Transition Track",
+    desc: "Bridge the leap between secondary school and senior secondary science. Build the deep conceptual foundation that prevents Class 12 panic.",
+  },
+  {
+    grade: "Class 9",
+    title: "Fundamental Foundations",
+    desc: "Master key algebra, geometry, and foundational science topics that underpin all higher-secondary curricula.",
+  },
+];
+
 export default function CbseBoardPage() {
   return (
     <>
@@ -51,50 +74,69 @@ export default function CbseBoardPage() {
       />
       <PublicNavbar />
 
-      <main id="main">
-        <section className="hero" style={{ padding: "120px 0 64px" }}>
+      <main id="main" className="editorial-page">
+        {/* Hero */}
+        <section className="page-hero">
           <div className="wrap">
-            <h1 style={{ fontSize: "clamp(32px, 5vw, 56px)", fontWeight: 800, letterSpacing: "-0.03em", marginBottom: 20, color: "var(--la-text)" }}>
+            <p className="ui-eyebrow">National Board Track</p>
+            <h1 className="ui-display page-hero-title">
               CBSE Board Classes 9–12 Preparation
             </h1>
-            <p style={{ fontSize: 18, color: "var(--la-muted, #a1a1aa)", maxWidth: 640, lineHeight: 1.6, marginBottom: 28 }}>
-              Comprehensive NCERT syllabus coverage for Class 9, 10, 11 and 12 CBSE examinations. Master key definitions, derivations, chapter summaries, and board question patterns.
+            <p className="ui-lede page-hero-lede">
+              Comprehensive NCERT syllabus coverage for Class 9, 10, 11, and 12 CBSE examinations. Master definitions, derivations, chapter summaries, and official board question patterns with patient Socratic guidance.
             </p>
-            <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
+            <div className="page-hero-actions">
               <Link href="/signup" className="btn btn-primary btn-lg">
                 Start CBSE prep free
+              </Link>
+              <Link href="/login" className="btn btn-secondary btn-lg">
+                Student login
               </Link>
             </div>
           </div>
         </section>
 
-        <section style={{ padding: "64px 0" }}>
+        {/* Classes Supported */}
+        <section className="ui-section">
           <div className="wrap">
-            <h2 style={{ fontSize: 28, fontWeight: 700, marginBottom: 14, color: "var(--la-text)" }}>
-              Classes supported
-            </h2>
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", gap: 20, marginTop: 24 }}>
-              {[
-                { title: "Class 10 CBSE Board", desc: "Science (Physics, Chem, Bio), Mathematics (Standard & Basic), Social Science, and English literature." },
-                { title: "Class 12 CBSE Science", desc: "Physics, Chemistry, Mathematics, Biology, and Computer Science with step-by-step NCERT solutions." },
-                { title: "Class 11 Foundation", desc: "Bridge the leap between secondary school and senior secondary science with conceptual foundation tools." },
-                { title: "Class 9 Fundamentals", desc: "Master the foundational math and science concepts that support your Class 10 board readiness." },
-              ].map((c, i) => (
-                <div key={i} style={{ background: "var(--la-surface, #111113)", border: "1px solid var(--la-line, rgba(255,255,255,0.09))", borderRadius: 16, padding: 24 }}>
-                  <h3 style={{ fontSize: 18, fontWeight: 700, marginBottom: 10, color: "var(--la-text)" }}>{c.title}</h3>
-                  <p style={{ fontSize: 14.5, color: "var(--la-muted, #a1a1aa)", lineHeight: 1.6 }}>{c.desc}</p>
+            <div className="ui-section-head">
+              <p className="ui-eyebrow">Class Tiers</p>
+              <h2 className="ui-display ui-section-title">
+                Tailored for your specific academic year
+              </h2>
+              <p className="ui-lede ui-section-lede">
+                Every grade level receives curriculum-calibrated explanations and appropriate question difficulty.
+              </p>
+            </div>
+
+            <div className="curriculum-highlights-grid">
+              {CLASSES.map((c, i) => (
+                <div key={i} className="curriculum-highlight-card">
+                  <span className="syllabus-badge">{c.grade}</span>
+                  <h3>{c.title}</h3>
+                  <p>{c.desc}</p>
                 </div>
               ))}
             </div>
           </div>
         </section>
 
-        <section style={{ padding: "40px 0 80px" }}>
+        {/* CTA */}
+        <section className="ui-section">
           <div className="wrap">
-            <div style={{ background: "var(--la-surface, #111113)", border: "1px solid var(--la-line-strong, rgba(255,255,255,0.16))", borderRadius: 24, padding: "48px 32px", textAlign: "center" }}>
-              <h2 style={{ fontSize: 28, fontWeight: 800, marginBottom: 12, color: "var(--la-text)" }}>Aiming for 95%+ in your CBSE Board?</h2>
-              <p style={{ color: "var(--la-muted, #a1a1aa)", fontSize: 16, maxWidth: 440, margin: "0 auto 24px" }}>Start practising chapter-wise board questions now.</p>
-              <Link href="/signup" className="btn btn-primary btn-lg">Create Free Account</Link>
+            <div className="ui-panel home-cta">
+              <h2>Targeting 95%+ in your CBSE Board?</h2>
+              <p>
+                Begin testing your recall with chapter-wise diagnostic quizzes and Socratic tutor explanations.
+              </p>
+              <div className="hero-actions">
+                <Link href="/signup" className="btn btn-primary btn-lg">
+                  Create free CBSE account
+                </Link>
+                <Link href="/login" className="btn btn-secondary btn-lg">
+                  Student login
+                </Link>
+              </div>
             </div>
           </div>
         </section>

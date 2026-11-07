@@ -168,18 +168,18 @@ export default function SignupPage() {
           maxWidth: 440,
           background: "var(--la-surface, #111113)",
           border: "1px solid var(--la-line, rgba(255,255,255,0.09))",
-          borderRadius: 20,
+          borderRadius: 14,
           padding: "36px 32px",
           boxShadow: "0 20px 40px rgba(0,0,0,0.4)",
         }}
       >
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
-          <span style={{ fontSize: 12, fontWeight: 600, color: "var(--la-accent, #ff8a1f)" }}>
+          <span style={{ fontSize: 12, fontWeight: 600, color: "var(--la-accent, #3b82f6)" }}>
             Step {step} of 2
           </span>
           <div style={{ display: "flex", gap: 4 }}>
-            <span style={{ width: 24, height: 4, borderRadius: 2, background: "var(--la-accent, #ff8a1f)" }} />
-            <span style={{ width: 24, height: 4, borderRadius: 2, background: step === 2 ? "var(--la-accent, #ff8a1f)" : "var(--la-line, rgba(255,255,255,0.16))" }} />
+            <span style={{ width: 24, height: 4, borderRadius: 2, background: "var(--la-accent, #3b82f6)" }} />
+            <span style={{ width: 24, height: 4, borderRadius: 2, background: step === 2 ? "var(--la-accent, #3b82f6)" : "var(--la-line, rgba(255,255,255,0.16))" }} />
           </div>
         </div>
 
@@ -207,7 +207,7 @@ export default function SignupPage() {
               Create your account
             </h1>
             <p style={{ fontSize: 14, color: "var(--la-muted, #a1a1aa)", marginBottom: 24 }}>
-              Join thousands of students learning smarter with Learning Allied.
+              Master rigorous science and engineering curricula.
             </p>
 
             <div className="auth-row-2">
@@ -457,7 +457,7 @@ export default function SignupPage() {
 
         <p style={{ marginTop: 24, textAlign: "center", fontSize: 13.5, color: "var(--la-muted, #a1a1aa)" }}>
           Already have an account?{" "}
-          <Link href="/login" style={{ color: "var(--la-accent, #ff8a1f)", fontWeight: 600 }}>
+          <Link href="/login" style={{ color: "var(--la-accent, #3b82f6)", fontWeight: 600 }}>
             Log in
           </Link>
         </p>

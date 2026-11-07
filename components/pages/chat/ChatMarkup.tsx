@@ -353,7 +353,6 @@ export function ChatMarkup() {
 
             <div className="chat-empty" id="chatEmpty" hidden>
               <div className="chat-empty-inner">
-                <SparkleField />
                 <h2 className="chat-empty-title">
                   What are we learning today?
                 </h2>

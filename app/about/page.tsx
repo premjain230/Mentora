@@ -29,6 +29,29 @@ const JSON_LD = {
   ],
 };
 
+const PRINCIPLES = [
+  {
+    index: "01",
+    title: "Socratic First, Never Answer Dumps",
+    desc: "When a student asks a question, answering immediately rob them of the chance to encode the solution in long-term memory. Learning Allied prompts the student for the underlying premise, guiding them to derive the answer step-by-step.",
+  },
+  {
+    index: "02",
+    title: "Active Retrieval Over Re-reading",
+    desc: "Cognitive science shows that re-reading textbooks provides an illusion of competence. Real retention requires effortful retrieval practice through diagnostic quizzes and conceptual challenges.",
+  },
+  {
+    index: "03",
+    title: "Spaced Repetition Calibrated to Decay",
+    desc: "Instead of cramming before exams, memory strength is modelled algorithmically. Topics resurface in your study queue precisely when neural decay begins, cutting revision time by half.",
+  },
+  {
+    index: "04",
+    title: "Strict Syllabi Grounding",
+    desc: "Every concept, formula, and question maps strictly to official NTA JEE, NEET, CBSE, and Maharashtra State Board curricula. Zero hallucinated topics or off-syllabus trivia.",
+  },
+];
+
 export default function AboutPage() {
   return (
     <>
@@ -38,39 +61,20 @@ export default function AboutPage() {
       />
       <PublicNavbar />
 
-      <main id="main">
-        <section className="page-hero" style={{ padding: "120px 0 64px" }}>
+      <main id="main" className="editorial-page">
+        {/* Editorial Hero */}
+        <section className="page-hero">
           <div className="wrap">
-            <h1
-              id="about-heading"
-              style={{
-                fontSize: "clamp(34px, 4.5vw, 52px)",
-                fontWeight: 800,
-                letterSpacing: "-0.035em",
-                marginBottom: 16,
-                color: "var(--la-text)",
-              }}
-            >
-              About Learning Allied
+            <p className="ui-eyebrow">The Learning Allied Philosophy</p>
+            <h1 id="about-heading" className="ui-display page-hero-title">
+              Built to replace passive memorisation with genuine understanding.
             </h1>
-            <p
-              style={{
-                fontSize: 20,
-                color: "var(--la-muted, #a1a1aa)",
-                lineHeight: 1.6,
-                maxWidth: 680,
-                marginBottom: 16,
-              }}
-            >
-              AI-powered learning designed to help students understand concepts, practise effectively, and become more independent learners.
+            <p className="ui-lede page-hero-lede">
+              AI shouldn&apos;t just be a shortcut to copy answers. Learning Allied was designed
+              from first cognitive principles to help Indian students think deeply, master complex
+              curricula, and build unshakeable confidence.
             </p>
-            <p style={{ fontSize: 15, color: "var(--la-faint, #71717a)", marginBottom: 32 }}>
-              Founded by{" "}
-              <Link href="/founder" style={{ color: "var(--la-accent, #ff8a1f)", fontWeight: 600 }}>
-                Prem Jain
-              </Link>
-            </p>
-            <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
+            <div className="page-hero-actions">
               <Link href="/signup" className="btn btn-primary btn-lg">
                 Start learning free
               </Link>
@@ -78,104 +82,101 @@ export default function AboutPage() {
                 Meet the founder
               </Link>
             </div>
+            <p className="page-hero-byline">
+              Founded by <Link href="/founder">Prem Jain</Link> · Independent &amp; student-first
+            </p>
           </div>
         </section>
 
-        <section style={{ padding: "48px 0" }}>
+        {/* Mission Statement */}
+        <section className="ui-section">
           <div className="wrap">
-            <h2 style={{ fontSize: 28, fontWeight: 700, marginBottom: 16, color: "var(--la-text)" }}>
-              Our mission
-            </h2>
-            <div style={{ color: "var(--la-muted, #a1a1aa)", fontSize: 16.5, lineHeight: 1.7, maxWidth: 720, marginBottom: 36 }}>
-              <p style={{ marginBottom: 16 }}>
-                Learning Allied aims to help students understand what they study, instead of relying only on memorisation.
-              </p>
-              <p>
-                Memorised answers tend to fall apart when a question is asked in a new way. So the focus is on the understanding underneath: explaining concepts, giving students practice that makes them think, and showing where their understanding has gaps.
-              </p>
-            </div>
-
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: 24 }}>
-              <div style={{ background: "var(--la-surface, #111113)", border: "1px solid var(--la-line, rgba(255,255,255,0.09))", borderRadius: 16, padding: 24 }}>
-                <h3 style={{ fontSize: 18, fontWeight: 700, marginBottom: 10, color: "var(--la-text)" }}>Concept explanations</h3>
-                <p style={{ color: "var(--la-muted, #a1a1aa)", fontSize: 14.5, lineHeight: 1.6 }}>
-                  The tutor asks what you think before it explains, so you work towards an idea yourself instead of only reading an answer.
-                </p>
+            <div className="editorial-grid">
+              <div className="editorial-label">
+                <span className="ui-kicker">Core Mission</span>
               </div>
-              <div style={{ background: "var(--la-surface, #111113)", border: "1px solid var(--la-line, rgba(255,255,255,0.09))", borderRadius: 16, padding: 24 }}>
-                <h3 style={{ fontSize: 18, fontWeight: 700, marginBottom: 10, color: "var(--la-text)" }}>Practice & Recall</h3>
-                <p style={{ color: "var(--la-muted, #a1a1aa)", fontSize: 14.5, lineHeight: 1.6 }}>
-                  Quizzes and active recall questions make you bring answers out of memory, which strengthens learning more than rereading.
+              <div className="editorial-prose">
+                <h2 className="editorial-headline">
+                  Why most exam prep fails under pressure
+                </h2>
+                <p>
+                  In competitive exams like JEE and NEET, rote memorisation collapses the moment a problem
+                  presents a novel boundary condition. When students rely on video solutions or instant AI answers,
+                  they experience the &quot;fluency illusion&quot;—believing they know the material simply because
+                  they watched someone else solve it.
                 </p>
-              </div>
-              <div style={{ background: "var(--la-surface, #111113)", border: "1px solid var(--la-line, rgba(255,255,255,0.09))", borderRadius: 16, padding: 24 }}>
-                <h3 style={{ fontSize: 18, fontWeight: 700, marginBottom: 10, color: "var(--la-text)" }}>Identifying gaps</h3>
-                <p style={{ color: "var(--la-muted, #a1a1aa)", fontSize: 14.5, lineHeight: 1.6 }}>
-                  Memory strength and confidence tracking show which topics are solid and which are fading, so you know what to revise next.
+                <p>
+                  Learning Allied was built to eliminate this trap. We combine modern large language models with
+                  proven cognitive learning science: Socratic dialogue, generative problem solving, and Leitner
+                  spaced review intervals.
                 </p>
               </div>
             </div>
           </div>
         </section>
 
-        <section style={{ padding: "48px 0" }}>
+        {/* Four Architectural Pillars */}
+        <section className="ui-section editorial-divider">
           <div className="wrap">
-            <h2 style={{ fontSize: 28, fontWeight: 700, marginBottom: 16, color: "var(--la-text)" }}>
-              Meet Prem Jain, Founder of Learning Allied
-            </h2>
-            <div style={{ color: "var(--la-muted, #a1a1aa)", fontSize: 16.5, lineHeight: 1.7, maxWidth: 720 }}>
-              <p style={{ marginBottom: 16 }}>
-                <strong>Prem Jain</strong> is a student entrepreneur building Learning Allied around one idea: AI should help students genuinely learn, rather than simply provide answers.
-              </p>
-              <p style={{ marginBottom: 20 }}>
-                That idea shapes the product. The tutor asks questions, practice is built around recall, and progress is shown plainly so students can take charge of their own learning.
-              </p>
-              <Link href="/founder" style={{ color: "var(--la-accent, #ff8a1f)", fontWeight: 600 }}>
-                Read the founder profile →
-              </Link>
-            </div>
-          </div>
-        </section>
-
-        <section style={{ padding: "48px 0" }}>
-          <div className="wrap">
-            <h2 style={{ fontSize: 28, fontWeight: 700, marginBottom: 16, color: "var(--la-text)" }}>
-              Our vision
-            </h2>
-            <div style={{ color: "var(--la-muted, #a1a1aa)", fontSize: 16.5, lineHeight: 1.7, maxWidth: 720 }}>
-              <p style={{ marginBottom: 16 }}>
-                We want effective, understandable AI-assisted learning to be accessible to students, so more of them can learn with confidence and become independent learners.
-              </p>
-              <p>
-                Learning Allied currently supports students preparing for JEE, NEET and Board exams.
-              </p>
-            </div>
-          </div>
-        </section>
-
-        <section style={{ padding: "40px 0 80px" }}>
-          <div className="wrap">
-            <div
-              style={{
-                background: "var(--la-surface, #111113)",
-                border: "1px solid var(--la-line-strong, rgba(255,255,255,0.16))",
-                borderRadius: 24,
-                padding: "48px 32px",
-                textAlign: "center",
-              }}
-            >
-              <h2 style={{ fontSize: 28, fontWeight: 800, marginBottom: 12, color: "var(--la-text)" }}>
-                Try Learning Allied
+            <div className="ui-section-head">
+              <p className="ui-eyebrow">Our Methodology</p>
+              <h2 className="ui-display ui-section-title">
+                The four tenets of deliberate practice
               </h2>
-              <p style={{ color: "var(--la-muted, #a1a1aa)", fontSize: 16, maxWidth: 440, margin: "0 auto 24px" }}>
-                Create a free account and ask your first question in under a minute.
+              <p className="ui-lede ui-section-lede">
+                Every interaction in Learning Allied is structured to maximise long-term retention
+                and conceptual independence.
               </p>
-              <div style={{ display: "flex", justifyContent: "center", gap: 12, flexWrap: "wrap" }}>
+            </div>
+
+            <div className="pillars-grid">
+              {PRINCIPLES.map((p) => (
+                <div key={p.index} className="pillar-card">
+                  <span className="pillar-index">{p.index}</span>
+                  <h3 className="pillar-title">{p.title}</h3>
+                  <p className="pillar-desc">{p.desc}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* Founder Story Strip */}
+        <section className="ui-section editorial-divider">
+          <div className="wrap">
+            <div className="ui-panel founder-feature-panel">
+              <div className="founder-feature-copy">
+                <p className="ui-eyebrow">The Story</p>
+                <h2>A student building for students</h2>
+                <p>
+                  Learning Allied is independently created and maintained by Prem Jain. Having experienced
+                  the pressure of Indian competitive exams firsthand, he set out to build the learning partner
+                  he wished he had: patient, available 24/7, and focused on genuine mastery rather than rote drills.
+                </p>
+                <div className="founder-feature-links">
+                  <Link href="/founder" className="btn btn-secondary">
+                    Read Prem&apos;s story →
+                  </Link>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Final CTA */}
+        <section className="ui-section">
+          <div className="wrap">
+            <div className="ui-panel home-cta">
+              <h2>Master your syllabus today</h2>
+              <p>
+                Join thousands of students using Socratic AI and spaced retention to prepare for JEE, NEET, and Boards.
+              </p>
+              <div className="hero-actions">
                 <Link href="/signup" className="btn btn-primary btn-lg">
                   Start learning free
                 </Link>
                 <Link href="/login" className="btn btn-secondary btn-lg">
-                  Log in
+                  Student login
                 </Link>
               </div>
             </div>
