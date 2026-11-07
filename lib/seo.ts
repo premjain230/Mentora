@@ -87,6 +87,7 @@ export const SHARED_JSONLD_GRAPH = {
       "https://x.com/itzprem109",
       "https://github.com/premjain230/Mentora",
       "https://discord.gg/vDvrJhUzud",
+      "https://teenfounders.in/user/learningallied",
     ],
   },
   founder: {

@@ -53,6 +53,7 @@ export function PublicFooter() {
             <a href="https://x.com/itzprem109" target="_blank" rel="noopener noreferrer">X (Twitter)</a>
             <a href="https://github.com/premjain230/Mentora" target="_blank" rel="noopener noreferrer">GitHub</a>
             <a href="https://discord.gg/vDvrJhUzud" target="_blank" rel="noopener noreferrer">Discord</a>
+            <a href="https://teenfounders.in/user/learningallied" target="_blank" rel="noopener noreferrer">TeenFounders</a>
           </div>
         </div>
       </div>
