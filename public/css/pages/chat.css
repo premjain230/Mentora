@@ -1790,3 +1790,290 @@
     scroll-behavior: auto !important;
   }
 }
+
+
+/* ─── Structured Response System (Markdown, Code, Tables, Math, Citations) ──── */
+
+.page-chat .learn-code-block {
+  margin: 14px 0;
+  border: 1px solid var(--chat-hairline);
+  border-radius: var(--radius-md, 8px);
+  background: var(--chat-user-bg, #0d1117);
+  overflow: hidden;
+}
+
+.page-chat .learn-code-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 12px;
+  background: var(--chat-hover, #161b22);
+  border-bottom: 1px solid var(--chat-hairline);
+}
+
+.page-chat .learn-code-lang {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.page-chat .learn-code-copy {
+  padding: 3px 8px;
+  border: 1px solid var(--chat-hairline);
+  border-radius: 4px;
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 11px;
+  cursor: pointer;
+  transition: all var(--dur-fast) ease;
+}
+
+.page-chat .learn-code-copy:hover {
+  background: var(--chat-surface-solid);
+  color: var(--text-primary);
+  border-color: var(--accent);
+}
+
+.page-chat .learn-code-copy.is-copied {
+  color: var(--green, #10b981);
+  border-color: var(--green, #10b981);
+}
+
+.page-chat .learn-code-pre {
+  margin: 0;
+  padding: 12px 14px;
+  overflow-x: auto;
+  font-family: var(--font-mono);
+  font-size: 13.5px;
+  line-height: 1.6;
+  color: var(--text-primary);
+}
+
+.page-chat .learn-code-snippet {
+  font-family: inherit;
+  white-space: pre;
+}
+
+.page-chat .learn-inline-code {
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: var(--chat-hover);
+  border: 1px solid var(--chat-hairline);
+  font-family: var(--font-mono);
+  font-size: 0.88em;
+  color: var(--accent);
+}
+
+/* Tables */
+.page-chat .learn-table-wrap {
+  margin: 14px 0;
+  overflow-x: auto;
+  border: 1px solid var(--chat-hairline);
+  border-radius: var(--radius-md, 8px);
+}
+
+.page-chat .learn-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: 13.5px;
+}
+
+.page-chat .learn-table th {
+  padding: 10px 14px;
+  font-weight: 600;
+  background: var(--chat-hover);
+  color: var(--text-primary);
+  border-bottom: 1px solid var(--chat-hairline);
+  white-space: nowrap;
+}
+
+.page-chat .learn-table td {
+  padding: 10px 14px;
+  color: var(--text-secondary);
+  border-bottom: 1px solid var(--chat-hairline);
+}
+
+.page-chat .learn-table tr:last-child td {
+  border-bottom: none;
+}
+
+.page-chat .learn-table tbody tr:hover {
+  background: var(--chat-hover);
+}
+
+/* Lists and Blockquotes */
+.page-chat .learn-steps {
+  margin: 10px 0;
+  padding-left: 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.page-chat .learn-steps li {
+  font-size: 14.5px;
+  line-height: 1.68;
+  color: var(--text-secondary);
+}
+
+.page-chat .learn-list {
+  margin: 10px 0;
+  padding-left: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.page-chat .learn-list li {
+  font-size: 14.5px;
+  line-height: 1.68;
+  color: var(--text-secondary);
+}
+
+.page-chat .learn-blockquote {
+  margin: 14px 0;
+  padding: 10px 16px;
+  border-left: 3px solid var(--accent);
+  background: var(--chat-hover);
+  border-radius: 0 var(--radius-sm, 6px) var(--radius-sm, 6px) 0;
+  color: var(--text-secondary);
+  font-style: italic;
+  font-size: 14px;
+  line-height: 1.65;
+}
+
+.page-chat .learn-subheading {
+  margin: 14px 0 6px 0;
+  font-size: 14.5px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+/* Math */
+.page-chat .learn-inline-math {
+  font-family: "Cambria Math", "KaTeX_Math", "Times New Roman", serif;
+  font-style: italic;
+  color: var(--text-primary);
+  padding: 0 2px;
+}
+
+.page-chat .learn-math-block {
+  margin: 12px 0;
+  padding: 12px 16px;
+  text-align: center;
+  background: var(--chat-hover);
+  border: 1px solid var(--chat-hairline);
+  border-radius: var(--radius-md, 8px);
+  overflow-x: auto;
+}
+
+.page-chat .learn-math-code {
+  font-family: "Cambria Math", "KaTeX_Math", "Times New Roman", serif;
+  font-size: 15px;
+  color: var(--text-primary);
+}
+
+.page-chat .learn-link {
+  color: var(--accent);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.page-chat .learn-cite-ref a {
+  color: var(--accent);
+  font-size: 0.8em;
+  font-weight: 600;
+  text-decoration: none;
+  margin: 0 1px;
+}
+
+.page-chat .learn-cite-ref a:hover {
+  text-decoration: underline;
+}
+
+/* Citations & Research Evidence Section */
+.page-chat .learn-citations {
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid var(--chat-hairline);
+}
+
+.page-chat .learn-citations-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.page-chat .learn-citations-meta {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.page-chat .learn-citations-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.page-chat .learn-citation-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px 14px;
+  border: 1px solid var(--chat-hairline);
+  border-radius: var(--radius-md, 8px);
+  background: var(--chat-surface-solid);
+  text-decoration: none;
+  transition: all var(--dur-fast) ease;
+}
+
+.page-chat .learn-citation-card:hover {
+  border-color: var(--accent);
+  background: var(--chat-hover);
+  transform: translateY(-1px);
+}
+
+.page-chat .learn-citation-badge {
+  flex: none;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--accent);
+  margin-top: 2px;
+}
+
+.page-chat .learn-citation-body {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+
+.page-chat .learn-citation-title {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--text-primary);
+  line-height: 1.4;
+}
+
+.page-chat .learn-citation-snippet {
+  font-size: 12px;
+  color: var(--text-secondary);
+  line-height: 1.45;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.page-chat .learn-citation-source {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--accent);
+  margin-top: 2px;
+}

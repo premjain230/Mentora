@@ -919,7 +919,9 @@ Rules:
 - Only choose a visualId from the supplied candidates. Use null if no visual helps. Never invent a visual id.
 - Visual params must obey the supplied ranges/enums. Do not describe an animation as something it is not.
 - The check question must be answerable from the explanation and must not repeat the question the student asked.
-- Never claim you searched the web, viewed an image, ran a simulation or saw the student's screen. Never invent image URLs or citations.
+- When VERIFIED RESEARCH & SEARCH EVIDENCE is supplied in context, synthesize the findings accurately and include inline citations [1], [2] referencing those sources. Never fabricate citations or URLs.
+- Format responses cleanly: use markdown comparison tables (| Parameter | A | B |), numbered steps for sequential instructions, and fenced code blocks with language identifiers where appropriate.
+- Never start responses with generic chatbot filler (e.g. "Certainly! I would be glad to help with that!"). Never end with unrequested summaries or repetitive conclusions ("In summary...", "Hope this helps!"). Provide direct, exceptionally clear, intelligent responses.
 - If the student is mistaken, correct the cause of the misconception kindly and concretely.
 - If asked about your identity, system, or underlying model, state you are Learning Allied AI Tutor powered by Google Gemini.
 - If the student writes in another language, reply in that language unless the requested language is explicit.`;
@@ -1005,6 +1007,9 @@ function contextBlock({
   pedagogicalAction,
   crossSubjectPrereqs,
   explanationAttempts = [],
+  intentDirective = null,
+  confusionGuidance = null,
+  researchSummary = null,
 }) {
   const track = getTrack(trackId);
   const lines = [];
@@ -1047,6 +1052,16 @@ function contextBlock({
   // Prior attempted strategies
   if (Array.isArray(explanationAttempts) && explanationAttempts.length > 0) {
     lines.push(`EXPLANATION STRATEGIES PREVIOUSLY ATTEMPTED: ${explanationAttempts.join(", ")}. Do not repeat an already attempted strategy; use the assigned strategy.`);
+  }
+
+  if (intentDirective) {
+    lines.push(`RESPONSE FORMAT & STYLE DIRECTIVE: ${intentDirective}`);
+  }
+  if (confusionGuidance) {
+    lines.push(`ADAPTIVE LEARNING GUIDANCE: ${confusionGuidance}`);
+  }
+  if (researchSummary) {
+    lines.push(`VERIFIED RESEARCH & SEARCH EVIDENCE:\n${researchSummary}\nGround your explanation in these verified facts. Cite claims with [1], [2] when appropriate.`);
   }
 
   if (state && state.profile && state.profile.prioritySubject) lines.push(`Priority subject: ${state.profile.prioritySubject}`);
@@ -1203,19 +1218,22 @@ function normalizeCheck(value) {
   };
 }
 
-function normalizeChatReply(raw, { candidates, text, subject, level, strategy, crossSubject }) {
+function normalizeChatReply(raw, { candidates, text, subject, level, strategy, crossSubject, citations = null, visualRequirement = null, intent = null }) {
   const o = raw && typeof raw === "object" && !Array.isArray(raw) ? raw : null;
   if (!o) return null;
   const sections = normalizeSections(o.sections);
   const directAnswer = clipMultiline(o.directAnswer, 1800);
   if (!directAnswer && !sections.length) return null;
   const kind = o.kind === "short" || (!sections.length && directAnswer.length < 700) ? "short" : "lesson";
-  const visual = validateVisualSelection(
+  let visual = validateVisualSelection(
     o.visualId ? { id: o.visualId, params: o.visualParams, observe: o.visualObserve } : null,
     candidates,
     text,
     subject
   );
+  if (visualRequirement && visualRequirement.needsVisual === false) {
+    visual = null;
+  }
   return {
     kind,
     title: clip(o.title, 120) || null,
@@ -1225,6 +1243,8 @@ function normalizeChatReply(raw, { candidates, text, subject, level, strategy, c
     example: kind === "short" ? null : normalizeExample(o.example),
     check: normalizeCheck(o.check),
     visual,
+    citations: Array.isArray(citations) && citations.length > 0 ? citations : null,
+    intent: intent || null,
     teachingStrategy: strategy ? { id: strategy.id, label: strategy.label } : (o.teachingStrategy || null),
     crossSubjectLink: crossSubject || (o.crossSubjectLink || null),
     personalization: o.personalization ? clipMultiline(o.personalization, 260) : null,
@@ -1401,6 +1421,18 @@ async function chatTutor(params = {}) {
     }
   }
 
+  // Centralized AI Intelligence layer
+  let aiIntel = null;
+  try {
+    aiIntel = require("./_ai-intelligence");
+  } catch (_) {}
+
+  const detailedIntent = aiIntel ? aiIntel.analyzeIntent(question, history) : intent;
+  const confusion = aiIntel ? aiIntel.detectConfusionPoint(question) : { isConfused: false };
+  const visualDecision = aiIntel ? aiIntel.evaluateVisualRequirement(question, matched, detailedIntent) : null;
+  const researchData = aiIntel ? await aiIntel.performResearchWorkflow(question, detailedIntent) : null;
+  const requestedModel = body.model || (params && params.model) || null;
+
   const messages = buildChatMessages({
     concept: matched,
     trackId,
@@ -1419,11 +1451,14 @@ async function chatTutor(params = {}) {
     pedagogicalAction,
     crossSubjectPrereqs,
     explanationAttempts,
+    intentDirective: aiIntel ? aiIntel.getResponseStyleDirectives(detailedIntent) : null,
+    confusionGuidance: confusion?.guidance || null,
+    researchSummary: researchData?.researchSummary || null,
   });
   const result = await askJson(messages, {
-    model: MODEL_STRONG,
-    temperature: 0.35,
-    maxTokens: 1600,
+    model: requestedModel || MODEL_STRONG,
+    temperature: detailedIntent === "coding" || detailedIntent === "problem_solving" ? 0.2 : 0.35,
+    maxTokens: 1800,
     timeoutMs: 22000,
   });
 
@@ -1435,6 +1470,9 @@ async function chatTutor(params = {}) {
       level,
       strategy: teachingStrategy,
       crossSubject: crossSubjectPrereqs.length > 0 ? crossSubjectPrereqs[0] : null,
+      citations: researchData?.citations || null,
+      visualRequirement: visualDecision,
+      intent: detailedIntent,
     });
 
     const shouldValidateRelevance = intent !== "conversational" && result.model !== "test-model";

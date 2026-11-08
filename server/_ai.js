@@ -626,6 +626,25 @@ async function aiComplete(options = {}) {
   const hasGemini = isUsableKey(process.env.GEMINI_API_KEY);
   const hasGroq = isUsableKey(process.env.GROQ_API_KEY);
 
+  // Manual provider selection: respect user choice without silent rerouting
+  const isExplicitGroq = (options.provider === "groq" || (options.manual === true && options.model && !String(options.model).toLowerCase().includes("gemini"))) && options.allowFallback !== true;
+  if (isExplicitGroq) {
+    if (!hasGroq) {
+      throw Object.assign(new Error("Groq provider is requested but GROQ_API_KEY is not configured."), { statusCode: 500, retryable: false });
+    }
+    logAiEvent("info", "ATTEMPT", { provider: "groq", isManual: true });
+    return await groqComplete(options);
+  }
+
+  const isExplicitGemini = (options.provider === "gemini" || (options.manual === true && options.model && String(options.model).toLowerCase().includes("gemini"))) && options.allowFallback !== true;
+  if (isExplicitGemini) {
+    if (!hasGemini) {
+      throw Object.assign(new Error("Gemini provider is requested but GEMINI_API_KEY is not configured."), { statusCode: 500, retryable: false });
+    }
+    logAiEvent("info", "ATTEMPT", { provider: "gemini", isManual: true });
+    return await geminiComplete(options);
+  }
+
   if (!hasGemini && !hasGroq) {
     logAiEvent("error", "NO_CONFIG", {
       error: "Neither GEMINI_API_KEY nor GROQ_API_KEY is configured.",

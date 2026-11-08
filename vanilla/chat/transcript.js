@@ -9,6 +9,8 @@ import { el } from "../shared/dom.js";
 import {
   LEVEL_LABEL,
   renderTeaching,
+  renderRichContent,
+  renderCitations,
 } from "../shared/learning-blocks.js";
 import { EMPTY_ACTIONS, replyToText } from "./messages.js";
 import { iconMarkup } from "./icons.js";
@@ -71,7 +73,9 @@ export function createTranscript(app) {
     if (message.reply) {
       renderAssistant(bubble, message);
     } else {
-      bubble.appendChild(el("p", "chat-short-answer", message.content));
+      const shortWrap = el("div", "chat-short-answer");
+      renderRichContent(shortWrap, message.content);
+      bubble.appendChild(shortWrap);
     }
 
     row.appendChild(bubble);
@@ -128,7 +132,13 @@ export function createTranscript(app) {
     const reply = message.reply;
 
     if (reply.kind === "short") {
-      bubble.appendChild(el("p", "chat-short-answer", message.content));
+      const shortWrap = el("div", "chat-short-answer");
+      renderRichContent(shortWrap, message.content || reply.directAnswer);
+      bubble.appendChild(shortWrap);
+      if (reply.citations && reply.citations.length) {
+        const citeBox = renderCitations(reply.citations);
+        if (citeBox) bubble.appendChild(citeBox);
+      }
     } else {
       bubble.appendChild(renderTeaching(reply));
     }

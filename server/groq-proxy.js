@@ -33,6 +33,12 @@ const {
 } = require("./_ai");
 
 const ALLOWED_MODELS = new Set([
+  "auto",
+  "gemini",
+  "gemini-2.5-flash",
+  "gemini-1.5-flash",
+  "gemini-1.5-pro",
+  "gemini-2.0-flash",
   "llama-3.3-70b-versatile",
   "llama-3.1-8b-instant",
   "openai/gpt-oss-120b",
@@ -274,6 +280,18 @@ module.exports = async function handler(req, res) {
   const temperature = Math.min(MAX_TEMPERATURE, Math.max(0, Number(body.temperature) || 0.65));
   const max_tokens = Math.min(MAX_TOKENS, Math.max(1, Number(body.max_tokens) || 2048));
   const stream = body.stream === true;
+
+  // 4) Manual vs Auto Routing
+  const isManualGroq = (body.provider === "groq" || (body.manual === true && !String(body.model).toLowerCase().includes("gemini"))) && body.allowFallback !== true;
+  if (isManualGroq) {
+    return await executeGroq(req, res, {
+      messages,
+      max_tokens,
+      temperature,
+      stream,
+      requestedModel: body.model || "llama-3.3-70b-versatile",
+    });
+  }
 
   // 4) Execute Request: Priority 1 Gemini -> Priority 2 Groq Fallback
   if (!stream) {
