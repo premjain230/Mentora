@@ -88,6 +88,7 @@ export const SHARED_JSONLD_GRAPH = {
       "https://github.com/premjain230/Mentora",
       "https://discord.gg/vDvrJhUzud",
       "https://teenfounders.in/user/learningallied",
+      "https://www.linkedin.com/in/prem-jain-603173426/",
     ],
   },
   founder: {
@@ -100,6 +101,7 @@ export const SHARED_JSONLD_GRAPH = {
     sameAs: [
       "https://x.com/itzprem109",
       "https://github.com/premjain230",
+      "https://www.linkedin.com/in/prem-jain-603173426/",
     ],
   },
   website: {
