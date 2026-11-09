@@ -65,6 +65,7 @@ export function mount(root, ctx) {
   initMemory();
   initPasswordReset();
   initSupport();
+  initFeedback();
   initLogoutModal();
 
   return () => lifecycle.dispose();
@@ -296,6 +297,27 @@ export function mount(root, ctx) {
         toast.show("Couldn't send the reset email. Try again.", "error");
       }
     });
+  }
+
+  function initFeedback() {
+    const openFeedbackBtn = root.querySelector("#openFeedbackBtn");
+    const openBugReportBtn = root.querySelector("#openBugReportBtn");
+
+    if (openFeedbackBtn) {
+      lifecycle.on(openFeedbackBtn, "click", () => {
+        window.dispatchEvent(
+          new CustomEvent("open-feedback-modal", { detail: { category: "general" } })
+        );
+      });
+    }
+
+    if (openBugReportBtn) {
+      lifecycle.on(openBugReportBtn, "click", () => {
+        window.dispatchEvent(
+          new CustomEvent("open-feedback-modal", { detail: { category: "bug_report" } })
+        );
+      });
+    }
   }
 
   function initSupport() {
