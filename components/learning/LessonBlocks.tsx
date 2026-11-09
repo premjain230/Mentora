@@ -249,7 +249,7 @@ export function CheckCard({
   return (
     <div className="learn-check">
       <div className="learn-check-head">
-        <span className="learn-badge learn-badge--accent">Check your understanding</span>
+        <span className="learn-badge learn-badge--accent">Check your understanding in simple things</span>
         <span className="learn-check-difficulty">Level {check.difficulty}/3</span>
       </div>
       <p className="learn-check-prompt">{check.prompt}</p>

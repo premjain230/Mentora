@@ -45,7 +45,8 @@ function shouldSearch(query) {
   if (/^(explain|define|what is|meaning of|tell me about) /i.test(q) && !/(current|latest|recent|today|2024|2025|2026|cutoff|result|admission|syllabus|pattern|change|update|news|verify|check)/i.test(q)) {
     if (q.length < 80) return false;
   }
-  if (/(current|latest|recent|today|2024|2025|2026|cutoff|result date|admission|last date|syllabus.*change|pattern.*change|verify|is it true|fact check|news|update)/i.test(q)) return true;
+  if (/\\b(search|search the web|search online|search internet|google|look up|lookup|find online|check online|browse web)\\b/i.test(q)) return true;
+  if (/(current|latest|recent|today|yesterday|this year|upcoming|202[4-9]|203[0-9]|cutoff|result date|exam date|admit card|admission|last date|syllabus.*change|pattern.*change|official.*notification|circular|counseling|merit list|rankings?|score|who won|who is the (?:current )?(?:prime minister|president|minister|ceo)|verify|is it true|fact check|news|update)/i.test(q)) return true;
   if (q.includes("?") && q.split(/\s+/).length > 6) return true;
   if (q.length > 120) return true;
   return false;
@@ -683,7 +684,7 @@ function formatSearchResults(results) {
     const link    = toSafeString(r?.link || r?.url);
     return `[${i + 1}] "${title}" — ${snippet}\nSource: ${link}`;
   });
-  return `\n\n=== CURRENT WEB SEARCH RESULTS (always use for accuracy — cite as [1], [2], etc.) ===\n${parts.join("\n")}\n\nInstructions: Use these results to ground your answer. Prefer them over internal knowledge for facts/dates/syllabus/formulas. Cite naturally. If results are insufficient, say so and fall back to internal knowledge with a disclaimer. Make the answer MORE effective to learn: connect to the student's onboarding profile, add a micro mental-model, and end with an active-recall check.`;
+  return `\n\n=== CURRENT WEB SEARCH RESULTS (always use for accuracy — cite as [1], [2], etc.) ===\n${parts.join("\n")}\n\nInstructions: Use these results to ground your answer. Prefer them over internal knowledge for facts/dates/syllabus/formulas. Cite naturally. If results are insufficient, say so and fall back to internal knowledge with a disclaimer. Make the answer MORE effective to learn: connect to the student's onboarding profile, add a micro mental-model, and end with: "Check your understanding in simple things:" followed by a simple everyday question.`;
 }
 
 function pulseSearchBtn(pulse) {
@@ -872,9 +873,9 @@ async function runAiReply(chatRef, rawText, searchResults, searchError, searchSk
 
     // Final guardrail: force effective learning even with or without search
     if (searchSkipped) {
-      enhancedPrompt += `\n\nREMINDER: Web verification was NOT needed for this turn (stable concept/casual). Deliver a concise, mistake-free, learning-optimized answer from trusted knowledge: 1) Direct answer → intuition → steps → example, 2) Tailor to ${toSafeString(profile?.examType || "general")} / ${toSafeString((profile?.subjects||[]).join(", ") || "all subjects")}, 3) End with one active-recall question. Keep it short unless learner asks for depth.`;
+      enhancedPrompt += `\n\nREMINDER: Web verification was NOT needed for this turn (stable concept/casual). Deliver a concise, mistake-free, learning-optimized answer from trusted knowledge: 1) Direct answer → intuition → steps → example, 2) Tailor to ${toSafeString(profile?.examType || "general")} / ${toSafeString((profile?.subjects||[]).join(", ") || "all subjects")}, 3) End with "Check your understanding in simple things:" followed by a simple everyday question. Keep it short unless learner asks for depth.`;
     } else {
-      enhancedPrompt += `\n\nREMINDER: You have already been web-verified (or attempted) for this turn. Now deliver a MISTAKE-FREE, learning-optimized answer: 1) Lead with the verified direct answer (with citations if you used search results), 2) Give intuition/mental model, 3) Tailor examples to the student's onboarding profile (${toSafeString(profile?.examType || "general")} / ${toSafeString((profile?.subjects||[]).join(", ") || "all subjects")}), 4) Call out the common exam trap for their level, 5) End with one active-recall question. If you are not fully sure, say so rather than guessing.`;
+      enhancedPrompt += `\n\nREMINDER: You have already been web-verified (or attempted) for this turn. Now deliver a MISTAKE-FREE, learning-optimized answer: 1) Lead with the verified direct answer (with citations if you used search results), 2) Give intuition/mental model, 3) Tailor examples to the student's onboarding profile (${toSafeString(profile?.examType || "general")} / ${toSafeString((profile?.subjects||[]).join(", ") || "all subjects")}), 4) Call out the common exam trap for their level, 5) End with "Check your understanding in simple things:" followed by a simple everyday question. If you are not fully sure, say so rather than guessing.`;
     }
 
     // Token budgeting (P4): trim oldest history if prompt would exceed Groq 120k char limit

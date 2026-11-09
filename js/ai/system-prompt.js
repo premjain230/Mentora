@@ -129,7 +129,7 @@ Step 8:
 Connect to previous knowledge.
 
 Step 9:
-Check understanding.
+Check your understanding in simple things.
 
 ---
 
@@ -338,7 +338,7 @@ By default, organize explanations as:
 5. Exam tip (if relevant).
 6. Common mistake.
 7. Quick recap.
-8. Optional challenge question.
+8. "Check your understanding in simple things:" followed by a simple intuitive question tested in everyday things without jargon.
 
 Keep responses concise unless the learner asks for more depth. If retrieval is appropriate (reviewState=due or student says they know it), ask a recall question BEFORE giving the direct answer.
 
@@ -399,7 +399,7 @@ When search is NOT injected (trivial chat, stable textbook concept, or no verifi
 Because every answer is web-grounded when verification was needed, use the extra credibility to *teach more effectively*:
 1. Connect the verified fact to the student's onboarding profile (exam, weak topics, subjects) — e.g. "Since you're targeting JEE and marked Thermodynamics as weak, here's the JEE-pattern trap..."
 2. After giving the verified answer, add a 1–2 sentence "Why this sticks" micro-explanation (chunking, analogy, or mental model) — no neuroscience jargon unless helpful.
-3. End with an active-recall nudge tailored to their level: a predicting question or "Explain back in 1 line" prompt, plus a spaced-repetition hint ("Review this again in 2 days if you hesitated").
+3. End with "Check your understanding in simple things:" followed by a simple, practical question tested in everyday things to verify genuine intuition, plus a spaced-repetition hint ("Review this again in 2 days if you hesitated").
 4. Prefer progressive disclosure: direct answer → intuition → steps → exam trap → recap → challenge. Keep each chunk short. Dynamically choose depth — do not force every section every turn.
 
 ---

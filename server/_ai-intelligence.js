@@ -37,13 +37,18 @@ const INTENT_TYPES = {
 function needsInternetResearch(text) {
   const q = String(text || "").toLowerCase();
   
+  // Explicit search actions & web lookup requests
+  if (/\b(search|search the web|search online|search internet|google|look up|lookup|find online|check online|browse web)\b/i.test(q)) {
+    return true;
+  }
+
   // Exclude physical "electric current", "water current", "eddy current", "alternating current"
   const isPhysicalCurrent = /(electric|alternating|direct|water|ocean|eddy)\s+current/i.test(q) ||
     /current\s+(carrying|flows?|in a (?:wire|circuit)|divider|electricity)/i.test(q) ||
     /unit of (?:electric )?current/i.test(q);
 
-  // Explicit temporal markers
-  if (/\b(202[4-9]|203[0-9]|latest|recent|newest|this year|today)\b/.test(q)) {
+  // Explicit temporal markers and dates
+  if (/\b(202[4-9]|203[0-9]|latest|recent|newest|this year|today|yesterday|this week|this month|upcoming|current affairs|updates?)\b/.test(q)) {
     return true;
   }
   if (/\bcurrent\b/.test(q) && !isPhysicalCurrent) {
@@ -53,8 +58,13 @@ function needsInternetResearch(text) {
     }
   }
 
-  // Discovery, news, statistics, external validation
-  if (/\b(discovery|discoveries|breakthrough|statistics|census|population of|gdp|nobel prize|who won|election|stock price|market trend|paper published|recent research|according to studies)\b/.test(q)) {
+  // Exam schedules, circulars, admissions, real-world statistics
+  if (/\b(cutoff|result date|exam date|admit card|application deadline|registration date|eligibility criteria|syllabus change|pattern change|official notification|circular|counseling|seat matrix|merit list|rankings?|score)\b/.test(q)) {
+    return true;
+  }
+
+  // Discovery, news, statistics, external validation, people in office
+  if (/\b(discovery|discoveries|breakthrough|statistics|census|population of|gdp|nobel prize|who won|election|stock price|market trend|paper published|recent research|according to studies|according to research|fact check|is it true that|who is the (?:current )?(?:prime minister|president|minister|ceo|governor))\b/.test(q)) {
     return true;
   }
   // Technology releases / updates
@@ -290,7 +300,7 @@ function getResponseStyleDirectives(intent) {
     case INTENT_TYPES.COMPLEX_QUESTION:
       return "Detailed structured breakdown. Divide into logical sub-parts with clear descriptive headings. Highlight key terminology and explain causes before effects.";
     case INTENT_TYPES.EDUCATIONAL_TOPIC:
-      return "Concept-first pedagogical teaching. Anchor with an intuitive core takeaway, followed by progressive depth, a practical worked example or application, and check for understanding.";
+      return "Concept-first pedagogical teaching. Anchor with an intuitive core takeaway, followed by progressive depth, a practical worked example or application, and 'Check your understanding in simple things'.";
     case INTENT_TYPES.RESEARCH:
       return "Evidence-based analysis. Ground claims in the provided search results. Provide numbered inline citations [1], [2] referencing verified sources. Differentiate established facts from evolving estimates.";
     case INTENT_TYPES.COMPARISON:

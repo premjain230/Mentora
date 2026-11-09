@@ -4,7 +4,7 @@ const { verifyIdToken } = require("./_admin");
 function searchCredentials() {
   const key = process.env.SEARCH_API_KEY || process.env.GOOGLE_SEARCH_API_KEY;
   const cx = process.env.SEARCH_ENGINE_ID || process.env.GOOGLE_CX;
-  return key && cx ? { key, cx } : null;
+  return key && cx && key.length > 20 && !key.includes("[SENSITIVE]") ? { key, cx } : null;
 }
 
 function httpsUrl(value) {
@@ -23,6 +23,7 @@ function cleanHtml(text) {
   return text
     .replace(/<[^>]+>/g, " ")
     .replace(/&quot;/g, '"')
+    .replace(/&#039;/g, "'")
     .replace(/&#39;/g, "'")
     .replace(/&amp;/g, "&")
     .replace(/&lt;/g, "<")
@@ -31,61 +32,135 @@ function cleanHtml(text) {
     .trim();
 }
 
+function cleanSearchQuery(query) {
+  let q = String(query || "").trim();
+  // Strip conversational search prefixes to get clean search keywords
+  q = q.replace(/^(?:please\s+)?(?:can you\s+)?(?:search\s+(?:the\s+)?(?:web|internet|online)?\s*(?:for)?|google|look\s*up|find\s+(?:me\s+)?(?:online|on the web)?|browse\s+(?:the\s+)?web\s+for)\s+/i, "");
+  return q.slice(0, 300).trim();
+}
+
 /**
- * Fallback Web Search via Wikipedia Search API + DuckDuckGo Lite.
- * Delivers real, live, authoritative web citations without fabrication.
+ * Robust Multi-Engine Web Search:
+ * Queries authoritative real-time sources (Wikipedia, DuckDuckGo Instant Answer,
+ * Wikinews, and academic Crossref) with zero CAPTCHA blockers, delivering verified,
+ * live internet citations without fabrication.
  */
 async function fallbackWebSearch(query, count = 5) {
   const results = [];
   const seenUrls = new Set();
-  const cleanQ = String(query || "").trim().slice(0, 300);
+  const cleanQ = cleanSearchQuery(query);
+  if (!cleanQ) return { results: [], source: "none" };
 
-  // 1) Query Wikipedia API for scientific, historical, academic topics
-  try {
-    const wikiUrl = `https://en.wikipedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(cleanQ)}&utf8=&format=json`;
-    const wikiRes = await fetch(wikiUrl, {
-      headers: { "User-Agent": "LearningAlliedBot/2.0 (educational research)" },
-      signal: AbortSignal.timeout(6000),
+  function addResult(title, snippet, url, source) {
+    const validUrl = httpsUrl(url);
+    if (!validUrl || seenUrls.has(validUrl) || results.length >= count) return;
+    if (validUrl.includes("duckduckgo.com") && !validUrl.includes("uddg=")) return;
+    seenUrls.add(validUrl);
+    results.push({
+      title: cleanHtml(title).slice(0, 200),
+      snippet: cleanHtml(snippet).slice(0, 400),
+      url: validUrl,
+      source: source || (() => {
+        try { return new URL(validUrl).hostname.replace(/^www\./, ""); } catch (_) { return "web"; }
+      })(),
     });
-    if (wikiRes.ok) {
-      const wikiData = await wikiRes.json();
-      const items = wikiData?.query?.search || [];
-      for (const item of items) {
-        const title = String(item.title || "").trim();
-        const snippet = cleanHtml(item.snippet);
-        const url = `https://en.wikipedia.org/wiki/${encodeURIComponent(title.replace(/\s+/g, "_"))}`;
-        if (!seenUrls.has(url)) {
-          seenUrls.add(url);
-          results.push({
-            title: title.slice(0, 200),
-            snippet: snippet.slice(0, 400),
-            url,
-            source: "wikipedia.org",
-          });
+  }
+
+  // 1) DuckDuckGo Instant Answer API (Real-time summary + authoritative reference URL)
+  try {
+    const ddgApiUrl = `https://api.duckduckgo.com/?q=${encodeURIComponent(cleanQ)}&format=json&no_html=1&skip_disambig=1`;
+    const res = await fetch(ddgApiUrl, { signal: AbortSignal.timeout(4500) });
+    if (res.ok) {
+      const d = await res.json();
+      if (d.Abstract && d.AbstractURL) {
+        addResult(d.Heading || cleanQ, d.Abstract, d.AbstractURL, "duckduckgo.com");
+      }
+      for (const t of d.RelatedTopics || []) {
+        if (t.Text && t.FirstURL) {
+          addResult(t.Text.slice(0, 80), t.Text, t.FirstURL, "duckduckgo.com");
         }
         if (results.length >= count) break;
       }
     }
-  } catch (err) {
-    // Wikipedia fallback silent continue
-  }
+  } catch (_) {}
 
-  // 2) If more results needed, query DuckDuckGo HTML search for current web results
+  // 2) Wikipedia API (Authoritative encyclopedia, curriculum, scientific topics)
   if (results.length < count) {
     try {
-      const ddgUrl = `https://html.duckduckgo.com/html/?q=${encodeURIComponent(cleanQ)}`;
-      const ddgRes = await fetch(ddgUrl, {
+      const wikiUrl = `https://en.wikipedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(cleanQ)}&utf8=&format=json`;
+      const wikiRes = await fetch(wikiUrl, {
+        headers: { "User-Agent": "LearningAlliedBot/2.0 (educational research)" },
+        signal: AbortSignal.timeout(5000),
+      });
+      if (wikiRes.ok) {
+        const wikiData = await wikiRes.json();
+        const items = wikiData?.query?.search || [];
+        for (const item of items) {
+          const title = String(item.title || "").trim();
+          const url = `https://en.wikipedia.org/wiki/${encodeURIComponent(title.replace(/\s+/g, "_"))}`;
+          addResult(title, item.snippet, url, "wikipedia.org");
+          if (results.length >= count) break;
+        }
+      }
+    } catch (_) {}
+  }
+
+  // 3) Wikinews API (Current events, real-world updates, policy & exam announcements)
+  if (results.length < count) {
+    try {
+      const newsUrl = `https://en.wikinews.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(cleanQ)}&utf8=&format=json`;
+      const newsRes = await fetch(newsUrl, {
+        headers: { "User-Agent": "LearningAlliedBot/2.0 (news research)" },
+        signal: AbortSignal.timeout(4500),
+      });
+      if (newsRes.ok) {
+        const newsData = await newsRes.json();
+        const items = newsData?.query?.search || [];
+        for (const item of items) {
+          const title = String(item.title || "").trim();
+          const url = `https://en.wikinews.org/wiki/${encodeURIComponent(title.replace(/\s+/g, "_"))}`;
+          addResult(title, item.snippet, url, "wikinews.org");
+          if (results.length >= count) break;
+        }
+      }
+    } catch (_) {}
+  }
+
+  // 4) Crossref Academic API (Peer-reviewed scientific breakthroughs, papers, studies)
+  if (results.length < count) {
+    try {
+      const crUrl = `https://api.crossref.org/works?query=${encodeURIComponent(cleanQ)}&rows=3`;
+      const crRes = await fetch(crUrl, { signal: AbortSignal.timeout(4500) });
+      if (crRes.ok) {
+        const d = await crRes.json();
+        const items = d?.message?.items || [];
+        for (const item of items) {
+          const title = item.title?.[0];
+          const url = item.URL;
+          const publisher = item.publisher || "crossref.org";
+          if (title && url) {
+            addResult(title, `Peer-reviewed research published in ${publisher}. DOI: ${item.DOI || ""}`, url, "doi.org");
+          }
+          if (results.length >= count) break;
+        }
+      }
+    } catch (_) {}
+  }
+
+  // 5) DuckDuckGo HTML search fallback
+  if (results.length < count) {
+    try {
+      const ddgRes = await fetch("https://html.duckduckgo.com/html/", {
+        method: "POST",
         headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
           "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
         },
-        signal: AbortSignal.timeout(7000),
+        body: `q=${encodeURIComponent(cleanQ)}`,
+        signal: AbortSignal.timeout(5000),
       });
       if (ddgRes.ok) {
         const html = await ddgRes.text();
-        const linkRegex = /<a\s+class="result__snippet"[^>]*href="([^"]+)"[^>]*>([\s\S]*?)<\/a>/gi;
-        const titleRegex = /<a\s+class="result__url"[^>]*href="([^"]+)"[^>]*>([\s\S]*?)<\/a>/gi;
-        
-        // Parse results with title and snippets
         const blocks = html.split(/class="result\s+/);
         for (let i = 1; i < blocks.length; i++) {
           const b = blocks[i];
@@ -101,27 +176,12 @@ async function fallbackWebSearch(query, count = 5) {
                 targetUrl = decodeURIComponent(u.searchParams.get("uddg") || targetUrl);
               } catch (_) {}
             }
-            const valid = httpsUrl(targetUrl);
-            if (valid && !seenUrls.has(valid) && !valid.includes("duckduckgo.com")) {
-              seenUrls.add(valid);
-              let sourceLabel = "web";
-              try {
-                sourceLabel = new URL(valid).hostname.replace(/^www\./, "");
-              } catch (_) {}
-              results.push({
-                title: cleanHtml(titleMatch[1]).slice(0, 200),
-                snippet: cleanHtml(snippetMatch ? snippetMatch[1] : "").slice(0, 400),
-                url: valid,
-                source: sourceLabel,
-              });
-            }
+            addResult(titleMatch[1], snippetMatch ? snippetMatch[1] : "", targetUrl);
           }
           if (results.length >= count) break;
         }
       }
-    } catch (err) {
-      // DDG fallback silent continue
-    }
+    } catch (_) {}
   }
 
   return {

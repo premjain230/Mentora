@@ -900,7 +900,7 @@ Return ONLY a JSON object. No markdown fences, no prose outside the JSON. Shape:
   "keyIdea": "one clear sentence identifying the most important takeaway",
   "sections": [{ "heading": "short heading", "body": "2-5 sentences", "equation": "optional equation or null" }],
   "example": { "problem": "worked example or real application", "steps": ["step 1", "step 2"], "answer": "final answer" },
-  "check": { "prompt": "one useful understanding-check question", "hint": "optional nudge", "answerKey": "a short model answer for the app's checker; never shown to the student" },
+  "check": { "prompt": "one useful understanding-check question in simple things", "hint": "optional nudge", "answerKey": "a short model answer for the app's checker; never shown to the student" },
   "visualId": "one id from the supplied candidates or null",
   "visualParams": { "paramName": "value" },
   "visualObserve": "one sentence telling the student what to watch",
@@ -918,7 +918,7 @@ Rules:
 - Include units and check the arithmetic. Do not state a result you have not verified.
 - Only choose a visualId from the supplied candidates. Use null if no visual helps. Never invent a visual id.
 - Visual params must obey the supplied ranges/enums. Do not describe an animation as something it is not.
-- The check question must be answerable from the explanation and must not repeat the question the student asked.
+- The check question must test understanding using simple things. Always frame the check question simply using relatable everyday things or simple intuitive scenarios (e.g., "Check your understanding in simple things: ..."), and ensure it is directly answerable from the explanation without repeating the student's question.
 - When VERIFIED RESEARCH & SEARCH EVIDENCE is supplied in context, synthesize the findings accurately and include inline citations [1], [2] referencing those sources. Never fabricate citations or URLs.
 - Format responses cleanly: use markdown comparison tables (| Parameter | A | B |), numbered steps for sequential instructions, and fenced code blocks with language identifiers where appropriate.
 - Never start responses with generic chatbot filler (e.g. "Certainly! I would be glad to help with that!"). Never end with unrequested summaries or repetitive conclusions ("In summary...", "Hope this helps!"). Provide direct, exceptionally clear, intelligent responses.
@@ -1064,6 +1064,7 @@ function contextBlock({
     lines.push(`VERIFIED RESEARCH & SEARCH EVIDENCE:\n${researchSummary}\nGround your explanation in these verified facts. Cite claims with [1], [2] when appropriate.`);
   }
 
+    lines.push('CHECK QUESTION DIRECTIVE: For the check question, test understanding using simple things. Frame an intuitive question using simple everyday things so any student can verify their understanding in simple terms.');
   if (state && state.profile && state.profile.prioritySubject) lines.push(`Priority subject: ${state.profile.prioritySubject}`);
   if (state && state.weakConcepts && state.weakConcepts.length) {
     lines.push(`Recently weak topics: ${state.weakConcepts.map((w) => w.topic).join("; ")}`);

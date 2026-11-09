@@ -16,7 +16,7 @@ export function createCheck(app) {
 
     const head = el("div", "learn-check-head");
     head.appendChild(
-      el("span", "learn-badge learn-badge--accent", "Check your understanding")
+      el("span", "learn-badge learn-badge--accent", "Check your understanding in simple things")
     );
     head.appendChild(
       el("span", "learn-check-difficulty", `Level ${check.difficulty}/3`)
