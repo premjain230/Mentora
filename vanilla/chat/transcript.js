@@ -91,15 +91,78 @@ export function createTranscript(app) {
       head.appendChild(el("span", "chat-speaker-meta", LEVEL_LABEL[level]));
     }
 
+        const actions = el("div", "chat-bubble-actions");
+
     const copy = el("button", "chat-copy");
     copy.type = "button";
     copy.innerHTML = iconMarkup("copy", 15);
     copy.setAttribute("aria-label", "Copy this answer");
     copy.title = "Copy";
     lifecycle.on(copy, "click", () => copyAnswer(message, copy));
-    head.appendChild(copy);
+    actions.appendChild(copy);
+
+    const thumbsUp = el("button", "chat-copy chat-feedback-btn chat-thumb-up");
+    thumbsUp.type = "button";
+    thumbsUp.innerHTML = iconMarkup("thumbsUp", 14);
+    thumbsUp.setAttribute("aria-label", "Helpful explanation");
+    thumbsUp.title = "Helpful";
+    lifecycle.on(thumbsUp, "click", () => sendAiFeedback(message, "thumbs_up", thumbsUp, thumbsDown));
+    actions.appendChild(thumbsUp);
+
+    const thumbsDown = el("button", "chat-copy chat-feedback-btn chat-thumb-down");
+    thumbsDown.type = "button";
+    thumbsDown.innerHTML = iconMarkup("thumbsDown", 14);
+    thumbsDown.setAttribute("aria-label", "Unhelpful or confusing");
+    thumbsDown.title = "Needs improvement";
+    lifecycle.on(thumbsDown, "click", () => sendAiFeedback(message, "thumbs_down", thumbsDown, thumbsUp));
+    actions.appendChild(thumbsDown);
+
+    head.appendChild(actions);
 
     return head;
+  }
+
+  
+  function sendAiFeedback(message, type, activeBtn, otherBtn) {
+    activeBtn.classList.add("is-active-feedback");
+    otherBtn.classList.remove("is-active-feedback");
+
+    const isUp = type === "thumbs_up";
+    const payload = {
+      category: "ai_response",
+      rating: isUp ? 5 : 1,
+      page: "/chat",
+      feedbackType: type,
+      responseId: String(message.id || ""),
+      conversationId: String(state.chatId || ""),
+      model: String(message.meta?.model || "default"),
+      provider: String(message.meta?.provider || "groq"),
+      message: isUp ? "Helpful response" : "Unhelpful response",
+    };
+
+    if (app.ctx?.authFetch) {
+      app.ctx.authFetch("/api/growth?route=feedback", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      }).catch((err) => console.warn("Could not save AI feedback:", err));
+    }
+
+    if (!isUp) {
+      window.dispatchEvent(
+        new CustomEvent("open-feedback-modal", {
+          detail: {
+            category: "ai_response",
+            responseId: String(message.id || ""),
+            conversationId: String(state.chatId || ""),
+            model: String(message.meta?.model || "default"),
+            provider: String(message.meta?.provider || "groq"),
+            initialType: "thumbs_down",
+            rating: 1,
+          },
+        })
+      );
+    }
   }
 
   function copyAnswer(message, button) {

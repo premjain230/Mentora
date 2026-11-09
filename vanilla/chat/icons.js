@@ -18,6 +18,8 @@ export const ICON_PATHS = {
     '<path d="M4.5 6h11" /><path d="M8 6V4.5h4V6" /><path d="M6 6l.7 9.1a1.5 1.5 0 0 0 1.5 1.4h3.6a1.5 1.5 0 0 0 1.5-1.4L14 6" /><path d="M8.5 9v4.5M11.5 9v4.5" />',
   more: '<circle cx="5" cy="10" r="1.1" fill="currentColor" stroke="none" /><circle cx="10" cy="10" r="1.1" fill="currentColor" stroke="none" /><circle cx="15" cy="10" r="1.1" fill="currentColor" stroke="none" />',
   copy: '<rect x="7" y="7" width="9" height="9" rx="2" /><path d="M13 7V5.5A1.5 1.5 0 0 0 11.5 4h-7A1.5 1.5 0 0 0 3 5.5v7A1.5 1.5 0 0 0 4.5 14H6" />',
+  thumbsUp: '<path d="M7 10v6M7 10l3.5-6.5a1.5 1.5 0 0 1 2.5 1.2v2.8h4a1.5 1.5 0 0 1 1.5 1.5l-1 5a2 2 0 0 1-2 1.5H7M7 16H4a1 1 0 0 1-1-1v-4a1 1 0 0 1 1-1h3" />',
+  thumbsDown: '<path d="M7 10V4M7 10l3.5 6.5a1.5 1.5 0 0 0 2.5-1.2v-2.8h4a1.5 1.5 0 0 0 1.5-1.5l-1-5a2 2 0 0 0-2-1.5H7M7 4H4a1 1 0 0 0-1 1v4a1 1 0 0 0 1 1h3" />',
   check: '<path d="m5 10.5 3.5 3.5L15.5 6.5" />',
   refresh:
     '<path d="M16 10a6 6 0 1 1-1.8-4.3" /><path d="M16 3.5v4h-4" />',

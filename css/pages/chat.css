@@ -2083,3 +2083,15 @@
   color: var(--accent);
   margin-top: 2px;
 }
+
+.page-chat .chat-bubble-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-left: auto;
+}
+
+.page-chat .chat-feedback-btn.is-active-feedback {
+  opacity: 1 !important;
+  color: #3b82f6 !important;
+}

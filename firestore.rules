@@ -248,7 +248,7 @@ service cloud.firestore {
         allow read: if isOwner(userId);
         allow create: if isOwner(userId)
           && request.resource.data.type is string
-          && request.resource.data.type in ['lesson_started','lesson_completed','question_answered','question_correct','question_incorrect','quiz_started','quiz_completed','assessment_completed','hint_requested','explanation_requested','mistake_detected','misconception_detected','topic_reviewed','study_session_started','study_session_completed','goal_created','goal_completed','onboarding_started','onboarding_question_answered','onboarding_answered','onboarding_completed','diagnostic_started','diagnostic_answered','diagnostic_completed','review_started','review_completed','recommendation_clicked','syllabus_uploaded']
+          && request.resource.data.type in ['lesson_started','lesson_completed','question_answered','question_correct','question_incorrect','quiz_started','quiz_completed','assessment_completed','hint_requested','explanation_requested','mistake_detected','misconception_detected','topic_reviewed','study_session_started','study_session_completed','goal_created','goal_completed','onboarding_started','onboarding_question_answered','onboarding_answered','onboarding_completed','quiz_submitted','assessment_result','explanation_viewed','practice_attempted','diagnostic_started','diagnostic_answered','diagnostic_completed','review_started','review_completed','recommendation_clicked','syllabus_uploaded']
           && (!('conceptId' in request.resource.data) || request.resource.data.conceptId == null || (request.resource.data.conceptId is string && request.resource.data.conceptId.size() <= 120))
           && (!('confidence' in request.resource.data) || request.resource.data.confidence == null || (request.resource.data.confidence is number && request.resource.data.confidence >= 1 && request.resource.data.confidence <= 5));
         allow update, delete: if false;
@@ -619,7 +619,33 @@ service cloud.firestore {
       allow read, write: if false;
     }
 
-    /* ──────────────────────────────────────────────
+        /* ──────────────────────────────────────────────
+       feedback — validated & rate-limited via Admin API
+       Clients can read their own feedback, or public feature requests.
+       Direct client writes are denied to ensure server-side
+       validation, rate limiting, and server timestamps.
+    ────────────────────────────────────────────── */
+
+    match /feedback/{docId} {
+      allow read: if (isSignedIn() && resource.data.userId == request.auth.uid)
+        || (resource.data.category == 'feature_request' && resource.data.isPublic == true);
+
+      allow write: if false;
+    }
+
+    match /feedback_events/{docId} {
+      allow read, write: if false;
+    }
+
+    match /feedback_reports/{docId} {
+      allow read, write: if false;
+    }
+
+    match /product_analytics/{docId} {
+      allow read, write: if false;
+    }
+
+/* ──────────────────────────────────────────────
        Default deny
     ────────────────────────────────────────────── */
 

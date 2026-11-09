@@ -32,6 +32,14 @@
     {
       "source": "/api/learn-hub",
       "destination": "/api/study-session?route=learn-hub"
+    },
+    {
+      "source": "/api/feedback",
+      "destination": "/api/growth?route=feedback"
+    },
+    {
+      "source": "/api/feedback/(.*)",
+      "destination": "/api/growth?route=feedback/$1"
     }
   ],
   "crons": [

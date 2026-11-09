@@ -14,7 +14,7 @@ const ALLOWED_TYPES = new Set([
   "quiz_started","quiz_completed","assessment_completed","hint_requested","explanation_requested",
   "mistake_detected","misconception_detected","topic_reviewed","study_session_started","study_session_completed",
   "goal_created","goal_completed","onboarding_started","onboarding_question_answered","onboarding_answered","onboarding_completed","diagnostic_started","diagnostic_answered","diagnostic_completed",
-  "review_started","review_completed","recommendation_clicked","syllabus_uploaded"
+  "review_started","review_completed","recommendation_clicked","syllabus_uploaded","explanation_viewed","practice_attempted","quiz_submitted","assessment_result"
 ]);
 const ALLOWED_SOURCES = new Set(["quiz","study_session","diagnostic","chat","onboarding","self_report","syllabus", null, undefined]);
 

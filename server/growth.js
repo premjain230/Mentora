@@ -21,6 +21,7 @@
 
 const { applyCors, rateLimit, readJsonBody, sendError } = require("./_shared");
 const { requireAdmin, requireCron, firestore, adminSdk, adminEmails } = require("./_admin");
+const feedbackEngine = require("./_feedback");
 const { aiComplete, groqComplete } = require("./_ai");
 const {
   EVENT_TYPES,
@@ -67,6 +68,7 @@ module.exports = async function handler(req, res) {
 
   if (seg[0] === "track") return routeTrack(req, res);
   if (seg[0] === "cron") return routeCron(req, res);
+  if (seg[0] === "feedback") return routeFeedback(req, res, seg.slice(1));
   if (seg[0] === "admin") {
     const adminSeg = seg.slice(1);
     return routeAdmin(req, res, adminSeg);
@@ -197,6 +199,7 @@ async function routeAdmin(req, res, seg) {
     case "analyst": return adminAnalyst(req, res);
     case "experiments": return adminExperiments(req, res, seg[1] || null, seg[2] || null);
     case "research": return adminResearch(req, res, seg[1] || null);
+    case "feedback": return routeFeedback(req, res, seg.slice(1));
     default: return res.status(404).json({ error: "Not found." });
   }
 }
@@ -1003,4 +1006,131 @@ async function adminResearch(req, res, sub) {
   } catch (err) {
     return sendError(req, res, err, "Research operation failed.");
   }
+}
+
+/* ─────────────────────────────────────────────────────────────
+   /api/feedback & /api/admin/feedback — Feedback Engine Route
+───────────────────────────────────────────────────────────── */
+async function routeFeedback(req, res, seg) {
+  if (!applyCors(req, res, ["GET", "POST", "PUT", "PATCH", "OPTIONS"])) return;
+  if (req.method === "OPTIONS") return res.status(204).end();
+
+  const sub = seg[0] || "";
+
+  // Upvote feature request
+  if (sub === "upvote") {
+    if (req.method !== "POST" && req.method !== "PUT") return res.status(405).json({ error: "Method not allowed." });
+    let body;
+    try { body = await readJsonBody(req); } catch (e) { return res.status(400).json({ error: "Invalid JSON" }); }
+    const authHeader = req.headers.authorization || "";
+    if (!authHeader.startsWith("Bearer ")) return res.status(401).json({ error: "Authentication required." });
+    const { verifyIdToken } = require("./_admin");
+    const user = await verifyIdToken(authHeader.slice(7).trim());
+    if (!user || !user.uid) return res.status(401).json({ error: "Authentication failed." });
+    try {
+      const result = await feedbackEngine.toggleFeatureUpvote(body.id || body.feedbackId, user);
+      return res.status(200).json(result);
+    } catch (err) {
+      return res.status(err.statusCode || 400).json({ error: err.message });
+    }
+  }
+
+  // Stats (admin only)
+  if (sub === "stats") {
+    const adminUser = await requireAdmin(req, res);
+    if (!adminUser) return;
+    try {
+      const stats = await feedbackEngine.getFeedbackIntelligenceStats();
+      return res.status(200).json(stats);
+    } catch (err) {
+      return res.status(500).json({ error: err.message });
+    }
+  }
+
+  // Report generation (admin only)
+  if (sub === "report") {
+    const adminUser = await requireAdmin(req, res);
+    if (!adminUser) return;
+    try {
+      const report = await feedbackEngine.generateFeedbackReport(req.query.timeframe || "weekly");
+      return res.status(200).json(report);
+    } catch (err) {
+      return res.status(500).json({ error: err.message });
+    }
+  }
+
+  // CSV export (admin only)
+  if (sub === "export") {
+    const adminUser = await requireAdmin(req, res);
+    if (!adminUser) return;
+    try {
+      const csv = await feedbackEngine.generateFeedbackCsv(req.query, adminUser);
+      res.setHeader("Content-Type", "text/csv; charset=utf-8");
+      res.setHeader("Content-Disposition", 'attachment; filename="learning-allied-feedback.csv"');
+      return res.status(200).send(csv);
+    } catch (err) {
+      return res.status(500).json({ error: err.message });
+    }
+  }
+
+  // Admin single item update (PATCH or POST with id)
+  if (req.method === "PATCH" || (req.method === "POST" && sub && sub !== "submit")) {
+    const adminUser = await requireAdmin(req, res);
+    if (!adminUser) return;
+    let body;
+    try { body = await readJsonBody(req); } catch (e) { return res.status(400).json({ error: "Invalid JSON" }); }
+    const targetId = sub || req.query.id;
+    if (!targetId) return res.status(400).json({ error: "Feedback ID required." });
+    try {
+      const result = await feedbackEngine.updateFeedbackAdmin(targetId, body, adminUser);
+      return res.status(200).json(result);
+    } catch (err) {
+      return res.status(err.statusCode || 400).json({ error: err.message });
+    }
+  }
+
+  // Submit feedback (POST)
+  if (req.method === "POST") {
+    let body;
+    try { body = await readJsonBody(req); } catch (e) { return res.status(400).json({ error: "Invalid JSON" }); }
+    let user = null;
+    const authHeader = req.headers.authorization || "";
+    if (authHeader.startsWith("Bearer ")) {
+      const { verifyIdToken } = require("./_admin");
+      const decoded = await verifyIdToken(authHeader.slice(7).trim());
+      if (decoded && decoded.uid) user = decoded;
+    }
+    const clientIp = req.socket?.remoteAddress || req.headers["x-forwarded-for"] || "127.0.0.1";
+    try {
+      const result = await feedbackEngine.submitFeedback(body, user, clientIp);
+      return res.status(201).json(result);
+    } catch (err) {
+      return res.status(err.statusCode || 400).json({ error: err.message });
+    }
+  }
+
+  // List feedback (GET)
+  if (req.method === "GET") {
+    let user = null;
+    let isAdmin = false;
+    const authHeader = req.headers.authorization || "";
+    if (authHeader.startsWith("Bearer ")) {
+      const { verifyIdToken, isAdminEmail } = require("./_admin");
+      const decoded = await verifyIdToken(authHeader.slice(7).trim());
+      if (decoded && decoded.uid) {
+        user = decoded;
+        const email = decoded.email ? decoded.email.toLowerCase() : "";
+        isAdmin = decoded.admin === true || (decoded.email_verified === true && isAdminEmail(email));
+      }
+    }
+    const forcePublic = req.query.public === "true" || !isAdmin;
+    try {
+      const data = await feedbackEngine.listFeedback(req.query, !forcePublic, user?.uid);
+      return res.status(200).json(data);
+    } catch (err) {
+      return res.status(500).json({ error: err.message });
+    }
+  }
+
+  return res.status(405).json({ error: "Method not allowed." });
 }

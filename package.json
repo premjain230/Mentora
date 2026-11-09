@@ -11,7 +11,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "test": "node test_regression.js",
+    "test": "node test_regression.js && node test_feedback_system.js",
     "test:next": "node test_next_migration.js",
     "test:adaptive": "node test_adaptive_engine.js",
     "test:flow": "node test_tutor_flow.js",
@@ -19,7 +19,8 @@
     "test:upgrade": "node test_ai_intelligence_upgrade.js",
     "test:rules": "firebase emulators:exec --only firestore --project demo-learning-allied \"node test_rules_emulator.js\"",
     "audit:entitlements": "node scripts/audit-entitlements.js",
-    "migrate:entitlements": "node scripts/migrate-entitlements.js"
+    "migrate:entitlements": "node scripts/migrate-entitlements.js",
+    "test:feedback": "node test_feedback_system.js"
   },
   "keywords": [
     "ai",

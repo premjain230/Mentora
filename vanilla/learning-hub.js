@@ -941,6 +941,27 @@ export function mount(root, ctx) {
     const evaluation = state.evaluation;
     if (!evaluation) {
       els.adaptText.textContent = "Complete practice questions to receive personalized adaptive recommendations.";
+    if (els.adaptCard && !els.adaptCard.querySelector(".hub-lesson-feedback-btn")) {
+      const fbBtn = document.createElement("button");
+      fbBtn.type = "button";
+      fbBtn.className = "hub-lesson-feedback-btn";
+      fbBtn.textContent = "Lesson Feedback & Suggestions";
+      fbBtn.style.cssText = "margin-top: 10px; display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; font-size: 11.5px; font-weight: 500; border-radius: 6px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.12); color: var(--text-muted, #94a3b8); cursor: pointer;";
+      fbBtn.onclick = () => {
+        window.dispatchEvent(
+          new CustomEvent("open-feedback-modal", {
+            detail: {
+              category: "learning_experience",
+              subject: state.subjectKey || "",
+              topic: state.chapter?.name || "",
+              page: "/learning-hub",
+            },
+          })
+        );
+      };
+      els.adaptCard.appendChild(fbBtn);
+    }
+
       return;
     }
 
