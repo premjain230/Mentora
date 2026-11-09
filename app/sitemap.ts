@@ -52,5 +52,23 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: "monthly",
       priority: 0.8,
     },
+    {
+      url: `${baseUrl}/learning-hub`,
+      lastModified: new Date("2026-11-09"),
+      changeFrequency: "weekly",
+      priority: 0.9,
+    },
+    {
+      url: `${baseUrl}/arena`,
+      lastModified: new Date("2026-11-09"),
+      changeFrequency: "weekly",
+      priority: 0.9,
+    },
+    {
+      url: `${baseUrl}/chat`,
+      lastModified: new Date("2026-11-09"),
+      changeFrequency: "daily",
+      priority: 0.9,
+    },
   ];
 }

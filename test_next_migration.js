@@ -72,7 +72,7 @@ publicPages.forEach(({ path: pagePath, route }) => {
 });
 
 // 4. Verify Sitemap and Robots
-test('app/sitemap.ts contains all 8 indexable canonical public URLs and excludes private routes', () => {
+test('app/sitemap.ts contains canonical public URLs and excludes private routes', () => {
   const sitemapContent = fs.readFileSync(path.join(__dirname, 'app/sitemap.ts'), 'utf8');
   const expectedRoutes = [
     '${baseUrl}/',
@@ -83,13 +83,15 @@ test('app/sitemap.ts contains all 8 indexable canonical public URLs and excludes
     '${baseUrl}/cbse-board',
     '${baseUrl}/maharashtra-board',
     '${baseUrl}/blog/how-to-make-a-jee-study-plan',
+    '${baseUrl}/learning-hub',
+    '${baseUrl}/arena',
+    '${baseUrl}/chat',
   ];
   expectedRoutes.forEach((route) => {
     assert(sitemapContent.includes(route), `Sitemap missing route: ${route}`);
   });
   assert(!sitemapContent.includes('/admin'), 'Sitemap must not include /admin');
   assert(!sitemapContent.includes('/home'), 'Sitemap must not include /home');
-  assert(!sitemapContent.includes('/chat'), 'Sitemap must not include /chat');
   assert(!sitemapContent.includes('/api/'), 'Sitemap must not include /api/');
 });
 
@@ -99,6 +101,9 @@ test('app/robots.ts disallows private and sensitive paths', () => {
   assert(robotsContent.includes('/admin'), 'Robots must disallow /admin');
   assert(robotsContent.includes('/sidebar.html'), 'Robots must disallow /sidebar.html');
   assert(robotsContent.includes('sitemap.xml'), 'Robots must link to sitemap.xml');
+  assert(robotsContent.includes('/learning-hub'), 'Robots must allow /learning-hub');
+  assert(robotsContent.includes('/arena'), 'Robots must allow /arena');
+  assert(robotsContent.includes('/chat'), 'Robots must allow /chat');
 });
 
 // 5. Verify Authenticated and Private Pages have noindex robots directives or auth redirects

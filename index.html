@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-<title>Learning Allied — AI Study Partner for JEE, NEET & Board Exams</title>
-<meta name="description" content="Learning Allied is an AI study partner for Indian students preparing for JEE, NEET and Board exams. AI tutor, spaced review, active recall, chapter-wise practice quizzes and personalized study plans." />
+<title>Learning Allied — Premium AI Study Partner for JEE, NEET & Board Exams</title>
+<meta name="description" content="Learning Allied is an AI study partner for Indian students preparing for JEE, NEET and Board exams. Socratic tutoring, active recall, prerequisite mapping, misconception diagnosis, and spaced revision." />
 <meta name="author" content="Prem Jain" />
 <meta name="publisher" content="Learning Allied" />
 <meta name="robots" content="index, follow, max-image-preview:large" />
@@ -12,11 +12,10 @@
 <meta name="theme-color" content="#0a0a0b" media="(prefers-color-scheme: dark)" />
 <meta name="theme-color" content="#fafaf9" media="(prefers-color-scheme: light)" />
 <link rel="canonical" href="https://www.learningallied.world/" />
-<meta property="og:title" content="Learning Allied — AI Study Partner for JEE, NEET & Board Exams" />
-<meta property="og:description" content="Learning Allied is an AI study partner for Indian students preparing for JEE, NEET and Board exams. AI tutor, spaced review, active recall, chapter-wise practice quizzes and personalized study plans." />
+<meta property="og:title" content="Learning Allied — Premium AI Study Partner for JEE, NEET & Board Exams" />
+<meta property="og:description" content="Learning Allied is an AI study partner for Indian students preparing for JEE, NEET and Board exams. Socratic tutoring, active recall, prerequisite mapping, misconception diagnosis, and spaced revision." />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://www.learningallied.world/" />
-<!-- TODO: replace this SVG with a 1200x630 PNG/JPG. Most social platforms ignore SVG og:images. -->
 <meta property="og:image" content="https://www.learningallied.world/learningallied-white.svg" />
 <meta property="og:image:width" content="512" />
 <meta property="og:image:height" content="512" />
@@ -24,182 +23,54 @@
 <meta property="og:site_name" content="Learning Allied" />
 <meta property="og:locale" content="en_IN" />
 <meta name="twitter:card" content="summary" />
-<meta name="twitter:title" content="Learning Allied — AI Study Partner for JEE, NEET & Board Exams" />
+<meta name="twitter:title" content="Learning Allied — Premium AI Study Partner for JEE, NEET & Board Exams" />
 <meta name="twitter:description" content="Learning Allied is an AI study partner for Indian students preparing for JEE, NEET and Board exams." />
 <meta name="twitter:image" content="https://www.learningallied.world/learningallied-white.svg" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap" />
 <link rel="stylesheet" href="/css/tokens.css" />
 <link rel="stylesheet" href="/css/base.css" />
 <link rel="stylesheet" href="/css/nav.css" />
+<link rel="stylesheet" href="/css/landing-premium.css" />
 <link rel="icon" type="image/svg+xml" href="/learningallied-white.svg" />
 <link rel="shortcut icon" href="/favicon.ico" />
 <style>
-/* Theme tokens (prefixed so they never collide with /css/tokens.css) */
 :root{
-  --la-bg:#000000; --la-surface:#111113; --la-surface-2:#17171a;
+  --la-bg:#000000; --la-surface:#0a0a0c; --la-surface-2:#121215;
   --la-line:rgba(255,255,255,.09); --la-line-strong:rgba(255,255,255,.16);
-  --la-text:#f4f4f5; --la-muted:#a1a1aa; --la-faint:#71717a;
-  --la-accent:#6b95ff; --la-accent-ink:#0a0a0b; --la-accent-soft:rgba(107,149,255,.14);
-  --la-ok:#4ade80; --la-warn:#fbbf24;
-  --la-r:14px; --la-r-sm:10px;
+  --la-text:#ffffff; --la-muted:#a1a1aa; --la-faint:#71717a;
+  --la-accent:#3b82f6; --la-accent-ink:#ffffff; --la-accent-soft:rgba(59,130,246,.12);
+  --la-ok:#10b981; --la-warn:#f59e0b;
   --la-font:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  --font-display:'Space Grotesk',var(--la-font);
+  --font-mono:'JetBrains Mono',monospace;
 }
 .light-mode{
   --la-bg:#ffffff; --la-surface:#ffffff; --la-surface-2:#f5f5f5;
   --la-line:rgba(0,0,0,.09); --la-line-strong:rgba(0,0,0,.18);
-  --la-text:#18181b; --la-muted:#52525b; --la-faint:#71717a;
-  --la-accent:#2c55d4; --la-accent-ink:#ffffff; --la-accent-soft:rgba(44,85,212,.09);
-  --la-ok:#15803d; --la-warn:#b45309;
+  --la-text:#0a0a0a; --la-muted:#525252; --la-faint:#737373;
+  --la-accent:#2563eb; --la-accent-ink:#ffffff; --la-accent-soft:rgba(37,99,235,.08);
+  --la-ok:#16a34a; --la-warn:#d97706;
 }
 *{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth;scroll-padding-top:88px;-webkit-text-size-adjust:100%}
 body{background:var(--la-bg);color:var(--la-text);font-family:var(--la-font);line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:hidden;min-height:100vh}
-h1,h2,h3{font-family:'Space Grotesk',var(--la-font)}
+h1,h2,h3{font-family:var(--font-display)}
 a{color:inherit;text-decoration:none}
 img{display:block;max-width:100%}
 :focus-visible{outline:2px solid var(--la-accent);outline-offset:3px;border-radius:6px}
-.sr-only{position:absolute;width:1px;height:1px;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
-.wrap{max-width:1160px;margin:0 auto;padding:0 24px}
-@keyframes spin{to{transform:rotate(360deg)}}
-
-/* Skip link */
-.skip-link{position:fixed;top:10px;left:10px;z-index:10000;padding:10px 16px;border-radius:var(--la-r-sm);background:var(--la-text);color:var(--la-bg);font:600 13px/1 var(--la-font);transform:translateY(-160%);transition:transform .2s}
+.skip-link{position:fixed;top:10px;left:10px;z-index:10000;padding:10px 16px;border-radius:8px;background:var(--la-text);color:var(--la-bg);font:600 13px/1 var(--la-font);transform:translateY(-160%);transition:transform .2s}
 .skip-link:focus-visible{transform:none}
-
-/* Buttons */
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;font:600 14px/1 var(--la-font);padding:12px 20px;border-radius:var(--la-r-sm);border:1px solid transparent;cursor:pointer;transition:background .2s,border-color .2s,transform .2s,filter .2s}
-.btn-primary{background:var(--la-accent);color:var(--la-accent-ink)}
-.btn-primary:hover{filter:brightness(1.08);transform:translateY(-1px)}
-.btn-secondary{background:transparent;color:var(--la-text);border-color:var(--la-line-strong)}
-.btn-secondary:hover{background:var(--la-surface-2)}
-.btn-lg{padding:15px 26px;font-size:15px}
-.btn-quiet{font:500 14px var(--la-font);color:var(--la-muted);padding:10px 14px;border-radius:var(--la-r-sm);transition:color .2s}
-.btn-quiet:hover{color:var(--la-text)}
-
-/* Navbar */
-.navbar{position:fixed;top:12px;left:50%;transform:translateX(-50%);width:calc(100% - 32px);max-width:1160px;height:60px;padding:0 10px 0 18px;display:flex;align-items:center;justify-content:space-between;z-index:100;border:1px solid transparent;border-radius:16px;transition:background .3s,border-color .3s,backdrop-filter .3s}
-.navbar.scrolled{background:color-mix(in srgb,var(--la-bg) 82%,transparent);border-color:var(--la-line);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px)}
-.logo{display:flex;align-items:center;gap:10px;font-weight:600;font-size:16px;letter-spacing:-.01em}
+.navbar{position:fixed;top:12px;left:50%;transform:translateX(-50%);width:calc(100% - 32px);max-width:1200px;height:62px;padding:0 12px 0 20px;display:flex;align-items:center;justify-content:space-between;z-index:100;border:1px solid rgba(255,255,255,.08);border-radius:16px;background:rgba(10,10,12,.82);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);transition:background .3s,border-color .3s}
+.light-mode .navbar{background:rgba(255,255,255,.86);border-color:rgba(0,0,0,.08)}
+.logo{display:flex;align-items:center;gap:10px;font-weight:700;font-size:16px;letter-spacing:-.015em}
 .logo-img{height:28px;width:auto}
 .nav-links{display:flex;gap:24px;font-size:14px;color:var(--la-muted)}
 .nav-links a{transition:color .2s}
 .nav-links a:hover{color:var(--la-text)}
-.nav-actions{display:flex;align-items:center;gap:6px}
-@media(max-width:880px){.nav-links{display:none}.navbar{padding-right:60px}}
-@media(max-width:480px){.nav-actions .btn-quiet{display:none}}
-
-/* Hero */
-.hero{padding:150px 0 72px}
-.hero-grid{display:grid;grid-template-columns:1fr 1.05fr;gap:56px;align-items:center}
-.hero h1{font-size:clamp(38px,5.4vw,64px);line-height:1.04;letter-spacing:-.035em;font-weight:700;margin-bottom:22px}
-.hero-sub{font-size:18px;color:var(--la-muted);max-width:480px;margin-bottom:32px}
-.hero-ctas{display:flex;flex-wrap:wrap;gap:12px}
-.hero-note{margin-top:18px;font-size:13px;color:var(--la-faint)}
-.hero-anim{animation:rise .7s cubic-bezier(.16,1,.3,1) both}
-.hero-anim.d2{animation-delay:.12s}
-@keyframes rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
-@media(max-width:940px){.hero{padding-top:120px}.hero-grid{grid-template-columns:1fr;gap:44px}}
-@media(max-width:520px){.hero{padding-top:96px;padding-bottom:56px}.hero-ctas .btn{width:100%}}
-@media(max-width:480px){.wrap{padding:0 16px}}
-
-/* Product preview (illustrative composition; replace with real screenshot when available) */
-.app{background:var(--la-surface);border:1px solid var(--la-line-strong);border-radius:18px;overflow:hidden;box-shadow:0 30px 60px -30px rgba(0,0,0,.55)}
-.app-bar{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:1px solid var(--la-line);font-size:12.5px;color:var(--la-faint)}
-.app-dots{display:flex;gap:6px}.app-dots i{width:8px;height:8px;border-radius:50%;background:var(--la-line-strong)}
-.app-body{display:grid;grid-template-columns:1.25fr 1fr}
-.pane{padding:18px}
-.pane+.pane{border-left:1px solid var(--la-line)}
-.pane h3{font-size:12.5px;font-weight:600;color:var(--la-muted);margin-bottom:14px}
-.msg{font-size:13px;line-height:1.55;padding:10px 12px;border-radius:12px;margin-bottom:10px;max-width:92%}
-.msg.you{background:var(--la-accent-soft);margin-left:auto;border-bottom-right-radius:4px}
-.msg.ai{background:var(--la-surface-2);border-bottom-left-radius:4px}
-.topic{margin-bottom:14px}
-.topic-row{display:flex;justify-content:space-between;font-size:12.5px;margin-bottom:6px}
-.topic-row span:last-child{color:var(--la-faint)}
-.meter{height:6px;border-radius:99px;background:var(--la-surface-2);overflow:hidden}
-.meter b{display:block;height:100%;width:0;border-radius:99px;background:var(--la-accent);transition:width 1.1s cubic-bezier(.16,1,.3,1) .3s}
-.is-visible .meter b,.hero .meter b{width:var(--w)}
-.meter b.warn{background:var(--la-warn)}
-@media(max-width:560px){.app-body{grid-template-columns:1fr}.pane+.pane{border-left:0;border-top:1px solid var(--la-line)}}
-
-/* Sections */
-.section{padding:104px 0}
-.section-head{max-width:620px;margin-bottom:56px}
-.section-head h2{font-size:clamp(28px,3.6vw,40px);line-height:1.12;letter-spacing:-.03em;font-weight:700;margin-bottom:14px}
-.section-head p{font-size:17px;color:var(--la-muted)}
-@media(max-width:640px){.section{padding:72px 0}.section-head{margin-bottom:40px}}
-@media(max-width:520px){.section{padding:56px 0}}
-
-/* Capabilities: ruled list, not cards */
-.cap-list{border-top:1px solid var(--la-line)}
-.cap{display:grid;grid-template-columns:280px 1fr;gap:32px;padding:30px 0;border-bottom:1px solid var(--la-line)}
-.cap h3{font-size:18px;font-weight:600;letter-spacing:-.015em}
-.cap p{color:var(--la-muted);font-size:15.5px;max-width:620px}
-.cap small{display:block;margin-top:8px;font-size:12.5px;color:var(--la-faint)}
-@media(max-width:760px){.cap{grid-template-columns:1fr;gap:8px;padding:24px 0}}
-
-/* Exam support */
-.split{display:grid;grid-template-columns:1fr 1fr;gap:24px}
-.panel{background:var(--la-surface);border:1px solid var(--la-line);border-radius:var(--la-r);padding:32px;transition:border-color .25s}
-.panel:hover{border-color:var(--la-line-strong)}
-.panel h3{font-size:20px;letter-spacing:-.02em;margin-bottom:10px}
-.panel p{color:var(--la-muted);font-size:15.5px;margin-bottom:20px}
-.link{font-size:14px;font-weight:600;color:var(--la-accent)}
-.link:hover{text-decoration:underline;text-underline-offset:3px}
-@media(max-width:760px){.split{grid-template-columns:1fr}.panel{padding:26px}}
-
-/* Exam guide links (real internal links for visitors and Google) */
-.guide-links{border-top:1px solid var(--la-line)}
-.guide-links a{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:13px 0;border-bottom:1px solid var(--la-line);font-size:15px;font-weight:500;color:var(--la-text);transition:color .2s}
-.guide-links a svg{width:16px;height:16px;flex-shrink:0;color:var(--la-faint);transition:color .2s,transform .2s}
-.guide-links a:hover{color:var(--la-accent)}
-.guide-links a:hover svg{color:var(--la-accent);transform:translateX(3px)}
-
-/* Who's behind it */
-.founder{display:flex;align-items:center;justify-content:space-between;gap:28px 40px;flex-wrap:wrap}
-.founder-copy{max-width:560px}
-.founder-copy h2{font-size:clamp(24px,3vw,32px);line-height:1.15;letter-spacing:-.03em;font-weight:700;margin-bottom:10px}
-.founder-copy p{color:var(--la-muted);font-size:16px}
-.founder .hero-ctas{flex-shrink:0}
-@media(max-width:640px){.founder .hero-ctas,.founder .hero-ctas .btn{width:100%}}
-
-/* FAQ */
-.faq-list{max-width:760px;border-top:1px solid var(--la-line)}
-.faq-item{border-bottom:1px solid var(--la-line)}
-.faq-q{width:100%;display:flex;justify-content:space-between;align-items:center;gap:16px;padding:22px 0;background:none;border:0;color:var(--la-text);font:600 16px/1.4 var(--la-font);text-align:left;cursor:pointer}
-.faq-chev{width:18px;height:18px;flex-shrink:0;color:var(--la-faint);transition:transform .3s}
-.faq-item.open .faq-chev{transform:rotate(180deg)}
-.faq-body{display:grid;grid-template-rows:0fr;transition:grid-template-rows .3s}
-.faq-item.open .faq-body{grid-template-rows:1fr}
-.faq-body-inner{overflow:hidden;color:var(--la-muted);font-size:15px}
-.faq-item.open .faq-body-inner{padding-bottom:22px}
-
-/* CTA */
-.cta{background:var(--la-accent-soft);border:1px solid var(--la-line);border-radius:22px;padding:72px 32px;text-align:center}
-.cta h2{font-size:clamp(28px,4vw,42px);letter-spacing:-.03em;line-height:1.1;margin-bottom:14px}
-.cta p{color:var(--la-muted);font-size:17px;max-width:440px;margin:0 auto 30px}
-.cta .hero-ctas{justify-content:center}
-
-/* Footer */
-.site-footer{border-top:1px solid var(--la-line);padding:56px 0 36px;margin-top:104px}
-.footer-grid{display:grid;grid-template-columns:1.5fr repeat(4,1fr);gap:36px;margin-bottom:44px}
-.footer-brand p{color:var(--la-muted);font-size:14px;max-width:280px;margin-top:12px}
-.footer-col h4{font-size:13px;font-weight:600;margin-bottom:14px}
-.footer-col a{display:block;font-size:14px;color:var(--la-muted);margin-bottom:10px;transition:color .2s}
-.footer-col a:hover{color:var(--la-text)}
-.footer-bottom{display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;padding-top:24px;border-top:1px solid var(--la-line);font-size:13px;color:var(--la-faint)}
-@media(max-width:900px){.footer-grid{grid-template-columns:1fr 1fr 1fr}.footer-brand{grid-column:1/-1}}
-@media(max-width:560px){.footer-grid{grid-template-columns:1fr 1fr}}
-
-/* Reveal: content stays visible without JS */
-.js .reveal{opacity:0;transform:translateY(16px);transition:opacity .6s,transform .6s cubic-bezier(.16,1,.3,1)}
-.js .reveal.is-visible{opacity:1;transform:none}
-@media(prefers-reduced-motion:reduce){
-  *,*::before,*::after{animation-duration:.01ms!important;animation-delay:0s!important;transition-duration:.01ms!important;scroll-behavior:auto!important}
-  .js .reveal{opacity:1;transform:none}
-}
+.nav-actions{display:flex;align-items:center;gap:8px}
+@media(max-width:880px){.nav-links{display:none}}
 </style>
 </head>
 <body>
@@ -216,11 +87,10 @@ import { auth } from "./firebase-config.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 import { applyCleanUrlLinks } from "./api-base.js";
 
-// Vercel serves clean URLs (/blog/...) via rewrites; Live Server needs the real file.
 applyCleanUrlLinks();
 const loading = document.getElementById("authLoading");
 const hide = () => { if (loading) loading.style.display = "none"; };
-setTimeout(hide, 2500);
+setTimeout(hide, 2000);
 try {
   onAuthStateChanged(auth, (user) => {
     if (user) { window.location.replace("home.html"); } else { hide(); }
@@ -228,7 +98,7 @@ try {
 } catch (e) { hide(); }
 </script>
 
-<!-- Mobile menu (ids and classes are used by nav.js / css/nav.css) -->
+<!-- Mobile menu -->
 <button class="mnav-btn" id="mnavBtn" aria-label="Open menu" aria-expanded="false">
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
 </button>
@@ -239,17 +109,19 @@ try {
     <button class="mnav-close" id="mnavClose" aria-label="Close menu">✕</button>
   </div>
   <div class="mnav-links">
-    <div class="mnav-label">Explore</div>
-    <a href="#features">How it works</a>
-    <a href="#exams">Exam support</a>
-    <a href="#faq">FAQ</a>
+    <div class="mnav-label">Exams &amp; Curricula</div>
+    <a href="/jee-preparation">JEE Main &amp; Advanced</a>
+    <a href="/neet-preparation">NEET UG Medical</a>
+    <a href="/cbse-board">CBSE Class 9–12</a>
+    <a href="/maharashtra-board">Maharashtra State Board</a>
     <div class="mnav-label">Company</div>
-    <a href="/about">About Learning Allied</a>
-    <a href="/founder">Meet the founder</a>
-    <div class="mnav-label">Get started</div>
-    <a class="mnav-cta" href="signup.html">Start learning free</a>
-    <a class="mnav-ghost" href="login.html">Log in</a>
-    <a class="mnav-ghost" href="https://github.com/premjain230/Mentora/releases/download/v1.1.0/learningallied.apk">Download for Android</a>
+    <a href="/about">Educational Philosophy</a>
+    <a href="/founder">Meet the Founder</a>
+    <a href="/blog/how-to-make-a-jee-study-plan">JEE Study Guide</a>
+    <div class="mnav-label">Start Studying</div>
+    <a class="mnav-cta" href="signup.html">Start Learning Free</a>
+    <a class="mnav-ghost" href="login.html">Student Login</a>
+    <a class="mnav-ghost" href="https://github.com/premjain230/Mentora/releases/download/v1.1.0/learningallied.apk">Download Android APK</a>
   </div>
 </nav>
 
@@ -260,312 +132,410 @@ try {
       <span>Learning Allied</span>
     </a>
     <div class="nav-links">
-      <a href="#features">How it works</a>
-      <a href="#exams">Exam support</a>
-      <a href="#faq">FAQ</a>
-      <a href="/about">About</a>
+      <a href="/jee-preparation">JEE</a>
+      <a href="/neet-preparation">NEET</a>
+      <a href="/cbse-board">CBSE</a>
+      <a href="/maharashtra-board">Maharashtra</a>
+      <a href="/about">Philosophy</a>
       <a href="/founder">Founder</a>
+      <a href="/blog/how-to-make-a-jee-study-plan">Blog</a>
     </div>
     <div class="nav-actions">
-      <a class="btn-quiet" href="login.html">Log in</a>
-      <a class="btn btn-primary" href="signup.html">Get started</a>
+      <a class="prem-btn prem-btn-secondary" style="padding:8px 16px;font-size:13px;" href="login.html">Log in</a>
+      <a class="prem-btn prem-btn-primary" style="padding:8px 18px;font-size:13px;" href="signup.html">Start free</a>
     </div>
   </nav>
 </header>
 
-<main id="main">
-  <section class="hero" aria-labelledby="hero-heading">
-    <div class="wrap hero-grid">
-      <div>
-        <h1 id="hero-heading" class="hero-anim">Study less time. Remember more of it.</h1>
-        <p class="hero-sub hero-anim d2">Learning Allied is an AI study partner for JEE, NEET and Board exam students. It asks you questions, schedules your revision, and shows you what you're about to forget.</p>
-        <div class="hero-ctas hero-anim d2">
-          <a class="btn btn-primary btn-lg" href="signup.html">Start learning free</a>
-          <a class="btn btn-secondary btn-lg" href="#features">See how it works</a>
+<main id="main" class="landing-root">
+  <!-- ── HERO SECTION ── -->
+  <section class="prem-hero" aria-labelledby="hero-heading">
+    <div class="landing-wrap">
+      <div class="prem-hero-intro">
+        <div class="prem-badge">
+          <span class="prem-badge-tag">Cognitive AI</span>
+          <span>Designed from neuroscience for serious Indian exam prep</span>
         </div>
-        <p class="hero-note hero-anim d2">Free to start. Also available on <a class="link" href="https://github.com/premjain230/Mentora/releases/download/v1.1.0/learningallied.apk" aria-label="Download the Learning Allied Android app">Android</a>.</p>
+
+        <h1 id="hero-heading" class="prem-hero-title">
+          Master the concept.<br />
+          <span class="accent-blue">Not just the answer.</span>
+        </h1>
+
+        <p class="prem-hero-lede">
+          Learning Allied is a Socratic AI study partner for JEE, NEET, and Board
+          examinations. Instead of spoon-feeding answers, it prompts your reasoning,
+          diagnoses misconceptions, and schedules recall before memory decays.
+        </p>
+
+        <div class="prem-hero-actions">
+          <a href="signup.html" class="prem-btn prem-btn-primary">
+            <span>Start Learning Free</span>
+            <svg viewBox="0 0 16 16" fill="none" class="prem-btn-icon" aria-hidden="true"><path d="M3.5 8h9M8.8 4.3 12.5 8l-3.7 3.7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </a>
+          <a href="#platform-tour" class="prem-btn prem-btn-secondary">
+            <span>Explore the Platform</span>
+          </a>
+        </div>
+
+        <div class="prem-hero-trust-bar">
+          <span>Free to start</span>
+          <i class="sep" aria-hidden="true"></i>
+          <span>No credit card required</span>
+          <i class="sep" aria-hidden="true"></i>
+          <span>NTA JEE &amp; NEET aligned</span>
+          <i class="sep" aria-hidden="true"></i>
+          <span>Also on <a href="https://github.com/premjain230/Mentora/releases/download/v1.1.0/learningallied.apk">Android</a></span>
+        </div>
       </div>
 
-      <div class="app is-visible hero-anim d2" role="img" aria-label="Preview of a Learning Allied study session: a tutor conversation next to memory strength for each topic">
-        <div class="app-bar"><div class="app-dots"><i></i><i></i><i></i></div><span>Study session</span><span></span></div>
-        <div class="app-body">
-          <div class="pane">
-            <h3>Tutor</h3>
-            <div class="msg you">Why does a heavier object not fall faster?</div>
-            <div class="msg ai">Good question. Before I explain: what force pulls on each object, and what does the mass do in Newton's second law?</div>
-            <div class="msg you">Gravity scales with mass, but so does inertia…</div>
-            <div class="msg ai">Exactly. So what happens to the acceleration?</div>
+      <!-- Static Code-Built Demonstration Shell -->
+      <div class="prem-demo-container">
+        <div class="prem-app-window">
+          <div class="prem-app-topbar">
+            <div class="prem-app-dots" aria-hidden="true"><i></i><i></i><i></i></div>
+            <div class="prem-app-title">
+              <span>Socratic Workbench</span>
+              <span class="curr-tag">NCERT Class 11 · Physics Ch 6</span>
+            </div>
+            <div class="prem-app-status"><i></i> Live Lesson</div>
           </div>
-          <div class="pane">
-            <h3>Memory strength</h3>
-            <div class="topic"><div class="topic-row"><span>Newton's laws</span><span>Strong</span></div><div class="meter"><b style="--w:88%"></b></div></div>
-            <div class="topic"><div class="topic-row"><span>Rotational motion</span><span>Review soon</span></div><div class="meter"><b class="warn" style="--w:46%"></b></div></div>
-            <div class="topic"><div class="topic-row"><span>Work and energy</span><span>Strong</span></div><div class="meter"><b style="--w:72%"></b></div></div>
+
+          <div class="prem-demo-grid">
+            <div class="prem-demo-main">
+              <div class="prem-chat-thread">
+                <div class="prem-chat-bubble prem-chat-student">
+                  <div class="prem-bubble-sender">Student Question</div>
+                  <span>&ldquo;A coolie carries a 40 kg suitcase across a 50m platform. Why is mechanical work 0 J if he feels exhausted?&rdquo;</span>
+                </div>
+                <div class="prem-chat-bubble prem-chat-tutor">
+                  <div class="prem-bubble-sender">Learning Allied AI Tutor</div>
+                  <span><strong>First principles:</strong> Mechanical work requires displacement along the force vector: <code>W = F · d · cos(90°) = 0 J</code>. Muscular fatigue is biochemical ATP consumption, not mechanical work.</span>
+                </div>
+              </div>
+
+              <div class="prem-sim-card">
+                <div class="prem-sim-head">
+                  <span class="prem-sim-title">Vector Breakdown (θ = 90°)</span>
+                </div>
+                <div class="prem-sim-canvas-wrap">
+                  <svg class="prem-sim-svg" viewBox="0 0 500 130" fill="none">
+                    <line x1="20" y1="110" x2="480" y2="110" stroke="rgba(255,255,255,0.1)" stroke-width="1" stroke-dasharray="4 4" />
+                    <rect x="210" y="55" width="80" height="50" rx="6" fill="#17171c" stroke="#3b82f6" stroke-width="1.5" />
+                    <text x="250" y="85" text-anchor="middle" fill="#f4f4f5" font-size="12" font-weight="600">m = 40 kg</text>
+                    <line x1="250" y1="55" x2="250" y2="18" stroke="#3b82f6" stroke-width="2.5" />
+                    <polygon points="250,12 245,22 255,22" fill="#3b82f6" />
+                    <text x="262" y="32" fill="#60a5fa" font-size="11" font-weight="700" font-family="monospace">F(lift) = 400 N ↑</text>
+                    <line x1="250" y1="80" x2="390" y2="80" stroke="#06b6d4" stroke-width="2.5" stroke-dasharray="4 2" />
+                    <polygon points="396,80 386,75 386,85" fill="#06b6d4" />
+                    <text x="330" y="72" fill="#22d3ee" font-size="11" font-weight="700" font-family="monospace">d = 50 m →</text>
+                    <path d="M 264 80 L 264 68 L 250 68" fill="none" stroke="#eab308" stroke-width="1.5" />
+                    <text x="270" y="64" fill="#facc15" font-size="11" font-weight="700">θ = 90°</text>
+                  </svg>
+                </div>
+                <div class="prem-sim-formula-bar">
+                  <span class="math">W = 400 N · 50 m · cos(90°) = 0 J</span>
+                  <span class="result">Work: 0 Joules</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="prem-demo-sidebar">
+              <div class="prem-side-panel">
+                <span class="prem-side-title">Memory Strength (Decay Model)</span>
+                <div class="prem-meter-card">
+                  <div class="prem-meter-head"><strong>Work-Energy Theorem</strong><span class="val ok">94% Solid</span></div>
+                  <div class="prem-meter-bar"><div class="prem-meter-fill ok" style="width:94%"></div></div>
+                </div>
+                <div class="prem-meter-card">
+                  <div class="prem-meter-head"><strong>Rotational Dynamics</strong><span class="val warn">48% Fading</span></div>
+                  <div class="prem-meter-bar"><div class="prem-meter-fill warn" style="width:48%"></div></div>
+                </div>
+              </div>
+              <div class="prem-side-panel">
+                <span class="prem-side-title">Daily Spaced Queue</span>
+                <div class="prem-decay-card">
+                  <p><strong>Scheduled Recall:</strong> Rotational Dynamics approaching 50% decay threshold. Review today (12 min).</p>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
     </div>
   </section>
 
-  <section class="section" id="features" aria-labelledby="features-heading" style="padding-top:56px">
-    <div class="wrap">
-      <div class="section-head reveal">
-        <span id="science"></span>
-        <h2 id="features-heading">Built around how memory actually works</h2>
-        <p>Reading a chapter again feels productive, but it's a weak way to learn. Learning Allied uses methods with decades of research behind them.</p>
+  <!-- ── 6-STAGE COGNITIVE STORYTELLING ── -->
+  <section id="platform-tour" class="prem-section" aria-labelledby="story-heading">
+    <div class="landing-wrap">
+      <div class="prem-section-header">
+        <div class="prem-eyebrow"><span class="dot"></span><span>Cognitive Architecture</span></div>
+        <h2 id="story-heading" class="prem-heading">How students move from confusion to <span class="accent-blue">mastery</span>.</h2>
+        <p class="prem-lede">Understand → Explain → Practice → Evaluate → Improve → Remember. Each phase is grounded in decades of cognitive neuroscience research.</p>
       </div>
-      <div class="cap-list">
-        <div class="cap reveal"><h3>Socratic tutor</h3><div><p>The tutor asks what you think before it explains. Working out an answer yourself helps it stick.</p><small>Generation effect, Slamecka &amp; Graf, 1978</small></div></div>
-        <div class="cap reveal"><h3>Spaced review</h3><div><p>Revision is scheduled for just before you'd forget a topic, so you review less often and keep more.</p><small>Forgetting curve, Ebbinghaus, 1885</small></div></div>
-        <div class="cap reveal"><h3>Active recall</h3><div><p>Quizzes and questions make you pull answers from memory, which strengthens it more than rereading.</p><small>Retrieval practice, Roediger &amp; Butler, 2011</small></div></div>
-        <div class="cap reveal"><h3>Memory strength</h3><div><p>See how well you remember each concept and which ones are fading, so you know what to revise today.</p></div></div>
-        <div class="cap reveal"><h3>Confidence tracking</h3><div><p>Compare how sure you felt with how you actually did. Knowing the gap helps you study the right things.</p><small>Metacognition, Flavell, 1979</small></div></div>
-        <div class="cap reveal"><h3>Prerequisites first</h3><div><p>Concepts are linked to the basics they depend on, so you don't build advanced topics on shaky ground.</p></div></div>
-      </div>
-    </div>
-  </section>
 
-  <section class="section" id="how-to-use" aria-labelledby="how-heading" style="padding-top:24px;padding-bottom:24px">
-    <div class="wrap">
-      <div class="section-head reveal">
-        <h2 id="how-heading">How to get started</h2>
-        <p>Four steps from sign-up to your first study session.</p>
-      </div>
-      <ol class="steps-list reveal" style="list-style:none;display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:24px;counter-reset:step">
-        <li style="counter-increment:step">
-          <div class="step-num" style="font:700 13px/1 'Space Grotesk',var(--la-font);color:var(--la-accent);margin-bottom:10px;letter-spacing:.06em">STEP <span style="font-size:22px">01</span></div>
-          <h3 style="font-size:16px;font-weight:600;margin-bottom:6px">Sign up free</h3>
-          <p style="font-size:14px;color:var(--la-muted);line-height:1.55">Create your account in seconds — no card required.</p>
-        </li>
-        <li style="counter-increment:step">
-          <div class="step-num" style="font:700 13px/1 'Space Grotesk',var(--la-font);color:var(--la-accent);margin-bottom:10px;letter-spacing:.06em">STEP <span style="font-size:22px">02</span></div>
-          <h3 style="font-size:16px;font-weight:600;margin-bottom:6px">Pick your exam and subjects</h3>
-          <p style="font-size:14px;color:var(--la-muted);line-height:1.55">Choose JEE, NEET, or Board exams and select your active chapters.</p>
-        </li>
-        <li style="counter-increment:step">
-          <div class="step-num" style="font:700 13px/1 'Space Grotesk',var(--la-font);color:var(--la-accent);margin-bottom:10px;letter-spacing:.06em">STEP <span style="font-size:22px">03</span></div>
-          <h3 style="font-size:16px;font-weight:600;margin-bottom:6px">Ask questions and study with AI</h3>
-          <p style="font-size:14px;color:var(--la-muted);line-height:1.55">Chat with the Socratic tutor, work through problems, and deepen your understanding.</p>
-        </li>
-        <li style="counter-increment:step">
-          <div class="step-num" style="font:700 13px/1 'Space Grotesk',var(--la-font);color:var(--la-accent);margin-bottom:10px;letter-spacing:.06em">STEP <span style="font-size:22px">04</span></div>
-          <h3 style="font-size:16px;font-weight:600;margin-bottom:6px">Review with spaced repetition</h3>
-          <p style="font-size:14px;color:var(--la-muted);line-height:1.55">The app schedules revision for just before you'd forget a topic, so you keep more with less effort.</p>
-        </li>
-      </ol>
-    </div>
-  </section>
-  <section class="section" id="exams" aria-labelledby="exams-heading" style="padding-top:24px">
-    <div class="wrap">
-      <div class="section-head reveal">
-        <h2 id="exams-heading">Made for Indian exam preparation</h2>
-        <p>Plan your syllabus, practise with quizzes, and get help in the same place, whether you're preparing for JEE, NEET or your Board exams.</p>
-      </div>
-      <div class="split">
-        <div class="panel reveal">
-          <h3>Study plan and quizzes</h3>
-          <p>Turn your syllabus into a schedule, then test yourself as you go. Your progress feeds back into what you review next.</p>
-          <a class="link" href="signup.html">Create a free account</a>
+      <div class="prem-trust-grid">
+        <div class="prem-trust-panel capabilities">
+          <h3 class="prem-trust-panel-title ok">01. Socratic Understand &amp; Explain</h3>
+          <p class="prem-trust-panel-sub">Grounded in the Generation Effect (Slamecka &amp; Graf, 1978). Generative cognitive struggle produces enduring neural traces.</p>
+          <ul class="prem-trust-list">
+            <li class="prem-trust-item"><span style="color:#10b981;font-weight:700;">✓</span><div><strong>Prerequisite Knowledge Graph</strong> — traces complex doubts back to foundational gaps.</div></li>
+            <li class="prem-trust-item"><span style="color:#10b981;font-weight:700;">✓</span><div><strong>Never Spoon-Feeds Answers</strong> — scaffolds deductions step-by-step.</div></li>
+          </ul>
         </div>
-        <div class="panel reveal">
-          <h3>Exam preparation guides</h3>
-          <p>Start with the guide for the exam you're sitting.</p>
-          <nav class="guide-links" aria-label="Exam preparation guides">
-            <a href="/jee-preparation">JEE preparation<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></a>
-            <a href="/neet-preparation">NEET preparation<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></a>
-            <a href="/maharashtra-board">Maharashtra Board<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></a>
-            <a href="/cbse-board">CBSE Board<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></a>
-          </nav>
+
+        <div class="prem-trust-panel capabilities">
+          <h3 class="prem-trust-panel-title ok">02. Practice, Evaluate &amp; Remember</h3>
+          <p class="prem-trust-panel-sub">Grounded in Retrieval Practice (Roediger, 2011) and Ebbinghaus Forgetting Decay (1885).</p>
+          <ul class="prem-trust-list">
+            <li class="prem-trust-item"><span style="color:#10b981;font-weight:700;">✓</span><div><strong>Misconception Classification</strong> — pinpoints algebraic slips vs conceptual bugs.</div></li>
+            <li class="prem-trust-item"><span style="color:#10b981;font-weight:700;">✓</span><div><strong>Spaced Decay Scheduling</strong> — prompts active recall just before decay occurs.</div></li>
+          </ul>
         </div>
       </div>
     </div>
   </section>
 
-  <section class="section" id="about" aria-labelledby="about-heading" style="padding-top:24px;padding-bottom:40px">
-    <div class="wrap">
-      <div class="panel founder reveal">
-        <div class="founder-copy">
-          <h2 id="about-heading">Who's behind Learning Allied</h2>
-          <p>Learning Allied is built by Prem Jain, a student entrepreneur. Read what the product is for and who is building it.</p>
+  <!-- ── EXAM TRACKS ── -->
+  <section id="exams" class="prem-section" aria-labelledby="exams-heading">
+    <div class="landing-wrap">
+      <div class="prem-section-header">
+        <div class="prem-eyebrow"><span class="dot"></span><span>Curriculum Precision</span></div>
+        <h2 id="exams-heading" class="prem-heading">Tailored for high-stakes Indian exams.</h2>
+        <p class="prem-lede">Zero off-syllabus trivia. Strictly aligned with official NTA and State Board curriculum specifications.</p>
+      </div>
+
+      <div class="prem-exams-grid">
+        <a href="/jee-preparation" class="prem-exam-card">
+          <div>
+            <div class="prem-exam-head"><span class="prem-exam-badge">Engineering</span></div>
+            <h3 class="prem-exam-title">JEE Main &amp; Advanced</h3>
+            <p class="prem-exam-desc">Rigorous first-principles physics, physical chemistry, and multi-concept mathematics designed for high percentile targets.</p>
+            <div class="prem-exam-topics">
+              <span class="prem-exam-chip">Mechanics</span>
+              <span class="prem-exam-chip">Electromagnetism</span>
+              <span class="prem-exam-chip">Organic Mechanisms</span>
+              <span class="prem-exam-chip">Calculus</span>
+            </div>
+          </div>
+          <span class="prem-exam-link"><span>View JEE preparation guide</span> →</span>
+        </a>
+
+        <a href="/neet-preparation" class="prem-exam-card">
+          <div>
+            <div class="prem-exam-head"><span class="prem-exam-badge">Medical</span></div>
+            <h3 class="prem-exam-title">NEET UG Medical</h3>
+            <p class="prem-exam-desc">High-yield NCERT line-by-line active recall, biological classifications, chemical equilibrium, and numerical physics precision.</p>
+            <div class="prem-exam-topics">
+              <span class="prem-exam-chip">Human Physiology</span>
+              <span class="prem-exam-chip">Genetics</span>
+              <span class="prem-exam-chip">Coordination Chemistry</span>
+              <span class="prem-exam-chip">Optics</span>
+            </div>
+          </div>
+          <span class="prem-exam-link"><span>View NEET preparation guide</span> →</span>
+        </a>
+
+        <a href="/cbse-board" class="prem-exam-card">
+          <div>
+            <div class="prem-exam-head"><span class="prem-exam-badge">National Board</span></div>
+            <h3 class="prem-exam-title">CBSE Class 9–12</h3>
+            <p class="prem-exam-desc">NCERT-aligned curriculum for science and mathematics with step-by-step marking scheme rubrics and descriptive proofs.</p>
+            <div class="prem-exam-topics">
+              <span class="prem-exam-chip">Class 9-10 Foundations</span>
+              <span class="prem-exam-chip">Class 11-12 Core</span>
+              <span class="prem-exam-chip">Exemplar Drills</span>
+            </div>
+          </div>
+          <span class="prem-exam-link"><span>View CBSE preparation guide</span> →</span>
+        </a>
+
+        <a href="/maharashtra-board" class="prem-exam-card">
+          <div>
+            <div class="prem-exam-head"><span class="prem-exam-badge">State Board</span></div>
+            <h3 class="prem-exam-title">Maharashtra State Board</h3>
+            <p class="prem-exam-desc">Balbharati textbook curriculum mapping for SSC Class 10 and HSC Science Class 12 state board examinations.</p>
+            <div class="prem-exam-topics">
+              <span class="prem-exam-chip">Balbharati Syllabus</span>
+              <span class="prem-exam-chip">SSC Question Bank</span>
+              <span class="prem-exam-chip">HSC Physics &amp; Chem</span>
+            </div>
+          </div>
+          <span class="prem-exam-link"><span>View Maharashtra board guide</span> →</span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── HONESTY & LIMITATIONS MATRIX ── -->
+  <section class="prem-section" aria-labelledby="capabilities-heading">
+    <div class="landing-wrap">
+      <div class="prem-section-header">
+        <div class="prem-eyebrow"><span class="dot"></span><span>Honest Transparency</span></div>
+        <h2 id="capabilities-heading" class="prem-heading">What Learning Allied does — and what it does not.</h2>
+        <p class="prem-lede">We believe in genuine trust over marketing hype. Here is an honest, plain-language breakdown.</p>
+      </div>
+
+      <div class="prem-trust-grid">
+        <div class="prem-trust-panel capabilities">
+          <h3 class="prem-trust-panel-title ok">Platform Strengths</h3>
+          <p class="prem-trust-panel-sub">Where Learning Allied provides an unfair cognitive advantage:</p>
+          <ul class="prem-trust-list">
+            <li class="prem-trust-item"><strong>Socratic Scaffolding</strong> — Prompts your reasoning step-by-step.</li>
+            <li class="prem-trust-item"><strong>Prerequisite Knowledge Graph</strong> — Traces foundational gaps.</li>
+            <li class="prem-trust-item"><strong>Misconception Tagging</strong> — Explains why a mistake occurred.</li>
+            <li class="prem-trust-item"><strong>Spaced Repetition</strong> — Models memory decay curves.</li>
+          </ul>
         </div>
-        <div class="hero-ctas">
-          <a class="btn btn-primary" href="/about">About Learning Allied</a>
-          <a class="btn btn-secondary" href="/founder">Meet the founder</a>
+
+        <div class="prem-trust-panel limitations">
+          <h3 class="prem-trust-panel-title neutral">Honest Limitations</h3>
+          <p class="prem-trust-panel-sub">Clear boundaries on what our AI will never claim:</p>
+          <ul class="prem-trust-list">
+            <li class="prem-trust-item"><strong>Does not replace human teachers</strong> — Built for study hours between classes.</li>
+            <li class="prem-trust-item"><strong>Requires effort</strong> — Will not complete homework blindly for you.</li>
+            <li class="prem-trust-item"><strong>Cross-check core textbooks</strong> — Always verify with NCERT &amp; Balbharati.</li>
+            <li class="prem-trust-item"><strong>Constrained from off-syllabus trivia</strong> — Focused purely on exam syllabi.</li>
+          </ul>
         </div>
       </div>
     </div>
   </section>
 
-  <section class="section" id="faq" aria-labelledby="faq-heading" style="padding-top:24px">
-    <div class="wrap">
-      <div class="section-head reveal"><h2 id="faq-heading">Questions, answered plainly</h2></div>
-      <div class="faq-list reveal">
-        <div class="faq-item">
-          <button class="faq-q" aria-expanded="false">Is Learning Allied free to start?
-            <svg class="faq-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg></button>
-          <div class="faq-body"><div class="faq-body-inner">Yes. You can start chatting, build a study plan and join the community at no cost. No card is needed to begin.</div></div>
+  <!-- ── FOUNDER STORY ── -->
+  <section id="founder" class="prem-section" aria-labelledby="founder-heading">
+    <div class="landing-wrap">
+      <div class="prem-founder-card">
+        <div class="prem-founder-grid">
+          <div>
+            <div class="prem-eyebrow"><span class="dot"></span><span>Independent &amp; Student-First</span></div>
+            <blockquote class="prem-founder-quote" id="founder-heading">
+              &ldquo;AI should never rob a student of the struggle to understand.
+              Real mastery is earned through reasoning, not copy-pasting.&rdquo;
+            </blockquote>
+            <p class="prem-founder-body">
+              Learning Allied was created by Prem Jain to eliminate the monopoly of
+              rote-memorization coaching and generic AI answer-dump tools. Built to give
+              every student an affordable, patient personal Socratic mentor.
+            </p>
+            <div class="prem-founder-author">
+              <div class="prem-founder-avatar">PJ</div>
+              <div class="prem-founder-meta">
+                <strong>Prem Jain</strong>
+                <span>Founder &amp; Student Entrepreneur, Learning Allied</span>
+              </div>
+            </div>
+          </div>
+          <div class="prem-founder-links">
+            <a href="/founder" class="prem-founder-link-btn"><span>Read the Founder Story</span> →</a>
+            <a href="/about" class="prem-founder-link-btn"><span>Educational Philosophy</span> →</a>
+            <a href="/blog/how-to-make-a-jee-study-plan" class="prem-founder-link-btn"><span>JEE Study Plan Strategy Guide</span> →</a>
+          </div>
         </div>
-        <div class="faq-item">
-          <button class="faq-q" aria-expanded="false">Does it replace my teacher?
-            <svg class="faq-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg></button>
-          <div class="faq-body"><div class="faq-body-inner">No. Think of it as a study partner that's available between classes. Always check important facts against your textbooks and coursework.</div></div>
-        </div>
-        <div class="faq-item">
-          <button class="faq-q" aria-expanded="false">Can I use it on my phone?
-            <svg class="faq-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg></button>
-          <div class="faq-body"><div class="faq-body-inner">Yes. It works in any modern browser on desktop or mobile, and there is an Android app you can download from this page.</div></div>
-        </div>
-        <div class="faq-item">
-          <button class="faq-q" aria-expanded="false">Which exams does it support?
-            <svg class="faq-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg></button>
-          <div class="faq-body"><div class="faq-body-inner">JEE Main, JEE Advanced, NEET, Maharashtra State Board (Class 9–12) and CBSE (Class 9–12).</div></div>
-        </div>      </div>
+      </div>
     </div>
   </section>
 
-  <section class="wrap reveal" aria-labelledby="cta-heading">
-    <div class="cta">
-      <h2 id="cta-heading">Start your first study session</h2>
-      <p>Create a free account and ask your first question in under a minute.</p>
-      <div class="hero-ctas">
-        <a class="btn btn-primary btn-lg" href="signup.html">Get started</a>
-        <a class="btn btn-secondary btn-lg" href="login.html">Log in</a>
-        <a class="btn btn-secondary btn-lg" href="https://github.com/premjain230/Mentora/releases/download/v1.1.0/learningallied.apk" aria-label="Download the Learning Allied Android app">Download for Android</a>
+  <!-- ── FAQ ── -->
+  <section id="faq" class="prem-section" aria-labelledby="faq-heading">
+    <div class="landing-wrap">
+      <div class="prem-section-header">
+        <div class="prem-eyebrow"><span class="dot"></span><span>FAQ</span></div>
+        <h2 id="faq-heading" class="prem-heading">Questions, answered plainly.</h2>
+        <p class="prem-lede">Everything you need to know about getting started, our pedagogy, and policies.</p>
+      </div>
+
+      <div class="prem-faq-panel">
+        <div class="faq-list">
+          <div class="faq-item" style="padding:16px 0;border-bottom:1px solid var(--la-line);">
+            <div style="font-weight:600;font-size:16px;margin-bottom:8px;">Is Learning Allied free to start?</div>
+            <p style="color:var(--la-muted);font-size:14.5px;">Yes. You can create an account, ask questions, and build a personalized study schedule at zero cost. No credit card is required.</p>
+          </div>
+          <div class="faq-item" style="padding:16px 0;border-bottom:1px solid var(--la-line);">
+            <div style="font-weight:600;font-size:16px;margin-bottom:8px;">How is it different from ChatGPT or other AI chatbots?</div>
+            <p style="color:var(--la-muted);font-size:14.5px;">Standard chatbots dump final answers, creating an illusion of competence. Learning Allied uses Socratic questioning, prerequisite diagnosis, curriculum-grounded quizzes, and Ebbinghaus spaced revision.</p>
+          </div>
+          <div class="faq-item" style="padding:16px 0;border-bottom:1px solid var(--la-line);">
+            <div style="font-weight:600;font-size:16px;margin-bottom:8px;">Does it replace my teachers or coaching institute?</div>
+            <p style="color:var(--la-muted);font-size:14.5px;">No. Learning Allied is designed to be your 24/7 personal study partner for the hours between classes. It patiently answers late-night doubts and drills chapter-wise recall.</p>
+          </div>
+          <div class="faq-item" style="padding:16px 0;">
+            <div style="font-weight:600;font-size:16px;margin-bottom:8px;">How is student privacy protected?</div>
+            <p style="color:var(--la-muted);font-size:14.5px;">We strictly adhere to India's DPDP Act 2023. We never sell student data, we host no third-party ad trackers, and your queries remain private.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── FINAL CONVERSION CTA ── -->
+  <section class="prem-section" style="border-bottom:none;" aria-labelledby="cta-heading">
+    <div class="landing-wrap">
+      <div class="prem-final-cta">
+        <div class="prem-eyebrow"><span class="dot"></span><span>Begin Your Journey</span></div>
+        <h2 id="cta-heading" class="prem-final-cta-title">Start your first Socratic study session today.</h2>
+        <p class="prem-final-cta-lede">Create a free account in under 30 seconds. Ask your toughest concept question and experience genuine understanding.</p>
+        <div class="prem-final-cta-actions">
+          <a href="signup.html" class="prem-btn prem-btn-primary"><span>Start Learning Free</span> →</a>
+          <a href="login.html" class="prem-btn prem-btn-secondary"><span>Student Login</span></a>
+          <a href="https://github.com/premjain230/Mentora/releases/download/v1.1.0/learningallied.apk" class="prem-btn prem-btn-secondary"><span>Download Android APK</span></a>
+        </div>
+        <div class="prem-final-cta-note">100% free to start · No card required · Instant access on web &amp; Android</div>
       </div>
     </div>
   </section>
 </main>
 
-<footer class="site-footer">
-  <div class="wrap">
-    <div class="footer-grid">
-      <div class="footer-brand">
-        <a class="logo" href="/" aria-label="Learning Allied home"><img src="/learningallied-white.svg" alt="" class="logo-img" loading="lazy" width="28" height="28"><span>Learning Allied</span></a>
-        <p>AI study partner for JEE, NEET and Board exam students.</p>
+<footer class="site-footer" style="border-top:1px solid var(--la-line);padding:56px 0 36px;">
+  <div class="landing-wrap">
+    <div style="display:grid;grid-template-columns:1.5fr repeat(4,1fr);gap:36px;margin-bottom:44px;">
+      <div>
+        <a class="logo" href="/" style="margin-bottom:12px;"><img src="/learningallied-white.svg" alt="" width="28" height="28"><span>Learning Allied</span></a>
+        <p style="color:var(--la-muted);font-size:14px;max-width:280px;">AI study partner for Indian students preparing for JEE, NEET and Board exams.</p>
       </div>
-      <div class="footer-col"><h4>Product</h4><a href="#features">How it works</a><a href="#exams">Exam support</a><a href="/signup">Get started</a><a href="/login">Log in</a></div>
-      <div class="footer-col"><h4>Company</h4><a href="/about">About Learning Allied</a><a href="/founder">Meet the founder</a></div>
-      <div class="footer-col"><h4>Resources</h4><a href="#faq">FAQ</a><a href="/blog/how-to-make-a-jee-study-plan">JEE study guide</a><a href="/jee-preparation">JEE prep</a><a href="/neet-preparation">NEET prep</a><a href="/maharashtra-board">Maharashtra Board</a><a href="/cbse-board">CBSE Board</a></div>
-      <div class="footer-col"><h4>Connect</h4><a href="https://youtube.com/@learningalliedoffical?si=x677FCu-oWGE0aEY" rel="noopener">YouTube</a>
-        <a href="https://discord.gg/vDvrJhUzud" rel="noopener">Discord</a>
-
-        <a href="https://teenfounders.in/user/learningallied" rel="noopener">TeenFounders</a>
-        <a href="https://www.linkedin.com/in/prem-jain-603173426/" rel="noopener">LinkedIn</a>
+      <div>
+        <h4 style="font-size:13px;font-weight:600;margin-bottom:14px;">Curriculum</h4>
+        <div style="display:flex;flex-direction:column;gap:8px;font-size:14px;color:var(--la-muted);">
+          <a href="/jee-preparation">JEE Main &amp; Advanced</a>
+          <a href="/neet-preparation">NEET UG Medical</a>
+          <a href="/cbse-board">CBSE Class 9–12</a>
+          <a href="/maharashtra-board">Maharashtra State Board</a>
+        </div>
       </div>
-      <div class="footer-col"><h4>Download</h4><a href="https://github.com/premjain230/Mentora/releases/download/v1.1.0/learningallied.apk" rel="noopener">Android APK</a></div>
+      <div>
+        <h4 style="font-size:13px;font-weight:600;margin-bottom:14px;">Company</h4>
+        <div style="display:flex;flex-direction:column;gap:8px;font-size:14px;color:var(--la-muted);">
+          <a href="/about">Educational Philosophy</a>
+          <a href="/founder">Meet the Founder</a>
+          <a href="/blog/how-to-make-a-jee-study-plan">JEE Study Guide</a>
+        </div>
+      </div>
+      <div>
+        <h4 style="font-size:13px;font-weight:600;margin-bottom:14px;">Account</h4>
+        <div style="display:flex;flex-direction:column;gap:8px;font-size:14px;color:var(--la-muted);">
+          <a href="signup.html">Create free account</a>
+          <a href="login.html">Student login</a>
+          <a href="/subscription">Pro membership</a>
+        </div>
+      </div>
+      <div>
+        <h4 style="font-size:13px;font-weight:600;margin-bottom:14px;">Community</h4>
+        <div style="display:flex;flex-direction:column;gap:8px;font-size:14px;color:var(--la-muted);">
+          <a href="https://youtube.com/@learningalliedoffical?si=x677FCu-oWGE0aEY" target="_blank" rel="noopener">YouTube</a>
+          <a href="https://discord.gg/vDvrJhUzud" target="_blank" rel="noopener">Discord</a>
+          <a href="https://teenfounders.in/user/learningallied" target="_blank" rel="noopener">TeenFounders</a>
+          <a href="https://www.linkedin.com/in/prem-jain-603173426/" target="_blank" rel="noopener">LinkedIn</a>
+        </div>
+      </div>
     </div>
-    <div class="footer-bottom"><span>&copy; 2026 Learning Allied. All rights reserved.</span></div>
+    <div style="display:flex;justify-content:space-between;border-top:1px solid var(--la-line);padding-top:24px;font-size:13px;color:var(--la-faint);">
+      <span>&copy; 2026 Learning Allied. Built by Prem Jain for ambitious students.</span>
+      <span>DPDP 2023 Compliant</span>
+    </div>
   </div>
 </footer>
 
-<script>
-document.documentElement.classList.add('js');
-(function(){
-  var nav=document.querySelector('.navbar');
-  function onScroll(){nav.classList.toggle('scrolled',window.scrollY>24)}
-  window.addEventListener('scroll',onScroll,{passive:true});onScroll();
-
-  document.querySelectorAll('.faq-q').forEach(function(btn){
-    btn.addEventListener('click',function(){
-      var item=btn.closest('.faq-item'),open=item.classList.contains('open');
-      document.querySelectorAll('.faq-item.open').forEach(function(el){el.classList.remove('open');el.querySelector('.faq-q').setAttribute('aria-expanded','false')});
-      if(!open){item.classList.add('open');btn.setAttribute('aria-expanded','true')}
-    });
-  });
-
-  var items=document.querySelectorAll('.reveal');
-  if('IntersectionObserver' in window){
-    var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('is-visible');io.unobserve(e.target)}})},{threshold:.08,rootMargin:'0px 0px -30px 0px'});
-    items.forEach(function(el){io.observe(el)});
-  } else items.forEach(function(el){el.classList.add('is-visible')});
-
-  document.querySelectorAll('a[href^="#"]').forEach(function(a){
-    a.addEventListener('click',function(e){
-      var id=a.getAttribute('href');if(id==='#')return;
-      var t=document.querySelector(id);
-      if(t){e.preventDefault();t.scrollIntoView({behavior:'smooth',block:'start'})}
-    });
-  });
-})();
-</script>
 <script type="module" src="./modules/track.js"></script>
 <script src="nav.js" defer></script>
-
-<!-- Structured data: one connected graph. The Person @id must match the one used on /founder. -->
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@graph": [
-    {
-      "@type": "Organization",
-      "@id": "https://www.learningallied.world/#organization",
-      "name": "Learning Allied",
-      "url": "https://www.learningallied.world/",
-      "logo": "https://www.learningallied.world/learningallied-white.svg",
-      "description": "AI study partner for JEE, NEET and Board exam students.",
-      "founder": { "@id": "https://www.learningallied.world/founder#person" },
-      "sameAs": [
-        "https://youtube.com/@learningalliedoffical?si=x677FCu-oWGE0aEY",
-
-        "https://discord.gg/vDvrJhUzud",
-        "https://teenfounders.in/user/learningallied",
-        "https://www.linkedin.com/in/prem-jain-603173426/"
-      ]
-    },
-    {
-      "@type": "Person",
-      "@id": "https://www.learningallied.world/founder#person",
-      "name": "Prem Jain",
-      "url": "https://www.learningallied.world/founder",
-      "jobTitle": "Founder",
-      "worksFor": { "@id": "https://www.learningallied.world/#organization" },
-      "sameAs": [
-        "https://youtube.com/@learningalliedoffical?si=x677FCu-oWGE0aEY",
-
-        "https://www.linkedin.com/in/prem-jain-603173426/"
-      ]
-    },
-    {
-      "@type": "WebSite",
-      "@id": "https://www.learningallied.world/#website",
-      "name": "Learning Allied",
-      "url": "https://www.learningallied.world/",
-      "description": "AI study partner for JEE, NEET and Board exam students.",
-      "inLanguage": "en-IN",
-      "publisher": { "@id": "https://www.learningallied.world/#organization" }
-    },
-    {
-      "@type": "WebPage",
-      "@id": "https://www.learningallied.world/#webpage",
-      "url": "https://www.learningallied.world/",
-      "name": "Learning Allied — AI Study Partner for JEE, NEET & Board Exams",
-      "isPartOf": { "@id": "https://www.learningallied.world/#website" },
-      "about": { "@id": "https://www.learningallied.world/#organization" },
-      "inLanguage": "en-IN"
-    },
-    {
-      "@type": "FAQPage",
-      "@id": "https://www.learningallied.world/#faq",
-      "mainEntity": [
-        {
-          "@type": "Question",
-          "name": "Is Learning Allied free to start?",
-          "acceptedAnswer": { "@type": "Answer", "text": "Yes. You can start chatting, build a study plan and join the community at no cost. No card is needed to begin." }
-        },
-        {
-          "@type": "Question",
-          "name": "Does it replace my teacher?",
-          "acceptedAnswer": { "@type": "Answer", "text": "No. Think of it as a study partner that's available between classes. Always check important facts against your textbooks and coursework." }
-        },
-        {
-          "@type": "Question",
-          "name": "Can I use it on my phone?",
-          "acceptedAnswer": { "@type": "Answer", "text": "Yes. It works in any modern browser on desktop or mobile, and there is an Android app you can download from this page." }
-        }
-      ]
-    }
-  ]
-}
-</script>
 </body>
 </html>

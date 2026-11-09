@@ -14,5 +14,8 @@ Allow: /jee-preparation
 Allow: /neet-preparation
 Allow: /cbse-board
 Allow: /maharashtra-board
+Allow: /learning-hub
+Allow: /arena
+Allow: /chat
 
 Sitemap: https://www.learningallied.world/sitemap.xml

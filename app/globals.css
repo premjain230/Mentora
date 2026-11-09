@@ -8,6 +8,7 @@
 @import "../css/premium.css";
 @import "../css/system.css";
 @import "../css/dashboard/shared.css";
+@import "../css/landing-premium.css";
 
 /* Public & marketing theme tokens (--la-*) and Next.js layout utilities */
 :root {

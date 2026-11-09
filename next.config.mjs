@@ -51,6 +51,11 @@ const nextConfig = {
         permanent: true,
       },
       {
+        source: '/learninghub',
+        destination: '/learning-hub',
+        permanent: true,
+      },
+      {
         source: '/:page(about|admin|arena|cbse-board|chat|chat-history|founder|home|jee-preparation|learning-hub|login|maharashtra-board|neet-preparation|onboarding|planner|planner-onboarding|profile|quiz|review|settings|signup|study-session|subscription|verify-email).html',
         destination: '/:page',
         permanent: true,
