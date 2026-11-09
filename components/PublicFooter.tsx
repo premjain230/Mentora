@@ -50,8 +50,7 @@ export function PublicFooter() {
         <div className="footer-bottom">
           <div>© 2026 Learning Allied. Built by Prem Jain for ambitious students.</div>
           <div className="footer-social">
-            <a href="https://x.com/itzprem109" target="_blank" rel="noopener noreferrer">X (Twitter)</a>
-            <a href="https://github.com/premjain230/Mentora" target="_blank" rel="noopener noreferrer">GitHub</a>
+            <a href="https://youtube.com/@learningalliedoffical?si=x677FCu-oWGE0aEY" target="_blank" rel="noopener noreferrer">YouTube</a>
             <a href="https://discord.gg/vDvrJhUzud" target="_blank" rel="noopener noreferrer">Discord</a>
             <a href="https://teenfounders.in/user/learningallied" target="_blank" rel="noopener noreferrer">TeenFounders</a>
             <a href="https://www.linkedin.com/in/prem-jain-603173426/" target="_blank" rel="noopener noreferrer">LinkedIn</a>

@@ -84,8 +84,8 @@ export const SHARED_JSONLD_GRAPH = {
     description: "AI study partner for JEE, NEET and Board exam students.",
     founder: { "@id": `${SITE_URL}/founder#person` },
     sameAs: [
-      "https://x.com/itzprem109",
-      "https://github.com/premjain230/Mentora",
+      "https://youtube.com/@learningalliedoffical?si=x677FCu-oWGE0aEY",
+
       "https://discord.gg/vDvrJhUzud",
       "https://teenfounders.in/user/learningallied",
       "https://www.linkedin.com/in/prem-jain-603173426/",
@@ -99,8 +99,8 @@ export const SHARED_JSONLD_GRAPH = {
     jobTitle: "Founder",
     worksFor: { "@id": `${SITE_URL}/#organization` },
     sameAs: [
-      "https://x.com/itzprem109",
-      "https://github.com/premjain230",
+      "https://youtube.com/@learningalliedoffical?si=x677FCu-oWGE0aEY",
+
       "https://www.linkedin.com/in/prem-jain-603173426/",
     ],
   },
