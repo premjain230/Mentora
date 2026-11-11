@@ -33,6 +33,8 @@ export function PublicFooter() {
               <li><Link href="/about">About us</Link></li>
               <li><Link href="/founder">Founder story</Link></li>
               <li><Link href="/blog/how-to-make-a-jee-study-plan">JEE study plan guide</Link></li>
+              <li><Link href="/privacy-policy">Privacy Policy</Link></li>
+              <li><Link href="/terms-of-use">Terms of Use</Link></li>
             </ul>
           </div>
 
@@ -49,6 +51,11 @@ export function PublicFooter() {
 
         <div className="footer-bottom">
           <div>© 2026 Learning Allied. Built by Prem Jain for ambitious students.</div>
+          <div className="footer-legal-links">
+            <Link href="/privacy-policy">Privacy Policy</Link>
+            <span aria-hidden="true">·</span>
+            <Link href="/terms-of-use">Terms of Use</Link>
+          </div>
           <div className="footer-social">
             <a href="https://youtube.com/@learningalliedoffical?si=x677FCu-oWGE0aEY" target="_blank" rel="noopener noreferrer">YouTube</a>
             <a href="https://discord.gg/vDvrJhUzud" target="_blank" rel="noopener noreferrer">Discord</a>

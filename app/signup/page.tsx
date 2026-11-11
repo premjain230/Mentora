@@ -421,7 +421,7 @@ export default function SignupPage() {
                   style={{ marginTop: 2 }}
                 />
                 <span>
-                  I agree to the Terms of Service and Privacy Policy.
+                  I agree to the <Link href="/terms-of-use" target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()} style={{ color: "var(--la-text, #fff)", textDecoration: "underline" }}>Terms of Use</Link> and <Link href="/privacy-policy" target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()} style={{ color: "var(--la-text, #fff)", textDecoration: "underline" }}>Privacy Policy</Link>.
                 </span>
               </label>
             </div>

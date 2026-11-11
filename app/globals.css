@@ -9,6 +9,7 @@
 @import "../css/system.css";
 @import "../css/dashboard/shared.css";
 @import "../css/landing-premium.css";
+@import "../css/legal.css";
 
 /* Public & marketing theme tokens (--la-*) and Next.js layout utilities */
 :root {

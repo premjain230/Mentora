@@ -70,5 +70,17 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: "daily",
       priority: 0.9,
     },
+    {
+      url: `${baseUrl}/privacy-policy`,
+      lastModified: new Date("2026-11-11"),
+      changeFrequency: "monthly",
+      priority: 0.5,
+    },
+    {
+      url: `${baseUrl}/terms-of-use`,
+      lastModified: new Date("2026-11-11"),
+      changeFrequency: "monthly",
+      priority: 0.5,
+    },
   ];
 }

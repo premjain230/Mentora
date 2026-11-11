@@ -59,6 +59,8 @@ const publicPages = [
   { path: 'app/neet-preparation/page.tsx', route: '/neet-preparation' },
   { path: 'app/cbse-board/page.tsx', route: '/cbse-board' },
   { path: 'app/maharashtra-board/page.tsx', route: '/maharashtra-board' },
+  { path: 'app/privacy-policy/page.tsx', route: '/privacy-policy' },
+  { path: 'app/terms-of-use/page.tsx', route: '/terms-of-use' },
 ];
 
 publicPages.forEach(({ path: pagePath, route }) => {
@@ -86,6 +88,8 @@ test('app/sitemap.ts contains canonical public URLs and excludes private routes'
     '${baseUrl}/learning-hub',
     '${baseUrl}/arena',
     '${baseUrl}/chat',
+    '${baseUrl}/privacy-policy',
+    '${baseUrl}/terms-of-use',
   ];
   expectedRoutes.forEach((route) => {
     assert(sitemapContent.includes(route), `Sitemap missing route: ${route}`);

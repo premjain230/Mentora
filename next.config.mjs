@@ -56,7 +56,7 @@ const nextConfig = {
         permanent: true,
       },
       {
-        source: '/:page(about|admin|arena|cbse-board|chat|chat-history|founder|home|jee-preparation|learning-hub|login|maharashtra-board|neet-preparation|onboarding|planner|planner-onboarding|profile|quiz|review|settings|signup|study-session|subscription|verify-email).html',
+        source: '/:page(about|admin|arena|cbse-board|chat|chat-history|founder|home|jee-preparation|learning-hub|login|maharashtra-board|neet-preparation|onboarding|planner|planner-onboarding|privacy-policy|profile|quiz|review|settings|signup|study-session|subscription|terms-of-use|verify-email).html',
         destination: '/:page',
         permanent: true,
       },

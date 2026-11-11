@@ -17,5 +17,7 @@ Allow: /maharashtra-board
 Allow: /learning-hub
 Allow: /arena
 Allow: /chat
+Allow: /privacy-policy
+Allow: /terms-of-use
 
 Sitemap: https://www.learningallied.world/sitemap.xml

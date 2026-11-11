@@ -522,6 +522,9 @@ export default function LoginPage() {
             </p>
           </div>
 
+          <p className="auth-legal" style={{ textAlign: "center", fontSize: "12px", color: "var(--la-faint, #737373)", marginBottom: "8px" }}>
+            By continuing, you agree to our <Link href="/terms-of-use" style={{ color: "var(--la-muted, #a1a1aa)", textDecoration: "underline" }}>Terms of Use</Link> and acknowledge our <Link href="/privacy-policy" style={{ color: "var(--la-muted, #a1a1aa)", textDecoration: "underline" }}>Privacy Policy</Link>.
+          </p>
           <p className="auth-support">
             Trouble signing in?{" "}
             <a href={`mailto:${SUPPORT_EMAIL}`}>Contact support</a>

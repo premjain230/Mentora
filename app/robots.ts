@@ -16,6 +16,8 @@ export default function robots(): MetadataRoute.Robots {
         "/learning-hub",
         "/arena",
         "/chat",
+        "/privacy-policy",
+        "/terms-of-use",
       ],
       disallow: ["/api/", "/sidebar.html", "/admin"],
     },
