@@ -153,24 +153,24 @@ function analyzeIntent(question, history = []) {
 function evaluateVisualRequirement(question, concept, intent) {
   const text = `${question || ""} ${concept ? concept.name : ""}`.toLowerCase();
 
-  // Simple definitions or conversational queries do NOT need visuals
-  if (intent === INTENT_TYPES.CONVERSATIONAL || intent === INTENT_TYPES.SIMPLE_QUESTION) {
-    return { needsVisual: false, type: null, rationale: "Text is completely sufficient for simple factual or conversational response." };
+  // Pure conversational queries never need visuals
+  if (intent === INTENT_TYPES.CONVERSATIONAL) {
+    return { needsVisual: false, type: null, rationale: "Text is completely sufficient for conversational response." };
   }
 
-  // 1. Anatomical / biological structure -> scientific illustration
+  // 1. Technical diagrams (circuits, ray optics, mechanics, vectors)
+  if (/\b(circuit|resistor|resistance|capacitor|kirchhoff|ray diagram|concave lens|convex mirror|refraction|free body diagram|projectile motion|wave interference)\b/i.test(text)) {
+    return { needsVisual: true, type: "technical_diagram", rationale: "Ray paths, circuit schematics, or force vectors clarify physical interactions." };
+  }
+
+  // 2. Anatomical / biological structure -> scientific illustration
   if (/\b(heart|brain|kidney|nephron|neuron|cell|organelle|chloroplast|mitochondria|digestive system|eye anatomy|ear anatomy|dna structure)\b/i.test(text)) {
     return { needsVisual: true, type: "scientific_illustration", query: `${concept ? concept.name : "human"} anatomy diagram`, rationale: "Anatomical or cellular structures require spatial visualization." };
   }
 
-  // 2. Astronomy / Solar System / Space -> real photograph / visualization
+  // 3. Astronomy / Solar System / Space -> real photograph / visualization
   if (/\b(solar system|planet|mars|jupiter|saturn|black hole|telescope|nebula|galaxy|moon phase|eclipse)\b/i.test(text)) {
     return { needsVisual: true, type: "astronomical_visualization", query: `${concept ? concept.name : "solar system"} high resolution`, rationale: "Astronomical concepts are best understood through authentic imagery." };
-  }
-
-  // 3. Technical diagrams (circuits, ray optics, mechanics, vectors)
-  if (/\b(circuit|resistor|capacitor|kirchhoff|ray diagram|concave lens|convex mirror|refraction|free body diagram|projectile motion|wave interference)\b/i.test(text)) {
-    return { needsVisual: true, type: "technical_diagram", rationale: "Ray paths, circuit schematics, or force vectors clarify physical interactions." };
   }
 
   // 4. Historical Events -> authentic historical photographs
@@ -181,6 +181,11 @@ function evaluateVisualRequirement(question, concept, intent) {
   // 5. Graphs -> coordinate / function graphs
   if (/\b(distance-time graph|velocity-time graph|quadratic curve|parabola|sine wave|exponential curve)\b/i.test(text)) {
     return { needsVisual: true, type: "graph", rationale: "Trends, slopes, and kinematics depend directly on coordinate graphs." };
+  }
+
+  // Simple definitions without technical/visual requirements do NOT need visuals
+  if (intent === INTENT_TYPES.SIMPLE_QUESTION) {
+    return { needsVisual: false, type: null, rationale: "Text is completely sufficient for simple factual response." };
   }
 
   return { needsVisual: false, type: null, rationale: "Topic is clearly and elegantly explained through structured text." };

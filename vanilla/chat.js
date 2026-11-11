@@ -28,6 +28,7 @@ import { createTranscript } from "./chat/transcript.js";
 import { createCheck } from "./chat/check.js";
 import { createRail } from "./chat/rail.js";
 import { createComposer } from "./chat/composer.js";
+import { createVoiceEngine, VOICE_STATE } from "./chat/voice-engine.js";
 
 const MESSAGE_PAGE = 40;
 
@@ -79,6 +80,16 @@ export function mount(root, ctx) {
     deleteClose: root.querySelector("#chatDeleteClose"),
     deleteCancel: root.querySelector("#chatDeleteCancel"),
     deleteConfirm: root.querySelector("#chatDeleteConfirm"),
+    voiceBtn: root.querySelector("#chatVoiceBtn"),
+    voiceBar: root.querySelector("#chatVoiceBar"),
+    voiceStatus: root.querySelector("#chatVoiceStatus"),
+    voiceTranscript: root.querySelector("#chatVoiceTranscript"),
+    voiceInterrupt: root.querySelector("#chatVoiceInterrupt"),
+    voiceMute: root.querySelector("#chatVoiceMute"),
+    voiceEnd: root.querySelector("#chatVoiceEnd"),
+    voiceMicIcon: root.querySelector("#chatVoiceMicIcon"),
+    voiceMicOffIcon: root.querySelector("#chatVoiceMicOffIcon"),
+    voiceIndicator: root.querySelector("#chatVoiceIndicator"),
   };
 
   if (!els.messages || !els.log || !els.form) {
@@ -156,6 +167,7 @@ export function mount(root, ctx) {
   app.rail.bind();
   bindTitle();
   bindEarlier();
+  bindVoice();
 
   void app.context.loadCatalog();
   void app.rail.refresh();
@@ -209,6 +221,221 @@ export function mount(root, ctx) {
 
   function bindEarlier() {
     lifecycle.on(els.earlier, "click", () => void loadEarlier());
+  }
+
+  function bindVoice() {
+    if (!els.voiceBtn) return;
+
+    let voiceEngine = null;
+
+    function getOrCreateVoiceEngine() {
+      if (voiceEngine) return voiceEngine;
+
+      voiceEngine = createVoiceEngine({
+        onStateChange: (vState) => {
+          if (!els.voiceBar) return;
+          els.voiceBar.dataset.voiceState = vState;
+
+          if (vState === VOICE_STATE.REQUESTING_PERMISSION) {
+            els.voiceBar.hidden = false;
+            if (els.voiceStatus) els.voiceStatus.textContent = "Requesting microphone permission…";
+            if (els.voiceInterrupt) els.voiceInterrupt.hidden = true;
+          } else if (vState === VOICE_STATE.CONNECTING) {
+            els.voiceBar.hidden = false;
+            if (els.voiceStatus) els.voiceStatus.textContent = "Connecting to Voice Tutor…";
+            if (els.voiceInterrupt) els.voiceInterrupt.hidden = true;
+          } else if (vState === VOICE_STATE.LISTENING) {
+            els.voiceBar.hidden = false;
+            if (els.voiceStatus) els.voiceStatus.textContent = "Listening… Speak naturally";
+            if (els.voiceInterrupt) els.voiceInterrupt.hidden = true;
+          } else if (vState === VOICE_STATE.SPEAKING) {
+            els.voiceBar.hidden = false;
+            if (els.voiceStatus) els.voiceStatus.textContent = "Tutor is speaking…";
+            if (els.voiceInterrupt) els.voiceInterrupt.hidden = false;
+          } else if (vState === VOICE_STATE.MUTED) {
+            els.voiceBar.hidden = false;
+            if (els.voiceStatus) els.voiceStatus.textContent = "Microphone muted";
+            if (els.voiceInterrupt) els.voiceInterrupt.hidden = true;
+            if (els.voiceMicIcon) els.voiceMicIcon.hidden = true;
+            if (els.voiceMicOffIcon) els.voiceMicOffIcon.hidden = false;
+          } else if (vState === VOICE_STATE.ENDED) {
+            els.voiceBar.hidden = true;
+            if (els.voiceBtn) els.voiceBtn.classList.remove("is-active");
+            if (els.voiceInterrupt) els.voiceInterrupt.hidden = true;
+            if (els.voiceTranscript) els.voiceTranscript.hidden = true;
+          }
+        },
+        onTranscript: ({ text }) => {
+          if (!els.voiceTranscript) return;
+          if (text) {
+            els.voiceTranscript.hidden = false;
+            els.voiceTranscript.textContent = text;
+          }
+        },
+        onTurnComplete: async ({ text }) => {
+          if (!text || !text.trim()) return;
+          const cleanText = text.trim();
+
+          const assistant = {
+            id: makeId(),
+            role: "assistant",
+            content: cleanText,
+            reply: {
+              kind: "short",
+              title: null,
+              directAnswer: cleanText,
+              sections: [],
+              example: null,
+              check: null,
+              visual: null,
+              personalization: null,
+              advanced: null,
+              level: "voice",
+              source: "gemini-live",
+            },
+          };
+
+          state.messages = [...state.messages, assistant];
+          app.transcript.appendMessage(assistant);
+          app.transcript.scrollToEnd();
+
+          if (user && ctx.db) {
+            try {
+              if (!state.chatId) {
+                const sessionRef = await createChatSession(
+                  ctx.db,
+                  user.uid,
+                  "Voice Study Session"
+                );
+                state.chatId = sessionRef.id;
+                setTitle("Voice Study Session");
+                updateHistoryUrl(state.chatId);
+                app.rail.setActive(state.chatId);
+                void app.rail.refresh();
+              }
+              await saveChatMessage(ctx.db, user.uid, state.chatId, {
+                role: "assistant",
+                content: cleanText,
+                reply: assistant.reply,
+              });
+              void app.rail.refresh();
+            } catch (err) {
+              console.warn("[voice] could not persist turn to firestore:", err);
+            }
+          }
+        },
+        onError: (err) => {
+          console.error("[voice] engine error:", err);
+          app.notify(err.message || "Voice session encountered an error.", "error");
+          endVoice();
+        },
+      });
+
+      return voiceEngine;
+    }
+
+    async function startVoice() {
+      if (state.inFlight) {
+        app.stopGeneration();
+      }
+
+      if (els.voiceBtn) els.voiceBtn.classList.add("is-active");
+      if (els.voiceBar) {
+        els.voiceBar.hidden = false;
+        els.voiceBar.dataset.voiceState = "connecting";
+      }
+      if (els.voiceStatus) els.voiceStatus.textContent = "Connecting to Voice Tutor…";
+      if (els.voiceTranscript) {
+        els.voiceTranscript.textContent = "";
+        els.voiceTranscript.hidden = true;
+      }
+
+      try {
+        const tokenRes = await app.tutor("live-token", {
+          context: {
+            track: state.context.board || undefined,
+            classNum: state.context.classNum || undefined,
+            subject: state.context.subject || undefined,
+            language: state.context.language || "en",
+          },
+        });
+
+        if (lifecycle.disposed) return;
+
+        const engine = getOrCreateVoiceEngine();
+        await engine.start({
+          token: tokenRes.token,
+          model: tokenRes.model,
+          voice: tokenRes.voice,
+          maxDurationSeconds: tokenRes.maxDurationSeconds,
+        });
+      } catch (err) {
+        console.error("[voice] failed to start:", err);
+        const tutorError = err instanceof TutorError ? err : null;
+        if (tutorError?.code === "limit_reached") {
+          if (!ctx.isPro) {
+            ctx.showUpgrade?.({
+              source: "chat_voice_limit",
+              reason: tutorError.message,
+            });
+          }
+        }
+        app.notify(
+          err.message || "Could not connect to Voice Tutor. Check microphone permission and retry.",
+          "error"
+        );
+        endVoice();
+      }
+    }
+
+    function endVoice() {
+      if (voiceEngine) {
+        voiceEngine.stop();
+        voiceEngine = null;
+      }
+      if (els.voiceBar) els.voiceBar.hidden = true;
+      if (els.voiceBtn) els.voiceBtn.classList.remove("is-active");
+      if (els.voiceInterrupt) els.voiceInterrupt.hidden = true;
+      if (els.voiceMicIcon) els.voiceMicIcon.hidden = false;
+      if (els.voiceMicOffIcon) els.voiceMicOffIcon.hidden = true;
+    }
+
+    app.endVoice = endVoice;
+
+    lifecycle.on(els.voiceBtn, "click", () => {
+      const isRunning = els.voiceBtn.classList.contains("is-active");
+      if (isRunning) {
+        endVoice();
+      } else {
+        void startVoice();
+      }
+    });
+
+    if (els.voiceMute) {
+      lifecycle.on(els.voiceMute, "click", () => {
+        if (!voiceEngine) return;
+        const muted = voiceEngine.toggleMute();
+        if (els.voiceMicIcon) els.voiceMicIcon.hidden = muted;
+        if (els.voiceMicOffIcon) els.voiceMicOffIcon.hidden = !muted;
+      });
+    }
+
+    if (els.voiceInterrupt) {
+      lifecycle.on(els.voiceInterrupt, "click", () => {
+        if (!voiceEngine) return;
+        voiceEngine.interrupt();
+      });
+    }
+
+    if (els.voiceEnd) {
+      lifecycle.on(els.voiceEnd, "click", () => {
+        endVoice();
+      });
+    }
+
+    lifecycle.add(() => {
+      endVoice();
+    });
   }
 
   function setTitle(value) {
@@ -280,6 +507,7 @@ export function mount(root, ctx) {
   /* ── Conversation switching ─────────────────────────────────────────── */
 
   function startNewChat(options = {}) {
+    app.endVoice?.();
     try {
       abortController?.abort();
     } catch (_) {
@@ -310,6 +538,7 @@ export function mount(root, ctx) {
   async function openConversation(id) {
     if (!id) return;
     if (id === state.chatId) return;
+    app.endVoice?.();
     if (state.inFlight) {
       try {
         abortController?.abort();

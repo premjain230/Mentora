@@ -6,7 +6,30 @@
  * the same types, so a teaching-logic change never needs to be made twice.
  */
 
-export type TutorAction = "catalog" | "state" | "lesson" | "evaluate" | "chat" | "chapter";
+export type TutorAction = "catalog" | "state" | "lesson" | "evaluate" | "chat" | "chapter" | "live-token";
+
+export interface LiveTokenConfig {
+  token: string;
+  model: string;
+  voice: string;
+  maxDurationSeconds: number;
+  expireTime?: string;
+}
+
+export interface LiveTokenResponse {
+  ok: boolean;
+  token: string;
+  model: string;
+  voice: string;
+  maxDurationSeconds: number;
+  expireTime?: string;
+  studentContext?: {
+    board?: string;
+    classNum?: number | null;
+    subject?: string;
+    language?: string;
+  };
+}
 
 export interface LearningVisual {
   id: string;

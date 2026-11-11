@@ -418,6 +418,73 @@ export function ChatMarkup() {
               hidden
             />
 
+            <div
+              className="chat-voice-bar"
+              id="chatVoiceBar"
+              hidden
+              role="region"
+              aria-label="Live Voice Mode"
+            >
+              <div className="chat-voice-bar-main">
+                <div className="chat-voice-indicator" id="chatVoiceIndicator">
+                  <span className="chat-voice-pulse" />
+                  <span className="chat-voice-bar-wave">
+                    <i />
+                    <i />
+                    <i />
+                    <i />
+                  </span>
+                </div>
+                <div className="chat-voice-info">
+                  <span className="chat-voice-status" id="chatVoiceStatus">
+                    Connecting to Voice Tutor…
+                  </span>
+                  <span
+                    className="chat-voice-transcript"
+                    id="chatVoiceTranscript"
+                    hidden
+                  />
+                </div>
+              </div>
+
+              <div className="chat-voice-actions">
+                <button
+                  type="button"
+                  id="chatVoiceInterrupt"
+                  className="chat-voice-action-btn is-interrupt"
+                  aria-label="Interrupt tutor"
+                  title="Interrupt AI speaking"
+                  hidden
+                >
+                  Interrupt
+                </button>
+                <button
+                  type="button"
+                  id="chatVoiceMute"
+                  className="chat-voice-action-btn is-mute"
+                  aria-label="Mute microphone"
+                  title="Mute microphone"
+                >
+                  <span className="chat-voice-glyph is-mic" id="chatVoiceMicIcon">
+                    <Icon name="mic" size={16} />
+                  </span>
+                  <span className="chat-voice-glyph is-muted" id="chatVoiceMicOffIcon" hidden>
+                    <Icon name="micOff" size={16} />
+                  </span>
+                </button>
+                <button
+                  type="button"
+                  id="chatVoiceEnd"
+                  className="chat-voice-action-btn is-end"
+                  aria-label="End voice session"
+                  title="End voice session"
+                >
+                  <Icon name="phoneOff" size={16} />
+                  <span>End</span>
+                </button>
+              </div>
+            </div>
+
             <form className="chat-composer" id="chatForm">
               <div className="chat-composer-box">
                 <textarea
@@ -428,6 +495,15 @@ export function ChatMarkup() {
                   maxLength={2000}
                   className="chat-input"
                 />
+                <button
+                  type="button"
+                  id="chatVoiceBtn"
+                  className="chat-voice-btn"
+                  aria-label="Start Voice Tutor"
+                  title="Start Live Voice Mode"
+                >
+                  <Icon name="mic" size={17} />
+                </button>
                 <button
                   type="submit"
                   id="chatSend"
