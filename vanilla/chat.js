@@ -227,6 +227,7 @@ export function mount(root, ctx) {
     if (!els.voiceBtn) return;
 
     let voiceEngine = null;
+    let isStarting = false;
 
     function getOrCreateVoiceEngine() {
       if (voiceEngine) return voiceEngine;
@@ -252,6 +253,10 @@ export function mount(root, ctx) {
             els.voiceBar.hidden = false;
             if (els.voiceStatus) els.voiceStatus.textContent = "Tutor is speaking…";
             if (els.voiceInterrupt) els.voiceInterrupt.hidden = false;
+          } else if (vState === VOICE_STATE.INTERRUPTED) {
+            els.voiceBar.hidden = false;
+            if (els.voiceStatus) els.voiceStatus.textContent = "Listening…";
+            if (els.voiceInterrupt) els.voiceInterrupt.hidden = true;
           } else if (vState === VOICE_STATE.MUTED) {
             els.voiceBar.hidden = false;
             if (els.voiceStatus) els.voiceStatus.textContent = "Microphone muted";
@@ -263,6 +268,20 @@ export function mount(root, ctx) {
             if (els.voiceBtn) els.voiceBtn.classList.remove("is-active");
             if (els.voiceInterrupt) els.voiceInterrupt.hidden = true;
             if (els.voiceTranscript) els.voiceTranscript.hidden = true;
+          }
+        },
+        onVolume: (vol) => {
+          if (!els.voiceBar || els.voiceBar.dataset.voiceState === "muted") return;
+          const waveBars = els.voiceBar.querySelectorAll(".chat-voice-bar-wave i");
+          if (waveBars && waveBars.length > 0) {
+            const h1 = Math.max(4, Math.min(14, 4 + vol * 12));
+            const h2 = Math.max(4, Math.min(14, 4 + vol * 16));
+            const h3 = Math.max(4, Math.min(14, 4 + vol * 14));
+            const h4 = Math.max(4, Math.min(14, 4 + vol * 10));
+            if (waveBars[0]) waveBars[0].style.height = `${h1}px`;
+            if (waveBars[1]) waveBars[1].style.height = `${h2}px`;
+            if (waveBars[2]) waveBars[2].style.height = `${h3}px`;
+            if (waveBars[3]) waveBars[3].style.height = `${h4}px`;
           }
         },
         onTranscript: ({ text }) => {
@@ -335,6 +354,9 @@ export function mount(root, ctx) {
     }
 
     async function startVoice() {
+      if (isStarting) return;
+      isStarting = true;
+
       if (state.inFlight) {
         app.stopGeneration();
       }
@@ -372,6 +394,7 @@ export function mount(root, ctx) {
           model: tokenRes.model,
           voice: tokenRes.voice,
           systemInstruction: tokenRes.systemInstruction,
+          hasEmbeddedConstraints: tokenRes.hasEmbeddedConstraints,
           maxDurationSeconds: tokenRes.maxDurationSeconds,
         });
       } catch (err) {
@@ -390,10 +413,13 @@ export function mount(root, ctx) {
           "error"
         );
         endVoice();
+      } finally {
+        isStarting = false;
       }
     }
 
     function endVoice() {
+      isStarting = false;
       if (voiceEngine) {
         voiceEngine.stop();
         voiceEngine = null;
@@ -415,6 +441,12 @@ export function mount(root, ctx) {
         const engine = getOrCreateVoiceEngine();
         engine.unlockAudio?.();
         void startVoice();
+      }
+    });
+
+    lifecycle.on(document, "visibilitychange", () => {
+      if (document.visibilityState === "visible" && voiceEngine) {
+        voiceEngine.unlockAudio?.();
       }
     });
 

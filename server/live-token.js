@@ -181,6 +181,7 @@ async function createLiveVoiceToken(studentContext = {}) {
 
   let tokenResponse = null;
   let successfulModel = null;
+  let hasEmbeddedConstraints = false;
   let lastError = null;
 
   // Try candidate models in order of stability
@@ -212,6 +213,7 @@ async function createLiveVoiceToken(studentContext = {}) {
       });
       if (tokenResponse && tokenResponse.name) {
         successfulModel = model;
+        hasEmbeddedConstraints = true;
         break;
       }
     } catch (err) {
@@ -233,6 +235,7 @@ async function createLiveVoiceToken(studentContext = {}) {
         });
         if (tokenResponse && tokenResponse.name) {
           successfulModel = model;
+          hasEmbeddedConstraints = false;
           break;
         }
       } catch (innerErr) {
@@ -254,6 +257,7 @@ async function createLiveVoiceToken(studentContext = {}) {
     model: successfulModel,
     voice,
     systemInstruction,
+    hasEmbeddedConstraints,
     expireTime,
     maxDurationSeconds: MAX_SESSION_DURATION_SEC,
   };
@@ -338,6 +342,7 @@ async function liveTokenHandler(req, res) {
       model: sessionConfig.model,
       voice: sessionConfig.voice,
       systemInstruction: sessionConfig.systemInstruction,
+      hasEmbeddedConstraints: sessionConfig.hasEmbeddedConstraints,
       maxDurationSeconds: Math.min(sessionConfig.maxDurationSeconds, gate.maxDurationSec),
       expireTime: sessionConfig.expireTime,
       studentContext,

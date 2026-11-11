@@ -134,6 +134,8 @@ module.exports = async function handler(req, res) {
         token: sessionConfig.token,
         model: sessionConfig.model,
         voice: sessionConfig.voice,
+        systemInstruction: sessionConfig.systemInstruction,
+        hasEmbeddedConstraints: sessionConfig.hasEmbeddedConstraints,
         maxDurationSeconds: Math.min(sessionConfig.maxDurationSeconds, gate.maxDurationSec),
         expireTime: sessionConfig.expireTime,
         studentContext,

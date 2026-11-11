@@ -180,6 +180,24 @@ async function asyncTest(name, fn) {
     assert(voiceEngineSource.includes("getAudioTracks"), "voice engine must clean up microphone tracks on stop");
   });
 
+  test("voice-engine.js includes GC-resilient AudioWorklet capture and diagnostic telemetry", () => {
+    assert(voiceEngineSource.includes("VOICE_DIAGNOSTICS"), "must include diagnostic logger");
+    assert(voiceEngineSource.includes("MIC_PERMISSION_GRANTED"), "must trace permission granted");
+    assert(voiceEngineSource.includes("AUDIO_FRAMES_CAPTURED"), "must trace frame capture");
+    assert(voiceEngineSource.includes("AUDIO_CHUNK_SENT"), "must trace chunk transmission");
+    assert(voiceEngineSource.includes("GEMINI_RESPONSE_RECEIVED"), "must trace response reception");
+    assert(voiceEngineSource.includes("AUDIO_PLAYBACK_STARTED"), "must trace playback started");
+    assert(voiceEngineSource.includes("gemini-audio-capture-processor"), "must define audio worklet processor");
+    assert(voiceEngineSource.includes("outputTranscription"), "must support live speech transcription");
+  });
+
+  test("chat controller binds dynamic volume waveform and visibility lifecycle", () => {
+    assert(chatController.includes("onVolume:"), "chat must connect volume listener");
+    assert(chatController.includes("chat-voice-bar-wave"), "chat must animate wave bars");
+    assert(chatController.includes("visibilitychange"), "chat must handle tab switching");
+    assert(chatController.includes("unlockAudio"), "chat must pre-warm audio context on click");
+  });
+
   console.log("============================================================");
   console.log(`Live Voice Test Results: ${passed} passed, ${failed} failed`);
   console.log("============================================================");
