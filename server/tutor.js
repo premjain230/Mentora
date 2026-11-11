@@ -3,11 +3,13 @@
 //
 // Mounted at /api/tutor (see app/api/tutor/route.ts). All actions reuse the
 // existing authentication, rate limiting and Firestore helpers:
-//   catalog  -> curriculum browsing (no AI)
-//   state    -> compact learning-state summary (no AI)
-//   lesson   -> adaptive teaching step (authored pack, or one cached generation)
-//   evaluate -> answer evaluation + misconception + next authored question
-//   chat     -> structured teaching answer for the chat page
+//   catalog    -> curriculum browsing (no AI)
+//   state      -> compact learning-state summary (no AI)
+//   chapter    -> chapter outline & concept progression (no AI)
+//   lesson     -> adaptive teaching step (authored pack, or one cached generation)
+//   evaluate   -> answer evaluation + misconception + next authored question
+//   chat       -> structured teaching answer for the chat page
+//   live-token -> secure ephemeral token for Gemini Live Voice Mode
 //
 // The daily free-plan chat limit is enforced here for `chat`, because this route
 // calls the provider directly instead of /api/groq-proxy.
@@ -20,11 +22,13 @@ const {
   evaluateTutor,
   catalogAction,
   stateAction,
+  chapterAction,
   loadStudentState,
 } = require("./_learn-core");
 const { getConcept } = require("./_curriculum");
+const { createLiveVoiceToken, checkAndIncrementVoiceSession } = require("./live-token");
 
-const ACTIONS = new Set(["catalog", "state", "chapter", "lesson", "evaluate", "chat"]);
+const ACTIONS = new Set(["catalog", "state", "chapter", "lesson", "evaluate", "chat", "live-token"]);
 
 const ACTION_LIMITS = {
   catalog: { name: "tutor-catalog", limit: 40 },
@@ -33,6 +37,7 @@ const ACTION_LIMITS = {
   lesson: { name: "tutor-lesson", limit: 20 },
   evaluate: { name: "tutor-evaluate", limit: 30 },
   chat: { name: "tutor-chat", limit: 15 },
+  "live-token": { name: "tutor-live-token", limit: 12 },
 };
 
 function clip(value, max) {
@@ -92,6 +97,57 @@ module.exports = async function handler(req, res) {
     }
     res.setHeader("X-Chat-Used", String(gate.used ?? ""));
     res.setHeader("X-Chat-Limit", gate.limit === Infinity ? "unlimited" : String(gate.limit ?? ""));
+  }
+
+  // Live voice ephemeral token generation
+  if (action === "live-token") {
+    let gate;
+    try {
+      gate = await checkAndIncrementVoiceSession(uid, decoded);
+    } catch (err) {
+      console.error("[tutor:live-token] usage gate failed:", err && err.message ? err.message : err);
+      return res.status(503).json({ error: "Voice usage service temporarily unavailable. Please retry in a moment." });
+    }
+    if (!gate.allowed) {
+      return res.status(429).json({
+        error: {
+          message: "You have reached your daily Live Voice limit. Upgrade to Pro for unlimited interactive voice tutoring.",
+          code: "limit_reached",
+          used: gate.used,
+          limit: gate.limit,
+          plan: gate.plan,
+        },
+      });
+    }
+
+    const studentContext = {
+      board: clip(body.board || (body.context && body.context.track) || (body.context && body.context.board), 100),
+      classNum: body.classNum || (body.context && body.context.classNum),
+      subject: clip(body.subject || (body.context && body.context.subject), 100),
+      language: clip(body.language || (body.context && body.context.language) || "en", 20),
+    };
+
+    try {
+      const sessionConfig = await createLiveVoiceToken(studentContext);
+      return res.status(200).json({
+        ok: true,
+        token: sessionConfig.token,
+        model: sessionConfig.model,
+        voice: sessionConfig.voice,
+        maxDurationSeconds: Math.min(sessionConfig.maxDurationSeconds, gate.maxDurationSec),
+        expireTime: sessionConfig.expireTime,
+        studentContext,
+      });
+    } catch (err) {
+      const statusCode = err && err.statusCode ? err.statusCode : 500;
+      console.error("[tutor:live-token] Failed to create token:", err && err.message ? err.message : err);
+      return res.status(statusCode).json({
+        error: {
+          message: err.message || "Failed to initialize Gemini Live Voice session.",
+          code: err.code || "LIVE_TOKEN_ERROR",
+        },
+      });
+    }
   }
 
   const conceptId = clip(body.conceptId, 160);
