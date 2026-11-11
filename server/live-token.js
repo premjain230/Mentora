@@ -7,6 +7,8 @@
 //
 // Security & Production Guarantees:
 //  - Master GEMINI_API_KEY remains strictly server-side.
+//  - Rejects missing or Vercel CLI '[SENSITIVE]' placeholder keys cleanly.
+//  - Multi-model resilient fallback (gemini-2.0-flash, gemini-2.0-flash-exp).
 //  - Authentication enforced via Firebase ID token verification.
 //  - Entitlements verified against server-authoritative records.
 //  - Usage limits tracked transactionally in Firestore.
@@ -22,13 +24,16 @@ const {
   getVerifiedEntitlement,
   firestore,
 } = require("./_admin");
-const { applyCors, rateLimit, readJsonBody, sendError } = require("./_shared");
+const { applyCors, rateLimit, readJsonBody } = require("./_shared");
 
-const DEFAULT_LIVE_MODEL =
-  process.env.GEMINI_LIVE_MODEL || "models/gemini-2.5-flash-native-audio-preview-12-2025";
-const FALLBACK_LIVE_MODEL = "models/gemini-2.0-flash-exp";
+const CANDIDATE_MODELS = [
+  process.env.GEMINI_LIVE_MODEL,
+  "models/gemini-2.0-flash",
+  "models/gemini-2.0-flash-exp",
+  "models/gemini-2.5-flash-native-audio-preview-12-2025",
+].filter(Boolean);
 
-const DEFAULT_VOICE = process.env.GEMINI_LIVE_VOICE || "Puck"; // Puck is clear, friendly, and engaging for tutoring
+const DEFAULT_VOICE = process.env.GEMINI_LIVE_VOICE || "Puck";
 const MAX_SESSION_DURATION_SEC = 900; // 15 minutes max per single live session
 
 const VOICE_PLAN_LIMITS = {
@@ -39,6 +44,11 @@ const VOICE_PLAN_LIMITS = {
 function cleanEnvValue(val) {
   if (!val || typeof val !== "string") return "";
   return val.trim().replace(/^["']|["']$/g, "");
+}
+
+function isUsableKey(key) {
+  const cleaned = cleanEnvValue(key);
+  return Boolean(cleaned && cleaned !== "[SENSITIVE]" && cleaned.length > 15);
 }
 
 function getGeminiApiKey() {
@@ -147,9 +157,13 @@ async function checkAndIncrementVoiceSession(uid, decoded) {
  */
 async function createLiveVoiceToken(studentContext = {}) {
   const apiKey = getGeminiApiKey();
-  if (!apiKey || apiKey.length < 10) {
+  if (!isUsableKey(apiKey)) {
     throw Object.assign(
-      new Error("Gemini Live service is not configured with an API key."),
+      new Error(
+        apiKey === "[SENSITIVE]"
+          ? "GEMINI_API_KEY in server environment is set to '[SENSITIVE]' placeholder (from Vercel pull). Please configure a real Google AI Studio key in Vercel or .env.local."
+          : "Gemini Live service is not configured with an API key. Please configure GEMINI_API_KEY in your environment."
+      ),
       { statusCode: 503, code: "SERVICE_UNAVAILABLE" }
     );
   }
@@ -160,29 +174,31 @@ async function createLiveVoiceToken(studentContext = {}) {
   const expireTime = new Date(now + 30 * 60 * 1000).toISOString();
   const newSessionExpireTime = new Date(now + 5 * 60 * 1000).toISOString();
 
-  let targetModel = DEFAULT_LIVE_MODEL;
-
-  // Use the official @google/genai SDK to generate the ephemeral token
   const client = new GoogleGenAI({
     apiKey,
     httpOptions: { apiVersion: "v1alpha" },
   });
 
-  let tokenResponse;
-  try {
-    tokenResponse = await client.authTokens.create({
-      config: {
-        uses: 1, // Single-use connection
-        expireTime,
-        newSessionExpireTime,
-        liveConnectConstraints: {
-          model: targetModel,
-          config: {
-            responseModalities: ["AUDIO"],
-            systemInstruction: {
-              parts: [{ text: systemInstruction }],
-            },
-            generationConfig: {
+  let tokenResponse = null;
+  let successfulModel = null;
+  let lastError = null;
+
+  // Try candidate models in order of stability
+  for (const model of CANDIDATE_MODELS) {
+    // Strategy A: Full constraints (model, responseModalities, systemInstruction, speechConfig)
+    try {
+      tokenResponse = await client.authTokens.create({
+        config: {
+          uses: 1,
+          expireTime,
+          newSessionExpireTime,
+          liveConnectConstraints: {
+            model,
+            config: {
+              responseModalities: ["AUDIO"],
+              systemInstruction: {
+                parts: [{ text: systemInstruction }],
+              },
               speechConfig: {
                 voiceConfig: {
                   prebuiltVoiceConfig: {
@@ -193,52 +209,51 @@ async function createLiveVoiceToken(studentContext = {}) {
             },
           },
         },
-      },
-    });
-  } catch (err) {
-    // If the primary preview model fails validation, attempt fallback model
-    const errMsg = String((err && err.message) || err);
-    console.warn(`[live-token] Primary model ${targetModel} token creation failed: ${errMsg}. Trying fallback ${FALLBACK_LIVE_MODEL}`);
-    
-    targetModel = FALLBACK_LIVE_MODEL;
-    tokenResponse = await client.authTokens.create({
-      config: {
-        uses: 1,
-        expireTime,
-        newSessionExpireTime,
-        liveConnectConstraints: {
-          model: targetModel,
+      });
+      if (tokenResponse && tokenResponse.name) {
+        successfulModel = model;
+        break;
+      }
+    } catch (err) {
+      lastError = err;
+      // Strategy B: Minimal constraints (model, responseModalities)
+      try {
+        tokenResponse = await client.authTokens.create({
           config: {
-            responseModalities: ["AUDIO"],
-            systemInstruction: {
-              parts: [{ text: systemInstruction }],
-            },
-            generationConfig: {
-              speechConfig: {
-                voiceConfig: {
-                  prebuiltVoiceConfig: {
-                    voiceName: voice,
-                  },
-                },
+            uses: 1,
+            expireTime,
+            newSessionExpireTime,
+            liveConnectConstraints: {
+              model,
+              config: {
+                responseModalities: ["AUDIO"],
               },
             },
           },
-        },
-      },
-    });
+        });
+        if (tokenResponse && tokenResponse.name) {
+          successfulModel = model;
+          break;
+        }
+      } catch (innerErr) {
+        lastError = innerErr;
+      }
+    }
   }
 
   if (!tokenResponse || !tokenResponse.name) {
+    const errorDetails = String(lastError?.message || lastError || "Token creation rejected");
     throw Object.assign(
-      new Error("Failed to provision ephemeral token from Gemini Live API."),
+      new Error(`Failed to provision ephemeral token from Gemini Live API: ${errorDetails}`),
       { statusCode: 502, code: "TOKEN_PROVISION_FAILED" }
     );
   }
 
   return {
     token: tokenResponse.name,
-    model: targetModel,
+    model: successfulModel,
     voice,
+    systemInstruction,
     expireTime,
     maxDurationSeconds: MAX_SESSION_DURATION_SEC,
   };
@@ -276,7 +291,6 @@ async function liveTokenHandler(req, res) {
   try {
     body = await readJsonBody(req);
   } catch (err) {
-    // Non-fatal if body is empty or malformed
     body = {};
   }
 
@@ -323,6 +337,7 @@ async function liveTokenHandler(req, res) {
       token: sessionConfig.token,
       model: sessionConfig.model,
       voice: sessionConfig.voice,
+      systemInstruction: sessionConfig.systemInstruction,
       maxDurationSeconds: Math.min(sessionConfig.maxDurationSeconds, gate.maxDurationSec),
       expireTime: sessionConfig.expireTime,
       studentContext,
@@ -346,4 +361,5 @@ module.exports = {
   createLiveVoiceToken,
   checkAndIncrementVoiceSession,
   buildVoiceTutorInstruction,
+  isUsableKey,
 };

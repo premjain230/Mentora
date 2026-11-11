@@ -351,14 +351,18 @@ export function mount(root, ctx) {
       }
 
       try {
-        const tokenRes = await app.tutor("live-token", {
-          context: {
-            track: state.context.board || undefined,
-            classNum: state.context.classNum || undefined,
-            subject: state.context.subject || undefined,
-            language: state.context.language || "en",
+        const tokenRes = await app.tutor(
+          "live-token",
+          {
+            context: {
+              track: state.context.board || undefined,
+              classNum: state.context.classNum || undefined,
+              subject: state.context.subject || undefined,
+              language: state.context.language || "en",
+            },
           },
-        });
+          { dedupe: false }
+        );
 
         if (lifecycle.disposed) return;
 
@@ -367,6 +371,7 @@ export function mount(root, ctx) {
           token: tokenRes.token,
           model: tokenRes.model,
           voice: tokenRes.voice,
+          systemInstruction: tokenRes.systemInstruction,
           maxDurationSeconds: tokenRes.maxDurationSeconds,
         });
       } catch (err) {
@@ -407,6 +412,8 @@ export function mount(root, ctx) {
       if (isRunning) {
         endVoice();
       } else {
+        const engine = getOrCreateVoiceEngine();
+        engine.unlockAudio?.();
         void startVoice();
       }
     });

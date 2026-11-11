@@ -182,8 +182,12 @@ export function createVoiceEngine(options = {}) {
       throw new Error("Web Audio API is not supported in this browser.");
     }
 
-    inputAudioCtx = new AudioContextClass();
-    outputAudioCtx = new AudioContextClass({ sampleRate: 24000 });
+    if (!inputAudioCtx) {
+      inputAudioCtx = new AudioContextClass();
+    }
+    if (!outputAudioCtx) {
+      outputAudioCtx = new AudioContextClass();
+    }
 
     if (inputAudioCtx.state === "suspended") {
       await inputAudioCtx.resume();
@@ -237,16 +241,32 @@ export function createVoiceEngine(options = {}) {
   }
 
   /**
+   * Pre-warms the AudioContext on user gesture to prevent autoplay blocking.
+   */
+  function unlockAudio() {
+    try {
+      const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+      if (!outputAudioCtx && AudioContextClass) {
+        outputAudioCtx = new AudioContextClass();
+      }
+      if (outputAudioCtx && outputAudioCtx.state === "suspended") {
+        outputAudioCtx.resume().catch(() => {});
+      }
+    } catch (_) {}
+  }
+
+  /**
    * Enqueues an audio chunk from Gemini for smooth playback.
    */
-  function enqueuePlayback(float32Samples) {
+  function enqueuePlayback(float32Samples, sampleRate = 24000) {
     if (!outputAudioCtx || disposed) return;
 
     if (outputAudioCtx.state === "suspended") {
       outputAudioCtx.resume().catch(() => {});
     }
 
-    const buffer = outputAudioCtx.createBuffer(1, float32Samples.length, 24000);
+    const safeRate = Number.isFinite(sampleRate) && sampleRate > 0 ? sampleRate : 24000;
+    const buffer = outputAudioCtx.createBuffer(1, float32Samples.length, safeRate);
     buffer.getChannelData(0).set(float32Samples);
 
     const source = outputAudioCtx.createBufferSource();
@@ -277,9 +297,9 @@ export function createVoiceEngine(options = {}) {
    * Handles incoming message from Gemini Live WebSocket.
    */
   function handleLiveMessage(msg) {
-    if (disposed) return;
+    if (disposed || !msg) return;
 
-    const serverContent = msg.serverContent;
+    const serverContent = msg.serverContent || msg.server_content;
     if (!serverContent) return;
 
     // 1. Check for barge-in / interruption
@@ -291,13 +311,23 @@ export function createVoiceEngine(options = {}) {
     }
 
     // 2. Check for model turns (Audio or Text)
-    const modelTurn = serverContent.modelTurn;
+    const modelTurn = serverContent.modelTurn || serverContent.model_turn;
     if (modelTurn && Array.isArray(modelTurn.parts)) {
       for (const part of modelTurn.parts) {
         // Audio output chunk
-        if (part.inlineData && part.inlineData.data) {
-          const samples = base64PCMToFloat32(part.inlineData.data);
-          enqueuePlayback(samples);
+        const inlineData = part.inlineData || part.inline_data;
+        if (inlineData && inlineData.data) {
+          let sampleRate = 24000;
+          const mime = inlineData.mimeType || inlineData.mime_type || "";
+          const match = mime.match(/rate=(\d+)/);
+          if (match && match[1]) {
+            const parsedRate = parseInt(match[1], 10);
+            if (!Number.isNaN(parsedRate) && parsedRate > 0) {
+              sampleRate = parsedRate;
+            }
+          }
+          const samples = base64PCMToFloat32(inlineData.data);
+          enqueuePlayback(samples, sampleRate);
         }
 
         // Live transcript text
@@ -313,7 +343,7 @@ export function createVoiceEngine(options = {}) {
     }
 
     // 3. Turn complete
-    if (serverContent.turnComplete) {
+    if (serverContent.turnComplete || serverContent.turn_complete) {
       const finishedText = currentModelTurnText.trim();
       currentModelTurnText = "";
       if (finishedText) {
@@ -348,10 +378,29 @@ export function createVoiceEngine(options = {}) {
         httpOptions: { apiVersion: "v1alpha" },
       });
 
-      const model = tokenConfig.model || "models/gemini-2.5-flash-native-audio-preview-12-2025";
+      const model = tokenConfig.model || "models/gemini-2.0-flash";
+
+      const liveConfig = {
+        responseModalities: ["AUDIO"],
+      };
+      if (tokenConfig.systemInstruction) {
+        liveConfig.systemInstruction = {
+          parts: [{ text: tokenConfig.systemInstruction }],
+        };
+      }
+      if (tokenConfig.voice) {
+        liveConfig.speechConfig = {
+          voiceConfig: {
+            prebuiltVoiceConfig: {
+              voiceName: tokenConfig.voice,
+            },
+          },
+        };
+      }
 
       session = await ai.live.connect({
         model,
+        config: liveConfig,
         callbacks: {
           onopen: () => {
             if (disposed) return;
@@ -475,6 +524,7 @@ export function createVoiceEngine(options = {}) {
     stop,
     interrupt,
     toggleMute,
+    unlockAudio,
     getState: () => state,
     isMuted: () => isMuted,
   };
