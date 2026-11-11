@@ -4,6 +4,7 @@ import { constructMetadata, SITE_URL, SHARED_JSONLD_GRAPH } from "../lib/seo";
 import { PublicNavbar } from "../components/PublicNavbar";
 import { PublicFooter } from "../components/PublicFooter";
 import { HeroInteractiveDemo } from "../components/landing/HeroInteractiveDemo";
+import { ProductShowcase } from "../components/landing/ProductShowcase";
 import { CognitiveCycleInteractive } from "../components/landing/CognitiveCycleInteractive";
 import { RetentionSimulator } from "../components/landing/RetentionSimulator";
 
@@ -229,7 +230,7 @@ export default function HomePage() {
                   <span>Start Learning Free</span>
                   <ArrowRightIcon />
                 </Link>
-                <a href="#platform-tour" className="prem-btn prem-btn-secondary">
+                <a href="#product-showcase" className="prem-btn prem-btn-secondary">
                   <span>Explore the Platform</span>
                 </a>
               </div>
@@ -249,6 +250,9 @@ export default function HomePage() {
             <HeroInteractiveDemo />
           </div>
         </section>
+
+        {/* ── DEDICATED PRODUCT SHOWCASE: 7 CORE PILLARS ──────────────────────────── */}
+        <ProductShowcase />
 
         {/* ── PRODUCT STORYTELLING: THE 6-STAGE COGNITIVE JOURNEY ────────────────── */}
         <section id="platform-tour" className="prem-section" aria-labelledby="story-heading">
