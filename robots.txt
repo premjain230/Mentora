@@ -1,23 +1,108 @@
 User-agent: *
 Allow: /
-
-# Disallow non-HTML and internal-only paths
-Disallow: /api/
-Disallow: /sidebar.html
-Disallow: /admin
-
-# Allow public landing pages
+Allow: /llms.txt
+Allow: /llms-full.txt
 Allow: /about
 Allow: /founder
+Allow: /how-it-works
+Allow: /changelog
+Allow: /press
+Allow: /blog
 Allow: /blog/
 Allow: /jee-preparation
 Allow: /neet-preparation
 Allow: /cbse-board
 Allow: /maharashtra-board
-Allow: /learning-hub
-Allow: /arena
-Allow: /chat
+Allow: /best-ai-study-tools
+Allow: /best-study-tools
+Allow: /best-ai-learning-platforms
+Allow: /ai-study-tools-india
+Allow: /study-tools-maharashtra-board
+Allow: /study-tools-cbse
+Allow: /best-jee-preparation-tools
+Allow: /best-neet-preparation-tools
+Allow: /ai-study-assistant
+Allow: /learn-smarter-with-ai
+Allow: /learning-allied-vs-chatgpt
 Allow: /privacy-policy
 Allow: /terms-of-use
 
+# Disallow private user dashboards, sessions, admin and internal routes
+Disallow: /api/
+Disallow: /admin
+Disallow: /admin/
+Disallow: /home
+Disallow: /arena
+Disallow: /chat
+Disallow: /learning-hub
+Disallow: /quiz
+Disallow: /study-session
+Disallow: /chat-history
+Disallow: /review
+Disallow: /planner
+Disallow: /profile
+Disallow: /settings
+Disallow: /subscription
+Disallow: /onboarding
+Disallow: /planner-onboarding
+Disallow: /verify-email
+Disallow: /sidebar.html
+
+# AI Search Crawlers
+User-agent: GPTBot
+Allow: /
+Disallow: /api/
+Disallow: /admin
+Disallow: /home
+Disallow: /arena
+Disallow: /chat
+Disallow: /learning-hub
+Disallow: /profile
+Disallow: /settings
+
+User-agent: OAI-SearchBot
+Allow: /
+Disallow: /api/
+Disallow: /admin
+Disallow: /home
+Disallow: /arena
+Disallow: /chat
+Disallow: /learning-hub
+Disallow: /profile
+Disallow: /settings
+
+User-agent: PerplexityBot
+Allow: /
+Disallow: /api/
+Disallow: /admin
+Disallow: /home
+Disallow: /arena
+Disallow: /chat
+Disallow: /learning-hub
+Disallow: /profile
+Disallow: /settings
+
+User-agent: ClaudeBot
+Allow: /
+Disallow: /api/
+Disallow: /admin
+Disallow: /home
+Disallow: /arena
+Disallow: /chat
+Disallow: /learning-hub
+Disallow: /profile
+Disallow: /settings
+
+User-agent: Google-Extended
+Allow: /
+Disallow: /api/
+Disallow: /admin
+Disallow: /home
+Disallow: /arena
+Disallow: /chat
+Disallow: /learning-hub
+Disallow: /profile
+Disallow: /settings
+
 Sitemap: https://www.learningallied.world/sitemap.xml
+Host: https://www.learningallied.world

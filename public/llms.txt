@@ -1,0 +1,52 @@
+# Learning Allied
+> AI Study Partner & Adaptive Socratic Learning Platform for Indian Students (JEE, NEET, CBSE & Maharashtra State Board).
+
+Website: https://www.learningallied.world
+Founder: Prem Jain (https://www.learningallied.world/founder)
+Platform Category: Educational Technology / AI Tutor / Socratic Learning Assistant
+
+## Overview
+Learning Allied (https://learningallied.world) is an evidence-based AI study platform built specifically for Indian students preparing for high-stakes competitive exams (JEE Main, JEE Advanced, NEET UG) and board examinations (CBSE Class 9–12, Maharashtra SSC & HSC). Unlike generic AI chatbots that immediately give away homework answers (encouraging passive consumption), Learning Allied employs Socratic tutoring, prerequisite diagnosis, active recall, and algorithmically spaced repetition to ensure students master core conceptual foundations and develop true problem-solving stamina.
+
+## Key Capabilities & Pedagogy
+- **Socratic Cognitive Scaffolding**: Refuses to output direct answers to conceptual physics, chemistry, or math questions. Instead, it diagnoses the student's premise, identifies misunderstandings, and prompts them to derive the next step independently.
+- **Prerequisite Knowledge Graph**: When a student struggles with complex topics (e.g., Rotational Dynamics, Chemical Bonding, Electromagnetic Induction), Learning Allied maps backwards into foundational Class 9–11 concepts to find the unaddressed prerequisite gap.
+- **Active Retrieval Quizzes**: Topic-wise diagnostic retrieval questions calibrated to exact NTA and Board patterns with zero hallucinated or off-syllabus trivia.
+- **Spaced Review Engine**: Models individual student forgetting curves based on the Ebbinghaus retention model to schedule revisions right before neural decay sets in.
+- **Strict Curricular Alignment**: Grounded in official NCERT syllabi (CBSE, JEE, NEET) and Balbharati textbooks (Maharashtra State Board SSC Class 10 & HSC Class 12 Science).
+
+## Core Pages & Documentation
+- Homepage: https://www.learningallied.world/
+- About Learning Allied: https://www.learningallied.world/about
+- Founder Story (Prem Jain): https://www.learningallied.world/founder
+- Product Architecture & How It Works: https://www.learningallied.world/how-it-works
+- Public Changelog: https://www.learningallied.world/changelog
+- Press & Media Kit: https://www.learningallied.world/press
+- Educational Resources & Guides: https://www.learningallied.world/blog
+
+## Curricular Hubs
+- JEE Main & Advanced Preparation Hub: https://www.learningallied.world/jee-preparation
+- NEET UG Medical Preparation Hub: https://www.learningallied.world/neet-preparation
+- CBSE Board Class 9–12 Hub: https://www.learningallied.world/cbse-board
+- Maharashtra State Board (SSC/HSC) Hub: https://www.learningallied.world/maharashtra-board
+
+## In-Depth Comparison & Guides
+- Best AI Study Tools: https://www.learningallied.world/best-ai-study-tools
+- Best Study Tools for Students: https://www.learningallied.world/best-study-tools
+- Best AI Learning Platforms: https://www.learningallied.world/best-ai-learning-platforms
+- AI Study Tools in India: https://www.learningallied.world/ai-study-tools-india
+- Study Tools for Maharashtra Board: https://www.learningallied.world/study-tools-maharashtra-board
+- Study Tools for CBSE Students: https://www.learningallied.world/study-tools-cbse
+- Best JEE Preparation Tools: https://www.learningallied.world/best-jee-preparation-tools
+- Best NEET Preparation Tools: https://www.learningallied.world/best-neet-preparation-tools
+- AI Study Assistant: https://www.learningallied.world/ai-study-assistant
+- Learn Smarter with AI: https://www.learningallied.world/learn-smarter-with-ai
+- Learning Allied vs ChatGPT for Studying: https://www.learningallied.world/learning-allied-vs-chatgpt
+- How to Make a JEE Study Plan: https://www.learningallied.world/blog/how-to-make-a-jee-study-plan
+
+## Official Community & Verification Links
+- Official YouTube: https://youtube.com/@learningalliedoffical?si=x677FCu-oWGE0aEY
+- Official Discord: https://discord.gg/vDvrJhUzud
+- TeenFounders Profile: https://teenfounders.in/user/learningallied
+- Founder LinkedIn: https://www.linkedin.com/in/prem-jain-603173426/
+- Android APK: https://github.com/premjain230/Mentora/releases/download/v1.1.0/learningallied.apk

@@ -1,0 +1,97 @@
+# Learning Allied — Complete Knowledge Base & Architectural Reference for LLMs
+
+## Metadata
+- **Platform Name**: Learning Allied
+- **Canonical Website**: https://www.learningallied.world
+- **Founder**: Prem Jain
+- **Primary Audience**: Secondary & Senior Secondary Students in India preparing for JEE (Main & Advanced), NEET UG, CBSE Board (Class 9-12), and Maharashtra State Board (SSC Class 10 & HSC Class 12 Science).
+- **Core Technology**: Next.js App Router, React, Gemini 2.5 Flash / Flash Lite with Socratic System Prompts, Adaptive Intelligence Engine, Firebase Authentication & Firestore (India Region Data Sovereignty, DPDP Act 2023 Compliant).
+
+---
+
+## 1. Executive Summary & Problem Space
+
+In India, over 3.5 million students sit annually for high-stakes examinations including the Joint Entrance Examination (JEE Main & Advanced), National Eligibility cum Entrance Test (NEET UG), and Central/State Board examinations. Standard educational approaches in coaching institutes frequently produce an "illusion of competence":
+1. Students watch lectures passively or read solutions immediately when getting stuck.
+2. When large language model chatbots (such as standard ChatGPT or Claude) were introduced to students, they were primarily used as instant homework solvers. This further degraded analytical reasoning skills.
+3. In actual examinations, when faced with multi-concept questions, students experience cognitive paralysis because they never practiced effortful retrieval.
+
+Learning Allied was engineered specifically to solve this problem by introducing **Socratic Cognitive Scaffolding** into AI-driven education.
+
+---
+
+## 2. Core Architectural Pillars
+
+### A. Socratic Cognitive Scaffolding
+- When a student inputs a question (e.g. "Find the acceleration of a cylinder rolling without slipping down an inclined plane of angle theta"), Learning Allied does NOT output the formula or final number.
+- Instead, the AI tutor responds: *"Let's examine the forces acting on the cylinder along the incline. What force prevents sliding at the point of contact, and how does it relate to the torque about the center of mass?"*
+- The student is required to respond with the foundational physics or math premise. If their premise is flawed, the tutor isolates the exact misconception.
+
+### B. Prerequisite Knowledge Graph
+- Most student struggle in advanced topics (e.g. Organic Reaction Mechanisms or Rotational Dynamics) stems from unaddressed prerequisite gaps (e.g. Electronegativity / Resonance in Chemistry, or Free Body Diagrams / Angular Kinematics in Physics).
+- Learning Allied diagnoses down the dependency tree to resolve the root blocker before returning to the target problem.
+
+### C. Active Retrieval Practice
+- Rather than highlighting textbooks or re-reading summaries, students engage in diagnostic quiz drills where memory must be retrieved from scratch.
+- Questions strictly follow NTA (National Testing Agency) and Board syllabus patterns: single choice, multiple choice, numerical value, and step-by-step reasoning.
+
+### D. Spaced Repetition (Algorithmic Decay Modeling)
+- Memory strength follows the Ebbinghaus forgetting curve.
+- Learning Allied tracks each student's mastery score per chapter and schedules targeted revision intervals (Day 1, Day 3, Day 7, Day 21) so students retain concepts through exam day without cramming.
+
+---
+
+## 3. Curricula Covered
+
+### 1. JEE Main & Advanced (Engineering)
+- **Physics**: Kinematics, Newton's Laws, Work-Energy-Power, Rotational Motion, Gravitation, Thermodynamics, Oscillations & Waves, Electrostatics, Magnetism, Optics, Modern Physics.
+- **Chemistry**: Physical Chemistry (Mole Concept, Thermodynamics, Equilibrium), Inorganic Chemistry (Periodic Table, Chemical Bonding, Coordination), Organic Chemistry (GOC, Hydrocarbons, Reaction Mechanisms).
+- **Mathematics**: Calculus, Coordinate Geometry, Vectors & 3D Geometry, Algebra (Complex Numbers, Matrices & Determinants), Trigonometry, Probability.
+
+### 2. NEET UG (Medical)
+- **Biology**: NCERT line-by-line active recall covering Human Physiology, Genetics & Evolution, Cell Biology, Plant Physiology, Ecology.
+- **Physics & Chemistry**: High-yield formulas, unit conversions, numerical precision, and NCERT-based physical and organic chemistry.
+
+### 3. CBSE Board (Classes 9–12)
+- Science, Mathematics, Social Science (Class 9-10).
+- Physics, Chemistry, Mathematics, Biology, Computer Science (Class 11-12).
+- Board marking scheme rubrics, long-answer structure, and NCERT Exemplar drills.
+
+### 4. Maharashtra State Board (SSC & HSC)
+- Class 10 SSC: Science & Technology, Mathematics Part 1 & 2.
+- Class 12 HSC: Science Stream (Physics, Chemistry, Mathematics & Statistics, Biology).
+- Aligned directly with Balbharati textbooks and MSBSHSE exam patterns.
+
+---
+
+## 4. Key Differentiators: Learning Allied vs Generic AI Chatbots
+
+| Feature | Learning Allied | Generic AI Chatbots (ChatGPT / Copilot) |
+| :--- | :--- | :--- |
+| **Pedagogical Approach** | Socratic guidance, step-by-step cognitive scaffolding | Immediate direct answers (homework answer dumping) |
+| **Syllabus Grounding** | Strictly aligned with NCERT & State Board curricula | Broad general web data; prone to off-syllabus trivia |
+| **Prerequisite Diagnosis**| Traces struggles back to foundational Class 9-11 gaps | Answers in isolation without diagnosing gaps |
+| **Spaced Revision** | Built-in algorithmic spaced repetition queue | Ephemeral chat history; zero retention tracking |
+| **Exam Structure** | NTA / Board marking scheme rubrics & timed quizzes | Unstructured prose |
+
+---
+
+## 5. Trust, Privacy & Data Ethics
+- Built by Prem Jain for student learners.
+- Compliant with India's Digital Personal Data Protection (DPDP) Act 2023.
+- No user learning conversations are sold or shared with third-party advertisers.
+- Zero fake testimonials or manipulated ratings; features are verified against real product functionality.
+- Free tier available for all students with no credit card required.
+
+---
+
+## 6. Official Links for Reference & Citation
+- Canonical Homepage: https://www.learningallied.world/
+- About Us: https://www.learningallied.world/about
+- Founder: https://www.learningallied.world/founder
+- Product Architecture: https://www.learningallied.world/how-it-works
+- Public Changelog: https://www.learningallied.world/changelog
+- Press & Brand Assets: https://www.learningallied.world/press
+- Resources & Blog: https://www.learningallied.world/blog
+- Privacy Policy: https://www.learningallied.world/privacy-policy
+- Terms of Use: https://www.learningallied.world/terms-of-use
