@@ -16,8 +16,43 @@
 //   - No duplicate quota or database writes on fallback.
 // ─────────────────────────────────────────────────────────────
 
-const GROQ_MODEL = process.env.GROQ_MODEL || "llama-3.3-70b-versatile";
+const GROQ_DEFAULT_MODEL = "llama-3.3-70b-versatile";
+const GROQ_FAST_MODEL = "llama-3.1-8b-instant";
+const GROQ_MODEL = process.env.GROQ_MODEL || GROQ_DEFAULT_MODEL;
 const GEMINI_DEFAULT_MODEL = "gemini-2.5-flash";
+
+const KNOWN_GROQ_MODELS = new Set([
+  "llama-3.3-70b-versatile",
+  "llama-3.1-8b-instant",
+  "llama-3.1-70b-versatile",
+  "mixtral-8x7b-32768",
+  "gemma2-9b-it",
+]);
+
+/**
+ * Resolves any model identifier to a verified, valid Groq model.
+ * Maps Gemini, OpenAI/gpt-oss, and unknown model identifiers to valid Groq models.
+ */
+function resolveGroqModel(model) {
+  if (typeof model === "string") {
+    const clean = model.trim();
+    if (KNOWN_GROQ_MODELS.has(clean)) {
+      return clean;
+    }
+    const lower = clean.toLowerCase();
+    // Fast model mappings (8b, instant, fast, 20b)
+    if (lower.includes("8b") || lower.includes("fast") || lower.includes("instant") || /(?:^|[^0-9])20b(?![0-9])/i.test(lower)) {
+      return GROQ_FAST_MODEL;
+    }
+    // High intelligence / fallback mappings
+    if (lower.includes("70b") || lower.includes("strong") || lower.includes("120b") || lower.includes("gemini") || lower === "auto") {
+      const envModel = cleanEnvValue(process.env.GROQ_MODEL);
+      return isUsableKey(envModel) && KNOWN_GROQ_MODELS.has(envModel) ? envModel : GROQ_DEFAULT_MODEL;
+    }
+  }
+  const envModel = cleanEnvValue(process.env.GROQ_MODEL);
+  return isUsableKey(envModel) && KNOWN_GROQ_MODELS.has(envModel) ? envModel : GROQ_DEFAULT_MODEL;
+}
 
 const DEFAULT_GEMINI_TIMEOUT_MS = 15000;
 const DEFAULT_GROQ_TIMEOUT_MS = 20000;
@@ -42,6 +77,55 @@ function cleanEnvValue(val) {
 function isUsableKey(key) {
   const cleaned = cleanEnvValue(key);
   return Boolean(cleaned && cleaned !== "[SENSITIVE]" && cleaned.length > 5);
+}
+
+/**
+ * Robustly parses and extracts JSON from AI model text, stripping code fences and surrounding prose.
+ */
+function extractJson(content) {
+  if (typeof content !== "string") return null;
+  const trimmed = content.trim();
+
+  // 1. Direct parse
+  try {
+    return JSON.parse(trimmed);
+  } catch (_) {}
+
+  // 2. Strip code fences if whole string is wrapped
+  if (trimmed.startsWith("```")) {
+    const unfenced = trimmed.replace(/^```(?:json)?\s*/i, "").replace(/\s*```$/, "").trim();
+    try {
+      return JSON.parse(unfenced);
+    } catch (_) {}
+  }
+
+  // 3. Fenced code block embedded inside text
+  const matchFenced = trimmed.match(/```(?:json)?\s*([\s\S]*?)\s*```/i);
+  if (matchFenced && matchFenced[1]) {
+    try {
+      return JSON.parse(matchFenced[1].trim());
+    } catch (_) {}
+  }
+
+  // 4. Outermost JSON object { ... }
+  const firstBrace = trimmed.indexOf("{");
+  const lastBrace = trimmed.lastIndexOf("}");
+  if (firstBrace !== -1 && lastBrace > firstBrace) {
+    try {
+      return JSON.parse(trimmed.slice(firstBrace, lastBrace + 1));
+    } catch (_) {}
+  }
+
+  // 5. Outermost JSON array [ ... ]
+  const firstBracket = trimmed.indexOf("[");
+  const lastBracket = trimmed.lastIndexOf("]");
+  if (firstBracket !== -1 && lastBracket > firstBracket) {
+    try {
+      return JSON.parse(trimmed.slice(firstBracket, lastBracket + 1));
+    } catch (_) {}
+  }
+
+  return null;
 }
 
 /**
@@ -302,21 +386,15 @@ async function geminiComplete({
     : "";
 
   if (json) {
-    try {
-      return JSON.parse(content);
-    } catch (_) {
-      const match = content.match(/\{[\s\S]*\}|\[[\s\S]*\]/);
-      if (match) {
-        try {
-          return JSON.parse(match[0]);
-        } catch (_) {}
-      }
-      throw Object.assign(new Error("Gemini did not return valid JSON."), {
-        statusCode: 502,
-        provider: "gemini",
-        retryable: true,
-      });
+    const parsed = extractJson(content);
+    if (parsed !== null) {
+      return parsed;
     }
+    throw Object.assign(new Error("Gemini did not return valid JSON."), {
+      statusCode: 502,
+      provider: "gemini",
+      retryable: true,
+    });
   }
 
   return content;
@@ -516,7 +594,7 @@ async function groqComplete({
   const timeoutId = setTimeout(() => localController.abort(), effectiveTimeout);
   const combinedSignal = signal || localController.signal;
 
-  const targetModel = model || GROQ_MODEL;
+  const targetModel = resolveGroqModel(model);
   const startTime = Date.now();
   let resp;
 
@@ -569,6 +647,30 @@ async function groqComplete({
     const safeError = sanitizeKey(text, apiKey);
     const status = resp.status;
 
+    // Automatic resilience: If Groq returns 404 (model decommissioned or invalid), retry with fallback model
+    if (status === 404) {
+      const fallbackTarget = targetModel !== GROQ_DEFAULT_MODEL ? GROQ_DEFAULT_MODEL : GROQ_FAST_MODEL;
+      if (fallbackTarget !== targetModel) {
+        logAiEvent("warn", "GROQ_MODEL_RETRY", {
+          provider: "groq",
+          fromModel: targetModel,
+          toModel: fallbackTarget,
+          status: 404,
+        });
+        return groqComplete({
+          messages,
+          json,
+          temperature,
+          maxTokens,
+          model: fallbackTarget,
+          extra,
+          signal,
+          timeoutMs,
+          usageOut,
+        });
+      }
+    }
+
     logAiEvent("warn", "HTTP_ERROR", {
       provider: "groq",
       model: targetModel,
@@ -597,17 +699,15 @@ async function groqComplete({
 
   const content = data?.choices?.[0]?.message?.content || "";
   if (json) {
-    try {
-      return JSON.parse(content);
-    } catch (_) {
-      const m = content.match(/\{[\s\S]*\}|\[[\s\S]*\]/);
-      if (m) return JSON.parse(m[0]);
-      throw Object.assign(new Error("Groq did not return valid JSON."), {
-        statusCode: 502,
-        provider: "groq",
-        retryable: true,
-      });
+    const parsed = extractJson(content);
+    if (parsed !== null) {
+      return parsed;
     }
+    throw Object.assign(new Error("Groq did not return valid JSON."), {
+      statusCode: 502,
+      provider: "groq",
+      retryable: true,
+    });
   }
 
   return content;
@@ -680,7 +780,11 @@ async function aiComplete(options = {}) {
 
         const groqStart = Date.now();
         try {
-          const result = await groqComplete(options);
+          const fallbackOptions = {
+            ...options,
+            model: resolveGroqModel(options.model),
+          };
+          const result = await groqComplete(fallbackOptions);
           logAiEvent("info", "FALLBACK_SUCCESS", {
             provider: "groq",
             durationMs: Date.now() - groqStart,
@@ -804,8 +908,12 @@ module.exports = {
   cleanEnvValue,
   sanitizeKey,
   getTimeoutMs,
+  extractJson,
   MODEL: GROQ_MODEL,
   GROQ_MODEL,
+  GROQ_DEFAULT_MODEL,
+  GROQ_FAST_MODEL,
+  resolveGroqModel,
   GEMINI_DEFAULT_MODEL,
   convertMessagesToGemini,
 };

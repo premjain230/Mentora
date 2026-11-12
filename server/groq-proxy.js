@@ -30,6 +30,7 @@ const {
   geminiChunkToOpenAiSse,
   openAiSseDone,
   GEMINI_DEFAULT_MODEL,
+  resolveGroqModel,
 } = require("./_ai");
 
 const ALLOWED_MODELS = new Set([
@@ -49,8 +50,6 @@ const ALLOWED_MODELS = new Set([
 const FALLBACK_MODELS = [
   "llama-3.3-70b-versatile",
   "llama-3.1-8b-instant",
-  "openai/gpt-oss-20b",
-  "qwen/qwen3.6-27b",
 ];
 
 const MAX_TOKENS = 4096;
@@ -93,9 +92,10 @@ async function executeGroq(req, res, { messages, max_tokens, temperature, stream
     });
   }
 
+  const primaryGroqModel = resolveGroqModel(requestedModel);
   const modelCandidates = [
-    requestedModel,
-    ...FALLBACK_MODELS.filter((m) => m !== requestedModel),
+    primaryGroqModel,
+    ...FALLBACK_MODELS.filter((m) => m !== primaryGroqModel),
   ];
 
   let groqRes = null;

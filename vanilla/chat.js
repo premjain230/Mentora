@@ -249,6 +249,10 @@ export function mount(root, ctx) {
             els.voiceBar.hidden = false;
             if (els.voiceStatus) els.voiceStatus.textContent = "Listening… Speak naturally";
             if (els.voiceInterrupt) els.voiceInterrupt.hidden = true;
+          } else if (vState === VOICE_STATE.THINKING) {
+            els.voiceBar.hidden = false;
+            if (els.voiceStatus) els.voiceStatus.textContent = "Tutor is thinking…";
+            if (els.voiceInterrupt) els.voiceInterrupt.hidden = true;
           } else if (vState === VOICE_STATE.SPEAKING) {
             els.voiceBar.hidden = false;
             if (els.voiceStatus) els.voiceStatus.textContent = "Tutor is speaking…";
@@ -284,14 +288,51 @@ export function mount(root, ctx) {
             if (waveBars[3]) waveBars[3].style.height = `${h4}px`;
           }
         },
-        onTranscript: ({ text }) => {
+        onTranscript: ({ role, text }) => {
           if (!els.voiceTranscript) return;
           if (text) {
             els.voiceTranscript.hidden = false;
-            els.voiceTranscript.textContent = text;
+            els.voiceTranscript.textContent = (role === "user" ? "You: " : "Tutor: ") + text;
           }
         },
-        onTurnComplete: async ({ text }) => {
+        onTurnComplete: async ({ text, userText }) => {
+          if (!text && !userText) return;
+
+          // If a student user message was transcribed, record it first
+          if (userText && userText.trim()) {
+            const cleanUserText = userText.trim();
+            const userMsg = {
+              id: makeId(),
+              role: "user",
+              content: cleanUserText,
+              mode: "voice",
+            };
+            state.messages = [...state.messages, userMsg];
+            app.transcript.appendMessage(userMsg);
+            app.transcript.scrollToEnd();
+
+            if (user && ctx.db) {
+              try {
+                if (!state.chatId) {
+                  const title = cleanUserText.slice(0, 40) || "Voice Study Session";
+                  const sessionRef = await createChatSession(ctx.db, user.uid, title);
+                  state.chatId = sessionRef.id;
+                  setTitle(title);
+                  updateHistoryUrl(state.chatId);
+                  app.rail.setActive(state.chatId);
+                  void app.rail.refresh();
+                }
+                await saveChatMessage(ctx.db, user.uid, state.chatId, {
+                  role: "user",
+                  content: cleanUserText,
+                  mode: "voice",
+                });
+              } catch (err) {
+                console.warn("[voice] could not persist user voice turn:", err);
+              }
+            }
+          }
+
           if (!text || !text.trim()) return;
           const cleanText = text.trim();
 

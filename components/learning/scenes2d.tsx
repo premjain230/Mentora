@@ -335,6 +335,12 @@ export function GraphScene({ params }: SceneProps) {
   const py = (y: number) => 260 - ((y - yMin) / (yMax - yMin)) * 220;
 
   const points = useMemo(() => {
+    const xMin = -6;
+    const xMax = 6;
+    const yMin = -8;
+    const yMax = 10;
+    const px = (x: number) => 40 + ((x - xMin) / (xMax - xMin)) * 540;
+    const py = (y: number) => 260 - ((y - yMin) / (yMax - yMin)) * 220;
     const out: string[] = [];
     for (let i = 0; i <= 120; i++) {
       const x = xMin + (i / 120) * (xMax - xMin);
@@ -683,7 +689,7 @@ export function AtomScene({ params }: SceneProps) {
           return <circle key={i} cx={260 + Math.cos(angle) * radius} cy={150 + Math.sin(angle) * radius} r="5" fill={i < atom.protons ? "var(--accent3, #f87171)" : "var(--text-muted, #888)"} />;
         })}
         <text x="260" y="26" textAnchor="middle" fill="var(--text-primary, #eee)" fontSize="15" fontWeight="700">{element}</text>
-        <text x="260" y="286" textAnchor="middle" fill="var(--text-muted, #888)" fontSize="10.5">Simplified shell model, not the electron's actual path</text>
+        <text x="260" y="286" textAnchor="middle" fill="var(--text-muted, #888)" fontSize="10.5">{"Simplified shell model, not the electron's actual path"}</text>
       </svg>
       <p className="lv-readout">
         Protons {atom.protons} · Neutrons {atom.neutrons} · Electrons {atom.shells.reduce((a, b) => a + b, 0)} · Valence electrons {atom.shells[atom.shells.length - 1]}

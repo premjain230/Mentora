@@ -53,8 +53,9 @@ export default function OnboardingPage() {
     if (!uid) return;
     setLoading(true);
     try {
-      const { db } = await initFirebase();
+      const { auth, db } = await initFirebase();
       if (!db) return;
+      const currentUser = auth?.currentUser;
 
       const profileRef = doc(db, "users", uid, "learning", "profile");
       await setDoc(
@@ -65,6 +66,21 @@ export default function OnboardingPage() {
           targetExam,
           dailyHours,
           subjects: prioritySubjects,
+          onboardingComplete: true,
+          updatedAt: serverTimestamp(),
+        },
+        { merge: true }
+      );
+
+      // Mirror high-level preferences to root user doc for global controller compatibility
+      await setDoc(
+        doc(db, "users", uid),
+        {
+          uid,
+          displayName: currentUser?.displayName || "Student",
+          email: currentUser?.email || null,
+          exam: targetExam,
+          grade,
           onboardingComplete: true,
           updatedAt: serverTimestamp(),
         },

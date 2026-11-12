@@ -9,77 +9,89 @@ export interface SceneProps {
 
 /* ── 1. Motion Simulation (Distance vs Displacement / Projectile) ────────── */
 
+function ProjectileMotionSubscene({
+  params,
+  progress,
+  setProgress,
+}: {
+  params: Record<string, unknown>;
+  progress: number;
+  setProgress: React.Dispatch<React.SetStateAction<number>>;
+}) {
+  const u = clamp(num(params.u, 25), 10, 50);
+  const theta = clamp(num(params.theta, 45), 15, 75);
+  const rad = (theta * Math.PI) / 180;
+  const g = 9.8;
+  const tFlight = (2 * u * Math.sin(rad)) / g;
+  const hMax = (u * u * Math.sin(rad) * Math.sin(rad)) / (2 * g);
+  const rMax = (u * u * Math.sin(2 * rad)) / g;
+  const currentT = (progress / 100) * tFlight;
+  const currentX = u * Math.cos(rad) * currentT;
+  const currentY = u * Math.sin(rad) * currentT - 0.5 * g * currentT * currentT;
+
+  // Scale to SVG 620x260
+  const scaleX = 480 / Math.max(rMax, 1);
+  const scaleY = 160 / Math.max(hMax, 1);
+  const svgX = 60 + currentX * scaleX;
+  const svgY = 220 - currentY * scaleY;
+
+  // Build parabola points
+  const parabolaPoints = useMemo(() => {
+    const pts = [];
+    const steps = 30;
+    for (let i = 0; i <= steps; i++) {
+      const t = (i / steps) * tFlight;
+      const x = 60 + (u * Math.cos(rad) * t) * scaleX;
+      const y = 220 - (u * Math.sin(rad) * t - 0.5 * g * t * t) * scaleY;
+      pts.push(`${x.toFixed(1)},${y.toFixed(1)}`);
+    }
+    return pts.join(" ");
+  }, [u, rad, tFlight, scaleX, scaleY]);
+
+  return (
+    <div className="lv-scene">
+      <svg viewBox="0 0 620 280" role="img" aria-label="2D Projectile Motion Simulation">
+        <line x1="40" y1="220" x2="580" y2="220" stroke="var(--border-strong, #555)" strokeWidth="2" />
+        {/* Ground ticks */}
+        <text x="60" y="240" fill="var(--text-muted, #888)" fontSize="11" textAnchor="middle">0 m</text>
+        <text x={60 + rMax * scaleX} y="240" fill="var(--text-muted, #888)" fontSize="11" textAnchor="middle">R = {rMax.toFixed(1)} m</text>
+        {/* Parabola path */}
+        <polyline points={parabolaPoints} fill="none" stroke="var(--accent, #3b82f6)" strokeWidth="2.5" strokeDasharray="4 4" opacity="0.8" />
+        {/* Projectile ball */}
+        <circle cx={svgX} cy={svgY} r="7" fill="var(--accent-strong, #ef4444)" stroke="#fff" strokeWidth="2" />
+        {/* Velocity vectors */}
+        <line x1={svgX} y1={svgY} x2={svgX + (u * Math.cos(rad) * 0.8)} y2={svgY} stroke="#10b981" strokeWidth="2" markerEnd="url(#arrow-green)" />
+        <line x1={svgX} y1={svgY} x2={svgX} y2={svgY - ((u * Math.sin(rad) - g * currentT) * 0.8)} stroke="#3b82f6" strokeWidth="2" />
+        {/* Readout at ball */}
+        <text x={svgX} y={svgY - 14} fill="var(--text-primary, #eee)" fontSize="11" textAnchor="middle">
+          ({currentX.toFixed(1)}m, {Math.max(0, currentY).toFixed(1)}m)
+        </text>
+      </svg>
+      <p className="lv-readout">
+        Time: <strong>{currentT.toFixed(2)}s</strong> / {tFlight.toFixed(2)}s · H_max: <strong>{hMax.toFixed(1)} m</strong> · Range: <strong>{rMax.toFixed(1)} m</strong>
+      </p>
+      <div className="lv-controls" style={{ display: "flex", gap: "12px", alignItems: "center" }}>
+        <label style={{ fontSize: "12px", color: "var(--text-secondary, #bbb)" }}>Trajectory Time Scrub:</label>
+        <input
+          type="range"
+          min="0"
+          max="100"
+          value={progress}
+          onChange={(e) => setProgress(Number(e.target.value))}
+          style={{ flex: 1, accentColor: "var(--accent, #3b82f6)" }}
+        />
+      </div>
+    </div>
+  );
+}
+
 export function MotionSimulationScene({ params }: SceneProps) {
   const mode = textParam(params.mode, "distance_displacement");
   const [progress, setProgress] = useState(50);
   const [showPath, setShowPath] = useState(true);
 
   if (mode === "projectile_motion") {
-    const u = clamp(num(params.u, 25), 10, 50);
-    const theta = clamp(num(params.theta, 45), 15, 75);
-    const rad = (theta * Math.PI) / 180;
-    const g = 9.8;
-    const tFlight = (2 * u * Math.sin(rad)) / g;
-    const hMax = (u * u * Math.sin(rad) * Math.sin(rad)) / (2 * g);
-    const rMax = (u * u * Math.sin(2 * rad)) / g;
-    const currentT = (progress / 100) * tFlight;
-    const currentX = u * Math.cos(rad) * currentT;
-    const currentY = u * Math.sin(rad) * currentT - 0.5 * g * currentT * currentT;
-
-    // Scale to SVG 620x260
-    const scaleX = 480 / Math.max(rMax, 1);
-    const scaleY = 160 / Math.max(hMax, 1);
-    const svgX = 60 + currentX * scaleX;
-    const svgY = 220 - currentY * scaleY;
-
-    // Build parabola points
-    const parabolaPoints = useMemo(() => {
-      const pts = [];
-      const steps = 30;
-      for (let i = 0; i <= steps; i++) {
-        const t = (i / steps) * tFlight;
-        const x = 60 + (u * Math.cos(rad) * t) * scaleX;
-        const y = 220 - (u * Math.sin(rad) * t - 0.5 * g * t * t) * scaleY;
-        pts.push(`${x.toFixed(1)},${y.toFixed(1)}`);
-      }
-      return pts.join(" ");
-    }, [u, theta, tFlight, scaleX, scaleY]);
-
-    return (
-      <div className="lv-scene">
-        <svg viewBox="0 0 620 280" role="img" aria-label="2D Projectile Motion Simulation">
-          <line x1="40" y1="220" x2="580" y2="220" stroke="var(--border-strong, #555)" strokeWidth="2" />
-          {/* Ground ticks */}
-          <text x="60" y="240" fill="var(--text-muted, #888)" fontSize="11" textAnchor="middle">0 m</text>
-          <text x={60 + rMax * scaleX} y="240" fill="var(--text-muted, #888)" fontSize="11" textAnchor="middle">R = {rMax.toFixed(1)} m</text>
-          {/* Parabola path */}
-          <polyline points={parabolaPoints} fill="none" stroke="var(--accent, #3b82f6)" strokeWidth="2.5" strokeDasharray="4 4" opacity="0.8" />
-          {/* Projectile ball */}
-          <circle cx={svgX} cy={svgY} r="7" fill="var(--accent-strong, #ef4444)" stroke="#fff" strokeWidth="2" />
-          {/* Velocity vectors */}
-          <line x1={svgX} y1={svgY} x2={svgX + (u * Math.cos(rad) * 0.8)} y2={svgY} stroke="#10b981" strokeWidth="2" markerEnd="url(#arrow-green)" />
-          <line x1={svgX} y1={svgY} x2={svgX} y2={svgY - ((u * Math.sin(rad) - g * currentT) * 0.8)} stroke="#3b82f6" strokeWidth="2" />
-          {/* Readout at ball */}
-          <text x={svgX} y={svgY - 14} fill="var(--text-primary, #eee)" fontSize="11" textAnchor="middle">
-            ({currentX.toFixed(1)}m, {Math.max(0, currentY).toFixed(1)}m)
-          </text>
-        </svg>
-        <p className="lv-readout">
-          Time: <strong>{currentT.toFixed(2)}s</strong> / {tFlight.toFixed(2)}s · H_max: <strong>{hMax.toFixed(1)} m</strong> · Range: <strong>{rMax.toFixed(1)} m</strong>
-        </p>
-        <div className="lv-controls" style={{ display: "flex", gap: "12px", alignItems: "center" }}>
-          <label style={{ fontSize: "12px", color: "var(--text-secondary, #bbb)" }}>Trajectory Time Scrub:</label>
-          <input
-            type="range"
-            min="0"
-            max="100"
-            value={progress}
-            onChange={(e) => setProgress(Number(e.target.value))}
-            style={{ flex: 1, accentColor: "var(--accent, #3b82f6)" }}
-          />
-        </div>
-      </div>
-    );
+    return <ProjectileMotionSubscene params={params} progress={progress} setProgress={setProgress} />;
   }
 
   // Default: Distance vs Displacement

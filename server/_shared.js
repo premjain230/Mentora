@@ -66,6 +66,16 @@ function rateLimit(req, res, { name = "default", limit = 10 } = {}) {
 }
 
 function readJsonBody(req) {
+  if (req && req.body && typeof req.body === "object") {
+    return Promise.resolve(req.body);
+  }
+  if (req && typeof req.body === "string") {
+    try {
+      return Promise.resolve(JSON.parse(req.body));
+    } catch (e) {
+      return Promise.reject(Object.assign(new Error("Invalid JSON body."), { statusCode: 400 }));
+    }
+  }
   return new Promise((resolve, reject) => {
     let body = "";
     req.on("data", (chunk) => { body += chunk; });

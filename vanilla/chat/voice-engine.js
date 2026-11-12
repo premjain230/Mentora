@@ -27,6 +27,7 @@ export const VOICE_STATE = {
   REQUESTING_PERMISSION: "requesting-permission",
   CONNECTING: "connecting",
   LISTENING: "listening",
+  THINKING: "thinking",
   SPEAKING: "speaking",
   INTERRUPTED: "interrupted",
   MUTED: "muted",
@@ -157,6 +158,7 @@ export function createVoiceEngine(options = {}) {
   let firstAudioFramesLogged = false;
   let sessionTimer = null;
   let currentModelTurnText = "";
+  let currentUserTurnText = "";
   let disposed = false;
 
   function setState(nextState) {
@@ -204,7 +206,16 @@ export function createVoiceEngine(options = {}) {
    * Processes incoming microphone samples, downsamples, and buffers chunks for streaming.
    */
   function handleIncomingInputSamples(inputSamples) {
-    if (!session || state === VOICE_STATE.MUTED || isMuted || disposed) return;
+    if (
+      !session ||
+      disposed ||
+      isMuted ||
+      (state !== VOICE_STATE.LISTENING &&
+        state !== VOICE_STATE.SPEAKING &&
+        state !== VOICE_STATE.INTERRUPTED)
+    ) {
+      return;
+    }
 
     // 1. Calculate RMS volume for live waveform indicator
     let sum = 0;
@@ -334,7 +345,11 @@ export function createVoiceEngine(options = {}) {
         const blob = new Blob([AUDIO_WORKLET_CODE], { type: "application/javascript" });
         const blobUrl = URL.createObjectURL(blob);
         await inputAudioCtx.audioWorklet.addModule(blobUrl);
-        URL.revokeObjectURL(blobUrl);
+        setTimeout(() => {
+          try {
+            URL.revokeObjectURL(blobUrl);
+          } catch (_) {}
+        }, 10000);
 
         workletNode = new AudioWorkletNode(inputAudioCtx, "gemini-audio-capture-processor");
         workletNode.port.onmessage = (event) => {
@@ -435,12 +450,46 @@ export function createVoiceEngine(options = {}) {
     if (serverContent.interrupted) {
       stopPlayback();
       currentModelTurnText = "";
+      currentUserTurnText = "";
       logDiagnostic("INTERRUPT_TRIGGERED");
       setState(isMuted ? VOICE_STATE.MUTED : VOICE_STATE.LISTENING);
       return;
     }
 
-    // 2. Real-time text transcript from model output (outputTranscription)
+    // 2a. Real-time text transcript from user input (inputTranscription)
+    const inTranscription =
+      serverContent.inputTranscription || serverContent.input_transcription;
+    if (inTranscription && inTranscription.text) {
+      currentUserTurnText += inTranscription.text;
+      const isFinal = Boolean(inTranscription.finished);
+      onTranscript({
+        role: "user",
+        text: currentUserTurnText,
+        isFinal,
+      });
+      if (isFinal && state === VOICE_STATE.LISTENING) {
+        setState(VOICE_STATE.THINKING);
+      }
+    }
+
+    // 2b. User turn parts fallback
+    const userTurn = serverContent.userTurn || serverContent.user_turn;
+    if (userTurn && Array.isArray(userTurn.parts)) {
+      const uText = userTurn.parts.map((p) => p.text || "").join("").trim();
+      if (uText) {
+        currentUserTurnText = uText;
+        onTranscript({
+          role: "user",
+          text: currentUserTurnText,
+          isFinal: true,
+        });
+        if (state === VOICE_STATE.LISTENING) {
+          setState(VOICE_STATE.THINKING);
+        }
+      }
+    }
+
+    // 2c. Real-time text transcript from model output (outputTranscription)
     const outTranscription =
       serverContent.outputTranscription || serverContent.output_transcription;
     if (outTranscription && outTranscription.text) {
@@ -450,6 +499,9 @@ export function createVoiceEngine(options = {}) {
         text: currentModelTurnText,
         isFinal: false,
       });
+      if (state === VOICE_STATE.LISTENING && scheduledSources.length === 0) {
+        setState(VOICE_STATE.THINKING);
+      }
     }
 
     // 3. Model turn audio chunks and fallback text
@@ -480,6 +532,9 @@ export function createVoiceEngine(options = {}) {
             text: currentModelTurnText,
             isFinal: false,
           });
+          if (state === VOICE_STATE.LISTENING && scheduledSources.length === 0) {
+            setState(VOICE_STATE.THINKING);
+          }
         }
       }
     }
@@ -487,13 +542,22 @@ export function createVoiceEngine(options = {}) {
     // 4. Turn complete
     if (serverContent.turnComplete || serverContent.turn_complete) {
       const finishedText = currentModelTurnText.trim();
+      const finishedUserText = currentUserTurnText.trim();
       currentModelTurnText = "";
-      if (finishedText) {
-        logDiagnostic("GEMINI_RESPONSE_RECEIVED", { textLength: finishedText.length });
+      currentUserTurnText = "";
+      if (finishedText || finishedUserText) {
+        logDiagnostic("GEMINI_RESPONSE_RECEIVED", {
+          textLength: finishedText.length,
+          userTextLength: finishedUserText.length,
+        });
         onTurnComplete({
           role: "assistant",
           text: finishedText,
+          userText: finishedUserText,
         });
+      }
+      if (scheduledSources.length === 0 && state !== VOICE_STATE.ENDED) {
+        setState(isMuted ? VOICE_STATE.MUTED : VOICE_STATE.LISTENING);
       }
     }
   }
@@ -508,6 +572,7 @@ export function createVoiceEngine(options = {}) {
 
     disposed = false;
     currentModelTurnText = "";
+    currentUserTurnText = "";
     nextPlayTime = 0;
     isMuted = false;
     audioChunksSentCount = 0;
@@ -529,6 +594,8 @@ export function createVoiceEngine(options = {}) {
 
       const liveConfig = {
         responseModalities: ["AUDIO"],
+        inputAudioTranscription: {},
+        outputAudioTranscription: {},
       };
 
       // Only pass systemInstruction / speechConfig if not already embedded in token constraints

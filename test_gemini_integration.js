@@ -146,6 +146,7 @@ async function runTests() {
   let receivedGeminiBody = null;
   let geminiCalls = 0;
   let groqCalls = 0;
+  let lastGroqModel = null;
   let serverSleepMs = 0;
 
   const mockServer = http.createServer(async (req, res) => {
@@ -243,6 +244,16 @@ async function runTests() {
       // Mock Groq endpoint
       if (req.url.includes("/openai/v1/chat/completions")) {
         groqCalls++;
+        try {
+          const parsed = JSON.parse(body);
+          lastGroqModel = parsed.model;
+        } catch (_) {}
+
+        if (mockMode === "groq-404-once" && groqCalls === 1) {
+          res.writeHead(404, { "Content-Type": "application/json" });
+          return res.end(JSON.stringify({ error: { message: "The model does not exist or you do not have access." } }));
+        }
+
         if (mockMode === "both-fail") {
           res.writeHead(503, { "Content-Type": "application/json" });
           return res.end(JSON.stringify({ error: { message: "Groq service unavailable" } }));
@@ -793,7 +804,74 @@ async function runTests() {
   });
 
   // ──────────────────────────────────────────────────────────────────────────
-  // 4. Clean up mock server
+  // 4. Critical Production Bug Fix Regression Tests (Fallback + Voice)
+  // ──────────────────────────────────────────────────────────────────────────
+  console.log("\n[Suite 4] AI Provider Fallback & Live Voice Regression Suite");
+
+  const {
+    resolveGroqModel,
+    GROQ_DEFAULT_MODEL,
+    GROQ_FAST_MODEL,
+    groqComplete,
+  } = require("./server/_ai");
+
+  test("resolveGroqModel translates Gemini and mock models into valid Groq production models", () => {
+    assert.strictEqual(resolveGroqModel("gemini-2.5-flash"), GROQ_DEFAULT_MODEL);
+    assert.strictEqual(resolveGroqModel("gemini-1.5-pro"), GROQ_DEFAULT_MODEL);
+    assert.strictEqual(resolveGroqModel("openai/gpt-oss-120b"), GROQ_DEFAULT_MODEL);
+    assert.strictEqual(resolveGroqModel("openai/gpt-oss-20b"), GROQ_FAST_MODEL);
+    assert.strictEqual(resolveGroqModel("llama-3.1-8b-instant"), "llama-3.1-8b-instant");
+    assert.strictEqual(resolveGroqModel("auto"), GROQ_DEFAULT_MODEL);
+    assert.strictEqual(resolveGroqModel(undefined), GROQ_DEFAULT_MODEL);
+  });
+
+  await testAsync("Gemini failure safely sanitizes model name so Groq never receives invalid model string", async () => {
+    mockMode = "gemini-429";
+    lastGroqModel = null;
+    groqCalls = 0;
+
+    const res = await aiComplete({
+      model: "gemini-2.5-flash",
+      messages: [{ role: "user", content: "What is the speed of light?" }],
+      json: true,
+    });
+
+    assert.ok(res, "Fallback response must be returned");
+    assert.strictEqual(lastGroqModel, GROQ_DEFAULT_MODEL, `Groq should receive ${GROQ_DEFAULT_MODEL}, received: ${lastGroqModel}`);
+    assert.ok(groqCalls >= 1, "Groq should have been called on fallback");
+  });
+
+  await testAsync("Groq 404 (model decommissioned) automatically recovers with default fallback model", async () => {
+    mockMode = "groq-404-once";
+    groqCalls = 0;
+
+    const res = await groqComplete({
+      model: "llama-3.1-70b-versatile",
+      messages: [{ role: "user", content: "Explain momentum" }],
+      json: true,
+    });
+
+    assert.ok(res, "Groq must succeed on retry after initial 404");
+    assert.strictEqual(groqCalls, 2, "Groq should have attempted twice (initial 404 -> retry 200)");
+  });
+
+  const { createLiveVoiceToken, buildVoiceTutorInstruction } = require("./server/live-token");
+
+  test("Voice tutor instruction includes pedagogical and language constraints", () => {
+    const instr = buildVoiceTutorInstruction({
+      board: "CBSE",
+      classNum: 10,
+      subject: "Science",
+      language: "hi",
+    });
+    assert.ok(instr.includes("CBSE"));
+    assert.ok(instr.includes("Class: 10"));
+    assert.ok(instr.includes("Hindi"));
+    assert.ok(instr.includes("Socratic voice tutor"));
+  });
+
+  // ──────────────────────────────────────────────────────────────────────────
+  // 5. Clean up mock server
   // ──────────────────────────────────────────────────────────────────────────
   global.fetch = realFetch;
   mockServer.close();

@@ -29,6 +29,7 @@ const { applyCors, rateLimit, readJsonBody } = require("./_shared");
 const CANDIDATE_MODELS = [
   process.env.GEMINI_LIVE_MODEL,
   "models/gemini-2.0-flash",
+  "gemini-2.0-flash",
   "models/gemini-2.0-flash-exp",
   "models/gemini-2.5-flash-native-audio-preview-12-2025",
 ].filter(Boolean);
@@ -186,7 +187,7 @@ async function createLiveVoiceToken(studentContext = {}) {
 
   // Try candidate models in order of stability
   for (const model of CANDIDATE_MODELS) {
-    // Strategy A: Full constraints (model, responseModalities, systemInstruction, speechConfig)
+    // Strategy A: Full constraints (model, responseModalities, transcription, systemInstruction, speechConfig)
     try {
       tokenResponse = await client.authTokens.create({
         config: {
@@ -197,6 +198,8 @@ async function createLiveVoiceToken(studentContext = {}) {
             model,
             config: {
               responseModalities: ["AUDIO"],
+              inputAudioTranscription: {},
+              outputAudioTranscription: {},
               systemInstruction: {
                 parts: [{ text: systemInstruction }],
               },
@@ -218,7 +221,7 @@ async function createLiveVoiceToken(studentContext = {}) {
       }
     } catch (err) {
       lastError = err;
-      // Strategy B: Minimal constraints (model, responseModalities)
+      // Strategy B: Minimal constraints (model, responseModalities, transcription)
       try {
         tokenResponse = await client.authTokens.create({
           config: {
@@ -229,6 +232,8 @@ async function createLiveVoiceToken(studentContext = {}) {
               model,
               config: {
                 responseModalities: ["AUDIO"],
+                inputAudioTranscription: {},
+                outputAudioTranscription: {},
               },
             },
           },
@@ -241,6 +246,25 @@ async function createLiveVoiceToken(studentContext = {}) {
       } catch (innerErr) {
         lastError = innerErr;
       }
+    }
+  }
+
+  // Strategy C: Unconstrained ephemeral token (client supplies model and config at connect time)
+  if (!tokenResponse || !tokenResponse.name) {
+    try {
+      tokenResponse = await client.authTokens.create({
+        config: {
+          uses: 1,
+          expireTime,
+          newSessionExpireTime,
+        },
+      });
+      if (tokenResponse && tokenResponse.name) {
+        successfulModel = CANDIDATE_MODELS[0] || "models/gemini-2.0-flash";
+        hasEmbeddedConstraints = false;
+      }
+    } catch (unconstrainedErr) {
+      lastError = unconstrainedErr;
     }
   }
 

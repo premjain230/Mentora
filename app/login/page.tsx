@@ -14,6 +14,26 @@ import { initFirebase } from "../../lib/firebase";
 
 const SUPPORT_EMAIL = "hello@learningallied.com";
 
+async function syncGoogleUser(user: any) {
+  try {
+    const { db } = await initFirebase();
+    if (!db || !user?.uid) return;
+    const { doc, setDoc, serverTimestamp } = await import("firebase/firestore");
+    await setDoc(
+      doc(db, "users", user.uid),
+      {
+        uid: user.uid,
+        displayName: user.displayName || "Student",
+        email: user.email,
+        updatedAt: serverTimestamp(),
+      },
+      { merge: true }
+    );
+  } catch (syncErr) {
+    console.warn("Failed to sync Google user document:", syncErr);
+  }
+}
+
 function authErrorMessage(error: any, fallback: string): string {
   const code = error?.code as string | undefined;
   const message = String(error?.message || "");
@@ -223,6 +243,7 @@ export default function LoginPage() {
         if (!auth) return;
         const result = await getRedirectResult(auth);
         if (!cancelled && result?.user) {
+          await syncGoogleUser(result.user);
           router.push(result.user.emailVerified ? "/home" : "/verify-email");
         }
       } catch (err: any) {
@@ -248,7 +269,10 @@ export default function LoginPage() {
 
       try {
         const result = await signInWithPopup(auth, googleProvider);
-        if (result.user) router.push(result.user.emailVerified ? "/home" : "/verify-email");
+        if (result.user) {
+          await syncGoogleUser(result.user);
+          router.push(result.user.emailVerified ? "/home" : "/verify-email");
+        }
         return;
       } catch (popupErr: any) {
         // Fall back to redirect flow when popups are blocked or COOP prevents them.
