@@ -211,6 +211,7 @@ export function createVoiceEngine(options = {}) {
       disposed ||
       isMuted ||
       (state !== VOICE_STATE.LISTENING &&
+        state !== VOICE_STATE.THINKING &&
         state !== VOICE_STATE.SPEAKING &&
         state !== VOICE_STATE.INTERRUPTED)
     ) {
@@ -224,6 +225,24 @@ export function createVoiceEngine(options = {}) {
     }
     const rms = Math.sqrt(sum / inputSamples.length);
     onVolume(Math.min(1, rms * 4));
+
+    // Acoustic Echo Suppression & Barge-In Protection:
+    // When the tutor is speaking or audio is playing out of the speaker, microphone will capture
+    // the speaker output. If sent to Gemini, Gemini VAD will interpret its own echo as user speech,
+    // firing an interruption and prematurely killing the model's turn after 3-4 seconds.
+    const isPlaybackActive = state === VOICE_STATE.SPEAKING || scheduledSources.length > 0;
+    if (isPlaybackActive) {
+      if (rms < 0.035) {
+        // Echo/ambient noise: suppress from Gemini VAD and discard
+        audioBuffer16k.length = 0;
+        return;
+      }
+      // Genuine student barge-in (loud, intentional voice): stop playback and switch to listening
+      stopPlayback();
+      currentModelTurnText = "";
+      setState(VOICE_STATE.LISTENING);
+      logDiagnostic("BARGE_IN_DETECTED", { rms: rms.toFixed(4) });
+    }
 
     // 2. Downsample to 16,000 Hz
     const resampled = downsampleTo16k(inputSamples, inputAudioCtx.sampleRate);
@@ -393,6 +412,19 @@ export function createVoiceEngine(options = {}) {
       }
       logDiagnostic("SCRIPT_PROCESSOR_READY");
     }
+
+    // Pin all audio nodes and contexts to window to protect against V8/WebKit GC disconnection
+    if (typeof window !== "undefined") {
+      window.__la_voice = {
+        workletNode,
+        processorNode,
+        sourceNode,
+        pinnedSilentGain,
+        mediaStream,
+        inputAudioCtx,
+        outputAudioCtx,
+      };
+    }
   }
 
   /**
@@ -431,7 +463,11 @@ export function createVoiceEngine(options = {}) {
     source.onended = () => {
       const idx = scheduledSources.indexOf(source);
       if (idx !== -1) scheduledSources.splice(idx, 1);
-      if (scheduledSources.length === 0 && state === VOICE_STATE.SPEAKING) {
+      if (
+        scheduledSources.length === 0 &&
+        state === VOICE_STATE.SPEAKING &&
+        (!outputAudioCtx || outputAudioCtx.currentTime >= nextPlayTime - 0.05)
+      ) {
         setState(isMuted ? VOICE_STATE.MUTED : VOICE_STATE.LISTENING);
       }
     };
@@ -640,7 +676,7 @@ export function createVoiceEngine(options = {}) {
             if (disposed) return;
 
             if (code === 1000 || code === 1005) {
-              setState(VOICE_STATE.ENDED);
+              stop();
               return;
             }
 
@@ -747,6 +783,7 @@ export function createVoiceEngine(options = {}) {
     }
 
     if (typeof window !== "undefined") {
+      delete window.__la_voice;
       delete window.__la_processorNode;
       delete window.__la_silentGain;
     }

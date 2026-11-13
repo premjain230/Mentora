@@ -178,6 +178,8 @@ async function asyncTest(name, fn) {
     assert(voiceEngineSource.includes("stopPlayback"), "voice engine must implement barge-in/playback flush");
     assert(voiceEngineSource.includes("interrupted"), "voice engine must handle server interrupted signal");
     assert(voiceEngineSource.includes("getAudioTracks"), "voice engine must clean up microphone tracks on stop");
+    assert(voiceEngineSource.includes("BARGE_IN_DETECTED"), "voice engine must log barge-in events");
+    assert(voiceEngineSource.includes("window.__la_voice"), "voice engine must pin audio nodes against V8 GC sweeps");
   });
 
   test("voice-engine.js includes GC-resilient AudioWorklet capture and diagnostic telemetry", () => {

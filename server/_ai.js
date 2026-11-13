@@ -24,10 +24,26 @@ const GEMINI_DEFAULT_MODEL = "gemini-2.5-flash";
 const KNOWN_GROQ_MODELS = new Set([
   "llama-3.3-70b-versatile",
   "llama-3.1-8b-instant",
-  "llama-3.1-70b-versatile",
   "mixtral-8x7b-32768",
   "gemma2-9b-it",
 ]);
+
+/**
+ * Helper to combine a caller-provided AbortSignal with a local timeout signal.
+ */
+function combineSignals(callerSignal, localSignal) {
+  if (!callerSignal) return localSignal;
+  if (callerSignal.aborted) return callerSignal;
+  if (typeof AbortSignal.any === "function") {
+    return AbortSignal.any([callerSignal, localSignal]);
+  }
+  const controller = new AbortController();
+  const onCallerAbort = () => controller.abort(callerSignal.reason);
+  const onLocalAbort = () => controller.abort(localSignal.reason);
+  callerSignal.addEventListener("abort", onCallerAbort, { once: true });
+  localSignal.addEventListener("abort", onLocalAbort, { once: true });
+  return controller.signal;
+}
 
 /**
  * Resolves any model identifier to a verified, valid Groq model.
@@ -36,6 +52,9 @@ const KNOWN_GROQ_MODELS = new Set([
 function resolveGroqModel(model) {
   if (typeof model === "string") {
     const clean = model.trim();
+    if (clean === "llama-3.1-70b-versatile") {
+      return GROQ_DEFAULT_MODEL;
+    }
     if (KNOWN_GROQ_MODELS.has(clean)) {
       return clean;
     }
@@ -242,6 +261,7 @@ async function geminiComplete({
   signal,
   timeoutMs,
   usageOut,
+  _isRetry = false,
 }) {
   const apiKey = cleanEnvValue(process.env.GEMINI_API_KEY);
   if (!isUsableKey(apiKey)) {
@@ -273,7 +293,7 @@ async function geminiComplete({
   const effectiveTimeout = getTimeoutMs("gemini", timeoutMs);
   const localController = new AbortController();
   const timeoutId = setTimeout(() => localController.abort(), effectiveTimeout);
-  const combinedSignal = signal || localController.signal;
+  const combinedSignal = combineSignals(signal, localController.signal);
 
   let resp;
   let responseText = "";
@@ -326,7 +346,7 @@ async function geminiComplete({
   }
 
   if (!resp.ok) {
-    if (resp.status === 404 && targetModel !== GEMINI_DEFAULT_MODEL) {
+    if (resp.status === 404 && targetModel !== GEMINI_DEFAULT_MODEL && !_isRetry) {
       logAiEvent("warn", "MODEL_RETRY", {
         provider: "gemini",
         fromModel: targetModel,
@@ -342,6 +362,7 @@ async function geminiComplete({
         signal,
         timeoutMs,
         usageOut,
+        _isRetry: true,
       });
     }
 
@@ -440,7 +461,7 @@ async function geminiStream({
   const effectiveTimeout = getTimeoutMs("gemini", timeoutMs);
   const localController = new AbortController();
   const timeoutId = setTimeout(() => localController.abort(), effectiveTimeout);
-  const combinedSignal = signal || localController.signal;
+  const combinedSignal = combineSignals(signal, localController.signal);
 
   const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(targetModel)}:streamGenerateContent?alt=sse`;
   const startTime = Date.now();
@@ -545,6 +566,29 @@ async function geminiStream({
         }
       }
     }
+
+    if (buffer.trim()) {
+      const trimmed = buffer.trim();
+      if (trimmed.startsWith("data:")) {
+        const jsonStr = trimmed.slice(5).trim();
+        if (jsonStr && jsonStr !== "[DONE]") {
+          try {
+            const parsed = JSON.parse(jsonStr);
+            const candidate = parsed?.candidates?.[0];
+            const parts = candidate?.content?.parts;
+            if (Array.isArray(parts) && typeof onChunk === "function") {
+              for (const part of parts) {
+                if (part?.text) {
+                  onChunk(part.text);
+                }
+              }
+            }
+          } catch {
+            // ignore unparseable
+          }
+        }
+      }
+    }
   } finally {
     clearTimeout(timeoutId);
   }
@@ -570,6 +614,7 @@ async function groqComplete({
   signal,
   timeoutMs,
   usageOut,
+  _isRetry = false,
 }) {
   const apiKey = cleanEnvValue(process.env.GROQ_API_KEY);
   if (!isUsableKey(apiKey)) {
@@ -592,7 +637,7 @@ async function groqComplete({
   const effectiveTimeout = getTimeoutMs("groq", timeoutMs);
   const localController = new AbortController();
   const timeoutId = setTimeout(() => localController.abort(), effectiveTimeout);
-  const combinedSignal = signal || localController.signal;
+  const combinedSignal = combineSignals(signal, localController.signal);
 
   const targetModel = resolveGroqModel(model);
   const startTime = Date.now();
@@ -647,8 +692,8 @@ async function groqComplete({
     const safeError = sanitizeKey(text, apiKey);
     const status = resp.status;
 
-    // Automatic resilience: If Groq returns 404 (model decommissioned or invalid), retry with fallback model
-    if (status === 404) {
+    // Automatic resilience: If Groq returns 404 (model decommissioned or invalid), retry with fallback model once
+    if (status === 404 && !_isRetry) {
       const fallbackTarget = targetModel !== GROQ_DEFAULT_MODEL ? GROQ_DEFAULT_MODEL : GROQ_FAST_MODEL;
       if (fallbackTarget !== targetModel) {
         logAiEvent("warn", "GROQ_MODEL_RETRY", {
@@ -667,6 +712,7 @@ async function groqComplete({
           signal,
           timeoutMs,
           usageOut,
+          _isRetry: true,
         });
       }
     }
@@ -680,7 +726,18 @@ async function groqComplete({
     });
 
     throw Object.assign(new Error(`Groq error (${status}): ${safeError.slice(0, 300)}`), {
-      statusCode: status === 429 ? 429 : 502,
+      statusCode:
+        status === 429
+          ? 429
+          : status === 503
+          ? 503
+          : status === 401
+          ? 401
+          : status === 404
+          ? 404
+          : status >= 500
+          ? status
+          : 502,
       provider: "groq",
       retryable: status === 429 || status >= 500,
     });
@@ -783,6 +840,8 @@ async function aiComplete(options = {}) {
           const fallbackOptions = {
             ...options,
             model: resolveGroqModel(options.model),
+            // Never inherit an aborted signal from the failed Gemini call; give Groq a clean execution budget
+            signal: options.signal && !options.signal.aborted ? options.signal : undefined,
           };
           const result = await groqComplete(fallbackOptions);
           logAiEvent("info", "FALLBACK_SUCCESS", {

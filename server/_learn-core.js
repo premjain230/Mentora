@@ -841,7 +841,7 @@ async function writeContentCache(key, payload) {
 
 /* ── AI calls (one at a time, bounded) ───────────────────────────────────── */
 
-async function askJson(messages, { model, temperature = 0.4, maxTokens = 1200, timeoutMs = 20000 } = {}) {
+async function askJson(messages, { model, temperature = 0.4, maxTokens = 1200, timeoutMs = 28000 } = {}) {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), timeoutMs);
   const usage = {};
@@ -855,6 +855,7 @@ async function askJson(messages, { model, temperature = 0.4, maxTokens = 1200, t
       maxTokens,
       signal: controller.signal,
       usageOut: usage,
+      timeoutMs: Math.min(timeoutMs, 14000),
     });
     return { parsed, usage: usage.usage || null, model };
   } catch (err) {
@@ -1460,7 +1461,7 @@ async function chatTutor(params = {}) {
     model: requestedModel || MODEL_STRONG,
     temperature: detailedIntent === "coding" || detailedIntent === "problem_solving" ? 0.2 : 0.35,
     maxTokens: 1800,
-    timeoutMs: 22000,
+    timeoutMs: 28000,
   });
 
   if (result) {

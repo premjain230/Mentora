@@ -36,6 +36,7 @@ const {
 const ALLOWED_MODELS = new Set([
   "auto",
   "gemini",
+  "gemini-3.8-flash",
   "gemini-2.5-flash",
   "gemini-1.5-flash",
   "gemini-1.5-pro",
@@ -200,6 +201,18 @@ async function executeGroq(req, res, { messages, max_tokens, temperature, stream
       logAiEvent("warn", "GROQ_STREAM_PIPE_ERROR", {
         error: sanitizeKey(streamErr?.message, groqApiKey),
       });
+      if (res.headersSent) {
+        try {
+          res.write(
+            `data: ${JSON.stringify({
+              error: {
+                message: "Stream interrupted by upstream provider.",
+                code: "stream_interrupted",
+              },
+            })}\n\n`
+          );
+        } catch (_) {}
+      }
     } finally {
       res.end();
     }
@@ -283,6 +296,8 @@ module.exports = async function handler(req, res) {
 
   // 4) Manual vs Auto Routing
   const isManualGroq = (body.provider === "groq" || (body.manual === true && !String(body.model).toLowerCase().includes("gemini"))) && body.allowFallback !== true;
+  const isManualGemini = (body.provider === "gemini" || (body.manual === true && body.model && String(body.model).toLowerCase().includes("gemini"))) && body.allowFallback !== true;
+
   if (isManualGroq) {
     return await executeGroq(req, res, {
       messages,
@@ -293,7 +308,7 @@ module.exports = async function handler(req, res) {
     });
   }
 
-  // 4) Execute Request: Priority 1 Gemini -> Priority 2 Groq Fallback
+  // 5) Execute Request: Priority 1 Gemini -> Priority 2 Groq Fallback
   if (!stream) {
     // ── NON-STREAMING MODE ──
     if (hasGemini) {
@@ -322,10 +337,19 @@ module.exports = async function handler(req, res) {
         logAiEvent("warn", "FALLBACK_TRIGGERED", {
           endpoint: "groq-proxy",
           primary: "gemini",
-          fallback: "groq",
+          fallback: isManualGemini ? "none" : "groq",
           status: geminiErr.statusCode || 502,
           reason: geminiErr.message?.slice(0, 150),
         });
+
+        if (isManualGemini) {
+          return res.status(geminiErr.statusCode || 502).json({
+            error: {
+              message: geminiErr.message || "Gemini service temporarily unavailable.",
+              code: "upstream_error",
+            },
+          });
+        }
         // Proceed to Groq fallback below
       }
     }
@@ -379,8 +403,27 @@ module.exports = async function handler(req, res) {
       // If bytes were already written to the client, terminate cleanly to avoid
       // appending duplicate or corrupted Groq stream chunks.
       if (streamStarted || res.headersSent) {
+        try {
+          res.write(
+            `data: ${JSON.stringify({
+              error: {
+                message: "Stream interrupted by upstream provider.",
+                code: "stream_interrupted",
+              },
+            })}\n\n`
+          );
+        } catch (_) {}
         res.end();
         return;
+      }
+
+      if (isManualGemini) {
+        return res.status(geminiStreamErr.statusCode || 502).json({
+          error: {
+            message: geminiStreamErr.message || "Gemini service temporarily unavailable.",
+            code: "upstream_error",
+          },
+        });
       }
 
       logAiEvent("warn", "FALLBACK_TRIGGERED", {
