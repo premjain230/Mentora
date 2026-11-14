@@ -804,9 +804,9 @@ async function runTests() {
   });
 
   // ──────────────────────────────────────────────────────────────────────────
-  // 4. Critical Production Bug Fix Regression Tests (Fallback + Voice)
+  // 4. Critical Production Bug Fix Regression Tests (Fallback)
   // ──────────────────────────────────────────────────────────────────────────
-  console.log("\n[Suite 4] AI Provider Fallback & Live Voice Regression Suite");
+  console.log("\n[Suite 4] AI Provider Fallback Regression Suite");
 
   const {
     resolveGroqModel,
@@ -853,21 +853,6 @@ async function runTests() {
 
     assert.ok(res, "Groq must succeed on retry after initial 404");
     assert.strictEqual(groqCalls, 2, "Groq should have attempted twice (initial 404 -> retry 200)");
-  });
-
-  const { createLiveVoiceToken, buildVoiceTutorInstruction } = require("./server/live-token");
-
-  test("Voice tutor instruction includes pedagogical and language constraints", () => {
-    const instr = buildVoiceTutorInstruction({
-      board: "CBSE",
-      classNum: 10,
-      subject: "Science",
-      language: "hi",
-    });
-    assert.ok(instr.includes("CBSE"));
-    assert.ok(instr.includes("Class: 10"));
-    assert.ok(instr.includes("Hindi"));
-    assert.ok(instr.includes("Socratic voice tutor"));
   });
 
   // ──────────────────────────────────────────────────────────────────────────

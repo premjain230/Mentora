@@ -40,14 +40,6 @@ export const ICON_PATHS = {
   arrowDown: '<path d="M10 4v11M5.5 10.5 10 15l4.5-4.5" />',
   spark:
     '<path d="M10 2.5 11.6 8l5.4 2-5.4 2-1.6 5.5L8.4 12 3 10l5.4-2L10 2.5Z" />',
-  mic:
-    '<path d="M10 3a2.5 2.5 0 0 0-2.5 2.5v5a2.5 2.5 0 0 0 5 0v-5A2.5 2.5 0 0 0 10 3Z" /><path d="M5 9.5a5 5 0 0 0 10 0" /><path d="M10 14.5v3" /><path d="M7.5 17.5h5" />',
-  micOff:
-    '<path d="m3 3 14 14" /><path d="M8.5 8.5v2a2.5 2.5 0 0 0 4.2 1.8" /><path d="M12.5 7.8V5.5a2.5 2.5 0 0 0-4.7-.9" /><path d="M5 9.5a5 5 0 0 0 8.5 3.5" /><path d="M10 14.5v3" /><path d="M7.5 17.5h5" />',
-  volume:
-    '<path d="M4 8.5v3h3.5L12 15V5L7.5 8.5H4Z" /><path d="M14.5 7.5a4 4 0 0 1 0 5" /><path d="M16.5 5.5a7 7 0 0 1 0 9" />',
-  phoneOff:
-    '<path d="m3 3 14 14" /><path d="M10.7 6.3a14 14 0 0 1 5.8 1.9l-1.5 2.2a11.2 11.2 0 0 0-3.5-1.1" /><path d="M3.5 8.2a14 14 0 0 1 4.5-1.6l1.3 1.9" /><path d="M6 13.5l1.6-1.6" />',
 };
 
 export function iconMarkup(name, size = 15) {

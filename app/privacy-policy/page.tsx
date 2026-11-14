@@ -245,8 +245,8 @@ export default function PrivacyPolicyPage() {
               <h2 className="legal-section-title">AI-Powered Learning, Chat Interactions &amp; Generated Responses</h2>
               <div className="legal-prose">
                 <p>
-                  Learning Allied integrates state-of-the-art generative artificial intelligence models (including Google Gemini API via <code>@google/genai</code>)
-                  to power our Socratic tutor, conceptual breakdowns, problem generation, and Gemini Live Voice features.
+                  Learning Allied integrates state-of-the-art generative artificial intelligence models (including Google Gemini API)
+                  to power our Socratic tutor, conceptual breakdowns, and problem generation features.
                   To ensure safety and privacy, our AI integration is governed by strict privacy-by-design principles:
                 </p>
 
@@ -266,13 +266,7 @@ export default function PrivacyPolicyPage() {
                   student inputs, chat queries, and generated explanations are <strong>not used to train public foundational AI models</strong>.
                 </p>
 
-                <h3 className="legal-subsection-title">3. Ephemeral Live Voice Processing</h3>
-                <p>
-                  For Gemini Live Voice sessions, audio input is captured temporarily via standard browser APIs solely to generate real-time Socratic dialogue.
-                  Raw audio buffers are processed in memory and are not permanently archived or stored on disk.
-                </p>
-
-                <h3 className="legal-subsection-title">4. Educational Limitations &amp; Verification</h3>
+                <h3 className="legal-subsection-title">3. Educational Limitations &amp; Verification</h3>
                 <p>
                   While our AI prompts are strictly grounded in official NTA JEE, NEET, CBSE, and State Board syllabi, generative models can occasionally make mistakes
                   or miscalculate complex multi-step numericals. Students are encouraged to use AI guidance as a Socratic study companion and verify critical derivations
@@ -310,7 +304,7 @@ export default function PrivacyPolicyPage() {
                       </tr>
                       <tr>
                         <td><strong>Google Gemini API</strong></td>
-                        <td>AI Inference Engine (@google/genai)</td>
+                        <td>AI Inference Engine (Google Gemini API)</td>
                         <td>Anonymised syllabus prompts, Socratic dialogue queries (PII stripped)</td>
                         <td>Enterprise API terms; zero training on developer inputs; encrypted TLS endpoints.</td>
                       </tr>
