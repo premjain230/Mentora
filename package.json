@@ -16,6 +16,8 @@
     "test:adaptive": "node test_adaptive_engine.js",
     "test:flow": "node test_tutor_flow.js",
     "test:gemini": "node test_gemini_integration.js",
+    "test:fallback": "node test_gemini_to_groq_fallback.js",
+    "test:failover": "node test_critical_failover_scenarios.js",
     "test:upgrade": "node test_ai_intelligence_upgrade.js",
     "test:rules": "firebase emulators:exec --only firestore --project demo-learning-allied \"node test_rules_emulator.js\"",
     "audit:entitlements": "node scripts/audit-entitlements.js",
@@ -31,6 +33,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@google/genai": "^3.3.0",
     "@vercel/analytics": "^1.4.1",
     "@vercel/speed-insights": "^2.0.0",
     "firebase": "^10.12.0",

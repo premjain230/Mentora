@@ -845,6 +845,7 @@ async function askJson(messages, { model, temperature = 0.4, maxTokens = 1200, t
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), timeoutMs);
   const usage = {};
+  const meta = {};
   const complete = aiComplete || groqComplete;
   try {
     const parsed = await complete({
@@ -855,13 +856,18 @@ async function askJson(messages, { model, temperature = 0.4, maxTokens = 1200, t
       maxTokens,
       signal: controller.signal,
       usageOut: usage,
-      timeoutMs: Math.min(timeoutMs, 14000),
+      metaOut: meta,
+      timeoutMs,
     });
-    return { parsed, usage: usage.usage || null, model };
+    return {
+      parsed,
+      usage: usage.usage || null,
+      model: meta.model || model,
+      provider: meta.provider || "auto",
+    };
   } catch (err) {
     const message = String((err && err.message) || "");
-    // One bounded fallback when the fast model is unavailable to this key/region.
-    // Anything else (rate limit, context length, network) is reported, not retried.
+    // Bounded model retry if a 404 occurred on model selection
     if (/error \(404\)/i.test(message) && model && model !== MODEL_STRONG) {
       try {
         const parsed = await complete({
@@ -872,9 +878,15 @@ async function askJson(messages, { model, temperature = 0.4, maxTokens = 1200, t
           maxTokens,
           signal: controller.signal,
           usageOut: usage,
+          metaOut: meta,
         });
         logMetric({ event: "model_fallback", from: model, to: MODEL_STRONG });
-        return { parsed, usage: usage.usage || null, model: MODEL_STRONG };
+        return {
+          parsed,
+          usage: usage.usage || null,
+          model: meta.model || MODEL_STRONG,
+          provider: meta.provider || "auto",
+        };
       } catch (fallbackErr) {
         logMetric({ event: "ai_failed", model: MODEL_STRONG, message: clip(fallbackErr && fallbackErr.message, 180) });
         return null;
@@ -1560,6 +1572,7 @@ Do NOT explain unrelated topics. Keep the explanation focused, clear, and direct
         meta: {
           cached: false,
           model: result.model,
+          provider: result.provider || "auto",
           aiCalls: 1,
           latencyMs: Date.now() - startedAt,
           source: "ai",

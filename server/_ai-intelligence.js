@@ -265,33 +265,14 @@ function resolveModelRouting({ requestedModel, intent, needsResearch }) {
     }
   }
 
-  // AUTO Mode: Intelligently Route
-  // Gemini excels at multi-step reasoning, research synthesis, and concept explanations
-  // Groq excels at instantaneous streaming for simple, conversational, or coding questions
-  if (needsResearch || intent === INTENT_TYPES.RESEARCH || intent === INTENT_TYPES.COMPLEX_QUESTION) {
-    return {
-      provider: "gemini",
-      model: "gemini-2.5-flash",
-      isAuto: true,
-      reason: "Routed to Gemini for research verification and complex synthesis",
-    };
-  }
-
-  if (intent === INTENT_TYPES.SIMPLE_QUESTION || intent === INTENT_TYPES.CONVERSATIONAL) {
-    return {
-      provider: "groq",
-      model: "llama-3.3-70b-versatile",
-      isAuto: true,
-      reason: "Routed to Groq for ultra-low latency response",
-    };
-  }
-
-  // Default optimal educational model
+  // AUTO Mode: Primary provider is Google Gemini for every request, with automatic Groq failover
   return {
     provider: "gemini",
     model: "gemini-2.5-flash",
+    fallbackProvider: "groq",
+    fallbackModel: "llama-3.3-70b-versatile",
     isAuto: true,
-    reason: "Standard educational synthesis: Gemini primary with Groq resilience",
+    reason: "Auto mode: Google Gemini primary with automatic Groq failover",
   };
 }
 

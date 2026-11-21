@@ -7,12 +7,17 @@
 //
 // Features & Guarantees:
 //   - Deterministic priority: Gemini -> Groq.
-//   - Automatic fallback on 429 (rate-limit), 5xx (server error), network error, and timeout.
+//   - Automatic fallback on ANY recoverable Gemini error (429 rate limit, 400/401/403 auth,
+//     404 model unavailable, 5xx server error, timeout, network error, empty response,
+//     malformed response, or unparseable JSON).
+//   - Clean signal isolation: Groq fallback never inherits an aborted signal from Gemini.
+//   - Full streaming failover:
+//     * If Gemini fails before first token -> seamless instant switch to Groq stream.
+//     * If Gemini fails mid-stream -> explicit provider-switch event, reset client, clean Groq stream.
 //   - Configurable timeouts: GEMINI_TIMEOUT_MS, GROQ_TIMEOUT_MS, AI_TIMEOUT_MS.
-//   - Structured server-side logging without logging sensitive user messages or prompts.
+//   - Structured server-side diagnostics without logging sensitive user messages or prompts.
 //   - Safe redaction of API keys from all error logs.
-//   - Streaming support with OpenAI-compatible SSE output.
-//   - OpenAI-compatible JSON formatting helpers for chat proxies.
+//   - OpenAI-compatible SSE and JSON output formatting.
 //   - No duplicate quota or database writes on fallback.
 // ─────────────────────────────────────────────────────────────
 
@@ -20,6 +25,7 @@ const GROQ_DEFAULT_MODEL = "llama-3.3-70b-versatile";
 const GROQ_FAST_MODEL = "llama-3.1-8b-instant";
 const GROQ_MODEL = process.env.GROQ_MODEL || GROQ_DEFAULT_MODEL;
 const GEMINI_DEFAULT_MODEL = "gemini-2.5-flash";
+const GEMINI_FALLBACK_MODELS = ["gemini-2.5-flash", "gemini-2.0-flash", "gemini-1.5-flash"];
 
 const KNOWN_GROQ_MODELS = new Set([
   "llama-3.3-70b-versatile",
@@ -52,7 +58,7 @@ function combineSignals(callerSignal, localSignal) {
 function resolveGroqModel(model) {
   if (typeof model === "string") {
     const clean = model.trim();
-    if (clean === "llama-3.1-70b-versatile") {
+    if (clean === "llama-3.1-70b-versatile" || clean === "llama3-70b-8192") {
       return GROQ_DEFAULT_MODEL;
     }
     if (KNOWN_GROQ_MODELS.has(clean)) {
@@ -64,7 +70,7 @@ function resolveGroqModel(model) {
       return GROQ_FAST_MODEL;
     }
     // High intelligence / fallback mappings
-    if (lower.includes("70b") || lower.includes("strong") || lower.includes("120b") || lower.includes("gemini") || lower === "auto") {
+    if (lower.includes("70b") || lower.includes("strong") || lower.includes("120b") || lower.includes("gemini") || lower === "auto" || lower === "default") {
       const envModel = cleanEnvValue(process.env.GROQ_MODEL);
       return isUsableKey(envModel) && KNOWN_GROQ_MODELS.has(envModel) ? envModel : GROQ_DEFAULT_MODEL;
     }
@@ -96,6 +102,34 @@ function cleanEnvValue(val) {
 function isUsableKey(key) {
   const cleaned = cleanEnvValue(key);
   return Boolean(cleaned && cleaned !== "[SENSITIVE]" && cleaned.length > 5);
+}
+
+/**
+ * Classifies an error or HTTP status into a standard diagnostic failure category.
+ */
+function classifyFailure(status, err) {
+  if (status === 429) return "rate_limit";
+  if (status === 401 || status === 403 || (status === 400 && /key|auth|credential|permission/i.test(err?.message || ""))) {
+    return "auth_error";
+  }
+  if (status === 404) return "model_unavailable";
+  if (status === 504 || err?.name === "AbortError" || err?.name === "TimeoutError" || /timed?\s*out/i.test(err?.message || "")) {
+    return "timeout";
+  }
+  if (err?.code === "ENOTFOUND" || err?.code === "ECONNREFUSED" || err?.code === "ECONNRESET" || /fetch failed|network|connection/i.test(err?.message || "")) {
+    return "network_error";
+  }
+  if (err?.failureCategory === "empty_response" || /empty response|zero tokens/i.test(err?.message || "")) {
+    return "empty_response";
+  }
+  if (err?.failureCategory === "parse_error" || /valid json/i.test(err?.message || "")) {
+    return "parse_error";
+  }
+  if (err?.failureCategory === "malformed_response" || /malformed|unexpected token/i.test(err?.message || "")) {
+    return "malformed_response";
+  }
+  if (status >= 500) return "generation_failure";
+  return "api_error";
 }
 
 /**
@@ -168,6 +202,15 @@ function getTimeoutMs(provider, callerTimeout) {
 /**
  * Structured server-side logging helper.
  * Logs provider lifecycle events WITHOUT exposing user prompts, messages, or secrets.
+ * Provides the required diagnostics:
+ *   - selectedProvider
+ *   - providerAttempted
+ *   - status
+ *   - failureCategory
+ *   - durationMs
+ *   - fallbackTriggered
+ *   - fallbackSucceeded
+ *   - finalProvider
  */
 function logAiEvent(level, event, meta = {}) {
   const timestamp = new Date().toISOString();
@@ -268,7 +311,8 @@ async function geminiComplete({
     throw Object.assign(new Error("GEMINI_API_KEY is not configured or is a placeholder."), {
       statusCode: 500,
       provider: "gemini",
-      retryable: false,
+      failureCategory: "auth_error",
+      retryable: true,
     });
   }
 
@@ -316,21 +360,26 @@ async function geminiComplete({
     clearTimeout(timeoutId);
     const durationMs = Date.now() - startTime;
     const isTimeout = err?.name === "AbortError" || err?.name === "TimeoutError";
+    const failureCategory = isTimeout ? "timeout" : "network_error";
     const msg = isTimeout
       ? `Gemini API request timed out after ${effectiveTimeout}ms`
       : sanitizeKey(err?.message || String(err), apiKey);
 
     logAiEvent("warn", isTimeout ? "TIMEOUT" : "CONNECT_ERROR", {
-      provider: "gemini",
+      selectedProvider: "auto",
+      providerAttempted: "gemini",
       model: targetModel,
       durationMs,
       timeoutMs: effectiveTimeout,
+      status: isTimeout ? 504 : 502,
+      failureCategory,
       error: msg.slice(0, 150),
     });
 
     throw Object.assign(new Error(`Gemini connection error: ${msg}`), {
       statusCode: isTimeout ? 504 : 502,
       provider: "gemini",
+      failureCategory,
       retryable: true,
     });
   } finally {
@@ -348,7 +397,8 @@ async function geminiComplete({
   if (!resp.ok) {
     if (resp.status === 404 && targetModel !== GEMINI_DEFAULT_MODEL && !_isRetry) {
       logAiEvent("warn", "MODEL_RETRY", {
-        provider: "gemini",
+        selectedProvider: "auto",
+        providerAttempted: "gemini",
         fromModel: targetModel,
         toModel: GEMINI_DEFAULT_MODEL,
         status: 404,
@@ -369,11 +419,14 @@ async function geminiComplete({
     const rawError = parsedResponse?.error?.message || responseText || `HTTP ${resp.status}`;
     const safeError = sanitizeKey(rawError, apiKey);
     const status = resp.status;
+    const failureCategory = classifyFailure(status, { message: safeError });
 
     logAiEvent("warn", "HTTP_ERROR", {
-      provider: "gemini",
+      selectedProvider: "auto",
+      providerAttempted: "gemini",
       model: targetModel,
       status,
+      failureCategory,
       durationMs,
       error: safeError.slice(0, 150),
     });
@@ -381,15 +434,10 @@ async function geminiComplete({
     throw Object.assign(new Error(`Gemini error (${status}): ${safeError.slice(0, 300)}`), {
       statusCode: status === 429 ? 429 : status === 404 ? 404 : 502,
       provider: "gemini",
-      retryable: status === 429 || status >= 500 || status === 404,
+      failureCategory,
+      retryable: true,
     });
   }
-
-  logAiEvent("info", "SUCCESS", {
-    provider: "gemini",
-    model: targetModel,
-    durationMs,
-  });
 
   if (usageOut && typeof usageOut === "object" && parsedResponse?.usageMetadata) {
     const meta = parsedResponse.usageMetadata;
@@ -402,22 +450,69 @@ async function geminiComplete({
 
   const candidate = parsedResponse?.candidates?.[0];
   const parts = candidate?.content?.parts;
+  const finishReason = candidate?.finishReason;
   const content = Array.isArray(parts)
     ? parts.map((p) => p.text).filter(Boolean).join("")
     : "";
 
-  if (json) {
-    const parsed = extractJson(content);
-    if (parsed !== null) {
-      return parsed;
-    }
-    throw Object.assign(new Error("Gemini did not return valid JSON."), {
+  // Validate response: Reject empty or generation failure responses so Groq fallback triggers
+  if (!content || !content.trim()) {
+    const reasonMsg = finishReason ? ` (finishReason: ${finishReason})` : "";
+    logAiEvent("warn", "EMPTY_RESPONSE", {
+      selectedProvider: "auto",
+      providerAttempted: "gemini",
+      model: targetModel,
+      status: resp.status,
+      failureCategory: "empty_response",
+      durationMs,
+      error: `Gemini returned an empty response${reasonMsg}`,
+    });
+    throw Object.assign(new Error(`Gemini returned an empty response${reasonMsg}`), {
       statusCode: 502,
       provider: "gemini",
+      failureCategory: "empty_response",
       retryable: true,
     });
   }
 
+  if (json) {
+    const parsed = extractJson(content);
+    if (parsed !== null) {
+      logAiEvent("info", "SUCCESS", {
+        selectedProvider: "auto",
+        providerAttempted: "gemini",
+        model: targetModel,
+        status: 200,
+        durationMs,
+        finalProvider: "gemini",
+      });
+      return parsed;
+    }
+    logAiEvent("warn", "PARSE_ERROR", {
+      selectedProvider: "auto",
+      providerAttempted: "gemini",
+      model: targetModel,
+      status: resp.status,
+      failureCategory: "parse_error",
+      durationMs,
+      error: "Gemini did not return valid JSON",
+    });
+    throw Object.assign(new Error("Gemini did not return valid JSON."), {
+      statusCode: 502,
+      provider: "gemini",
+      failureCategory: "parse_error",
+      retryable: true,
+    });
+  }
+
+  logAiEvent("info", "SUCCESS", {
+    selectedProvider: "auto",
+    providerAttempted: "gemini",
+    model: targetModel,
+    status: 200,
+    durationMs,
+    finalProvider: "gemini",
+  });
   return content;
 }
 
@@ -439,7 +534,8 @@ async function geminiStream({
     throw Object.assign(new Error("GEMINI_API_KEY is not configured or is a placeholder."), {
       statusCode: 500,
       provider: "gemini",
-      retryable: false,
+      failureCategory: "auth_error",
+      retryable: true,
     });
   }
 
@@ -481,21 +577,26 @@ async function geminiStream({
     clearTimeout(timeoutId);
     const durationMs = Date.now() - startTime;
     const isTimeout = err?.name === "AbortError" || err?.name === "TimeoutError";
+    const failureCategory = isTimeout ? "timeout" : "network_error";
     const msg = isTimeout
       ? `Gemini stream timed out after ${effectiveTimeout}ms`
       : sanitizeKey(err?.message || String(err), apiKey);
 
     logAiEvent("warn", isTimeout ? "TIMEOUT" : "CONNECT_ERROR", {
-      provider: "gemini",
+      selectedProvider: "auto",
+      providerAttempted: "gemini",
       model: targetModel,
       durationMs,
       timeoutMs: effectiveTimeout,
+      status: isTimeout ? 504 : 502,
+      failureCategory,
       error: msg.slice(0, 150),
     });
 
     throw Object.assign(new Error(`Gemini stream connection error: ${msg}`), {
       statusCode: isTimeout ? 504 : 502,
       provider: "gemini",
+      failureCategory,
       retryable: true,
     });
   }
@@ -506,11 +607,14 @@ async function geminiStream({
     const errText = await resp.text().catch(() => "");
     const safeError = sanitizeKey(errText, apiKey);
     const status = resp.status;
+    const failureCategory = classifyFailure(status, { message: safeError });
 
     logAiEvent("warn", "HTTP_ERROR", {
-      provider: "gemini",
+      selectedProvider: "auto",
+      providerAttempted: "gemini",
       model: targetModel,
       status,
+      failureCategory,
       durationMs,
       error: safeError.slice(0, 150),
     });
@@ -518,7 +622,8 @@ async function geminiStream({
     throw Object.assign(new Error(`Gemini stream error (${status}): ${safeError.slice(0, 200)}`), {
       statusCode: status === 429 ? 429 : status === 404 ? 404 : 502,
       provider: "gemini",
-      retryable: status === 429 || status >= 500 || status === 404,
+      failureCategory,
+      retryable: true,
     });
   }
 
@@ -527,6 +632,7 @@ async function geminiStream({
     throw Object.assign(new Error("Gemini stream did not return a readable body."), {
       statusCode: 502,
       provider: "gemini",
+      failureCategory: "generation_failure",
       retryable: true,
     });
   }
@@ -592,13 +698,6 @@ async function geminiStream({
   } finally {
     clearTimeout(timeoutId);
   }
-
-  logAiEvent("info", "SUCCESS", {
-    provider: "gemini",
-    model: targetModel,
-    durationMs: Date.now() - startTime,
-    stream: true,
-  });
 }
 
 /**
@@ -621,6 +720,7 @@ async function groqComplete({
     throw Object.assign(new Error("GROQ_API_KEY is not configured or is a placeholder."), {
       statusCode: 500,
       provider: "groq",
+      failureCategory: "auth_error",
       retryable: false,
     });
   }
@@ -654,8 +754,8 @@ async function groqComplete({
       body: JSON.stringify({
         model: targetModel,
         messages,
-        temperature,
-        max_tokens: maxTokens,
+        temperature: Math.max(0, Math.min(2, Number(temperature) || 0.6)),
+        max_tokens: Math.max(1, Math.min(4096, Number(maxTokens) || 3000)),
         response_format: json ? { type: "json_object" } : undefined,
         ...(extraBody || {}),
       }),
@@ -664,13 +764,17 @@ async function groqComplete({
     clearTimeout(timeoutId);
     const durationMs = Date.now() - startTime;
     const isTimeout = networkErr?.name === "AbortError" || networkErr?.name === "TimeoutError";
+    const failureCategory = isTimeout ? "timeout" : "network_error";
     const msg = isTimeout
       ? `Groq request timed out after ${effectiveTimeout}ms`
       : sanitizeKey(networkErr?.message || String(networkErr), apiKey);
 
     logAiEvent("warn", isTimeout ? "TIMEOUT" : "CONNECT_ERROR", {
-      provider: "groq",
+      selectedProvider: "auto",
+      providerAttempted: "groq",
       model: targetModel,
+      status: isTimeout ? 504 : 502,
+      failureCategory,
       durationMs,
       timeoutMs: effectiveTimeout,
       error: msg.slice(0, 150),
@@ -679,6 +783,7 @@ async function groqComplete({
     throw Object.assign(new Error(`Groq connection error: ${msg}`), {
       statusCode: isTimeout ? 504 : 502,
       provider: "groq",
+      failureCategory,
       retryable: true,
     });
   } finally {
@@ -691,13 +796,15 @@ async function groqComplete({
     const text = await resp.text().catch(() => "");
     const safeError = sanitizeKey(text, apiKey);
     const status = resp.status;
+    const failureCategory = classifyFailure(status, { message: safeError });
 
     // Automatic resilience: If Groq returns 404 (model decommissioned or invalid), retry with fallback model once
     if (status === 404 && !_isRetry) {
       const fallbackTarget = targetModel !== GROQ_DEFAULT_MODEL ? GROQ_DEFAULT_MODEL : GROQ_FAST_MODEL;
       if (fallbackTarget !== targetModel) {
         logAiEvent("warn", "GROQ_MODEL_RETRY", {
-          provider: "groq",
+          selectedProvider: "auto",
+          providerAttempted: "groq",
           fromModel: targetModel,
           toModel: fallbackTarget,
           status: 404,
@@ -718,9 +825,11 @@ async function groqComplete({
     }
 
     logAiEvent("warn", "HTTP_ERROR", {
-      provider: "groq",
+      selectedProvider: "auto",
+      providerAttempted: "groq",
       model: targetModel,
       status,
+      failureCategory,
       durationMs,
       error: safeError.slice(0, 150),
     });
@@ -739,45 +848,312 @@ async function groqComplete({
           ? status
           : 502,
       provider: "groq",
+      failureCategory,
       retryable: status === 429 || status >= 500,
     });
   }
 
-  logAiEvent("info", "SUCCESS", {
-    provider: "groq",
-    model: targetModel,
-    durationMs,
-  });
+  let data = null;
+  try {
+    data = await resp.json();
+  } catch (parseErr) {
+    logAiEvent("warn", "MALFORMED_RESPONSE", {
+      selectedProvider: "auto",
+      providerAttempted: "groq",
+      model: targetModel,
+      status: resp.status,
+      failureCategory: "malformed_response",
+      durationMs,
+      error: "Groq response was not valid JSON",
+    });
+    throw Object.assign(new Error("Groq API response was malformed."), {
+      statusCode: 502,
+      provider: "groq",
+      failureCategory: "malformed_response",
+      retryable: true,
+    });
+  }
 
-  const data = await resp.json();
   if (usageOut && typeof usageOut === "object") {
     usageOut.usage = data && data.usage ? data.usage : null;
   }
 
   const content = data?.choices?.[0]?.message?.content || "";
-  if (json) {
-    const parsed = extractJson(content);
-    if (parsed !== null) {
-      return parsed;
-    }
-    throw Object.assign(new Error("Groq did not return valid JSON."), {
+  if (!content || !content.trim()) {
+    logAiEvent("warn", "EMPTY_RESPONSE", {
+      selectedProvider: "auto",
+      providerAttempted: "groq",
+      model: targetModel,
+      status: resp.status,
+      failureCategory: "empty_response",
+      durationMs,
+      error: "Groq returned an empty response",
+    });
+    throw Object.assign(new Error("Groq returned an empty response."), {
       statusCode: 502,
       provider: "groq",
+      failureCategory: "empty_response",
       retryable: true,
     });
   }
 
+  if (json) {
+    const parsed = extractJson(content);
+    if (parsed !== null) {
+      logAiEvent("info", "SUCCESS", {
+        selectedProvider: "auto",
+        providerAttempted: "groq",
+        model: targetModel,
+        status: 200,
+        durationMs,
+        finalProvider: "groq",
+      });
+      return parsed;
+    }
+    logAiEvent("warn", "PARSE_ERROR", {
+      selectedProvider: "auto",
+      providerAttempted: "groq",
+      model: targetModel,
+      status: resp.status,
+      failureCategory: "parse_error",
+      durationMs,
+      error: "Groq response did not contain valid JSON",
+    });
+    throw Object.assign(new Error("Groq did not return valid JSON."), {
+      statusCode: 502,
+      provider: "groq",
+      failureCategory: "parse_error",
+      retryable: true,
+    });
+  }
+
+  logAiEvent("info", "SUCCESS", {
+    selectedProvider: "auto",
+    providerAttempted: "groq",
+    model: targetModel,
+    status: 200,
+    durationMs,
+    finalProvider: "groq",
+  });
   return content;
 }
 
 /**
- * Unified completion helper.
+ * Streams tokens from Groq API via SSE.
+ * Calls onChunk(deltaText) for each incremental token.
+ */
+async function groqStream({
+  messages,
+  temperature = 0.65,
+  maxTokens = 2048,
+  model,
+  signal,
+  timeoutMs,
+  onChunk,
+  extra,
+  _isRetry = false,
+}) {
+  const apiKey = cleanEnvValue(process.env.GROQ_API_KEY);
+  if (!isUsableKey(apiKey)) {
+    throw Object.assign(new Error("GROQ_API_KEY is not configured or is a placeholder."), {
+      statusCode: 500,
+      provider: "groq",
+      failureCategory: "auth_error",
+      retryable: false,
+    });
+  }
+
+  let extraBody = null;
+  if (extra && typeof extra === "object") {
+    extraBody = {};
+    for (const [k, v] of Object.entries(extra)) {
+      if (RESERVED_BODY_KEYS.includes(k)) continue;
+      extraBody[k] = v;
+    }
+  }
+
+  const effectiveTimeout = getTimeoutMs("groq", timeoutMs);
+  const localController = new AbortController();
+  const timeoutId = setTimeout(() => localController.abort(), effectiveTimeout);
+  const combinedSignal = combineSignals(signal, localController.signal);
+
+  const targetModel = resolveGroqModel(model);
+  const startTime = Date.now();
+  let resp;
+
+  try {
+    resp = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${apiKey}`,
+      },
+      signal: combinedSignal,
+      body: JSON.stringify({
+        model: targetModel,
+        messages,
+        temperature: Math.max(0, Math.min(2, Number(temperature) || 0.65)),
+        max_tokens: Math.max(1, Math.min(4096, Number(maxTokens) || 2048)),
+        stream: true,
+        ...(extraBody || {}),
+      }),
+    });
+  } catch (err) {
+    clearTimeout(timeoutId);
+    const durationMs = Date.now() - startTime;
+    const isTimeout = err?.name === "AbortError" || err?.name === "TimeoutError";
+    const failureCategory = isTimeout ? "timeout" : "network_error";
+    const msg = isTimeout
+      ? `Groq stream request timed out after ${effectiveTimeout}ms`
+      : sanitizeKey(err?.message || String(err), apiKey);
+
+    logAiEvent("warn", isTimeout ? "TIMEOUT" : "CONNECT_ERROR", {
+      selectedProvider: "auto",
+      providerAttempted: "groq",
+      model: targetModel,
+      status: isTimeout ? 504 : 502,
+      failureCategory,
+      durationMs,
+      timeoutMs: effectiveTimeout,
+      error: msg.slice(0, 150),
+    });
+
+    throw Object.assign(new Error(`Groq stream connection error: ${msg}`), {
+      statusCode: isTimeout ? 504 : 502,
+      provider: "groq",
+      failureCategory,
+      retryable: true,
+    });
+  } finally {
+    clearTimeout(timeoutId);
+  }
+
+  const durationMs = Date.now() - startTime;
+
+  if (!resp.ok) {
+    const errText = await resp.text().catch(() => "");
+    const safeError = sanitizeKey(errText, apiKey);
+    const status = resp.status;
+    const failureCategory = classifyFailure(status, { message: safeError });
+
+    if (status === 404 && !_isRetry) {
+      const fallbackTarget = targetModel !== GROQ_DEFAULT_MODEL ? GROQ_DEFAULT_MODEL : GROQ_FAST_MODEL;
+      if (fallbackTarget !== targetModel) {
+        logAiEvent("warn", "GROQ_MODEL_RETRY", {
+          selectedProvider: "auto",
+          providerAttempted: "groq",
+          fromModel: targetModel,
+          toModel: fallbackTarget,
+          status: 404,
+        });
+        return groqStream({
+          messages,
+          temperature,
+          maxTokens,
+          model: fallbackTarget,
+          signal,
+          timeoutMs,
+          onChunk,
+          extra,
+          _isRetry: true,
+        });
+      }
+    }
+
+    logAiEvent("warn", "HTTP_ERROR", {
+      selectedProvider: "auto",
+      providerAttempted: "groq",
+      model: targetModel,
+      status,
+      failureCategory,
+      durationMs,
+      error: safeError.slice(0, 150),
+    });
+
+    throw Object.assign(new Error(`Groq stream error (${status}): ${safeError.slice(0, 200)}`), {
+      statusCode: status === 429 ? 429 : 502,
+      provider: "groq",
+      failureCategory,
+      retryable: true,
+    });
+  }
+
+  if (!resp.body || typeof resp.body.getReader !== "function") {
+    throw Object.assign(new Error("Groq stream did not return a readable body."), {
+      statusCode: 502,
+      provider: "groq",
+      failureCategory: "generation_failure",
+      retryable: true,
+    });
+  }
+
+  const reader = resp.body.getReader();
+  const decoder = new TextDecoder("utf-8");
+  let buffer = "";
+
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+
+    buffer += decoder.decode(value, { stream: true });
+    const lines = buffer.split("\n");
+    buffer = lines.pop() ?? "";
+
+    for (const line of lines) {
+      const trimmed = line.trim();
+      if (!trimmed || !trimmed.startsWith("data:")) continue;
+      const jsonStr = trimmed.slice(5).trim();
+      if (!jsonStr || jsonStr === "[DONE]") continue;
+
+      try {
+        const parsed = JSON.parse(jsonStr);
+        const delta = parsed?.choices?.[0]?.delta?.content;
+        if (delta && typeof onChunk === "function") {
+          onChunk(delta);
+        }
+      } catch {
+        // ignore unparseable partial chunk
+      }
+    }
+  }
+
+  if (buffer.trim()) {
+    const trimmed = buffer.trim();
+    if (trimmed.startsWith("data:")) {
+      const jsonStr = trimmed.slice(5).trim();
+      if (jsonStr && jsonStr !== "[DONE]") {
+        try {
+          const parsed = JSON.parse(jsonStr);
+          const delta = parsed?.choices?.[0]?.delta?.content;
+          if (delta && typeof onChunk === "function") {
+            onChunk(delta);
+          }
+        } catch {}
+      }
+    }
+  }
+
+  logAiEvent("info", "SUCCESS", {
+    selectedProvider: "auto",
+    providerAttempted: "groq",
+    model: targetModel,
+    status: 200,
+    durationMs: Date.now() - startTime,
+    stream: true,
+    finalProvider: "groq",
+  });
+}
+
+/**
+ * Centralized unified completion helper.
+ *
  * Provider Priority:
  *   1. Google Gemini (Primary)
  *   2. Groq (Automatic Fallback)
  *
- * Automatically fails over to Groq on Gemini timeouts, rate limits (429),
- * 5xx server errors, 400 invalid request/key errors, and network issues.
+ * Automatically fails over to Groq on ANY recoverable Gemini error:
+ * timeouts, rate limits (429), 5xx server errors, 400 invalid request/key,
+ * network issues, empty responses, and parse errors.
  */
 async function aiComplete(options = {}) {
   const hasGemini = isUsableKey(process.env.GEMINI_API_KEY);
@@ -789,8 +1165,14 @@ async function aiComplete(options = {}) {
     if (!hasGroq) {
       throw Object.assign(new Error("Groq provider is requested but GROQ_API_KEY is not configured."), { statusCode: 500, retryable: false });
     }
-    logAiEvent("info", "ATTEMPT", { provider: "groq", isManual: true });
-    return await groqComplete(options);
+    logAiEvent("info", "ATTEMPT", { selectedProvider: "groq", providerAttempted: "groq", isManual: true });
+    const model = resolveGroqModel(options.model);
+    const result = await groqComplete({ ...options, model });
+    if (options.metaOut && typeof options.metaOut === "object") {
+      options.metaOut.provider = "groq";
+      options.metaOut.model = model;
+    }
+    return result;
   }
 
   const isExplicitGemini = (options.provider === "gemini" || (options.manual === true && options.model && String(options.model).toLowerCase().includes("gemini"))) && options.allowFallback !== true;
@@ -798,8 +1180,14 @@ async function aiComplete(options = {}) {
     if (!hasGemini) {
       throw Object.assign(new Error("Gemini provider is requested but GEMINI_API_KEY is not configured."), { statusCode: 500, retryable: false });
     }
-    logAiEvent("info", "ATTEMPT", { provider: "gemini", isManual: true });
-    return await geminiComplete(options);
+    logAiEvent("info", "ATTEMPT", { selectedProvider: "gemini", providerAttempted: "gemini", isManual: true });
+    const model = resolveGeminiModel(options.model);
+    const result = await geminiComplete({ ...options, model });
+    if (options.metaOut && typeof options.metaOut === "object") {
+      options.metaOut.provider = "gemini";
+      options.metaOut.model = model;
+    }
+    return result;
   }
 
   if (!hasGemini && !hasGroq) {
@@ -816,38 +1204,57 @@ async function aiComplete(options = {}) {
   if (hasGemini) {
     const geminiStart = Date.now();
     try {
-      logAiEvent("info", "ATTEMPT", { provider: "gemini", isPrimary: true });
-      return await geminiComplete(options);
+      logAiEvent("info", "ATTEMPT", { selectedProvider: "auto", providerAttempted: "gemini", isPrimary: true });
+      const result = await geminiComplete(options);
+      const geminiDurationMs = Date.now() - geminiStart;
+      if (options.metaOut && typeof options.metaOut === "object") {
+        options.metaOut.provider = "gemini";
+        options.metaOut.model = resolveGeminiModel(options.model);
+      }
+      return result;
     } catch (geminiErr) {
       const geminiDurationMs = Date.now() - geminiStart;
       const safeGeminiError = sanitizeKey(
         geminiErr?.message || "Unknown Gemini error",
         cleanEnvValue(process.env.GEMINI_API_KEY)
       );
+      const failureCategory = geminiErr?.failureCategory || classifyFailure(geminiErr?.statusCode || 502, geminiErr);
 
       // If Groq is configured, trigger automatic fallback
       if (hasGroq) {
         logAiEvent("warn", "FALLBACK_TRIGGERED", {
+          selectedProvider: "auto",
           primary: "gemini",
           fallback: "groq",
           statusCode: geminiErr.statusCode || 502,
+          failureCategory,
           durationMs: geminiDurationMs,
           reason: safeGeminiError.slice(0, 150),
         });
 
         const groqStart = Date.now();
+        const fallbackModel = resolveGroqModel(options.model);
         try {
           const fallbackOptions = {
             ...options,
-            model: resolveGroqModel(options.model),
+            model: fallbackModel,
             // Never inherit an aborted signal from the failed Gemini call; give Groq a clean execution budget
             signal: options.signal && !options.signal.aborted ? options.signal : undefined,
           };
           const result = await groqComplete(fallbackOptions);
+          const groqDurationMs = Date.now() - groqStart;
           logAiEvent("info", "FALLBACK_SUCCESS", {
-            provider: "groq",
-            durationMs: Date.now() - groqStart,
+            selectedProvider: "auto",
+            providerAttempted: "groq",
+            fallbackSucceeded: true,
+            status: 200,
+            durationMs: groqDurationMs,
+            finalProvider: "groq",
           });
+          if (options.metaOut && typeof options.metaOut === "object") {
+            options.metaOut.provider = "groq";
+            options.metaOut.model = fallbackModel;
+          }
           return result;
         } catch (groqErr) {
           const safeGroqError = sanitizeKey(
@@ -856,8 +1263,10 @@ async function aiComplete(options = {}) {
           );
 
           logAiEvent("error", "ALL_FAILED", {
+            selectedProvider: "auto",
             primary: "gemini",
             fallback: "groq",
+            finalProvider: "none",
             geminiError: safeGeminiError.slice(0, 120),
             groqError: safeGroqError.slice(0, 120),
             statusCode: 503,
@@ -874,8 +1283,10 @@ async function aiComplete(options = {}) {
 
       // Gemini failed and no Groq fallback configured
       logAiEvent("error", "PROVIDER_FAILED_NO_FALLBACK", {
-        provider: "gemini",
+        selectedProvider: "auto",
+        providerAttempted: "gemini",
         statusCode: geminiErr.statusCode || 502,
+        failureCategory,
         reason: safeGeminiError.slice(0, 150),
       });
       throw geminiErr;
@@ -883,8 +1294,192 @@ async function aiComplete(options = {}) {
   }
 
   // 2) Default to Groq if Gemini is not configured
-  logAiEvent("info", "ATTEMPT", { provider: "groq", reason: "Gemini unconfigured" });
-  return await groqComplete(options);
+  logAiEvent("info", "ATTEMPT", { selectedProvider: "auto", providerAttempted: "groq", reason: "Gemini unconfigured" });
+  const targetGroqModel = resolveGroqModel(options.model);
+  const result = await groqComplete({ ...options, model: targetGroqModel });
+  if (options.metaOut && typeof options.metaOut === "object") {
+    options.metaOut.provider = "groq";
+    options.metaOut.model = targetGroqModel;
+  }
+  return result;
+}
+
+/**
+ * Centralized unified streaming helper.
+ *
+ * Provider Priority:
+ *   1. Google Gemini (Primary)
+ *   2. Groq (Automatic Fallback)
+ *
+ * Handles both:
+ *   - Pre-token failover: Gemini fails before sending any chunk -> seamless Groq stream.
+ *   - Mid-stream failover: Gemini fails after sending some chunks -> explicit provider switch event
+ *     (notifies caller via onProviderSwitch to reset client buffer), then cleanly streams Groq.
+ */
+async function aiStream(options = {}) {
+  const {
+    messages,
+    temperature = 0.65,
+    maxTokens = 2048,
+    model,
+    provider = "auto",
+    allowFallback = true,
+    signal,
+    timeoutMs,
+    onChunk,
+    onProviderSwitch,
+  } = options;
+
+  const hasGemini = isUsableKey(process.env.GEMINI_API_KEY);
+  const hasGroq = isUsableKey(process.env.GROQ_API_KEY);
+
+  const isExplicitGroq = (provider === "groq" || (options.manual === true && model && !String(model).toLowerCase().includes("gemini"))) && allowFallback !== true;
+  if (isExplicitGroq) {
+    if (!hasGroq) {
+      throw Object.assign(new Error("Groq provider requested but GROQ_API_KEY is not configured."), { statusCode: 500, retryable: false });
+    }
+    logAiEvent("info", "ATTEMPT", { selectedProvider: "groq", providerAttempted: "groq", isManual: true, stream: true });
+    return await groqStream({ ...options, model: resolveGroqModel(model) });
+  }
+
+  const isExplicitGemini = (provider === "gemini" || (options.manual === true && model && String(model).toLowerCase().includes("gemini"))) && allowFallback !== true;
+  if (isExplicitGemini) {
+    if (!hasGemini) {
+      throw Object.assign(new Error("Gemini provider requested but GEMINI_API_KEY is not configured."), { statusCode: 500, retryable: false });
+    }
+    logAiEvent("info", "ATTEMPT", { selectedProvider: "gemini", providerAttempted: "gemini", isManual: true, stream: true });
+    return await geminiStream(options);
+  }
+
+  if (!hasGemini && !hasGroq) {
+    logAiEvent("error", "NO_CONFIG", {
+      error: "Neither GEMINI_API_KEY nor GROQ_API_KEY is configured.",
+    });
+    throw Object.assign(new Error("Neither GEMINI_API_KEY nor GROQ_API_KEY is configured in the environment."), { statusCode: 500, retryable: false });
+  }
+
+  // Auto mode: Priority 1 Gemini -> Priority 2 Groq
+  if (hasGemini) {
+    let tokenCount = 0;
+    const geminiStart = Date.now();
+    try {
+      logAiEvent("info", "ATTEMPT", {
+        selectedProvider: "auto",
+        providerAttempted: "gemini",
+        isPrimary: true,
+        stream: true,
+      });
+
+      await geminiStream({
+        ...options,
+        onChunk: (chunkText) => {
+          tokenCount++;
+          if (typeof onChunk === "function") {
+            onChunk(chunkText);
+          }
+        },
+      });
+
+      // Validate stream output: if Gemini returned 0 tokens, treat as empty response failure
+      if (tokenCount === 0) {
+        throw Object.assign(new Error("Gemini stream completed with zero tokens."), {
+          statusCode: 502,
+          provider: "gemini",
+          failureCategory: "empty_response",
+          retryable: true,
+        });
+      }
+
+      logAiEvent("info", "SUCCESS", {
+        selectedProvider: "auto",
+        providerAttempted: "gemini",
+        status: 200,
+        durationMs: Date.now() - geminiStart,
+        stream: true,
+        finalProvider: "gemini",
+      });
+      return;
+    } catch (geminiErr) {
+      const geminiDurationMs = Date.now() - geminiStart;
+      const safeGeminiError = sanitizeKey(
+        geminiErr?.message || "Unknown Gemini stream error",
+        cleanEnvValue(process.env.GEMINI_API_KEY)
+      );
+      const failureCategory = geminiErr?.failureCategory || classifyFailure(geminiErr?.statusCode || 502, geminiErr);
+
+      if (hasGroq) {
+        logAiEvent("warn", "FALLBACK_TRIGGERED", {
+          selectedProvider: "auto",
+          primary: "gemini",
+          fallback: "groq",
+          statusCode: geminiErr.statusCode || 502,
+          failureCategory,
+          durationMs: geminiDurationMs,
+          stream: true,
+          tokensStreamedBeforeFailure: tokenCount,
+          reason: safeGeminiError.slice(0, 150),
+        });
+
+        // If tokens were already sent, explicitly notify caller/client of provider switch
+        if (tokenCount > 0 && typeof onProviderSwitch === "function") {
+          onProviderSwitch({
+            from: "gemini",
+            to: "groq",
+            tokensStreamed: tokenCount,
+            reason: safeGeminiError.slice(0, 100),
+          });
+        }
+
+        const groqStart = Date.now();
+        const fallbackModel = resolveGroqModel(model);
+        try {
+          const fallbackOptions = {
+            ...options,
+            model: fallbackModel,
+            signal: options.signal && !options.signal.aborted ? options.signal : undefined,
+          };
+          await groqStream(fallbackOptions);
+
+          logAiEvent("info", "FALLBACK_SUCCESS", {
+            selectedProvider: "auto",
+            providerAttempted: "groq",
+            fallbackSucceeded: true,
+            status: 200,
+            durationMs: Date.now() - groqStart,
+            stream: true,
+            finalProvider: "groq",
+          });
+          return;
+        } catch (groqErr) {
+          const safeGroqError = sanitizeKey(
+            groqErr?.message || "Unknown Groq stream error",
+            cleanEnvValue(process.env.GROQ_API_KEY)
+          );
+          logAiEvent("error", "ALL_FAILED", {
+            selectedProvider: "auto",
+            primary: "gemini",
+            fallback: "groq",
+            finalProvider: "none",
+            geminiError: safeGeminiError.slice(0, 120),
+            groqError: safeGroqError.slice(0, 120),
+            statusCode: 503,
+            stream: true,
+          });
+          throw Object.assign(
+            new Error(`AI providers unavailable: ${safeGeminiError.slice(0, 120)}; Groq fallback: ${safeGroqError.slice(0, 120)}`),
+            { statusCode: 503, retryable: true }
+          );
+        }
+      }
+
+      // No Groq fallback
+      throw geminiErr;
+    }
+  }
+
+  // Gemini unconfigured -> use Groq directly
+  logAiEvent("info", "ATTEMPT", { selectedProvider: "auto", providerAttempted: "groq", reason: "Gemini unconfigured", stream: true });
+  return await groqStream({ ...options, model: resolveGroqModel(model) });
 }
 
 /**
@@ -956,9 +1551,12 @@ function openAiSseDone(model = GEMINI_DEFAULT_MODEL) {
 
 module.exports = {
   aiComplete,
+  aiStream,
   geminiComplete,
   groqComplete,
   geminiStream,
+  groqStream,
+  classifyFailure,
   logAiEvent,
   geminiToOpenAiResponse,
   geminiChunkToOpenAiSse,

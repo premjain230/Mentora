@@ -16,7 +16,7 @@ import { apiUrl, apiFetch } from "./api-base.js";
 
 const API_ENDPOINT  = apiUrl("/api/groq-proxy");
 const SEARCH_ENDPOINT = apiUrl("/api/search");
-const MODEL         = "openai/gpt-oss-120b";
+const MODEL         = "auto";
 const MAX_HISTORY   = 60;
 
 // Cache for learner snapshot to avoid Firestore read on every message (P4)
@@ -1201,7 +1201,24 @@ async function streamGroqResponse(bubble, systemPrompt) {
       const stripped = toSafeString(line).replace(/^data: /, "").trim();
       if (!stripped || stripped === "[DONE]") continue;
       try {
-        const json  = JSON.parse(stripped);
+        const json = JSON.parse(stripped);
+
+        // Explicit provider-switch event: reset buffer so answer starts cleanly from Groq
+        if (json?.event === "provider_switch" || json?.provider_switch || json?.reset) {
+          fullText = "";
+          if (bubble) {
+            bubble.innerHTML = typingIndicator();
+          }
+          continue;
+        }
+
+        if (json?.error) {
+          if (!fullText) {
+            throw new Error(json.error.message || "Failed to generate answer.");
+          }
+          break;
+        }
+
         const delta = json?.choices?.[0]?.delta?.content || "";
         if (delta) {
           fullText += delta;
@@ -1210,8 +1227,16 @@ async function streamGroqResponse(bubble, systemPrompt) {
           }
           smoothScrollToBottom();
         }
-      } catch { /* ignore parse errors on partial chunks */ }
+      } catch (parseErr) {
+        if (parseErr?.message && !parseErr.message.includes("JSON")) {
+          throw parseErr;
+        }
+      }
     }
+  }
+
+  if (!fullText.trim()) {
+    throw new Error("I could not reach the teaching model just now. Your question has not been answered, so I will not pretend otherwise. Please retry in a moment — your message is saved in this chat.");
   }
 
   if (bubble) {

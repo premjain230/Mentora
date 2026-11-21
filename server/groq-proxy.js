@@ -12,16 +12,16 @@
 //     - Priority 1: Google Gemini (when GEMINI_API_KEY is configured).
 //     - Priority 2: Groq Fallback (when Gemini times out, hits 429 rate limit, 5xx, or fails).
 //  6. Streaming requests are handled safely:
-//     - If Gemini stream fails before sending headers, cleanly fall back to Groq stream.
-//     - If Gemini stream fails mid-stream after headers were sent, cleanly terminate
-//       without appending partial Groq output.
+//     - If Gemini stream fails before sending headers/tokens, cleanly fall back to Groq stream.
+//     - If Gemini stream fails mid-stream after tokens were sent, emit explicit provider-switch event
+//       so frontend resets client buffer, and deliver clean complete Groq response.
 //  7. Never expose API keys or secrets to the client.
 
 const { applyCors, rateLimit, readJsonBody, sendError } = require("./_shared");
 const admin = require("./_admin");
 const {
-  geminiComplete,
-  geminiStream,
+  aiComplete,
+  aiStream,
   isUsableKey,
   cleanEnvValue,
   sanitizeKey,
@@ -35,6 +35,7 @@ const {
 
 const ALLOWED_MODELS = new Set([
   "auto",
+  "default",
   "gemini",
   "gemini-3.8-flash",
   "gemini-2.5-flash",
@@ -47,11 +48,6 @@ const ALLOWED_MODELS = new Set([
   "openai/gpt-oss-20b",
   "qwen/qwen3.6-27b",
 ]);
-
-const FALLBACK_MODELS = [
-  "llama-3.3-70b-versatile",
-  "llama-3.1-8b-instant",
-];
 
 const MAX_TOKENS = 4096;
 const MAX_MESSAGES = 200;
@@ -76,152 +72,6 @@ function normalizeMessages(messages) {
     out.push({ role, content });
   }
   return out;
-}
-
-/**
- * Executes a request against Groq with fallback model chain.
- */
-async function executeGroq(req, res, { messages, max_tokens, temperature, stream, requestedModel }) {
-  const groqApiKey = cleanEnvValue(process.env.GROQ_API_KEY);
-  if (!isUsableKey(groqApiKey)) {
-    logAiEvent("error", "GROQ_KEY_MISSING", { endpoint: "groq-proxy" });
-    return res.status(503).json({
-      error: {
-        message: "AI service is temporarily unavailable. Please retry shortly.",
-        code: "provider_unavailable",
-      },
-    });
-  }
-
-  const primaryGroqModel = resolveGroqModel(requestedModel);
-  const modelCandidates = [
-    primaryGroqModel,
-    ...FALLBACK_MODELS.filter((m) => m !== primaryGroqModel),
-  ];
-
-  let groqRes = null;
-  let errBody = null;
-
-  for (const candidate of modelCandidates) {
-    let fetchRes;
-    const startTime = Date.now();
-    try {
-      fetchRes = await fetch("https://api.groq.com/openai/v1/chat/completions", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${groqApiKey}`,
-        },
-        body: JSON.stringify({
-          model: candidate,
-          messages,
-          max_tokens,
-          temperature,
-          stream,
-        }),
-      });
-    } catch (err) {
-      logAiEvent("warn", "GROQ_FETCH_ERROR", {
-        model: candidate,
-        durationMs: Date.now() - startTime,
-        error: sanitizeKey(err?.message, groqApiKey),
-      });
-      continue;
-    }
-
-    if (fetchRes.ok) {
-      groqRes = fetchRes;
-      logAiEvent("info", "GROQ_SUCCESS", {
-        model: candidate,
-        durationMs: Date.now() - startTime,
-        stream,
-      });
-      break;
-    }
-
-    try {
-      errBody = await fetchRes.json();
-    } catch {
-      errBody = { error: { message: `Groq API error ${fetchRes.status}` } };
-    }
-
-    const msg = String(((errBody && errBody.error) || {}).message || "");
-    const isModelNotFound =
-      fetchRes.status === 404 &&
-      (/does not exist/i.test(msg) ||
-        /do not have access/i.test(msg) ||
-        /decommissioned/i.test(msg) ||
-        /deprecat/i.test(msg));
-
-    if (!isModelNotFound) {
-      groqRes = fetchRes;
-      break;
-    }
-
-    logAiEvent("warn", "GROQ_MODEL_FALLBACK", {
-      candidate,
-      status: fetchRes.status,
-    });
-  }
-
-  if (!groqRes) {
-    return res.status(503).json({
-      error: {
-        message: "All AI providers temporarily unavailable. Please try again shortly.",
-        code: "all_providers_failed",
-      },
-    });
-  }
-
-  if (!groqRes.ok) {
-    return res.status(groqRes.status === 429 ? 429 : 502).json({
-      error: {
-        message:
-          errBody?.error?.message ||
-          "AI service temporarily unavailable. Please retry in a moment.",
-        code: "upstream_error",
-      },
-    });
-  }
-
-  // Handle Groq streaming
-  if (stream && groqRes.body) {
-    res.setHeader("Content-Type", "text/event-stream");
-    res.setHeader("Cache-Control", "no-cache");
-    res.setHeader("Connection", "keep-alive");
-
-    const reader = groqRes.body.getReader();
-    try {
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-        res.write(value);
-      }
-    } catch (streamErr) {
-      logAiEvent("warn", "GROQ_STREAM_PIPE_ERROR", {
-        error: sanitizeKey(streamErr?.message, groqApiKey),
-      });
-      if (res.headersSent) {
-        try {
-          res.write(
-            `data: ${JSON.stringify({
-              error: {
-                message: "Stream interrupted by upstream provider.",
-                code: "stream_interrupted",
-              },
-            })}\n\n`
-          );
-        } catch (_) {}
-      }
-    } finally {
-      res.end();
-    }
-    return;
-  }
-
-  // Non-streaming: Forward standard OpenAI JSON
-  const data = await groqRes.json();
-  return res.status(200).json(data);
 }
 
 module.exports = async function handler(req, res) {
@@ -286,7 +136,8 @@ module.exports = async function handler(req, res) {
     });
   }
 
-  if (!body.model || !ALLOWED_MODELS.has(body.model)) {
+  const requestedModel = body.model || "auto";
+  if (!ALLOWED_MODELS.has(requestedModel)) {
     return res.status(400).json({ error: "Unsupported model." });
   }
 
@@ -294,153 +145,139 @@ module.exports = async function handler(req, res) {
   const max_tokens = Math.min(MAX_TOKENS, Math.max(1, Number(body.max_tokens) || 2048));
   const stream = body.stream === true;
 
-  // 4) Manual vs Auto Routing
-  const isManualGroq = (body.provider === "groq" || (body.manual === true && !String(body.model).toLowerCase().includes("gemini"))) && body.allowFallback !== true;
-  const isManualGemini = (body.provider === "gemini" || (body.manual === true && body.model && String(body.model).toLowerCase().includes("gemini"))) && body.allowFallback !== true;
+  // 4) Determine Routing Mode (Auto vs Manual Gemini vs Manual Groq)
+  const isManualGroq = (body.provider === "groq" || (body.manual === true && !String(requestedModel).toLowerCase().includes("gemini"))) && body.allowFallback !== true;
+  const isManualGemini = (body.provider === "gemini" || (body.manual === true && String(requestedModel).toLowerCase().includes("gemini"))) && body.allowFallback !== true;
+  const provider = isManualGroq ? "groq" : isManualGemini ? "gemini" : "auto";
+  const allowFallback = body.allowFallback !== false && !isManualGroq && !isManualGemini;
 
-  if (isManualGroq) {
-    return await executeGroq(req, res, {
-      messages,
-      max_tokens,
-      temperature,
-      stream,
-      requestedModel: body.model || "llama-3.3-70b-versatile",
-    });
-  }
-
-  // 5) Execute Request: Priority 1 Gemini -> Priority 2 Groq Fallback
+  // 5) Non-streaming completion
   if (!stream) {
-    // ── NON-STREAMING MODE ──
-    if (hasGemini) {
-      const usageOut = {};
-      try {
-        logAiEvent("info", "PRIMARY_ATTEMPT", {
-          provider: "gemini",
-          endpoint: "groq-proxy",
-          stream: false,
-        });
-
-        const content = await geminiComplete({
-          messages,
-          temperature,
-          maxTokens: max_tokens,
-          usageOut,
-        });
-
-        const openAiFormat = geminiToOpenAiResponse(
-          content,
-          GEMINI_DEFAULT_MODEL,
-          usageOut.usage
-        );
-        return res.status(200).json(openAiFormat);
-      } catch (geminiErr) {
-        logAiEvent("warn", "FALLBACK_TRIGGERED", {
-          endpoint: "groq-proxy",
-          primary: "gemini",
-          fallback: isManualGemini ? "none" : "groq",
-          status: geminiErr.statusCode || 502,
-          reason: geminiErr.message?.slice(0, 150),
-        });
-
-        if (isManualGemini) {
-          return res.status(geminiErr.statusCode || 502).json({
-            error: {
-              message: geminiErr.message || "Gemini service temporarily unavailable.",
-              code: "upstream_error",
-            },
-          });
-        }
-        // Proceed to Groq fallback below
-      }
-    }
-
-    return await executeGroq(req, res, {
-      messages,
-      max_tokens,
-      temperature,
-      stream: false,
-      requestedModel: body.model,
-    });
-  }
-
-  // ── STREAMING MODE ──
-  let streamStarted = false;
-  if (hasGemini) {
+    const usageOut = {};
+    const metaOut = {};
     try {
       logAiEvent("info", "PRIMARY_ATTEMPT", {
-        provider: "gemini",
+        provider,
         endpoint: "groq-proxy",
-        stream: true,
+        stream: false,
       });
 
-      await geminiStream({
+      const content = await aiComplete({
         messages,
         temperature,
         maxTokens: max_tokens,
-        onChunk: (chunkText) => {
-          if (!streamStarted) {
-            streamStarted = true;
-            res.setHeader("Content-Type", "text/event-stream");
-            res.setHeader("Cache-Control", "no-cache");
-            res.setHeader("Connection", "keep-alive");
-          }
-          res.write(geminiChunkToOpenAiSse(chunkText));
+        model: requestedModel,
+        provider,
+        allowFallback,
+        usageOut,
+        metaOut,
+      });
+
+      const openAiFormat = geminiToOpenAiResponse(
+        content,
+        metaOut.model || requestedModel || GEMINI_DEFAULT_MODEL,
+        usageOut.usage
+      );
+      return res.status(200).json(openAiFormat);
+    } catch (err) {
+      logAiEvent("warn", "REQUEST_FAILED", {
+        endpoint: "groq-proxy",
+        provider,
+        stream: false,
+        status: err.statusCode || 502,
+        error: err.message?.slice(0, 150),
+      });
+
+      return res.status(err.statusCode || 502).json({
+        error: {
+          message: err.message || "AI service temporarily unavailable. Please retry in a moment.",
+          code: err.failureCategory || "upstream_error",
         },
       });
-
-      if (streamStarted) {
-        res.write(openAiSseDone());
-        res.end();
-        return;
-      }
-    } catch (geminiStreamErr) {
-      logAiEvent("warn", "STREAM_ERROR", {
-        provider: "gemini",
-        streamStarted,
-        error: geminiStreamErr.message?.slice(0, 150),
-      });
-
-      // If bytes were already written to the client, terminate cleanly to avoid
-      // appending duplicate or corrupted Groq stream chunks.
-      if (streamStarted || res.headersSent) {
-        try {
-          res.write(
-            `data: ${JSON.stringify({
-              error: {
-                message: "Stream interrupted by upstream provider.",
-                code: "stream_interrupted",
-              },
-            })}\n\n`
-          );
-        } catch (_) {}
-        res.end();
-        return;
-      }
-
-      if (isManualGemini) {
-        return res.status(geminiStreamErr.statusCode || 502).json({
-          error: {
-            message: geminiStreamErr.message || "Gemini service temporarily unavailable.",
-            code: "upstream_error",
-          },
-        });
-      }
-
-      logAiEvent("warn", "FALLBACK_TRIGGERED", {
-        endpoint: "groq-proxy",
-        primary: "gemini",
-        fallback: "groq",
-        stream: true,
-      });
-      // Fall through to Groq streaming below!
     }
   }
 
-  return await executeGroq(req, res, {
-    messages,
-    max_tokens,
-    temperature,
-    stream: true,
-    requestedModel: body.model,
-  });
+  // 6) Streaming mode with automatic failover and mid-stream provider switch recovery
+  let streamStarted = false;
+  try {
+    logAiEvent("info", "PRIMARY_ATTEMPT", {
+      provider,
+      endpoint: "groq-proxy",
+      stream: true,
+    });
+
+    await aiStream({
+      messages,
+      temperature,
+      maxTokens: max_tokens,
+      model: requestedModel,
+      provider,
+      allowFallback,
+      onChunk: (chunkText) => {
+        if (!streamStarted) {
+          streamStarted = true;
+          res.setHeader("Content-Type", "text/event-stream");
+          res.setHeader("Cache-Control", "no-cache");
+          res.setHeader("Connection", "keep-alive");
+        }
+        res.write(geminiChunkToOpenAiSse(chunkText));
+      },
+      onProviderSwitch: ({ from, to, tokensStreamed, reason }) => {
+        if (!streamStarted) {
+          streamStarted = true;
+          res.setHeader("Content-Type", "text/event-stream");
+          res.setHeader("Cache-Control", "no-cache");
+          res.setHeader("Connection", "keep-alive");
+        }
+        // Emit explicit provider-switch event so client resets partial buffer
+        try {
+          res.write(
+            `data: ${JSON.stringify({
+              event: "provider_switch",
+              provider: to,
+              from,
+              reset: true,
+              tokensStreamed,
+              reason,
+            })}\n\n`
+          );
+        } catch (_) {}
+      },
+    });
+
+    if (streamStarted) {
+      res.write(openAiSseDone());
+      res.end();
+      return;
+    }
+  } catch (err) {
+    logAiEvent("warn", "STREAM_ERROR", {
+      endpoint: "groq-proxy",
+      provider,
+      streamStarted,
+      error: err.message?.slice(0, 150),
+    });
+
+    if (streamStarted || res.headersSent) {
+      try {
+        res.write(
+          `data: ${JSON.stringify({
+            error: {
+              message: "Stream interrupted by upstream provider.",
+              code: "stream_interrupted",
+            },
+          })}\n\n`
+        );
+      } catch (_) {}
+      res.end();
+      return;
+    }
+
+    return res.status(err.statusCode || 502).json({
+      error: {
+        message: err.message || "AI service temporarily unavailable. Please retry in a moment.",
+        code: "upstream_error",
+      },
+    });
+  }
 };
