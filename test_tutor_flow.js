@@ -329,7 +329,7 @@ async function test(name, fn) {
     providerMode = "lesson";
     const result = await core.lessonTutor({
       uid: "test-user",
-      body: { conceptId: "cbse.10.science.life_processes", track: "cbse", classNum: 10, mode: "start" },
+      body: { conceptId: "cbse.10.science.metals_and_non_metals", track: "cbse", classNum: 10, mode: "start" },
       state: emptyState,
     });
     assert.strictEqual(providerCalls, 1);
@@ -345,7 +345,7 @@ async function test(name, fn) {
     providerMode = "throw";
     const result = await core.lessonTutor({
       uid: "test-user",
-      body: { conceptId: "cbse.10.science.heredity", track: "cbse", classNum: 10, mode: "start" },
+      body: { conceptId: "cbse.10.science.control_and_coordination_in_animals_and_plants", track: "cbse", classNum: 10, mode: "start" },
       state: emptyState,
     });
     assert.ok(
@@ -371,14 +371,14 @@ async function test(name, fn) {
     providerMode = "lesson";
     const first = await core.lessonTutor({
       uid: "test-user",
-      body: { conceptId: "cbse.10.science.life_processes", track: "cbse", classNum: 10, mode: "start" },
+      body: { conceptId: "cbse.10.science.metals_and_non_metals", track: "cbse", classNum: 10, mode: "start" },
       state: emptyState,
     });
     const callsAfterFirst = providerCalls;
     const reteach = await core.lessonTutor({
       uid: "test-user",
       body: {
-        conceptId: "cbse.10.science.life_processes",
+        conceptId: "cbse.10.science.metals_and_non_metals",
         track: "cbse",
         classNum: 10,
         mode: "reteach",

@@ -254,9 +254,10 @@ test("curriculum concept matching & pack fallback strictly isolate topics", () =
   assert(bondingPack && bondingPack.id === "covalent-bonding");
 
   const reactionPack = core.findPack(chemReaction, "What is a chemical reaction?", "Chemistry");
-  assert.strictEqual(reactionPack, null, "Must never return covalent-bonding for chemical reaction");
+  assert(reactionPack && reactionPack.id === "chemical-reactions-equations", "Must return chemical-reactions-equations pack when available");
+  assert.notStrictEqual(reactionPack.id, "covalent-bonding", "Must never return covalent-bonding for chemical reaction");
   const reactionPackByQ = core.findPackByQuestion("What is a chemical reaction?", "Chemistry");
-  assert.strictEqual(reactionPackByQ, null);
+  assert(reactionPackByQ && reactionPackByQ.id === "chemical-reactions-equations");
 
   assert.strictEqual(core.isConceptRelevantToQuestion(chemBonding, "Can you explain molecular shapes?"), true);
   assert.strictEqual(core.isConceptRelevantToQuestion(chemBonding, "What is a chemical reaction?"), false);

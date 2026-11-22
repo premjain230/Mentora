@@ -7,6 +7,7 @@ const { applyCors, rateLimit, readJsonBody, sendError } = require("./_shared");
 const { verifyIdToken, firestore } = require("./_admin");
 const { aiComplete, groqComplete } = require("./_ai");
 const arena = require("./_arena");
+const quiz = require("./_quiz");
 const chatManage = require("./chat-manage");
 
 const ALLOWED_TYPES = new Set([
@@ -220,9 +221,8 @@ async function handleArena(req, res){
       const topics = body.topics ? String(body.topics).trim().slice(0,400) : name;
       const count = mode==="final_boss" ? arena.BOSS_SIZE : arena.BATTLE_SIZE;
       if(!rateLimit(req,res,{name:"arena-generate",limit:10})) return;
-      if (!process.env.GROQ_API_KEY) {
-        console.error("[arena] GROQ_API_KEY is not configured.");
-        return res.status(500).json({ error: "AI service is not configured. Please contact support." });
+      if (!process.env.GROQ_API_KEY && !process.env.GEMINI_API_KEY) {
+        console.warn("[arena] AI keys not configured, using curriculum bank questions.");
       }
       const prompt = mode === "final_boss"
         ? `Generate ${count} MCQs covering ${subject} chapters: ${topics}. Mix difficulties. Return a JSON array [{"q":"","options":["A) ...","B) ...","C) ...","D) ..."],"answer":"B","explanation":"..."}]. Only JSON.`
@@ -240,37 +240,46 @@ async function handleArena(req, res){
       const startedAt = Date.now();
       const ARENA_DEADLINE_MS = 24000;
 
-      for (const candidateModel of uniqueCandidates) {
-        if (Date.now() - startedAt > ARENA_DEADLINE_MS) {
-          console.warn("[arena] time budget exceeded before attempting model", candidateModel);
-          break;
-        }
-        try {
-          const controller = new AbortController();
-          const timer = setTimeout(() => controller.abort(), Math.max(3000, ARENA_DEADLINE_MS - (Date.now() - startedAt)));
-          const runner = aiComplete || groqComplete;
-          const rawContent = await runner({
-            model: candidateModel,
-            messages: [{ role: "user", content: prompt }],
-            temperature: 0.7,
-            maxTokens: mode === "final_boss" ? 1200 : 900,
-            signal: controller.signal,
-          });
-          clearTimeout(timer);
-          parsed = extractArenaJsonArray(rawContent);
-          if (Array.isArray(parsed) && parsed.length > 0) {
+      if (process.env.GROQ_API_KEY || process.env.GEMINI_API_KEY) {
+        for (const candidateModel of uniqueCandidates) {
+          if (Date.now() - startedAt > ARENA_DEADLINE_MS) {
+            console.warn("[arena] time budget exceeded before attempting model", candidateModel);
             break;
           }
-        } catch (e) {
-          lastErr = e;
-          console.warn("[arena] generation attempt failed with model", candidateModel, e && e.message ? e.message : e);
+          try {
+            const controller = new AbortController();
+            const timer = setTimeout(() => controller.abort(), Math.max(3000, ARENA_DEADLINE_MS - (Date.now() - startedAt)));
+            const runner = aiComplete || groqComplete;
+            const rawContent = await runner({
+              model: candidateModel,
+              messages: [{ role: "user", content: prompt }],
+              temperature: 0.7,
+              maxTokens: mode === "final_boss" ? 1200 : 900,
+              signal: controller.signal,
+            });
+            clearTimeout(timer);
+            parsed = extractArenaJsonArray(rawContent);
+            if (Array.isArray(parsed) && parsed.length > 0) {
+              break;
+            }
+          } catch (e) {
+            lastErr = e;
+            console.warn("[arena] generation attempt failed with model", candidateModel, e && e.message ? e.message : e);
+          }
         }
       }
 
-      if (!parsed) {
-        console.error("[arena] question generation failed for all models:", lastErr && lastErr.message ? lastErr.message : "No valid JSON output");
-        return res.status(502).json({ error: "Could not generate battle questions right now. Please retry." });
+      if (!parsed || !arena.normalizeQuestions(parsed, count).length) {
+        console.warn("[arena] AI generation unavailable, falling back to curated curriculum question bank for subject:", subject, "topic:", topic);
+        const subKey = Object.keys(quiz.BANK).find(k => k.toLowerCase() === String(subject || "").toLowerCase()) || "Physics";
+        const subBank = quiz.BANK[subKey] || quiz.BANK.Physics;
+        const matchedTopicKey = Object.keys(subBank).find(k => k.toLowerCase() === String(topic || "").toLowerCase());
+        const topicPool = (matchedTopicKey && subBank[matchedTopicKey].length >= count)
+          ? subBank[matchedTopicKey]
+          : Object.values(subBank).flat();
+        parsed = quiz.normalizeQuizQuestions(topicPool.slice(0, count), count);
       }
+
       const questions = arena.normalizeQuestions(parsed, count);
       if(!questions.length) return res.status(502).json({error:"Could not generate battle questions. Please retry."});
       const sessionId = arena.newSessionId();
@@ -455,14 +464,522 @@ async function handleArena(req, res){
   }
 }
 
+/* ── Quiz — server-authoritative assessment sessions ── */
+const QUIZ_VALID_ACTIONS = new Set(["start_quiz", "submit_answer", "finish_quiz", "evaluate_written"]);
+
+async function handleQuiz(req, res) {
+  if (req.method === "GET") {
+    if (!applyCors(req, res, ["GET", "OPTIONS"])) return;
+    if (!rateLimit(req, res, { name: "quiz-get", limit: 60 })) return;
+
+    const url = (() => {
+      try { return new URL(req.url, `https://${req.headers.host || "localhost"}`); }
+      catch { return { searchParams: { get: () => null } }; }
+    })();
+
+    const action = url.searchParams.get("action") || req.query?.action;
+    if (action === "bank" || action === "subjects") {
+      const subjects = {};
+      for (const [sub, topics] of Object.entries(quiz.BANK)) {
+        subjects[sub] = Object.keys(topics);
+      }
+      return res.status(200).json({ subjects });
+    }
+
+    const sessionId = url.searchParams.get("sessionId") || req.query?.sessionId;
+    if (sessionId) {
+      if (!/^[A-Za-z0-9_-]{10,80}$/.test(sessionId)) {
+        return res.status(400).json({ error: "sessionId invalid" });
+      }
+      const tok = (req.headers.authorization || "").startsWith("Bearer ") ? req.headers.authorization.slice(7).trim() : "";
+      const dec = await verifyIdToken(tok);
+      if (!dec || !dec.uid) return res.status(401).json({ error: "Not authenticated" });
+      try {
+        const db = firestore();
+        const snap = await db.doc(`users/${dec.uid}/quizSessions/${sessionId}`).get();
+        if (!snap.exists) return res.status(404).json({ error: "Quiz session not found" });
+        const data = snap.data();
+        return res.status(200).json({
+          sessionId,
+          mode: data.mode,
+          subject: data.subject,
+          topic: data.topic,
+          status: data.status,
+          questions: data.status === "completed" ? data.questions : quiz.publicQuizQuestions(data.questions),
+          answers: data.answers || [],
+        });
+      } catch (e) {
+        return sendError(req, res, e, "Could not fetch quiz session");
+      }
+    }
+
+    return res.status(400).json({ error: "Specify action=bank or sessionId" });
+  }
+
+  if (!applyCors(req, res, ["POST", "OPTIONS"])) return;
+  if (req.method !== "POST") {
+    res.setHeader("Allow", "POST, GET");
+    return res.status(405).json({ error: "Method not allowed" });
+  }
+  if (!rateLimit(req, res, { name: "quiz-post", limit: 90 })) return;
+
+  const tok = (req.headers.authorization || "").startsWith("Bearer ") ? req.headers.authorization.slice(7).trim() : "";
+  const dec = await verifyIdToken(tok);
+  if (!dec || !dec.uid) return res.status(401).json({ error: "Not authenticated" });
+
+  let body;
+  try { body = await readJsonBody(req); }
+  catch (e) { return sendError(req, res, e, "Invalid JSON"); }
+
+  const action = body.action ? String(body.action).trim() : null;
+  if (!action || !QUIZ_VALID_ACTIONS.has(action)) {
+    return res.status(400).json({ error: "invalid action (start_quiz, submit_answer, finish_quiz, evaluate_written)" });
+  }
+
+  const uid = dec.uid;
+  const db = firestore();
+  const serverTs = () => require("firebase-admin").firestore.FieldValue.serverTimestamp();
+
+  try {
+    if (action === "start_quiz") {
+      const mode = body.mode === "ai" ? "ai" : "standard";
+      const subject = typeof body.subject === "string" ? body.subject.trim().slice(0, 80) : "General Studies";
+      const topic = typeof body.topic === "string" ? body.topic.trim().slice(0, 80) : "";
+      const requestedCount = Number(body.count) || quiz.DEFAULT_QUIZ_SIZE;
+      const count = Math.max(1, Math.min(quiz.MAX_QUIZ_QUESTIONS, requestedCount));
+      const conceptId = quiz.resolveQuizConceptId(subject, topic);
+
+      let questions = [];
+
+      if (mode === "standard") {
+        const pool = [...((quiz.BANK[subject] && quiz.BANK[subject][topic]) || [])];
+        if (!pool.length) {
+          return res.status(400).json({ error: `No standard questions found for ${subject} · ${topic}` });
+        }
+        for (let i = pool.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [pool[i], pool[j]] = [pool[j], pool[i]];
+        }
+        questions = quiz.normalizeQuizQuestions(pool.slice(0, count), count);
+      } else {
+        const difficulty = ["easy", "medium", "hard"].includes(body.difficulty) ? body.difficulty : "medium";
+        const studentName = typeof body.name === "string" ? body.name.trim().slice(0, 40) : (typeof body.studentName === "string" ? body.studentName.trim().slice(0, 40) : "Student");
+        const prompt = `You are an expert exam coach for ${studentName}. Generate exactly ${count} multiple-choice question(s) at "${difficulty}" difficulty about "${subject}"${topic ? ` focusing on "${topic}"` : ""}.
+
+Format your response as a JSON array of objects:
+[
+  {
+    "q": "question text",
+    "options": ["option 1", "option 2", "option 3", "option 4"],
+    "answer": "A, B, C, or D",
+    "explanation": "brief concept explanation"
+  }
+]
+
+Return ONLY valid JSON, no markdown formatting or other text.`;
+
+        let parsed = null;
+        try {
+          const runner = aiComplete || groqComplete;
+          const rawContent = await runner({
+            messages: [{ role: "user", content: prompt }],
+            temperature: 0.7,
+            json: true,
+            maxTokens: Math.min(1800, count * 220),
+          });
+          parsed = extractArenaJsonArray(rawContent);
+        } catch (genErr) {
+          console.warn("[quiz] AI question generation failed:", genErr?.message || genErr);
+        }
+
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          questions = quiz.normalizeQuizQuestions(parsed, count);
+        }
+
+        if (!questions.length) {
+          const fallbackPool = (quiz.BANK.Physics && quiz.BANK.Physics.Kinematics) || [];
+          questions = quiz.normalizeQuizQuestions(fallbackPool.slice(0, count), count);
+        }
+      }
+
+      if (!questions.length) {
+        return res.status(502).json({ error: "Could not generate questions. Please retry." });
+      }
+
+      const sessionId = quiz.newQuizSessionId();
+      await db.doc(`users/${uid}/quizSessions/${sessionId}`).set({
+        sessionId,
+        uid,
+        mode,
+        subject,
+        topic,
+        conceptId: conceptId || null,
+        questions,
+        answers: [],
+        status: "active",
+        questionCount: questions.length,
+        createdAt: serverTs(),
+        expiresAt: require("firebase-admin").firestore.Timestamp.fromMillis(Date.now() + quiz.SESSION_TTL_MS),
+      });
+
+      const publicQuestions = quiz.publicQuizQuestions(questions);
+      return res.status(201).json({
+        ok: true,
+        sessionId,
+        mode,
+        subject,
+        topic,
+        questions: publicQuestions,
+        session: {
+          sessionId,
+          mode,
+          subject,
+          topic,
+          questions: publicQuestions,
+          totalQuestions: publicQuestions.length,
+          currentQuestionIndex: 0,
+        },
+      });
+    }
+
+    if (action === "submit_answer") {
+      const sessionId = typeof body.sessionId === "string" ? body.sessionId.trim() : "";
+      if (!/^[A-Za-z0-9_-]{10,80}$/.test(sessionId)) return res.status(400).json({ error: "sessionId invalid" });
+
+      const questionIndex = Number(body.questionIndex);
+      if (!Number.isInteger(questionIndex) || questionIndex < 0) {
+        return res.status(400).json({ error: "questionIndex invalid" });
+      }
+
+      const sessionRef = db.doc(`users/${uid}/quizSessions/${sessionId}`);
+      let result;
+
+      await db.runTransaction(async (tx) => {
+        const snap = await tx.get(sessionRef);
+        const { questions, answers } = quiz.assertUsableQuizSession(snap.exists ? snap.data() : null, { uid });
+
+        if (questionIndex > answers.length) {
+          throw Object.assign(new Error("Answer questions in sequential order."), { statusCode: 409 });
+        }
+
+        if (questionIndex < answers.length) {
+          const prior = answers[questionIndex];
+          const choiceNorm = quiz.normalizeChoice(body.choice, questions[questionIndex].options.length);
+          if (prior && Number(prior.choice) === choiceNorm) {
+            result = {
+              ok: true,
+              index: questionIndex,
+              correct: Boolean(prior.correct),
+              isCorrect: Boolean(prior.correct),
+              answer: questions[questionIndex].answer,
+              correctAnswer: questions[questionIndex].answer,
+              explanation: questions[questionIndex].explanation,
+              idempotent: true,
+            };
+            return;
+          }
+          throw Object.assign(new Error("Question already answered."), { statusCode: 409 });
+        }
+
+        const question = questions[questionIndex];
+        if (!question) throw Object.assign(new Error("questionIndex out of range"), { statusCode: 400 });
+
+        const choice = quiz.normalizeChoice(body.choice, question.options.length);
+        const correct = quiz.isCorrectChoice(question, choice);
+
+        tx.update(sessionRef, {
+          answers: [...answers, { index: questionIndex, mode: "mcq", choice, correct, at: new Date().toISOString() }],
+          updatedAt: serverTs(),
+        });
+
+        result = {
+          ok: true,
+          index: questionIndex,
+          correct,
+          isCorrect: correct,
+          answer: question.answer,
+          correctAnswer: question.answer,
+          explanation: question.explanation,
+        };
+      });
+
+      return res.status(200).json(result);
+    }
+
+    if (action === "evaluate_written") {
+      const sessionId = typeof body.sessionId === "string" ? body.sessionId.trim() : "";
+      const questionIndex = body.questionIndex != null ? Number(body.questionIndex) : null;
+      let question = typeof body.question === "string" ? body.question.trim().slice(0, 1000) : "";
+      const userAnswer = typeof (body.answer ?? body.userAnswer) === "string" ? String(body.answer ?? body.userAnswer).trim().slice(0, 2000) : "";
+      let subject = typeof body.subject === "string" ? body.subject.trim().slice(0, 80) : "Subject";
+
+      let sessionRef = null;
+      let activeSession = null;
+
+      if (sessionId) {
+        if (!/^[A-Za-z0-9_-]{10,80}$/.test(sessionId)) {
+          return res.status(400).json({ error: "sessionId invalid" });
+        }
+        sessionRef = db.doc(`users/${uid}/quizSessions/${sessionId}`);
+        const snap = await sessionRef.get();
+        activeSession = snap.exists ? snap.data() : null;
+        const validated = quiz.assertUsableQuizSession(activeSession, { uid });
+
+        if (questionIndex == null || !Number.isInteger(questionIndex) || questionIndex < 0 || questionIndex >= validated.questions.length) {
+          return res.status(400).json({ error: "questionIndex invalid or out of range" });
+        }
+
+        const qObj = validated.questions[questionIndex];
+        question = qObj.q;
+        subject = activeSession.subject || subject;
+      }
+
+      if (!question || !userAnswer) {
+        return res.status(400).json({ error: "question and answer required" });
+      }
+
+      const prompt = `You are an expert exam grader for ${subject}. Evaluate this student's written response:
+
+Question: "${question}"
+Student's answer: "${userAnswer}"
+
+Respond in this EXACT format:
+- "CORRECT: [brief positive feedback on key principles identified]" if conceptually accurate
+- "PARTIAL: [what was accurate and what core detail was missing]" if partially understood
+- "INCORRECT: [brief explanation of why this is incorrect and what the correct answer is]"`;
+
+      let verdict = "INCORRECT: Evaluation service unavailable.";
+      try {
+        const runner = aiComplete || groqComplete;
+        const raw = await runner({
+          messages: [{ role: "user", content: prompt }],
+          temperature: 0.3,
+          maxTokens: 250,
+        });
+        if (typeof raw === "string" && raw.trim()) verdict = raw.trim();
+      } catch (e) {
+        console.warn("[quiz] written evaluation error:", e?.message || e);
+      }
+
+      const isCorrect = verdict.startsWith("CORRECT");
+      const isPartial = verdict.startsWith("PARTIAL");
+
+      if (sessionRef && activeSession && questionIndex != null) {
+        await db.runTransaction(async (tx) => {
+          const freshSnap = await tx.get(sessionRef);
+          const freshData = freshSnap.exists ? freshSnap.data() : null;
+          const { questions, answers } = quiz.assertUsableQuizSession(freshData, { uid });
+
+          if (questionIndex > answers.length) {
+            throw Object.assign(new Error("Answer questions in sequential order."), { statusCode: 409 });
+          }
+
+          if (questionIndex < answers.length) {
+            // Already answered, permit idempotent retry
+            return;
+          }
+
+          tx.update(sessionRef, {
+            answers: [
+              ...answers,
+              {
+                index: questionIndex,
+                mode: "written",
+                choice: null,
+                userAnswer,
+                correct: isCorrect,
+                partial: isPartial,
+                verdict,
+                at: new Date().toISOString(),
+              },
+            ],
+            updatedAt: serverTs(),
+          });
+        });
+      }
+
+      return res.status(200).json({
+        ok: true,
+        verdict,
+        correct: isCorrect,
+        isCorrect,
+        partial: isPartial,
+        explanation: verdict.replace(/^(CORRECT|PARTIAL|INCORRECT):?\s*/i, ""),
+      });
+    }
+
+    if (action === "finish_quiz") {
+      const sessionId = typeof body.sessionId === "string" ? body.sessionId.trim() : "";
+      if (!/^[A-Za-z0-9_-]{10,80}$/.test(sessionId)) return res.status(400).json({ error: "sessionId invalid" });
+
+      const sessionRef = db.doc(`users/${uid}/quizSessions/${sessionId}`);
+      let outcome;
+
+      await db.runTransaction(async (tx) => {
+        const sessionSnap = await tx.get(sessionRef);
+        const session = sessionSnap.exists ? sessionSnap.data() : null;
+
+        if (session && session.status === "completed") {
+          if (session.uid !== uid) {
+            throw Object.assign(new Error("Quiz session belongs to another user."), { statusCode: 403 });
+          }
+          outcome = {
+            ok: true,
+            sessionId,
+            score: Number(session.score) || 0,
+            correct: Number(session.correct) || 0,
+            correctCount: Number(session.correct) || 0,
+            incorrect: Number(session.incorrect) || 0,
+            incorrectCount: Number(session.incorrect) || 0,
+            total: Array.isArray(session.questions) ? session.questions.length : 0,
+            percentage: Number(session.percentage) || 0,
+            passed: Boolean(session.passed),
+            questions: session.questions,
+            idempotent: true,
+          };
+          return;
+        }
+
+        const { questions, answers } = quiz.assertUsableQuizSession(session, { uid, requireComplete: true });
+        const scored = quiz.scoreQuizAnswers(questions, answers);
+
+        tx.update(sessionRef, {
+          status: "completed",
+          completedAt: serverTs(),
+          score: scored.score,
+          correct: scored.correct,
+          incorrect: scored.incorrect,
+          percentage: scored.percentage,
+          passed: scored.passed,
+        });
+
+        // 1. Write official record to users/{uid}/quizAttempts
+        const attemptRef = db.collection(`users/${uid}/quizAttempts`).doc();
+        tx.set(attemptRef, {
+          subject: session.subject || "General",
+          topic: session.topic || "Quiz",
+          title: session.topic ? `${session.topic} Quiz` : `${session.subject} Quiz`,
+          totalQ: scored.total,
+          correct: scored.correct,
+          incorrect: scored.incorrect,
+          skipped: 0,
+          score: scored.score,
+          maxScore: scored.total,
+          percentage: scored.percentage,
+          passed: scored.passed,
+          questions: questions.map((q, idx) => {
+            const ans = answers[idx];
+            return {
+              q: q.q,
+              options: q.options,
+              answer: q.answer,
+              selected: ans ? (ans.mode === "written" ? ans.userAnswer : ans.choice) : null,
+              isCorrect: ans ? Boolean(ans.correct) : false,
+              mode: ans ? (ans.mode || "mcq") : "mcq",
+            };
+          }),
+          date: new Date().toISOString(),
+          createdAt: serverTs(),
+          serverVerified: true,
+          sessionId,
+        });
+
+        // 2. Write server-authoritative learning event
+        const eventId = `quiz_${sessionId}_${Date.now()}`.slice(0, 120);
+        const eventDoc = {
+          eventId,
+          uid,
+          type: "quiz_completed",
+          conceptId: session.conceptId || null,
+          subject: session.subject || "",
+          topic: session.topic || "",
+          source: "quiz",
+          sessionId,
+          payload: {
+            correct: scored.correct,
+            incorrect: scored.incorrect,
+            totalQ: scored.total,
+            percentage: scored.percentage,
+            accuracy: scored.accuracy,
+            passed: scored.passed,
+            mode: session.mode,
+          },
+          confidence: 0.90,
+          createdAt: serverTs(),
+          learningSchemaVersion: 1,
+          serverVerified: true,
+        };
+        tx.set(db.doc(`users/${uid}/learningEvents/${eventId}`), eventDoc);
+
+        // 3. Connect to Bayesian mastery if conceptId is resolved
+        if (session.conceptId) {
+          const masteryRef = db.doc(`users/${uid}/mastery/${session.conceptId}`);
+          const masterySnap = await tx.get(masteryRef);
+          const currentMastery = masterySnap.exists ? masterySnap.data() : {
+            uid,
+            conceptId: session.conceptId,
+            subject: session.subject || "",
+            topic: session.topic || "",
+            masteryScore: 0.5,
+            masteryState: "unknown",
+            evidenceStrength: 0,
+            attempts: 0,
+          };
+
+          const newAttempts = (Number(currentMastery.attempts) || 0) + 1;
+          const currentScore = Number(currentMastery.masteryScore) || 0.5;
+          const updatedScore = quiz.clamp01(currentScore * 0.65 + scored.accuracy * 0.35);
+          const updatedEvidence = quiz.clamp01((Number(currentMastery.evidenceStrength) || 0) + 0.20);
+          const updatedState = updatedScore >= 0.85 ? "mastered" : updatedScore >= 0.60 ? "learning" : "needs_review";
+
+          tx.set(masteryRef, {
+            ...currentMastery,
+            masteryScore: updatedScore,
+            masteryState: updatedState,
+            evidenceStrength: updatedEvidence,
+            attempts: newAttempts,
+            lastQuizScore: scored.score,
+            lastQuizAt: serverTs(),
+            updatedAt: serverTs(),
+          }, { merge: true });
+        }
+
+        outcome = {
+          ok: true,
+          sessionId,
+          score: scored.score,
+          correct: scored.correct,
+          correctCount: scored.correct,
+          incorrect: scored.incorrect,
+          incorrectCount: scored.incorrect,
+          total: scored.total,
+          percentage: scored.percentage,
+          passed: scored.passed,
+          questions,
+        };
+      });
+
+      return res.status(200).json(outcome);
+    }
+
+    return res.status(400).json({ error: "Unknown action" });
+  } catch (err) {
+    const statusCode = err.statusCode || 500;
+    if (statusCode >= 500) console.error("[quiz] error:", err);
+    return res.status(statusCode).json({ error: err.message || "Quiz processing error" });
+  }
+}
+
 module.exports = async function handler(req, res){
   // Support GET /api/learning-event?route=recommendations via rewrite /api/recommendations,
-  // GET /api/learning-event?route=arena via rewrite /api/arena, and
+  // GET /api/learning-event?route=arena via rewrite /api/arena,
+  // GET /api/learning-event?route=quiz via rewrite /api/quiz, and
   // POST /api/learning-event?route=chat-manage via rewrite /api/chat/manage.
-  // All three share this function to stay within the Vercel Hobby 12-function limit.
+  // All four share this function to stay within the Vercel Hobby 12-function limit.
   const url = (()=>{ try{ return new URL(req.url, `https://${req.headers.host||'localhost'}`); }catch{ return { searchParams:{ get:()=>null }}; }})();
   const route = url.searchParams.get("route") || req.query?.route;
   if(route==="arena" || (url && url.pathname && url.pathname.endsWith("/arena"))) return handleArena(req,res);
+  if(route==="quiz" || (url && url.pathname && url.pathname.endsWith("/quiz"))) return handleQuiz(req,res);
   // chat-manage keeps its own CORS, POST-only check, rate limit, auth and cascade.
   if(route==="chat-manage") return chatManage(req,res);
   if(req.method==="GET" && route==="recommendations"){

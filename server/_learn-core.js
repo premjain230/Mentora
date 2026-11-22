@@ -313,33 +313,167 @@ const PACK_TOPIC_VALIDATORS = {
     (tokens.has("cell") && (tokens.has("structure") || tokens.has("organelle") || tokens.has("membrane") || tokens.has("wall") || tokens.has("nucleus") || tokens.has("mitochondria") || tokens.has("prokaryote") || tokens.has("eukaryote"))) ||
     (/\bcell\s+structure\b/i.test(text)) ||
     (/\bcell\s+organelle/i.test(text)),
+
+  "laws-of-motion-equations": (tokens, text) =>
+    (tokens.has("motion") && (tokens.has("equation") || tokens.has("kinematic") || tokens.has("velocity") || tokens.has("acceleration") || tokens.has("displacement"))) ||
+    (/\bkinematic(al)?\s+equations?\b/i.test(text)) ||
+    (/\blaws?\s+of\s+motion\b/i.test(text)) ||
+    (/\bv\s*=\s*u\s*\+\s*a\s*t\b/i.test(text)),
+
+  "gravitation-kepler-laws": (tokens, text) =>
+    tokens.has("gravitation") ||
+    tokens.has("gravity") ||
+    tokens.has("kepler") ||
+    (tokens.has("planetary") && tokens.has("law")) ||
+    (/\bkepler('?s)?\s+laws?\b/i.test(text)) ||
+    (/\buniversal\s+gravitation\b/i.test(text)),
+
+  "chemical-reactions-equations": (tokens, text) =>
+    (tokens.has("chemical") && (tokens.has("reaction") || tokens.has("equation") || tokens.has("balancing") || tokens.has("redox") || tokens.has("combustion") || tokens.has("decomposition"))) ||
+    (/\bchemical\s+reactions?\b/i.test(text)) ||
+    (/\bbalancing\s+equations?\b/i.test(text)),
+
+  "refraction-of-light-snell": (tokens, text) =>
+    (tokens.has("refraction") || tokens.has("snell") || (tokens.has("refractive") && tokens.has("index"))) ||
+    (/\brefraction\s+of\s+light\b/i.test(text)) ||
+    (/\bsnell('?s)?\s+law\b/i.test(text)),
+
+  "work-and-energy-transfer": (tokens, text) =>
+    (tokens.has("work") && (tokens.has("energy") || tokens.has("joule") || tokens.has("displacement") || tokens.has("kinetic") || tokens.has("potential"))) ||
+    (tokens.has("kinetic") && tokens.has("energy")) ||
+    (tokens.has("potential") && tokens.has("energy")) ||
+    (/\bconservation\s+of\s+energy\b/i.test(text)) ||
+    (/\bwork\s+and\s+energy\b/i.test(text)),
+
+  "measurement-of-matter-mole": (tokens, text) =>
+    tokens.has("mole") ||
+    tokens.has("avogadro") ||
+    (tokens.has("measurement") && tokens.has("matter")) ||
+    (tokens.has("molecular") && tokens.has("mass")) ||
+    (/\bmole\s+concept\b/i.test(text)) ||
+    (/\blaw\s+of\s+constant\s+proportion\b/i.test(text)),
+
+  "acids-bases-ph": (tokens, text) =>
+    tokens.has("acid") ||
+    tokens.has("base") ||
+    tokens.has("alkali") ||
+    tokens.has("ph") ||
+    tokens.has("neutralization") ||
+    (/\bacids?,?\s+bases?\b/i.test(text)),
+
+  "sound-waves-frequency": (tokens, text) =>
+    (tokens.has("sound") && (tokens.has("wave") || tokens.has("frequency") || tokens.has("velocity") || tokens.has("speed") || tokens.has("echo") || tokens.has("sonar") || tokens.has("ultrasound"))) ||
+    (/\blongitudinal\s+waves?\b/i.test(text)) ||
+    (/\bspeed\s+of\s+sound\b/i.test(text)) ||
+    (/\bstudy\s+of\s+sound\b/i.test(text)),
+
+  "carbon-allotropes": (tokens, text) =>
+    (tokens.has("carbon") && (tokens.has("allotrope") || tokens.has("allotropy") || tokens.has("diamond") || tokens.has("graphite") || tokens.has("fullerene") || tokens.has("graphene"))) ||
+    (/\ballotropes?\s+of\s+carbon\b/i.test(text)),
+
+  "plant-classification-diversity": (tokens, text) =>
+    (tokens.has("plant") && (tokens.has("classification") || tokens.has("kingdom") || tokens.has("diversity"))) ||
+    tokens.has("thallophyta") ||
+    tokens.has("bryophyta") ||
+    tokens.has("pteridophyta") ||
+    tokens.has("gymnosperm") ||
+    tokens.has("angiosperm") ||
+    tokens.has("cryptogam") ||
+    tokens.has("phanerogam") ||
+    (/\bclassification\s+of\s+plants\b/i.test(text)),
+
+  "energy-flow-ecosystem": (tokens, text) =>
+    (tokens.has("ecosystem") && (tokens.has("energy") || tokens.has("flow") || tokens.has("trophic") || tokens.has("pyramid") || tokens.has("food"))) ||
+    (/\benergy\s+flow\b/i.test(text)) ||
+    (/\bfood\s+chain\b/i.test(text)) ||
+    (/\bfood\s+web\b/i.test(text)) ||
+    (/\btrophic\s+levels?\b/i.test(text)),
+
+  "periodic-classification-modern": (tokens, text) =>
+    (tokens.has("periodic") && (tokens.has("table") || tokens.has("classification") || tokens.has("mendeleev") || tokens.has("moseley") || tokens.has("trend") || tokens.has("period") || tokens.has("group"))) ||
+    (/\bmodern\s+periodic\s+table\b/i.test(text)) ||
+    (/\bperiodic\s+classification\b/i.test(text)),
+
+  "electric-current-effects": (tokens, text) =>
+    (tokens.has("electric") && tokens.has("current") && (tokens.has("effect") || tokens.has("heating") || tokens.has("magnetic") || tokens.has("joule") || tokens.has("motor") || tokens.has("generator"))) ||
+    (/\beffects?\s+of\s+electric\s+current\b/i.test(text)) ||
+    (/\bjoule('?s)?\s+law\b/i.test(text)) ||
+    (/\bfleming('?s)?\s+left\s+hand\s+rule\b/i.test(text)),
+
+  "lenses-vision-defects": (tokens, text) =>
+    ((tokens.has("lens") || tokens.has("lenses")) && (tokens.has("convex") || tokens.has("concave") || tokens.has("focal") || tokens.has("power") || tokens.has("myopia") || tokens.has("hypermetropia") || tokens.has("vision") || tokens.has("defect"))) ||
+    (/\blens\s+formula\b/i.test(text)) ||
+    (/\bhuman\s+eye\b/i.test(text)),
+
+  "heredity-evolution-darwin": (tokens, text) =>
+    tokens.has("heredity") ||
+    tokens.has("evolution") ||
+    tokens.has("darwin") ||
+    tokens.has("lamarck") ||
+    tokens.has("speciation") ||
+    tokens.has("transcription") ||
+    tokens.has("translation") ||
+    tokens.has("translocation") ||
+    (/\bcentral\s+dogma\b/i.test(text)) ||
+    (/\bheredity\s+and\s+evolution\b/i.test(text)),
+
+  "cellular-respiration-atp": (tokens, text) =>
+    (tokens.has("respiration") && (tokens.has("cellular") || tokens.has("aerobic") || tokens.has("anaerobic") || tokens.has("atp") || tokens.has("glucose"))) ||
+    tokens.has("glycolysis") ||
+    tokens.has("krebs") ||
+    (/\bcellular\s+respiration\b/i.test(text)) ||
+    (/\bkrebs\s+cycle\b/i.test(text)) ||
+    (/\btca\s+cycle\b/i.test(text)),
+
+  "life-processes-nutrition-transport": (tokens, text) =>
+    (tokens.has("life") && tokens.has("process")) ||
+    (tokens.has("nutrition") && (tokens.has("autotrophic") || tokens.has("heterotrophic") || tokens.has("digestive") || tokens.has("digestion"))) ||
+    (tokens.has("transportation") && (tokens.has("plant") || tokens.has("blood") || tokens.has("circulatory") || tokens.has("heart") || tokens.has("xylem") || tokens.has("phloem"))) ||
+    (/\blife\s+processes?\b/i.test(text)) ||
+    (/\bcirculatory\s+system\b/i.test(text)),
 };
 
 function isPackRelevantToContext(packId, text, concept) {
   const validator = PACK_TOPIC_VALIDATORS[packId];
-  if (!validator) return false;
   const textHay = String(text || "").toLowerCase();
   const textStems = new Set(tokenize(textHay).map(stem).filter((t) => !GENERIC_MODIFIERS.has(t)));
-  if (textStems.size > 0 && validator(textStems, textHay)) {
-    return true;
+  if (validator) {
+    if (textStems.size > 0 && validator(textStems, textHay)) {
+      return true;
+    }
+    if (textStems.size === 0 && concept) {
+      const conceptHay = `${concept.name || ""} ${concept.topic || ""} ${concept.conceptId || ""}`.toLowerCase();
+      const conceptStems = new Set(tokenize(conceptHay).map(stem));
+      return validator(conceptStems, conceptHay);
+    }
+    if (concept) {
+      const conceptHay = `${concept.name || ""} ${concept.topic || ""} ${concept.conceptId || ""}`.toLowerCase();
+      const conceptStems = new Set(tokenize(conceptHay).map(stem));
+      if (validator(conceptStems, conceptHay)) {
+        if (textStems.size > 0) {
+          const pack = PACKS.packs.find((p) => p.id === packId);
+          const allPackTokens = new Set(tokenize(`${pack?.title || ""} ${(pack?.keywords || []).join(" ")}`).map(stem));
+          const textMatches = [...textStems].filter((t) => allPackTokens.has(t));
+          if (textMatches.length === 0) return false;
+        }
+        return true;
+      }
+    }
+    return false;
   }
-  if (textStems.size === 0 && concept) {
-    const conceptHay = `${concept.name || ""} ${concept.topic || ""} ${concept.conceptId || ""}`.toLowerCase();
-    const conceptStems = new Set(tokenize(conceptHay).map(stem));
-    return validator(conceptStems, conceptHay);
+  // Generic fallback if validator not explicitly registered
+  const pack = PACKS.packs.find((p) => p.id === packId);
+  if (!pack) return false;
+  const packStems = new Set(tokenize(`${pack.title || ""} ${(pack.keywords || []).join(" ")}`).map(stem));
+  if (textStems.size > 0) {
+    const hits = [...textStems].filter((t) => packStems.has(t));
+    if (hits.length >= 2 || (hits.length >= 1 && (pack.keywords || []).some((k) => textHay.includes(k.toLowerCase())))) return true;
   }
   if (concept) {
     const conceptHay = `${concept.name || ""} ${concept.topic || ""} ${concept.conceptId || ""}`.toLowerCase();
-    const conceptStems = new Set(tokenize(conceptHay).map(stem));
-    if (validator(conceptStems, conceptHay)) {
-      if (textStems.size > 0) {
-        const pack = PACKS.packs.find((p) => p.id === packId);
-        const allPackTokens = new Set(tokenize(`${pack?.title || ""} ${(pack?.keywords || []).join(" ")}`).map(stem));
-        const textMatches = [...textStems].filter((t) => allPackTokens.has(t));
-        if (textMatches.length === 0) return false;
-      }
-      return true;
-    }
+    const cStems = tokenize(conceptHay).map(stem);
+    const hits = cStems.filter((t) => packStems.has(t));
+    if (hits.length >= 2) return true;
   }
   return false;
 }

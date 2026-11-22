@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { useAuth } from "../../components/AuthContext";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
@@ -78,38 +78,12 @@ export function AdminDashboardClient() {
   const [generatedReport, setGeneratedReport] = useState<any | null>(null);
   const [reportLoading, setReportLoading] = useState(false);
 
-  // Authentication & Initial Load
-  useEffect(() => {
-    if (loading) return;
-
-    if (!user) {
-      setFetching(false);
-      router.replace("/login");
-      return;
-    }
-
-    if (!isAdmin) {
-      setFetching(false);
-      router.replace("/home");
-      return;
-    }
-
-    loadDashboardData();
-  }, [user, loading, isAdmin, router]);
-
-  // Load Feedback Items when inbox tab or filters change
-  useEffect(() => {
-    if (user && isAdmin && (activeTab === "inbox" || activeTab === "bugs" || activeTab === "features")) {
-      loadFeedbackItems();
-    }
-  }, [activeTab, categoryFilter, statusFilter, severityFilter, ratingFilter]);
-
-  const getAuthToken = async () => {
+  const getAuthToken = useCallback(async () => {
     if (!user) return "";
     return await user.getIdToken();
-  };
+  }, [user]);
 
-  const loadDashboardData = async () => {
+  const loadDashboardData = useCallback(async () => {
     setFetching(true);
     try {
       const token = await getAuthToken();
@@ -133,9 +107,9 @@ export function AdminDashboardClient() {
     } finally {
       setFetching(false);
     }
-  };
+  }, [getAuthToken]);
 
-  const loadFeedbackItems = async () => {
+  const loadFeedbackItems = useCallback(async () => {
     setLoadingItems(true);
     try {
       const token = await getAuthToken();
@@ -164,7 +138,33 @@ export function AdminDashboardClient() {
     } finally {
       setLoadingItems(false);
     }
-  };
+  }, [getAuthToken, activeTab, categoryFilter, statusFilter, severityFilter, ratingFilter, searchQuery]);
+
+  // Authentication & Initial Load
+  useEffect(() => {
+    if (loading) return;
+
+    if (!user) {
+      setFetching(false);
+      router.replace("/login");
+      return;
+    }
+
+    if (!isAdmin) {
+      setFetching(false);
+      router.replace("/home");
+      return;
+    }
+
+    loadDashboardData();
+  }, [user, loading, isAdmin, router, loadDashboardData]);
+
+  // Load Feedback Items when inbox tab or filters change
+  useEffect(() => {
+    if (user && isAdmin && (activeTab === "inbox" || activeTab === "bugs" || activeTab === "features")) {
+      loadFeedbackItems();
+    }
+  }, [user, isAdmin, activeTab, loadFeedbackItems]);
 
   const handleStatusUpdate = async (itemId: string, newStatus: string) => {
     setActionLoading(true);

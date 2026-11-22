@@ -26,6 +26,10 @@
       "destination": "/api/learning-event?route=arena"
     },
     {
+      "source": "/api/quiz",
+      "destination": "/api/learning-event?route=quiz"
+    },
+    {
       "source": "/api/chat/manage",
       "destination": "/api/learning-event?route=chat-manage"
     },

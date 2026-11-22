@@ -395,25 +395,32 @@ async function geminiComplete({
   }
 
   if (!resp.ok) {
-    if (resp.status === 404 && targetModel !== GEMINI_DEFAULT_MODEL && !_isRetry) {
-      logAiEvent("warn", "MODEL_RETRY", {
-        selectedProvider: "auto",
-        providerAttempted: "gemini",
-        fromModel: targetModel,
-        toModel: GEMINI_DEFAULT_MODEL,
-        status: 404,
-      });
-      return geminiComplete({
-        messages,
-        json,
-        temperature,
-        maxTokens,
-        model: GEMINI_DEFAULT_MODEL,
-        signal,
-        timeoutMs,
-        usageOut,
-        _isRetry: true,
-      });
+    if (resp.status === 404) {
+      const currentIndex = GEMINI_FALLBACK_MODELS.indexOf(targetModel);
+      const nextModel = currentIndex >= 0 && currentIndex < GEMINI_FALLBACK_MODELS.length - 1
+        ? GEMINI_FALLBACK_MODELS[currentIndex + 1]
+        : (currentIndex === -1 && targetModel !== GEMINI_DEFAULT_MODEL ? GEMINI_DEFAULT_MODEL : null);
+
+      if (nextModel && nextModel !== targetModel) {
+        logAiEvent("warn", "MODEL_RETRY", {
+          selectedProvider: "auto",
+          providerAttempted: "gemini",
+          fromModel: targetModel,
+          toModel: nextModel,
+          status: 404,
+        });
+        return geminiComplete({
+          messages,
+          json,
+          temperature,
+          maxTokens,
+          model: nextModel,
+          signal,
+          timeoutMs,
+          usageOut,
+          _isRetry: true,
+        });
+      }
     }
 
     const rawError = parsedResponse?.error?.message || responseText || `HTTP ${resp.status}`;
@@ -439,13 +446,16 @@ async function geminiComplete({
     });
   }
 
-  if (usageOut && typeof usageOut === "object" && parsedResponse?.usageMetadata) {
-    const meta = parsedResponse.usageMetadata;
-    usageOut.usage = {
-      prompt_tokens: meta.promptTokenCount || 0,
-      completion_tokens: meta.candidatesTokenCount || 0,
-      total_tokens: meta.totalTokenCount || 0,
-    };
+  if (usageOut && typeof usageOut === "object") {
+    usageOut.model = targetModel;
+    if (parsedResponse?.usageMetadata) {
+      const meta = parsedResponse.usageMetadata;
+      usageOut.usage = {
+        prompt_tokens: meta.promptTokenCount || 0,
+        completion_tokens: meta.candidatesTokenCount || 0,
+        total_tokens: meta.totalTokenCount || 0,
+      };
+    }
   }
 
   const candidate = parsedResponse?.candidates?.[0];
@@ -608,6 +618,33 @@ async function geminiStream({
     const safeError = sanitizeKey(errText, apiKey);
     const status = resp.status;
     const failureCategory = classifyFailure(status, { message: safeError });
+
+    if (status === 404) {
+      const currentIndex = GEMINI_FALLBACK_MODELS.indexOf(targetModel);
+      const nextModel = currentIndex >= 0 && currentIndex < GEMINI_FALLBACK_MODELS.length - 1
+        ? GEMINI_FALLBACK_MODELS[currentIndex + 1]
+        : (currentIndex === -1 && targetModel !== GEMINI_DEFAULT_MODEL ? GEMINI_DEFAULT_MODEL : null);
+
+      if (nextModel && nextModel !== targetModel) {
+        logAiEvent("warn", "STREAM_MODEL_RETRY", {
+          selectedProvider: "auto",
+          providerAttempted: "gemini",
+          fromModel: targetModel,
+          toModel: nextModel,
+          status: 404,
+        });
+        return geminiStream({
+          messages,
+          temperature,
+          maxTokens,
+          model: nextModel,
+          signal,
+          timeoutMs,
+          onChunk,
+          _isRetry: true,
+        });
+      }
+    }
 
     logAiEvent("warn", "HTTP_ERROR", {
       selectedProvider: "auto",
@@ -1205,11 +1242,16 @@ async function aiComplete(options = {}) {
     const geminiStart = Date.now();
     try {
       logAiEvent("info", "ATTEMPT", { selectedProvider: "auto", providerAttempted: "gemini", isPrimary: true });
-      const result = await geminiComplete(options);
+      const geminiUsage = options.usageOut || {};
+      const result = await geminiComplete({
+        ...options,
+        usageOut: geminiUsage,
+      });
       const geminiDurationMs = Date.now() - geminiStart;
       if (options.metaOut && typeof options.metaOut === "object") {
         options.metaOut.provider = "gemini";
-        options.metaOut.model = resolveGeminiModel(options.model);
+        options.metaOut.model = geminiUsage.model || resolveGeminiModel(options.model);
+        if (geminiUsage.usage) options.metaOut.usage = geminiUsage.usage;
       }
       return result;
     } catch (geminiErr) {

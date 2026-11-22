@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import { useAuth } from "../AuthContext";
 
 export type FeedbackCategory =
@@ -71,6 +71,50 @@ export function FeedbackModal() {
 
   const modalRef = useRef<HTMLDivElement>(null);
 
+  const resetForm = useCallback(() => {
+    setMessage("");
+    setTitle("");
+    setWhyNeeded("");
+    setBugCategory("broken_feature");
+    setSeverity("medium");
+    setAttachment(null);
+    setConfusingPart("");
+    setImprovements("");
+    setSubRatings({});
+    setUnderstood(null);
+    setEasyToFollow(null);
+    setHelpedTopic(null);
+    setSubmitted(false);
+    setErrorMsg("");
+  }, []);
+
+  const closeModal = useCallback(() => {
+    setIsOpen(false);
+    resetForm();
+  }, [resetForm]);
+
+  const fetchPublicFeatures = useCallback(async () => {
+    setLoadingFeatures(true);
+    try {
+      const headers: Record<string, string> = {};
+      if (user) {
+        const token = await user.getIdToken().catch(() => null);
+        if (token) headers["Authorization"] = `Bearer ${token}`;
+      }
+      const res = await fetch("/api/growth?route=feedback&public=true&category=feature_request", {
+        headers,
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setFeatures(data.items || []);
+      }
+    } catch (err) {
+      console.warn("Could not load features:", err);
+    } finally {
+      setLoadingFeatures(false);
+    }
+  }, [user]);
+
   // Listen for open events
   useEffect(() => {
     const handleOpen = (e: any) => {
@@ -103,7 +147,7 @@ export function FeedbackModal() {
 
     window.addEventListener("open-feedback-modal", handleOpen);
     return () => window.removeEventListener("open-feedback-modal", handleOpen);
-  }, []);
+  }, [fetchPublicFeatures, resetForm]);
 
   // Keyboard accessibility
   useEffect(() => {
@@ -114,51 +158,7 @@ export function FeedbackModal() {
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [isOpen]);
-
-  const resetForm = () => {
-    setMessage("");
-    setTitle("");
-    setWhyNeeded("");
-    setBugCategory("broken_feature");
-    setSeverity("medium");
-    setAttachment(null);
-    setConfusingPart("");
-    setImprovements("");
-    setSubRatings({});
-    setUnderstood(null);
-    setEasyToFollow(null);
-    setHelpedTopic(null);
-    setSubmitted(false);
-    setErrorMsg("");
-  };
-
-  const closeModal = () => {
-    setIsOpen(false);
-    resetForm();
-  };
-
-  const fetchPublicFeatures = async () => {
-    setLoadingFeatures(true);
-    try {
-      const headers: Record<string, string> = {};
-      if (user) {
-        const token = await user.getIdToken().catch(() => null);
-        if (token) headers["Authorization"] = `Bearer ${token}`;
-      }
-      const res = await fetch("/api/growth?route=feedback&public=true&category=feature_request", {
-        headers,
-      });
-      if (res.ok) {
-        const data = await res.json();
-        setFeatures(data.items || []);
-      }
-    } catch (err) {
-      console.warn("Could not load features:", err);
-    } finally {
-      setLoadingFeatures(false);
-    }
-  };
+  }, [isOpen, closeModal]);
 
   const handleUpvote = async (featureId: string) => {
     if (!user) {

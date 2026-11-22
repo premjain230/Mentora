@@ -63,7 +63,10 @@ function jsonSafe<T>(value: T): T {
 export function chatTitleFrom(text: string): string {
   const clean = String(text || "").trim().replace(/\s+/g, " ");
   if (!clean) return "New chat";
-  return clean.length > 60 ? `${clean.slice(0, 60)}…` : clean;
+  if (clean.length <= 50) return clean;
+  const truncated = clean.slice(0, 48);
+  const lastSpace = truncated.lastIndexOf(" ");
+  return lastSpace > 20 ? `${truncated.slice(0, lastSpace)}…` : `${truncated}…`;
 }
 
 export async function createChatSession(
