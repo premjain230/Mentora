@@ -264,3 +264,82 @@ export function createArticleJsonLd({
     },
   };
 }
+
+/**
+ * Generate Course Schema JSON-LD for Global Curricula
+ */
+export function createCourseJsonLd({
+  name,
+  description,
+  path,
+  courseCode,
+  provider = "Learning Allied",
+  educationalCredentialAwarded,
+  academicYear = "2026-2027",
+}: {
+  name: string;
+  description: string;
+  path: string;
+  courseCode?: string;
+  provider?: string;
+  educationalCredentialAwarded?: string;
+  academicYear?: string;
+}) {
+  const url = `${SITE_URL}${path}`;
+  return {
+    "@type": "Course",
+    "@id": `${url}#course`,
+    name,
+    description,
+    url,
+    courseCode: courseCode || name,
+    provider: {
+      "@type": "Organization",
+      name: provider,
+      sameAs: SITE_URL,
+    },
+    educationalCredentialAwarded,
+    timeRequired: "P3M",
+    inLanguage: "en",
+    isAccessibleForFree: true,
+    hasCourseInstance: {
+      "@type": "CourseInstance",
+      courseMode: "online",
+      courseWorkload: "PT2H",
+      instructor: {
+        "@type": "EducationalOrganization",
+        name: "Learning Allied AI Socratic Engine",
+      },
+      startDate: `${academicYear.split("-")[0]}-08-01`,
+    },
+  };
+}
+
+/**
+ * Generate EducationalOccupationalProgram Schema JSON-LD
+ */
+export function createProgramJsonLd({
+  name,
+  description,
+  path,
+  timeToComplete = "P1Y",
+  educationalCredentialAwarded,
+}: {
+  name: string;
+  description: string;
+  path: string;
+  timeToComplete?: string;
+  educationalCredentialAwarded?: string;
+}) {
+  const url = `${SITE_URL}${path}`;
+  return {
+    "@type": "EducationalOccupationalProgram",
+    "@id": `${url}#program`,
+    name,
+    description,
+    url,
+    provider: SHARED_JSONLD_GRAPH.organization,
+    timeToComplete,
+    educationalCredentialAwarded,
+  };
+}

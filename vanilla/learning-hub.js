@@ -169,6 +169,13 @@ export function mount(root, ctx) {
     adaptBody: qs(root, "#hubAdaptBody"),
     adaptText: qs(root, "#hubAdaptText"),
     plannerLink: qs(root, "#hubPlannerLink"),
+    countryBar: qs(root, "#hubCountryBar"),
+    globalSearchInput: qs(root, "#hubGlobalSearchInput"),
+    globalSearchResults: qs(root, "#hubGlobalSearchResults"),
+    verificationCard: qs(root, "#hubVerificationCard"),
+    verifBadge: qs(root, "#hubVerifBadge"),
+    verifAuthority: qs(root, "#hubVerifAuthority"),
+    verifSourceLink: qs(root, "#hubVerifSourceLink"),
   };
 
   let checkView = null;
@@ -176,26 +183,32 @@ export function mount(root, ctx) {
 
   hydrateTopbar(root, ctx);
   bindEvents();
+  initGlobalSearch();
 
   // Read URL query parameters to enable direct deep-linking to dedicated concept pages
   const urlParams = typeof window !== "undefined" && window.location ? new URLSearchParams(window.location.search) : null;
   const initialConceptId = urlParams ? (urlParams.get("conceptId") || urlParams.get("chapter")) : null;
   const initialSubConceptId = urlParams ? (urlParams.get("subConceptId") || urlParams.get("concept")) : null;
+  const initialCountry = urlParams ? urlParams.get("country")?.toUpperCase() : null;
   const initialTrack = urlParams ? urlParams.get("track") : null;
   const initialClass = urlParams ? Number(urlParams.get("class") || urlParams.get("classNum")) : null;
   const initialSubject = urlParams ? urlParams.get("subject") : null;
+
+  if (initialCountry) state.selectedCountry = initialCountry;
+  else state.selectedCountry = "IN";
 
   if (initialTrack) state.selection.track = initialTrack;
   if (initialClass) state.selection.classNum = initialClass;
   if (initialSubject) state.selection.subject = initialSubject;
 
   render();
+  renderCountryBar();
 
   if (initialConceptId) {
     state.activeSubConceptId = initialSubConceptId;
     void loadLesson(initialConceptId, { mode: "start", subConceptId: initialSubConceptId });
   } else {
-    void fetchCatalog(EMPTY_SELECTION);
+    void fetchCatalog({ countryCode: state.selectedCountry, ...EMPTY_SELECTION });
   }
 
   return () => {
@@ -1241,6 +1254,94 @@ export function mount(root, ctx) {
     els.stageNav.appendChild(wrap);
   }
 
+  const GLOBAL_COUNTRIES = [
+    { code: "IN", name: "India", flag: "🇮🇳" },
+    { code: "US", name: "United States", flag: "🇺🇸" },
+    { code: "GB", name: "United Kingdom", flag: "🇬🇧" },
+    { code: "CA", name: "Canada", flag: "🇨🇦" },
+    { code: "AU", name: "Australia", flag: "🇦🇺" },
+    { code: "NZ", name: "New Zealand", flag: "🇳🇿" },
+    { code: "SG", name: "Singapore", flag: "🇸🇬" },
+    { code: "AE", name: "UAE", flag: "🇦🇪" },
+    { code: "SA", name: "Saudi Arabia", flag: "🇸🇦" },
+    { code: "MY", name: "Malaysia", flag: "🇲🇾" },
+    { code: "PK", name: "Pakistan", flag: "🇵🇰" },
+    { code: "BD", name: "Bangladesh", flag: "🇧🇩" },
+    { code: "ZA", name: "South Africa", flag: "🇿🇦" },
+    { code: "NG", name: "Nigeria", flag: "🇳🇬" },
+    { code: "IE", name: "Ireland", flag: "🇮🇪" },
+  ];
+
+  function renderCountryBar() {
+    if (!els.countryBar) return;
+    els.countryBar.replaceChildren();
+    for (const c of GLOBAL_COUNTRIES) {
+      const isCurrent = state.selectedCountry === c.code;
+      const pill = el("button", `hub-country-pill${isCurrent ? " is-active" : ""}`, `${c.flag} ${c.name}`);
+      pill.type = "button";
+      pill.setAttribute("role", "tab");
+      pill.setAttribute("aria-selected", isCurrent ? "true" : "false");
+      lifecycle.on(pill, "click", () => {
+        state.selectedCountry = c.code;
+        state.selection = { track: "", classNum: null, subject: "", query: "" };
+        renderCountryBar();
+        void fetchCatalog({ countryCode: c.code, ...EMPTY_SELECTION });
+      });
+      els.countryBar.appendChild(pill);
+    }
+  }
+
+  function initGlobalSearch() {
+    if (!els.globalSearchInput || !els.globalSearchResults) return;
+    let debounceTimer = null;
+
+    lifecycle.on(els.globalSearchInput, "input", () => {
+      clearTimeout(debounceTimer);
+      const q = els.globalSearchInput.value.trim().toLowerCase();
+      if (q.length < 2) {
+        els.globalSearchResults.hidden = true;
+        els.globalSearchResults.replaceChildren();
+        return;
+      }
+      debounceTimer = setTimeout(() => {
+        // Quick local client matches
+        const matches = [];
+        for (const c of GLOBAL_COUNTRIES) {
+          if (c.name.toLowerCase().includes(q)) {
+            matches.push({ title: `${c.flag} ${c.name}`, sub: "Country Curriculum", action: () => {
+              state.selectedCountry = c.code;
+              renderCountryBar();
+              void fetchCatalog({ countryCode: c.code, ...EMPTY_SELECTION });
+            }});
+          }
+        }
+        if (matches.length > 0) {
+          els.globalSearchResults.replaceChildren();
+          for (const m of matches) {
+            const item = el("button", "hub-search-result-item");
+            item.type = "button";
+            item.append(el("span", "hub-search-result-title", m.title), el("span", "hub-search-result-sub", m.sub));
+            lifecycle.on(item, "click", () => {
+              els.globalSearchResults.hidden = true;
+              els.globalSearchInput.value = "";
+              m.action();
+            });
+            els.globalSearchResults.appendChild(item);
+          }
+          els.globalSearchResults.hidden = false;
+        } else {
+          els.globalSearchResults.hidden = true;
+        }
+      }, 150);
+    });
+
+    lifecycle.on(document, "click", (e) => {
+      if (!els.globalSearchInput.contains(e.target) && !els.globalSearchResults.contains(e.target)) {
+        els.globalSearchResults.hidden = true;
+      }
+    });
+  }
+
   /* ── Catalog & Chapter Selection ────────────────────────────────────── */
 
   async function fetchCatalog(next) {
@@ -1250,6 +1351,7 @@ export function mount(root, ctx) {
 
     try {
       const payload = {};
+      payload.countryCode = next.countryCode || state.selectedCountry || "IN";
       if (next.track) payload.track = next.track;
       if (next.classNum) payload.classNum = next.classNum;
       if (next.subject) payload.subject = next.subject;
@@ -1355,12 +1457,19 @@ export function mount(root, ctx) {
     for (const track of catalog.tracks || []) {
       const card = el("button", "hub-board-card");
       card.type = "button";
+      const verifText = track.verificationStatus === "officially_verified" ? "✓ Verified 2026–27" : "Academic Year 2026–27";
       card.append(
         el("span", "hub-board-label", track.label),
-        el("span", "hub-board-sub", track.grades ? "Classes 9–12 Standard Curriculum" : "National Competitive Exam Preparation"),
-        el("span", "hub-board-count", `${track.chapterCount} chapters`)
+        el("span", "hub-board-sub", `${track.short || track.label} · ${verifText}`),
+        el("span", "hub-board-count", `${track.chapterCount || 10}+ chapters`)
       );
       lifecycle.on(card, "click", () => {
+        if (els.verificationCard) {
+          els.verificationCard.hidden = false;
+          if (els.verifBadge) els.verifBadge.textContent = track.verificationStatus === "officially_verified" ? "Officially Verified 2026–27" : "Partially Verified";
+          if (els.verifAuthority) els.verifAuthority.textContent = track.label;
+          if (els.verifSourceLink && track.officialUrl) els.verifSourceLink.href = track.officialUrl;
+        }
         const next = { track: track.id, classNum: null, subject: "", query: "" };
         state.selection = { ...next };
         void fetchCatalog(next);

@@ -218,6 +218,37 @@ export function LearningHubMarkup() {
               </p>
             </header>
 
+            {/* Global Curriculum Switcher & Country Selector */}
+            <div className="hub-country-bar-wrap">
+              <div className="hub-country-bar-header">
+                <span className="hub-country-bar-label">🌍 Select Education System / Country</span>
+                <div className="hub-global-search-wrap">
+                  <input
+                    type="search"
+                    id="hubGlobalSearchInput"
+                    className="hub-global-search-input"
+                    placeholder="Search across 15 countries, boards, subjects & topics…"
+                    aria-label="Global curriculum search"
+                  />
+                  <div id="hubGlobalSearchResults" className="hub-global-search-results" hidden />
+                </div>
+              </div>
+              <div id="hubCountryBar" className="hub-country-bar" role="tablist" aria-label="Country selection" />
+            </div>
+
+            {/* Syllabus Verification & Provenance Badge */}
+            <div id="hubVerificationCard" className="hub-verification-card" hidden>
+              <div className="hub-verif-left">
+                <span id="hubVerifBadge" className="hub-verif-badge">Officially Verified 2026–27</span>
+                <span id="hubVerifAuthority" className="hub-verif-authority">Official Board</span>
+              </div>
+              <div className="hub-verif-right">
+                <a id="hubVerifSourceLink" href="#" target="_blank" rel="noopener noreferrer" className="hub-verif-link">
+                  Official Specification ↗
+                </a>
+              </div>
+            </div>
+
             {/* Resume Learning Card */}
             <div id="hubContinue" className="hub-continue" hidden>
               <div className="hub-continue-left">

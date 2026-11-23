@@ -56,6 +56,7 @@ export function mount(root, ctx) {
     cfName: root.querySelector("#cfName"),
     cfEmail: root.querySelector("#cfEmail"),
     cfMsg: root.querySelector("#cfMsg"),
+    cfParentConsent: root.querySelector("#cfParentConsent"),
     submitRequest: root.querySelector("#submitProRequestBtn"),
     requestStatus: root.querySelector("#proRequestStatus"),
     mailLink: root.querySelector("#proMailLink"),
@@ -272,6 +273,7 @@ export function mount(root, ctx) {
         contactEmail,
         contactName: name,
         message,
+        parentConsent: els.cfParentConsent ? els.cfParentConsent.checked : true,
         requestedAt: serverTimestamp(),
         status: "pending",
       });

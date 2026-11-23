@@ -123,7 +123,7 @@ export function SubscriptionMarkup() {
                 <div className="plan-name">Starter</div>
                 <div className="plan-title">Free</div>
                 <div className="plan-price">
-                  <strong>₹0</strong> <span className="per">/ forever</span>
+                  <strong id="freePlanPrice">Free</strong> <span className="per">/ forever</span>
                 </div>
               </div>
               <div className="plan-divider" />
@@ -169,7 +169,7 @@ export function SubscriptionMarkup() {
                   </span>
                   <span className="feat-text">
                     <strong>Community access</strong>
-                    <span>Join other JEE/NEET aspirants</span>
+                    <span>Join learners worldwide across 15 countries</span>
                   </span>
                 </li>
               </ul>
@@ -296,8 +296,25 @@ export function SubscriptionMarkup() {
                     <textarea
                       id="cfMsg"
                       rows={2}
-                      placeholder="Anything you'd like us to know? (optional)"
+                      placeholder="Your grade, country, or subjects? (optional)"
                     />
+                    <label
+                      className="consent-label"
+                      style={{
+                        display: "flex",
+                        alignItems: "flex-start",
+                        gap: "8px",
+                        fontSize: "12px",
+                        color: "var(--text-secondary, #A3A3A3)",
+                        margin: "6px 0",
+                        cursor: "pointer",
+                      }}
+                    >
+                      <input id="cfParentConsent" type="checkbox" defaultChecked />
+                      <span>
+                        I confirm I am 18+ or have parent/guardian permission to use Learning Allied.
+                      </span>
+                    </label>
                     <button
                       className="contact-form-btn"
                       id="submitProRequestBtn"
@@ -312,6 +329,33 @@ export function SubscriptionMarkup() {
             </div>
           </div>
 
+          <div
+            className="billing-trust-banner"
+            style={{
+              margin: "32px 0 16px",
+              padding: "16px 20px",
+              borderRadius: "14px",
+              border: "1px solid var(--border, rgba(255, 255, 255, 0.08))",
+              background: "var(--bg-elevated, rgba(255, 255, 255, 0.03))",
+              display: "flex",
+              flexWrap: "wrap",
+              gap: "20px",
+              justifyContent: "space-between",
+              alignItems: "center",
+              fontSize: "13px",
+              color: "var(--text-secondary, #A3A3A3)",
+            }}
+          >
+            <div>
+              <strong style={{ color: "var(--text-primary, #FFF)" }}>Parent Peace of Mind:</strong>{" "}
+              Self-serve one-click cancellation anytime in Settings. 14-day refund guarantee.
+            </div>
+            <div>
+              <strong style={{ color: "var(--text-primary, #FFF)" }}>Child Privacy:</strong>{" "}
+              COPPA &amp; AADC compliant. Zero advertising or data broker sharing.
+            </div>
+          </div>
+
           <div className="section-label">Frequently Asked Questions</div>
           <div className="faq-list">
             <div className="faq-item">
@@ -322,7 +366,7 @@ export function SubscriptionMarkup() {
                 </svg>
               </button>
               <div className="faq-a">
-                All free plan limits reset every 24 hours at midnight. Your usage
+                All free plan limits reset every 24 hours at midnight in your local timezone. Your usage
                 counter starts fresh each day automatically.
               </div>
             </div>
@@ -334,7 +378,7 @@ export function SubscriptionMarkup() {
                 </svg>
               </button>
               <div className="faq-a">
-                Yes — Learning Allied Pro is completely free during our Early
+                Yes — Learning Allied Pro is completely free during our Global Early
                 Access period. No credit card, no payment of any kind. We&apos;re
                 giving early supporters unlimited access as a thank-you for
                 helping us grow.
@@ -356,16 +400,18 @@ export function SubscriptionMarkup() {
             </div>
             <div className="faq-item">
               <button className="faq-q" type="button" aria-expanded="false">
-                What exams does Learning Allied support?
+                What education systems and exams does Learning Allied support?
                 <svg className="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" aria-hidden="true">
                   <polyline points="6 9 12 15 18 9" />
                 </svg>
               </button>
               <div className="faq-a">
-                Learning Allied is built specifically for Indian students
-                preparing for JEE (Main &amp; Advanced), NEET, and Board exams
-                (Class 10 &amp; 12). Our AI is tuned to the NCERT and JEE/NEET
-                syllabi.
+                Learning Allied is a Personal AI Learning OS supporting 15 countries:
+                India (CBSE, MSBSHSE, ICSE, JEE, NEET), United States (AP, CCSS, NGSS),
+                United Kingdom (GCSE, AQA, Edexcel, A-Levels), Canada (Ontario OSSD, BC),
+                Australia (VCE, HSC, QCE), New Zealand (NCEA), Singapore (O-Level, A-Level),
+                South Africa (CAPS), Nigeria (WAEC), Ireland (Leaving Cert), UAE, Saudi Arabia,
+                Malaysia, Pakistan, and Bangladesh.
               </div>
             </div>
           </div>

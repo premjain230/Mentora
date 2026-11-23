@@ -529,10 +529,15 @@ export function mount(root, ctx) {
     els.mapPath?.appendChild(startChip);
 
     filtered.forEach((chapter, index) => {
-      const entry = progress.chapters[chapter.conceptId] || {
-        state: "locked",
+      const rawEntry = progress.chapters[chapter.conceptId] || {
+        state: "available",
         bestScore: 0,
         masteryScore: 0,
+      };
+      // Ensure all chapters are open and accessible from day one (no sequential locks)
+      const entry = {
+        ...rawEntry,
+        state: rawEntry.state === "locked" ? "available" : rawEntry.state,
       };
       const mastery = masteryMap[chapter.conceptId];
       const weak =
@@ -547,25 +552,25 @@ export function mount(root, ctx) {
 
       const state = entry.state;
       const iconClass =
-        state === "locked"
-          ? "locked"
-          : state === "available"
+        state === "available"
           ? "available"
           : state === "in_progress"
           ? "in_progress"
           : state === "mastered"
           ? "mastered"
-          : "defeated";
+          : state === "defeated"
+          ? "defeated"
+          : "available";
       const iconGlyph =
-        state === "locked"
-          ? "🔒"
-          : state === "available"
+        state === "available"
           ? "⚔"
           : state === "in_progress"
           ? "🔥"
           : state === "mastered"
           ? "🏆"
-          : "✅";
+          : state === "defeated"
+          ? "✅"
+          : "⚔";
       const diffBadge = escapeHtml(chapter.difficultyLabel);
 
       node.innerHTML = `
@@ -759,14 +764,15 @@ export function mount(root, ctx) {
 
     const allowed = canBattle(activeChapter, progress, chapters);
     if (els.chLockedMsg) {
-      if (!allowed.ok) {
-        els.chLockedMsg.textContent = `🔒 ${allowed.reason}`;
+      if (allowed.hasPrereqNotice && allowed.recommendation) {
+        els.chLockedMsg.innerHTML = `<span style="display:inline-flex;align-items:center;gap:6px;"><span class="badge" style="background:rgba(59,130,246,0.15);color:#60a5fa;border:1px solid rgba(59,130,246,0.3);padding:2px 8px;border-radius:12px;font-size:12px;">💡 Recommended Prerequisite</span> <span>${escapeHtml(allowed.recommendation)}</span></span>`;
         els.chLockedMsg.classList.remove("hidden");
       } else {
         els.chLockedMsg.classList.add("hidden");
       }
     }
-    if (els.enterBattleBtn) els.enterBattleBtn.disabled = !allowed.ok;
+    // Fully unrestricted access: students can open and battle any chapter immediately
+    if (els.enterBattleBtn) els.enterBattleBtn.disabled = false;
 
     const defeated = entry.state === "defeated" || entry.state === "mastered";
     els.replayBtn?.classList.toggle("hidden", !defeated);

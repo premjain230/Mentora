@@ -1035,7 +1035,8 @@ async function askJson(messages, { model, temperature = 0.4, maxTokens = 1200, t
 
 /* ── prompts ─────────────────────────────────────────────────────────────── */
 
-const TEACHING_SYSTEM_PROMPT = `You are Learning Allied, an expert AI tutor powered by Google Gemini for Indian school, JEE and NEET students.
+const TEACHING_SYSTEM_PROMPT = `You are Learning Allied, a globally designed Personal AI Learning OS supporting 15 countries and an expert Socratic tutor supporting students worldwide across authentic national curricula, state/provincial boards, international qualifications (such as AP, GCSE, A-Levels, VCE, O-Level, NCEA, CAPS, Leaving Cert, CBSE, and Maharashtra State Board), and competitive examinations.
+REGIONAL GROUNDING: Adhere strictly to the student's regional conventions (spelling, math terminology, and unit systems) and syllabus specifications.
 
 Your job is to make ONE idea genuinely understood, not to write a long generic article. Accuracy is more important than sounding impressive. Admit uncertainty instead of inventing facts.
 
@@ -1059,14 +1060,16 @@ Rules:
 - Use kind "short" for greetings, logistics and simple factual questions; then keep directAnswer brief and sections empty.
 - Use kind "lesson" only when the concept genuinely needs explanation. 2-4 sections, each under ~90 words.
 - Answer the student's ACTUAL question first. Do not pad with unrelated syllabus content.
-- Adapt wording and depth to the supplied level, board, class and previously demonstrated understanding.
+- Adapt wording, terminology, spelling, units, and depth strictly to the supplied curriculum, level, board, and regional conventions.
 - When an ASSIGNED TEACHING STRATEGY is provided (e.g. Real-World Analogy, Step-by-Step, Visual Demonstration), you MUST adhere strictly to that strategy. Do NOT default to a textbook definition.
+- Respect regional spelling (e.g. color vs colour, analyze vs analyse, center vs centre) and mathematical conventions (e.g. PEMDAS vs BIDMAS, slope vs gradient, trapezoid vs trapezium, radicals vs surds) specified in the context block.
+- Use regional currency symbols and units aligned to the student's country.
+- When VERIFIED RESEARCH & SEARCH EVIDENCE is supplied in context, synthesize the findings accurately and include inline citations [1], [2] referencing those sources. Never fabricate citations or URLs.
 - For numerical problems show every step in example.steps and explain WHY each step is valid.
 - Include units and check the arithmetic. Do not state a result you have not verified.
 - Only choose a visualId from the supplied candidates. Use null if no visual helps. Never invent a visual id.
 - Visual params must obey the supplied ranges/enums. Do not describe an animation as something it is not.
 - The check question must test understanding using simple things. Always frame the check question simply using relatable everyday things or simple intuitive scenarios (e.g., "Check your understanding in simple things: ..."), and ensure it is directly answerable from the explanation without repeating the student's question.
-- When VERIFIED RESEARCH & SEARCH EVIDENCE is supplied in context, synthesize the findings accurately and include inline citations [1], [2] referencing those sources. Never fabricate citations or URLs.
 - Format responses cleanly: use markdown comparison tables (| Parameter | A | B |), numbered steps for sequential instructions, and fenced code blocks with language identifiers where appropriate.
 - Never start responses with generic chatbot filler (e.g. "Certainly! I would be glad to help with that!"). Never end with unrequested summaries or repetitive conclusions ("In summary...", "Hope this helps!"). Provide direct, exceptionally clear, intelligent responses.
 - If the student is mistaken, correct the cause of the misconception kindly and concretely.
@@ -1155,17 +1158,32 @@ function contextBlock({
   crossSubjectPrereqs,
   explanationAttempts = [],
   intentDirective = null,
+  track = null,
   confusionGuidance = null,
   researchSummary = null,
 }) {
-  const track = getTrack(trackId);
+  const resolvedTrack = track && typeof track === "object" ? track : getTrack(trackId);
   const lines = [];
   if (isTopicChange) {
     lines.push("TOPIC CHANGE DETECTED: The student has switched to a new topic. Focus exclusively on answering the new question; do not continue, blend with, or refer to previous conversation topics.");
   }
-  lines.push(`Board/exam: ${track ? track.label : "not specified"}`);
-  if (classNum) lines.push(`Class: ${classNum}`);
+  if (resolvedTrack?.countryCode) lines.push(`Country: ${resolvedTrack.countryCode}`);
+  lines.push(`Board/exam: ${resolvedTrack ? resolvedTrack.label : "not specified"}`);
+  if (classNum) lines.push(`Class/Grade: ${classNum}`);
   if (language) lines.push(`Language: ${language}`);
+
+  // Regional Pedagogical & Linguistic Conventions
+  if (resolvedTrack?.regionalConventions) {
+    const rc = resolvedTrack.regionalConventions;
+    lines.push(`REGIONAL CONVENTIONS: Use ${rc.spellingVariant} spelling (e.g. ${rc.spellingVariant.startsWith("en-US") ? "color, center, analyze" : "colour, centre, analyse"}).`);
+    lines.push(`MATHEMATICAL CONVENTIONS: Order of operations: ${rc.mathTerminology.divisionOfOperations}. Line steepness: '${rc.mathTerminology.slope}'. Geometry: '${rc.mathTerminology.trapezoid}'. Roots: '${rc.mathTerminology.radicals}'. Use '${rc.mathTerminology.reviewTerm}' for revision and evaluate in '${rc.mathTerminology.gradingTerm}'.`);
+    lines.push(`MEASUREMENT & CURRENCY: Primary system: ${rc.primaryMeasurementSystem}. Currency symbol: ${rc.currencySymbol} (${rc.currencyCode}).`);
+    if (rc.examQuestionStyle) lines.push(`EXAM STYLE: ${rc.examQuestionStyle}`);
+  }
+
+  // Syllabus Guardrail Directive
+  lines.push(`SYLLABUS GUARDRAIL: Anchor all explanations and practice strictly to the selected curriculum (${resolvedTrack ? resolvedTrack.label : "standard"}). If the student asks about an advanced topic beyond their grade level or excluded from their official syllabus, explicitly flag: "Note: This topic is beyond the standard syllabus, but here is how it works..." before explaining concisely.`);
+
   lines.push(`Student level: ${level}`);
   if (stage) lines.push(`Active learning stage: ${stage} (Stage ${(typeof stageIndex === "number" ? stageIndex : 0) + 1} of 7: Understand, Explain, Visualize, Practice, Evaluate, Adapt, Remember)`);
   if (concept) {
@@ -2874,4 +2892,6 @@ module.exports = {
   isReplyRelevantToQuestion,
   isPackRelevantToContext,
   PACK_TOPIC_VALIDATORS,
+  TEACHING_SYSTEM_PROMPT,
+  contextBlock,
 };

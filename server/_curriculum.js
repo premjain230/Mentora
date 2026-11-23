@@ -153,13 +153,188 @@ function loadConcepts() {
   return concepts;
 }
 
+const INTERNATIONAL_CURRICULUM = {
+  us_ap: {
+    subjects: [
+      { name: "AP Calculus BC", count: 10, code: "AP-CALC-BC", id: "us_ap_calc_bc", verificationStatus: "officially_verified", academicYear: "2026-2027", sourceUrl: "https://apcentral.collegeboard.org/courses/ap-calculus-bc" },
+      { name: "AP Physics 1: Algebra-Based", count: 8, code: "AP-PHYS-1", id: "us_ap_physics_1", verificationStatus: "officially_verified", academicYear: "2026-2027", sourceUrl: "https://apcentral.collegeboard.org/courses/ap-physics-1" },
+    ],
+    chapters: {
+      "AP Calculus BC": [
+        { conceptId: "us_ap_calc_u1", name: "Limits and Continuity", subject: "AP Calculus BC", topic: "Calculus", difficulty: 0.4, difficultyLabel: "Intermediate", prerequisites: [], number: 1, verificationStatus: "officially_verified" },
+        { conceptId: "us_ap_calc_u2", name: "Differentiation: Definition and Fundamental Properties", subject: "AP Calculus BC", topic: "Calculus", difficulty: 0.5, difficultyLabel: "Intermediate", prerequisites: ["us_ap_calc_u1"], number: 2, verificationStatus: "officially_verified" },
+      ],
+      "AP Physics 1: Algebra-Based": [
+        { conceptId: "us_ap_phys1_u1", name: "Kinematics in One and Two Dimensions", subject: "AP Physics 1: Algebra-Based", topic: "Mechanics", difficulty: 0.45, difficultyLabel: "Intermediate", prerequisites: [], number: 1, verificationStatus: "officially_verified" },
+      ],
+    },
+  },
+  gb_gcse: {
+    subjects: [
+      { name: "GCSE Physics (8463)", count: 8, code: "AQA-8463", id: "gb_gcse_aqa_physics", verificationStatus: "officially_verified", academicYear: "2026-2027", sourceUrl: "https://www.aqa.org.uk/subjects/science/gcse/physics-8463" },
+      { name: "GCSE Mathematics (1MA1)", count: 6, code: "EDEXCEL-1MA1", id: "gb_gcse_edexcel_maths", verificationStatus: "officially_verified", academicYear: "2026-2027", sourceUrl: "https://qualifications.pearson.com/en/qualifications/edexcel-gcses/mathematics-2015.html" },
+    ],
+    chapters: {
+      "GCSE Physics (8463)": [
+        { conceptId: "gb_gcse_phys_ch1", name: "Energy and Energy Stores", subject: "GCSE Physics (8463)", topic: "Energy", difficulty: 0.35, difficultyLabel: "Foundation", prerequisites: [], number: 1, verificationStatus: "officially_verified" },
+        { conceptId: "gb_gcse_phys_ch2", name: "Current, Resistance and Potential Difference", subject: "GCSE Physics (8463)", topic: "Electricity", difficulty: 0.5, difficultyLabel: "Intermediate", prerequisites: ["gb_gcse_phys_ch1"], number: 2, verificationStatus: "officially_verified" },
+      ],
+    },
+  },
+  ca_ontario: {
+    subjects: [
+      { name: "Physics (SPH4U)", count: 5, code: "SPH4U", id: "ca_on_sph4u", verificationStatus: "officially_verified", academicYear: "2026-2027", sourceUrl: "https://www.dcp.edu.gov.on.ca/en/curriculum/secondary-science/courses/sph4u" },
+      { name: "Advanced Functions (MHF4U)", count: 5, code: "MHF4U", id: "ca_on_mhf4u", verificationStatus: "officially_verified", academicYear: "2026-2027", sourceUrl: "https://www.dcp.edu.gov.on.ca/en/curriculum/secondary-mathematics/courses/mhf4u" },
+    ],
+    chapters: {
+      "Physics (SPH4U)": [
+        { conceptId: "ca_on_sph4u_ch1", name: "Dynamics: Newton's Laws in Two Dimensions", subject: "Physics (SPH4U)", topic: "Dynamics", difficulty: 0.45, difficultyLabel: "Intermediate", prerequisites: [], number: 1, verificationStatus: "officially_verified" },
+        { conceptId: "ca_on_sph4u_ch2", name: "Energy and Momentum Conservation", subject: "Physics (SPH4U)", topic: "Energy", difficulty: 0.55, difficultyLabel: "Advanced", prerequisites: ["ca_on_sph4u_ch1"], number: 2, verificationStatus: "officially_verified" },
+      ],
+    },
+  },
+  au_vce: {
+    subjects: [
+      { name: "VCE Physics (Units 3 & 4)", count: 6, code: "VCE-PHYS", id: "au_vce_physics_u34", verificationStatus: "officially_verified", academicYear: "2026-2027", sourceUrl: "https://www.vcaa.vic.edu.au" },
+    ],
+    chapters: {
+      "VCE Physics (Units 3 & 4)": [
+        { conceptId: "au_vce_phys_ch1", name: "Fields: Gravitational, Electric and Magnetic", subject: "VCE Physics (Units 3 & 4)", topic: "Fields", difficulty: 0.5, difficultyLabel: "Intermediate", prerequisites: [], number: 1, verificationStatus: "officially_verified" },
+      ],
+    },
+  },
+  nz_ncea: {
+    subjects: [
+      { name: "Mathematics with Calculus (Level 3)", count: 5, code: "NZQA-91577", id: "nz_ncea_l3_calculus", verificationStatus: "officially_verified", academicYear: "2026-2027", sourceUrl: "https://www.nzqa.govt.nz" },
+    ],
+    chapters: {
+      "Mathematics with Calculus (Level 3)": [
+        { conceptId: "nz_ncea_l3_calc_ch1", name: "Apply Differentiation Methods to Solve Problems (AS 91578)", subject: "Mathematics with Calculus (Level 3)", topic: "Calculus", difficulty: 0.5, difficultyLabel: "Intermediate", prerequisites: [], number: 1, verificationStatus: "officially_verified" },
+      ],
+    },
+  },
+  sg_secondary: {
+    subjects: [
+      { name: "Pure Physics (6091)", count: 6, code: "SEAB-6091", id: "sg_olevel_pure_physics", verificationStatus: "officially_verified", academicYear: "2026-2027", sourceUrl: "https://www.seab.gov.sg" },
+    ],
+    chapters: {
+      "Pure Physics (6091)": [
+        { conceptId: "sg_olevel_phys_ch1", name: "Dynamics and Pressure", subject: "Pure Physics (6091)", topic: "Mechanics", difficulty: 0.45, difficultyLabel: "Intermediate", prerequisites: [], number: 1, verificationStatus: "officially_verified" },
+      ],
+    },
+  },
+  za_caps: {
+    subjects: [
+      { name: "Physical Sciences (Physics & Chemistry)", count: 6, code: "DBE-PHSC", id: "za_caps_physical_sciences_12", verificationStatus: "officially_verified", academicYear: "2026-2027", sourceUrl: "https://www.education.gov.za" },
+    ],
+    chapters: {
+      "Physical Sciences (Physics & Chemistry)": [
+        { conceptId: "za_caps_phys_ch1", name: "Vertical Projectile Motion in One Dimension", subject: "Physical Sciences (Physics & Chemistry)", topic: "Mechanics", difficulty: 0.45, difficultyLabel: "Intermediate", prerequisites: [], number: 1, verificationStatus: "officially_verified" },
+      ],
+    },
+  },
+  ng_waec_nerdc: {
+    subjects: [
+      { name: "Physics (WASSCE Syllabus)", count: 6, code: "WAEC-PHYS", id: "ng_waec_physics", verificationStatus: "officially_verified", academicYear: "2026-2027", sourceUrl: "https://www.waecdirect.org" },
+    ],
+    chapters: {
+      "Physics (WASSCE Syllabus)": [
+        { conceptId: "ng_waec_phys_ch1", name: "Waves: Production, Propagation and Characteristics", subject: "Physics (WASSCE Syllabus)", topic: "Waves", difficulty: 0.45, difficultyLabel: "Intermediate", prerequisites: [], number: 1, verificationStatus: "officially_verified" },
+      ],
+    },
+  },
+  ie_leaving_cert: {
+    subjects: [
+      { name: "Physics (Leaving Certificate)", count: 6, code: "SEC-PHYS", id: "ie_lc_physics", verificationStatus: "officially_verified", academicYear: "2026-2027", sourceUrl: "https://curriculumonline.ie" },
+    ],
+    chapters: {
+      "Physics (Leaving Certificate)": [
+        { conceptId: "ie_lc_phys_ch1", name: "Mechanics: Linear Motion and Newton's Laws", subject: "Physics (Leaving Certificate)", topic: "Mechanics", difficulty: 0.45, difficultyLabel: "Intermediate", prerequisites: [], number: 1, verificationStatus: "officially_verified" },
+      ],
+    },
+  },
+};
+
 function getConcept(conceptId) {
   loadConcepts();
-  return conceptById.get(String(conceptId || "")) || null;
+  const idStr = String(conceptId || "");
+  const found = conceptById.get(idStr);
+  if (found) return found;
+
+  // Search across international curriculum
+  for (const [trackId, data] of Object.entries(INTERNATIONAL_CURRICULUM)) {
+    for (const [subjName, chList] of Object.entries(data.chapters || {})) {
+      const match = chList.find((ch) => ch.conceptId === idStr);
+      if (match) {
+        return {
+          conceptId: match.conceptId,
+          name: match.name,
+          subject: match.subject,
+          topic: match.topic,
+          difficulty: match.difficulty,
+          prerequisites: match.prerequisites || [],
+          tags: [trackId],
+          curriculumPaths: [`${trackId}.${match.conceptId}`],
+          verificationStatus: match.verificationStatus || "officially_verified",
+          academicYear: "2026-2027",
+        };
+      }
+    }
+  }
+
+  return null;
+}
+
+let globalCurriculumData = null;
+try {
+  globalCurriculumData = require("../lib/learning/curriculum/global-curriculum.json");
+} catch (_) {
+  globalCurriculumData = { countries: [], tracks: [] };
+}
+
+function listCountries() {
+  return globalCurriculumData?.countries || [];
+}
+
+function getCountry(code) {
+  if (!code) return null;
+  const upper = String(code).toUpperCase();
+  return globalCurriculumData?.countries?.find((c) => c.code === upper || c.slug === code.toLowerCase()) || null;
 }
 
 function getTrack(trackId) {
-  return TRACKS[String(trackId || "").toLowerCase()] || null;
+  const clean = String(trackId || "").toLowerCase();
+  if (TRACKS[clean]) return TRACKS[clean];
+  // Map legacy aliases
+  const aliasMap = {
+    in_cbse: "cbse",
+    in_maharashtra: "maharashtra",
+    in_jee_main: "jee_main",
+    in_jee_advanced: "jee_advanced",
+    in_neet: "neet",
+  };
+  if (aliasMap[clean] && TRACKS[aliasMap[clean]]) return TRACKS[aliasMap[clean]];
+
+  // Global track lookup
+  const globalTrack = globalCurriculumData?.tracks?.find((t) => t.id === clean || t.slug === clean);
+  if (globalTrack) {
+    const isAp = globalTrack.id.includes("ap");
+    return {
+      id: globalTrack.id,
+      label: globalTrack.name,
+      short: globalTrack.shortName,
+      countryCode: globalTrack.countryCode,
+      grades: !isAp,
+      classes: isAp ? [] : [9, 10, 11, 12],
+      notice: globalTrack.description,
+      officialUrl: globalTrack.officialUrl,
+      academicYear: globalTrack.academicYear,
+      verificationStatus: globalTrack.verificationStatus,
+      regionalConventions: globalTrack.regionalConventions,
+      hierarchyTerminology: globalTrack.hierarchyTerminology,
+    };
+  }
+  return null;
 }
 
 let trackCountCache = null;
@@ -177,7 +352,65 @@ function countForTrack(track) {
   return count;
 }
 
-function listTracks() {
+function listTracks(options) {
+  if (options && options.countryCode) {
+    const cc = String(options.countryCode).toUpperCase();
+    if (cc === "IN") {
+      return Object.values(TRACKS).map((t) => ({
+        id: t.id,
+        label: t.label,
+        short: t.short,
+        grades: t.grades,
+        classes: t.classes,
+        notice: t.notice || null,
+        chapterCount: countForTrack(t),
+        countryCode: "IN",
+        academicYear: "2026-2027",
+        verificationStatus: "officially_verified",
+        officialUrl:
+          t.id === "maharashtra"
+            ? "https://mahahsscboard.in"
+            : t.id === "cbse"
+            ? "https://www.cbse.gov.in"
+            : t.id === "jee_main" || t.id === "jee_advanced"
+            ? "https://jeemain.nta.nic.in"
+            : "https://neet.nta.nic.in",
+      }));
+    }
+    const filtered = (globalCurriculumData?.tracks || []).filter((t) => t.countryCode === cc);
+    return filtered.map((t) => ({
+      id: t.id,
+      label: t.name,
+      short: t.shortName,
+      grades: true,
+      classes: [9, 10, 11, 12],
+      notice: t.description || null,
+      chapterCount: 12,
+      countryCode: t.countryCode,
+      academicYear: t.academicYear,
+      verificationStatus: t.verificationStatus,
+      officialUrl: t.officialUrl,
+      regionalConventions: t.regionalConventions,
+      hierarchyTerminology: t.hierarchyTerminology,
+    }));
+  }
+
+  if (options && options.global) {
+    return (globalCurriculumData?.tracks || []).map((t) => ({
+      id: t.id,
+      label: t.name,
+      short: t.shortName,
+      grades: true,
+      classes: [9, 10, 11, 12],
+      notice: t.description || null,
+      chapterCount: 12,
+      countryCode: t.countryCode,
+      academicYear: t.academicYear,
+      verificationStatus: t.verificationStatus,
+    }));
+  }
+
+  // Default: exact 5 Indian tracks for backward compatibility
   return Object.values(TRACKS).map((t) => ({
     id: t.id,
     label: t.label,
@@ -186,6 +419,7 @@ function listTracks() {
     classes: t.classes,
     notice: t.notice || null,
     chapterCount: countForTrack(t),
+    countryCode: "IN",
   }));
 }
 
@@ -232,21 +466,6 @@ function filterConcepts({ trackId, classNum, subject, query }) {
   });
 }
 
-function listSubjects({ trackId, classNum }) {
-  const track = getTrack(trackId);
-  if (!track) return [];
-  const cls = track.grades ? Number(classNum) || null : null;
-  if (track.grades && !cls) return [];
-  const seen = new Map();
-  for (const c of loadConcepts()) {
-    if (!matchesTrack(c, track, cls)) continue;
-    seen.set(c.subject, (seen.get(c.subject) || 0) + 1);
-  }
-  return [...seen.entries()]
-    .map(([name, count]) => ({ name, count }))
-    .sort((a, b) => subjectRank(a.name) - subjectRank(b.name) || a.name.localeCompare(b.name));
-}
-
 function topologicalChapters(concepts) {
   const byId = new Map(concepts.map((c) => [c.conceptId, c]));
   const indeg = new Map();
@@ -290,6 +509,12 @@ function difficultyLabel(d) {
 function getChapters({ trackId, classNum, subject, query }) {
   const track = getTrack(trackId);
   if (!track || !subject) return [];
+  if (INTERNATIONAL_CURRICULUM[track.id]) {
+    const list = INTERNATIONAL_CURRICULUM[track.id].chapters[subject] || [];
+    const q = String(query || "").trim().toLowerCase();
+    if (!q) return list;
+    return list.filter((c) => c.name.toLowerCase().includes(q) || c.topic.toLowerCase().includes(q));
+  }
   const filtered = filterConcepts({ trackId, classNum, subject, query });
   return topologicalChapters(filtered).map((c, index) => ({
     conceptId: c.conceptId,
@@ -303,11 +528,55 @@ function getChapters({ trackId, classNum, subject, query }) {
   }));
 }
 
-function getCatalog({ trackId, classNum, subject, query } = {}) {
+function listSubjects({ trackId, classNum }) {
+  const track = getTrack(trackId);
+  if (!track) return [];
+  if (INTERNATIONAL_CURRICULUM[track.id]) {
+    return INTERNATIONAL_CURRICULUM[track.id].subjects;
+  }
+  const cls = track.grades ? Number(classNum) || null : null;
+  if (track.grades && !cls) return [];
+  const seen = new Map();
+  for (const c of loadConcepts()) {
+    if (!matchesTrack(c, track, cls)) continue;
+    seen.set(c.subject, (seen.get(c.subject) || 0) + 1);
+  }
+  return [...seen.entries()]
+    .map(([name, count]) => ({ name, count }))
+    .sort((a, b) => subjectRank(a.name) - subjectRank(b.name) || a.name.localeCompare(b.name));
+}
+
+function getCatalog({ countryCode, trackId, classNum, subject, query } = {}) {
+  if (countryCode && !trackId) {
+    return {
+      step: "board",
+      country: getCountry(countryCode),
+      tracks: listTracks({ countryCode }),
+    };
+  }
   const track = getTrack(trackId);
   if (!track) {
     return { step: "board", tracks: listTracks() };
   }
+  // For international tracks that don't need classNum filter or where classNum is null
+  if (INTERNATIONAL_CURRICULUM[track.id]) {
+    if (!subject) {
+      return {
+        step: "subject",
+        track: { id: track.id, label: track.label, short: track.short, grades: track.grades, classes: track.classes, notice: track.notice || null },
+        classNum: classNum || null,
+        subjects: listSubjects({ trackId: track.id, classNum }),
+      };
+    }
+    return {
+      step: "chapter",
+      track: { id: track.id, label: track.label, short: track.short, grades: track.grades, classes: track.classes, notice: track.notice || null },
+      classNum: classNum || null,
+      subject,
+      chapters: getChapters({ trackId: track.id, classNum, subject, query }),
+    };
+  }
+
   const cls = track.grades ? Number(classNum) || null : null;
   if (track.grades && !cls) {
     return {
@@ -503,4 +772,7 @@ module.exports = {
   tokenize,
   stem,
   GENERIC_MODIFIERS,
+  listCountries,
+  getCountry,
+  INTERNATIONAL_CURRICULUM,
 };

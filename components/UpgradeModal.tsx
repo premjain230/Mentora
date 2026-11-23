@@ -134,7 +134,7 @@ export function UpgradeModal() {
           </div>
           <div className="aum-feature-item">
             <span className="aum-check">✓</span>
-            <span>Full syllabus coverage across JEE, NEET, CBSE &amp; Boards</span>
+            <span>Full syllabus coverage across JEE, NEET, CBSE, AP, GCSE, A-Levels &amp; Global Curricula</span>
           </div>
         </div>
 

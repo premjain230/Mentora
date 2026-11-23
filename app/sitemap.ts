@@ -1,8 +1,9 @@
 import { MetadataRoute } from "next";
+import curriculumData from "@/lib/learning/curriculum/global-curriculum.json";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const baseUrl = "https://www.learningallied.world";
-  const now = new Date("2026-11-12");
+  const now = new Date("2026-11-23");
 
   const staticPublicRoutes: {
     url: string;
@@ -30,6 +31,9 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${baseUrl}/arena`, lastModified: now, changeFrequency: "weekly", priority: 0.85 },
     { url: `${baseUrl}/chat`, lastModified: now, changeFrequency: "daily", priority: 0.85 },
     { url: `${baseUrl}/how-it-works`, lastModified: now, changeFrequency: "monthly", priority: 0.8 },
+    { url: `${baseUrl}/how-our-ai-works`, lastModified: now, changeFrequency: "monthly", priority: 0.8 },
+    { url: `${baseUrl}/for-parents`, lastModified: now, changeFrequency: "monthly", priority: 0.8 },
+    { url: `${baseUrl}/child-privacy`, lastModified: now, changeFrequency: "monthly", priority: 0.75 },
     { url: `${baseUrl}/blog`, lastModified: now, changeFrequency: "weekly", priority: 0.8 },
     { url: `${baseUrl}/blog/how-to-make-a-jee-study-plan`, lastModified: new Date("2026-08-13"), changeFrequency: "monthly", priority: 0.8 },
     { url: `${baseUrl}/blog/how-to-study-smarter-using-ai`, lastModified: now, changeFrequency: "monthly", priority: 0.8 },
@@ -43,5 +47,25 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${baseUrl}/terms-of-use`, lastModified: new Date("2026-11-11"), changeFrequency: "monthly", priority: 0.5 },
   ];
 
-  return staticPublicRoutes;
+  // Dynamic Verified Curriculum Routes (Strict Anti-Thin-Content Gating)
+  const dynamicCurriculumRoutes: MetadataRoute.Sitemap = [];
+
+  for (const track of curriculumData.tracks) {
+    const isVerified =
+      track.verificationStatus === "officially_verified" ||
+      track.verificationStatus === "partially_verified";
+    const subjectCount = track.subjects?.length || 0;
+
+    // Gating rule: Only index verified tracks that contain real subjects and chapters
+    if (isVerified && subjectCount > 0 && track.countryCode && track.id) {
+      dynamicCurriculumRoutes.push({
+        url: `${baseUrl}/curriculum/${track.countryCode.toLowerCase()}/${track.id.toLowerCase()}`,
+        lastModified: now,
+        changeFrequency: "weekly",
+        priority: 0.85,
+      });
+    }
+  }
+
+  return [...staticPublicRoutes, ...dynamicCurriculumRoutes];
 }

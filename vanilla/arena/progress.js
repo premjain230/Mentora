@@ -41,9 +41,9 @@ export function createDefaultProgress({
   chapters,
 }) {
   const map = {};
-  chapters.forEach((chapter, index) => {
+  chapters.forEach((chapter) => {
     map[chapter.conceptId] = {
-      state: index === 0 ? ArenaState.AVAILABLE : ArenaState.LOCKED,
+      state: ArenaState.AVAILABLE,
       level: ArenaLevel.FOUNDATION,
       bestScore: 0,
       attempts: 0,
@@ -125,12 +125,11 @@ export function computeProgress(progress, chapters) {
 }
 
 export function canBattle(chapter, progress, chapters) {
-  const entry = progress.chapters[chapter.conceptId];
-  if (!entry) return { ok: false, reason: "Chapter not in progress map" };
-  if (entry.state === ArenaState.LOCKED) {
-    return { ok: false, reason: "Locked — defeat previous chapter first" };
-  }
+  const entry = progress?.chapters?.[chapter.conceptId];
+  // Even if not in progress map yet, allow exploration
+  if (!entry) return { ok: true, recommendation: null };
 
+  const uncompletedPrereqs = [];
   for (const prerequisite of chapter.prerequisites || []) {
     const previous = progress.chapters[prerequisite];
     if (
@@ -138,11 +137,20 @@ export function canBattle(chapter, progress, chapters) {
       previous.state !== ArenaState.DEFEATED &&
       previous.state !== ArenaState.MASTERED
     ) {
-      return { ok: false, reason: "Prerequisite not defeated" };
+      uncompletedPrereqs.push(prerequisite);
     }
   }
 
-  return { ok: true };
+  if (uncompletedPrereqs.length > 0) {
+    return {
+      ok: true,
+      hasPrereqNotice: true,
+      recommendation: `Recommended prerequisite background: ${uncompletedPrereqs.join(", ")}`,
+      uncompletedPrereqs,
+    };
+  }
+
+  return { ok: true, recommendation: null };
 }
 
 export function applyAttempt(

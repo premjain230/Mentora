@@ -32,9 +32,9 @@ export function nextLevel(lvl){
 export function createDefaultProgress({ subjectKey, trackId, subject, classNum, chapters }){
   const map = {};
   // First chapter available, rest locked
-  chapters.forEach((ch, idx)=>{
+  chapters.forEach((ch)=>{
     map[ch.conceptId] = {
-      state: idx===0 ? ArenaState.AVAILABLE : ArenaState.LOCKED,
+      state: ArenaState.AVAILABLE,
       level: ArenaLevel.FOUNDATION,
       bestScore: 0,
       attempts: 0,
@@ -96,20 +96,22 @@ export function computeProgress(progress, chapters){
   return { ...progress, defeated, total, progressPct: pct, currentChapterId: current, finalBossUnlocked, _staleIds: Object.keys(m).filter((id) => !inCurrent.has(id)) };
 }
 
-// Validation: can start battle? (must be available/in_progress, prerequisites defeated)
+// Validation: can start battle? (Unrestricted navigation, non-blocking prerequisite guidance)
 export function canBattle(chapter, progress, chapters){
-  const entry = progress.chapters[chapter.conceptId];
-  if(!entry) return { ok:false, reason:"Chapter not in progress map" };
-  if(entry.state===ArenaState.LOCKED) return { ok:false, reason:"Locked — defeat previous chapter first" };
-  // prerequisite check (syllabus graph)
+  const entry = progress?.chapters?.[chapter.conceptId];
+  if(!entry) return { ok:true, recommendation: null };
+
+  const uncompleted = [];
   for(const pre of (chapter.prerequisites||[])){
     const preEntry = progress.chapters[pre];
-    // if prerequisite not in this subject map, ignore (cross-subject)
     if(preEntry && preEntry.state!==ArenaState.DEFEATED && preEntry.state!==ArenaState.MASTERED){
-      return { ok:false, reason:"Prerequisite not defeated" };
+      uncompleted.push(pre);
     }
   }
-  return { ok:true };
+  if(uncompleted.length > 0){
+    return { ok: true, hasPrereqNotice: true, recommendation: `Helpful background: ${uncompleted.join(", ")}`, uncompleted };
+  }
+  return { ok:true, recommendation: null };
 }
 
 // Apply chapter attempt result (client optimistic; server will recompute)

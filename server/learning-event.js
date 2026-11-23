@@ -142,7 +142,7 @@ async function handleArena(req, res){
       const prereqMap = {};
       for(const ch of chapters){
         const cid = ch && typeof ch.conceptId==="string" ? ch.conceptId.trim().slice(0,80) : null;
-        if(!cid || !/^[a-z][a-z0-9]*(\.[a-z0-9_]+)+$/.test(cid)) continue;
+        if(!cid || !/^[a-z0-9][a-z0-9_.-]*[a-z0-9]$/i.test(cid)) continue;
         const prereqs = Array.isArray(ch.prerequisites) ? ch.prerequisites.filter(p=> typeof p==="string" && p.length<=80).slice(0,10) : [];
         if(!chapterIds.includes(cid)){ chapterIds.push(cid); prereqMap[cid]=prereqs; }
       }
@@ -160,10 +160,7 @@ async function handleArena(req, res){
               const chaptersMap = {...(d.chapters||{})};
               const order=[...(d.chapterOrder||[])];
               for(const mid of missing){
-                const allDefeated = order.every(oid=> {
-                  const e=chaptersMap[oid]; return e && (e.state==="defeated"||e.state==="mastered");
-                });
-                chaptersMap[mid] = { state: allDefeated? "available":"locked", level:"foundation", bestScore:0, attempts:0, lastAttemptAt:null, defeatedAt:null, masteryScore:0 };
+                chaptersMap[mid] = { state: "available", level:"foundation", bestScore:0, attempts:0, lastAttemptAt:null, defeatedAt:null, masteryScore:0 };
                 order.push(mid);
               }
               tx.update(progressRef, { chapters: chaptersMap, chapterOrder: order, total: order.length, updatedAt: require("firebase-admin").firestore.FieldValue.serverTimestamp() });
@@ -176,9 +173,9 @@ async function handleArena(req, res){
       }
       if(!chapterIds.length) return res.status(400).json({error:"chapters required for init (array of {conceptId, prerequisites})"});
       const chaptersMap = {};
-      chapterIds.forEach((cid, idx)=>{
+      chapterIds.forEach((cid)=>{
         chaptersMap[cid] = {
-          state: idx===0 ? "available":"locked",
+          state: "available",
           level: "foundation",
           bestScore:0, attempts:0, lastAttemptAt:null, defeatedAt:null, masteryScore:0,
         };
@@ -212,7 +209,7 @@ async function handleArena(req, res){
     if(action==="start_battle"){
       const mode = body.mode==="final_boss" ? "final_boss" : "chapter";
       const conceptId = body.conceptId ? String(body.conceptId).trim().slice(0,80) : null;
-      if(mode==="chapter" && (!conceptId || !/^[a-z][a-z0-9]*(\.[a-z0-9_]+)+$/.test(conceptId))){
+      if(mode==="chapter" && (!conceptId || !/^[a-z0-9][a-z0-9_.-]*[a-z0-9]$/i.test(conceptId))){
         return res.status(400).json({error:"conceptId invalid"});
       }
       const subject = body.subject ? String(body.subject).trim().slice(0,60) : "this subject";
@@ -375,13 +372,16 @@ async function handleArena(req, res){
         }
 
         const chapters = { ...(data.chapters || {}) };
-        const entry = chapters[conceptId];
-        if(!entry) throw Object.assign(new Error("conceptId not in this subject"), {statusCode:400});
-        if(entry.state==="locked") throw Object.assign(new Error("Chapter locked"), {statusCode:403});
-        const prereqs = (data.prerequisites && data.prerequisites[conceptId]) || [];
-        for(const pre of prereqs){
-          const pe=chapters[pre]; if(pe && pe.state!=="defeated" && pe.state!=="mastered") throw Object.assign(new Error("Prerequisite not defeated: "+pre), {statusCode:403});
-        }
+        const entry = chapters[conceptId] || {
+          state: "available",
+          level: "foundation",
+          bestScore: 0,
+          attempts: 0,
+          lastAttemptAt: null,
+          defeatedAt: null,
+          masteryScore: 0,
+        };
+        // Unrestricted non-linear progression: never reject a battle completion due to locked state or order
         let masteryScore = null;
         try{
           const masterySnap = await tx.get(db.doc(`users/${uid}/mastery/${conceptId}`));
@@ -400,13 +400,6 @@ async function handleArena(req, res){
         const order = data.chapterOrder || Object.keys(chapters);
         const idx = order.indexOf(conceptId);
         if(passed){
-          if(idx>0){
-            let earliestAvailable = null;
-            for(const cid of order){ const s=chapters[cid].state; if(s==="available"||s==="in_progress"){ earliestAvailable=cid; break; } }
-            if(earliestAvailable && earliestAvailable!==conceptId){
-              throw Object.assign(new Error("Defeat chapters in order — current is "+earliestAvailable), {statusCode:403});
-            }
-          }
           const updated = {
             ...entry,
             state: (masteryScore!=null && masteryScore>=0.85) ? "mastered" : "defeated",
