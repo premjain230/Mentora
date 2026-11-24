@@ -238,14 +238,24 @@ export function mount(root, ctx) {
   if (initialClass) state.selection.classNum = initialClass;
   if (initialSubject) state.selection.subject = initialSubject;
 
+  // Dedicated Country Selection on initial visit:
+  // When a student visits Learning Hub without a specific concept or track deep link,
+  // present the dedicated country selection experience first!
+  if (!initialConceptId && !initialTrack) {
+    state.viewMode = "country";
+  }
+
   render();
   renderCountryBar();
 
   if (initialConceptId) {
     state.activeSubConceptId = initialSubConceptId;
     void loadLesson(initialConceptId, { mode: "start", subConceptId: initialSubConceptId });
+  } else if (initialTrack) {
+    void fetchCatalog({ countryCode: state.selectedCountry, ...state.selection });
   } else {
-    void fetchCatalog({ countryCode: state.selectedCountry, ...EMPTY_SELECTION });
+    state.viewMode = "country";
+    render();
   }
 
   return () => {
@@ -331,6 +341,7 @@ export function mount(root, ctx) {
         const code = els.countrySelect.value;
         if (!code) return;
         state.selectedCountry = code;
+        state.viewMode = null;
         state.selection = { track: "", classNum: null, subject: "", query: "" };
         renderCountryBar();
         void fetchCatalog({ countryCode: code, ...EMPTY_SELECTION });
@@ -1340,6 +1351,7 @@ export function mount(root, ctx) {
       pill.setAttribute("aria-selected", isCurrent ? "true" : "false");
       lifecycle.on(pill, "click", () => {
         state.selectedCountry = c.code;
+        state.viewMode = null;
         if (els.countrySelect) els.countrySelect.value = c.code;
         state.selection = { track: "", classNum: null, subject: "", query: "" };
         renderCountryBar();
@@ -1371,6 +1383,7 @@ export function mount(root, ctx) {
           if (c.name.toLowerCase().includes(q)) {
             matches.push({ title: `${c.flag} ${c.name}`, sub: "Country Curriculum", action: () => {
               state.selectedCountry = c.code;
+              state.viewMode = null;
               if (els.countrySelect) els.countrySelect.value = c.code;
               renderCountryBar();
               void fetchCatalog({ countryCode: c.code, ...EMPTY_SELECTION });
@@ -1535,6 +1548,7 @@ export function mount(root, ctx) {
 
     const catalog = state.catalog;
     if (els.pickTitle) {
+      const countryObj = catalog?.country || GLOBAL_COUNTRIES.find((c) => c.code === state.selectedCountry);
       els.pickTitle.textContent =
         isCountryView
           ? "Choose Your Country or Education System"
@@ -1544,6 +1558,8 @@ export function mount(root, ctx) {
           ? "Choose a Subject"
           : catalog?.step === "class"
           ? "Select Your Class or Stage"
+          : catalog?.step === "board" && countryObj
+          ? `Select Education System / Board in ${countryObj.name}`
           : "What do you want to master today?";
     }
 
@@ -1557,7 +1573,7 @@ export function mount(root, ctx) {
       }
     }
 
-    if (els.catalogLoading) els.catalogLoading.hidden = !(state.catalogLoading && !catalog);
+    if (els.catalogLoading) els.catalogLoading.hidden = !(state.catalogLoading && !catalog && !isCountryView);
 
     if (els.catalogError) {
       els.catalogError.hidden = !state.catalogError;
@@ -1567,7 +1583,7 @@ export function mount(root, ctx) {
     if (els.catalog) els.catalog.hidden = !catalog && !isCountryView;
     if (!catalog && !isCountryView) return;
 
-    const showBreadcrumb = !isCountryView && catalog && (catalog.step !== "board" || state.selection.track);
+    const showBreadcrumb = !isCountryView && Boolean(catalog);
     if (els.breadcrumb) els.breadcrumb.hidden = !showBreadcrumb;
     if (showBreadcrumb && els.back && els.breadcrumbText) {
       els.back.textContent = `← ${
@@ -1577,11 +1593,16 @@ export function mount(root, ctx) {
           ? (state.selection.classNum ? `Class ${state.selection.classNum}` : "Boards")
           : catalog.step === "class"
           ? "Boards"
-          : "Countries"
+          : "Choose Country"
       }`;
-      els.breadcrumbText.textContent = `${catalog.track ? catalog.track.label : ""}${
-        catalog.classNum ? ` · Class ${catalog.classNum}` : ""
-      }${catalog.subject ? ` · ${catalog.subject}` : ""}`;
+      const countryObj = catalog.country || GLOBAL_COUNTRIES.find((c) => c.code === state.selectedCountry);
+      els.breadcrumbText.textContent = `${
+        catalog.step === "board"
+          ? (countryObj ? `${countryObj.flagEmoji || countryObj.flag || "🌍"} ${countryObj.name}` : (state.selectedCountry || "Global"))
+          : `${catalog.track ? catalog.track.label : ""}${
+              catalog.classNum ? ` · Class ${catalog.classNum}` : ""
+            }${catalog.subject ? ` · ${catalog.subject}` : ""}`
+      }`;
     }
 
     if (els.trackNotice) {
@@ -1614,11 +1635,23 @@ export function mount(root, ctx) {
     els.boards.hidden = !visible;
     if (els.changeCountryBtn) {
       els.changeCountryBtn.hidden = !visible;
+      const countryObj = catalog.country || GLOBAL_COUNTRIES.find((c) => c.code === state.selectedCountry);
+      if (countryObj) {
+        els.changeCountryBtn.textContent = `🌍 Change Country (${countryObj.flag || countryObj.flagEmoji || ""} ${countryObj.name})`;
+      } else {
+        els.changeCountryBtn.textContent = "🌍 Change Country";
+      }
     }
     if (!visible) return;
 
     els.boards.replaceChildren();
-    for (const track of catalog.tracks || []) {
+    const tracks = catalog.tracks || [];
+    if (tracks.length === 0) {
+      const emptyNote = el("p", "hub-board-empty-note", "No boards found for this country. Please select another country.");
+      els.boards.appendChild(emptyNote);
+      return;
+    }
+    for (const track of tracks) {
       const card = el("button", "hub-board-card");
       card.type = "button";
       const verifText = track.verificationStatus === "officially_verified" ? "✓ Verified 2026–27" : "Academic Year 2026–27";
@@ -1636,7 +1669,7 @@ export function mount(root, ctx) {
         }
         const next = { track: track.id, classNum: null, subject: "", query: "" };
         state.selection = { ...next };
-        void fetchCatalog(next);
+        void fetchCatalog({ countryCode: state.selectedCountry, ...next });
       });
       els.boards.appendChild(card);
     }
@@ -1658,7 +1691,7 @@ export function mount(root, ctx) {
       );
       lifecycle.on(card, "click", () => {
         state.selection = { ...state.selection, classNum, subject: "", query: "" };
-        void fetchCatalog({ ...state.selection, classNum, subject: "", query: "" });
+        void fetchCatalog({ countryCode: state.selectedCountry, ...state.selection, classNum, subject: "", query: "" });
       });
       els.classes.appendChild(card);
     }
@@ -1751,7 +1784,7 @@ export function mount(root, ctx) {
       card.append(nameRow, metaRow);
       lifecycle.on(card, "click", () => {
         state.selection = { ...state.selection, subject: subject.name, query: "" };
-        void fetchCatalog({ ...state.selection, subject: subject.name, query: "" });
+        void fetchCatalog({ countryCode: state.selectedCountry, ...state.selection, subject: subject.name, query: "" });
       });
       els.subjects.appendChild(card);
     }
@@ -1826,17 +1859,20 @@ export function mount(root, ctx) {
     if (state.selection.subject && state.catalog?.step === "chapter") {
       state.query = "";
       state.subjectFilter = "";
-      void fetchCatalog({ ...state.selection, subject: "", query: "" });
+      state.selection.subject = "";
+      void fetchCatalog({ countryCode: state.selectedCountry, ...state.selection, subject: "", query: "" });
       return;
     }
     if (state.selection.classNum && state.catalog?.step === "subject") {
       state.subjectFilter = "";
-      void fetchCatalog({ ...state.selection, classNum: null, subject: "", query: "" });
+      state.selection.classNum = null;
+      void fetchCatalog({ countryCode: state.selectedCountry, ...state.selection, classNum: null, subject: "", query: "" });
       return;
     }
     if (state.selection.track) {
       state.query = "";
       state.subjectFilter = "";
+      state.selection.track = "";
       void fetchCatalog({ countryCode: state.selectedCountry, ...EMPTY_SELECTION });
       return;
     }

@@ -2749,11 +2749,15 @@ async function catalogAction(params = {}) {
   const classNum = Number(body.classNum) || null;
   const requestedSubject = body.subject || null;
   const query = clip(body.query, 80);
+  const countryCode = body.countryCode ? String(body.countryCode).toUpperCase().trim() : null;
+  const step = body.step || null;
   const catalog = getCatalog({
+    countryCode,
     trackId: requestedTrack,
     classNum,
     subject: requestedSubject,
     query,
+    step,
   });
   // Attach which chapters already have saved progress so the UI can mark them.
   const topics = state && state.hub ? state.hub.topics || {} : {};

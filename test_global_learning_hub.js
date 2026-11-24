@@ -19,7 +19,7 @@ const {
   INTERNATIONAL_CURRICULUM,
 } = require("./server/_curriculum.js");
 
-const { lessonTutor, loadStudentState } = require("./server/_learn-core.js");
+const { lessonTutor, loadStudentState, catalogAction } = require("./server/_learn-core.js");
 
 let passed = 0;
 let total = 0;
@@ -222,6 +222,45 @@ async function runAll() {
 
     // Verify controller does not inject innerHTML
     assert(!controllerSource.includes("innerHTML"), "vanilla controller must not use innerHTML");
+  });
+
+  // ── Scenario 11: catalogAction Country Routing Verification ──
+  console.log("\n[Scenario 11] catalogAction Respects Country Codes");
+  await testAsync("catalogAction returns authentic tracks for international countries, not Indian tracks", async () => {
+    const usResult = await catalogAction({ body: { countryCode: "US" } });
+    assert.strictEqual(usResult.catalog.step, "board");
+    assert.strictEqual(usResult.catalog.country.code, "US");
+    const usTrackIds = usResult.catalog.tracks.map((t) => t.id);
+    assert(usTrackIds.includes("us_ap"), "US must include us_ap");
+    assert(!usTrackIds.includes("cbse"), "US must NOT include Indian cbse");
+    assert(!usTrackIds.includes("maharashtra"), "US must NOT include Indian maharashtra");
+
+    const gbResult = await catalogAction({ body: { countryCode: "GB" } });
+    assert.strictEqual(gbResult.catalog.step, "board");
+    assert.strictEqual(gbResult.catalog.country.code, "GB");
+    const gbTrackIds = gbResult.catalog.tracks.map((t) => t.id);
+    assert(gbTrackIds.includes("gb_gcse"), "GB must include gb_gcse");
+    assert(!gbTrackIds.includes("neet"), "GB must NOT include Indian neet");
+
+    const inResult = await catalogAction({ body: { countryCode: "IN" } });
+    assert.strictEqual(inResult.catalog.step, "board");
+    const inTrackIds = inResult.catalog.tracks.map((t) => t.id);
+    assert(inTrackIds.includes("cbse"), "IN must include cbse");
+    assert(inTrackIds.includes("maharashtra"), "IN must include maharashtra");
+  });
+
+  // ── Scenario 12: Dedicated Country Landing & Discovery ──
+  console.log("\n[Scenario 12] Dedicated Country Discovery View");
+  test("getCatalog with step: country returns all 15 supported countries", () => {
+    const countryCatalog = getCatalog({ step: "country" });
+    assert.strictEqual(countryCatalog.step, "country");
+    assert(Array.isArray(countryCatalog.countries), "countries must be array");
+    assert.strictEqual(countryCatalog.countries.length, 15, "Must list all 15 supported countries");
+    assert(countryCatalog.countries.some((c) => c.code === "US"));
+    assert(countryCatalog.countries.some((c) => c.code === "GB"));
+    assert(countryCatalog.countries.some((c) => c.code === "CA"));
+    assert(countryCatalog.countries.some((c) => c.code === "AU"));
+    assert(countryCatalog.countries.some((c) => c.code === "IN"));
   });
 
   console.log("\n============================================================");
