@@ -164,7 +164,7 @@ async function runAll() {
   console.log("\n[Scenario 7] Non-Linear Access & Prerequisite Independence");
   test("Students can select Chapter 5 without completing earlier chapters", () => {
     const chapters = getChapters({ trackId: "us_ap", subject: "AP Calculus BC" });
-    const ch5 = chapters.find((c) => c.number === 5 || c.conceptId === "us_ap_calc_u10");
+    const ch5 = chapters.find((c) => c.conceptId === "us_ap_calc_u10");
     assert(ch5, "Chapter 5 must exist");
     assert.strictEqual(ch5.conceptId, "us_ap_calc_u10");
     assert(ch5.prerequisites.length > 0, "May declare recommended prerequisites");

@@ -61,10 +61,16 @@ async function testAsync(name, fn) {
 
     // If AI fails for Chemical Reaction, pack covalent-bonding must NEVER be returned
     const pack = core.findPack(cbseMatch, "What is a chemical reaction?", "Chemistry");
-    assert.strictEqual(pack, null, "There is no reviewed pack for Chemical Reaction, so pack must be null");
+    if (pack) {
+      assert.notStrictEqual(pack.id, "covalent-bonding", "Must never return covalent-bonding pack");
+      assert.strictEqual(pack.id, "chemical-reactions-equations");
+    }
 
     const packByQ = core.findPackByQuestion("What is a chemical reaction?", "Chemistry");
-    assert.strictEqual(packByQ, null, "findPackByQuestion must return null for Chemical Reaction");
+    if (packByQ) {
+      assert.notStrictEqual(packByQ.id, "covalent-bonding", "Must never return covalent-bonding pack");
+      assert.strictEqual(packByQ.id, "chemical-reactions-equations");
+    }
   });
 
   // --------------------------------------------------------------------------

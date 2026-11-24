@@ -761,7 +761,16 @@ function getChapterMetadata(conceptId) {
       prerequisites: [],
     };
   }
-  return CURATED_CONCEPT_DECOMPOSITIONS[conceptId] || generateHeuristicConcepts(concept);
+  if (CURATED_CONCEPT_DECOMPOSITIONS[conceptId]) return CURATED_CONCEPT_DECOMPOSITIONS[conceptId];
+  if (concept && Array.isArray(concept.topics) && concept.topics.length > 0) {
+    return {
+      chapterSummary: concept.summary || `${concept.name} is a verified curriculum chapter in ${concept.subject}.`,
+      learningObjectives: concept.learningObjectives || [],
+      estimatedMinutes: concept.estimatedMinutes || 50,
+      concepts: concept.topics
+    };
+  }
+  return generateHeuristicConcepts(concept);
 }
 
 function getChapterOutline(conceptId, studentState = null) {
@@ -782,7 +791,14 @@ function getChapterOutline(conceptId, studentState = null) {
     };
   }
 
-  const decomposition = CURATED_CONCEPT_DECOMPOSITIONS[conceptId] || generateHeuristicConcepts(concept);
+  const decomposition = CURATED_CONCEPT_DECOMPOSITIONS[conceptId] ||
+    (concept && Array.isArray(concept.topics) && concept.topics.length > 0 ? {
+      chapterSummary: concept.summary || `${concept.name} is a verified curriculum chapter in ${concept.subject}.`,
+      learningObjectives: concept.learningObjectives || [],
+      estimatedMinutes: concept.estimatedMinutes || 50,
+      concepts: concept.topics
+    } : null) ||
+    generateHeuristicConcepts(concept);
   const prereqs = getPrerequisiteInfo(concept) || [];
   const crossSubjectPrereqs = getCrossSubjectPrerequisites(conceptId) || [];
 

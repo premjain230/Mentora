@@ -1376,41 +1376,119 @@ export function mount(root, ctx) {
         els.globalSearchResults.replaceChildren();
         return;
       }
-      debounceTimer = setTimeout(() => {
-        // Quick local client matches
-        const matches = [];
-        for (const c of GLOBAL_COUNTRIES) {
-          if (c.name.toLowerCase().includes(q)) {
-            matches.push({ title: `${c.flag} ${c.name}`, sub: "Country Curriculum", action: () => {
-              state.selectedCountry = c.code;
-              state.viewMode = null;
-              if (els.countrySelect) els.countrySelect.value = c.code;
-              renderCountryBar();
-              void fetchCatalog({ countryCode: c.code, ...EMPTY_SELECTION });
-              try {
-                localStorage.setItem("learning_allied_country", c.code);
-              } catch (_) {}
-            }});
+      debounceTimer = setTimeout(async () => {
+        try {
+          const res = await callTutor(getToken, "catalog", {
+            globalSearch: q,
+            countryCode: state.selectedCountry || undefined,
+          });
+          const results = (res && res.searchResults) || [];
+
+          if (results.length > 0) {
+            els.globalSearchResults.replaceChildren();
+            for (const item of results) {
+              const btn = el("button", `hub-search-result-item hub-search-result-item--${item.type}`);
+              btn.type = "button";
+
+              const badge = el("span", "hub-search-badge", String(item.type || "").toUpperCase());
+              const textWrap = el("div", "hub-search-result-texts");
+              textWrap.appendChild(el("span", "hub-search-result-title", item.title));
+              textWrap.appendChild(el("span", "hub-search-result-sub", item.sub));
+
+              btn.append(badge, textWrap);
+              lifecycle.on(btn, "click", () => {
+                els.globalSearchResults.hidden = true;
+                els.globalSearchInput.value = "";
+                if (item.type === "topic") {
+                  if (item.countryCode) state.selectedCountry = item.countryCode;
+                  state.selection = {
+                    track: item.trackId || state.selection.track,
+                    classNum: null,
+                    subject: item.subject || state.selection.subject,
+                    query: "",
+                  };
+                  state.activeSubConceptId = item.subConceptId;
+                  void loadLesson(item.conceptId, { mode: "start", subConceptId: item.subConceptId });
+                } else if (item.type === "chapter") {
+                  if (item.countryCode) state.selectedCountry = item.countryCode;
+                  state.selection = {
+                    track: item.trackId || state.selection.track,
+                    classNum: null,
+                    subject: item.subject || state.selection.subject,
+                    query: "",
+                  };
+                  void loadLesson(item.conceptId, { mode: "start" });
+                } else if (item.type === "subject") {
+                  if (item.countryCode) state.selectedCountry = item.countryCode;
+                  state.viewMode = null;
+                  state.selection = {
+                    track: item.trackId,
+                    classNum: null,
+                    subject: item.subject,
+                    query: "",
+                  };
+                  void fetchCatalog({ countryCode: item.countryCode, track: item.trackId, subject: item.subject });
+                } else if (item.type === "board") {
+                  if (item.countryCode) state.selectedCountry = item.countryCode;
+                  state.viewMode = null;
+                  state.selection = {
+                    track: item.trackId,
+                    classNum: null,
+                    subject: "",
+                    query: "",
+                  };
+                  void fetchCatalog({ countryCode: item.countryCode, track: item.trackId });
+                } else if (item.type === "country") {
+                  state.selectedCountry = item.countryCode;
+                  state.viewMode = null;
+                  if (els.countrySelect) els.countrySelect.value = item.countryCode;
+                  renderCountryBar();
+                  void fetchCatalog({ countryCode: item.countryCode, ...EMPTY_SELECTION });
+                }
+              });
+              els.globalSearchResults.appendChild(btn);
+            }
+            els.globalSearchResults.hidden = false;
+          } else {
+            els.globalSearchResults.hidden = true;
+          }
+        } catch (_) {
+          // Fallback to local country matching
+          const matches = [];
+          for (const c of GLOBAL_COUNTRIES) {
+            if (c.name.toLowerCase().includes(q)) {
+              matches.push({
+                title: `${c.flag} ${c.name}`,
+                sub: "Country Curriculum",
+                action: () => {
+                  state.selectedCountry = c.code;
+                  state.viewMode = null;
+                  if (els.countrySelect) els.countrySelect.value = c.code;
+                  renderCountryBar();
+                  void fetchCatalog({ countryCode: c.code, ...EMPTY_SELECTION });
+                },
+              });
+            }
+          }
+          if (matches.length > 0) {
+            els.globalSearchResults.replaceChildren();
+            for (const m of matches) {
+              const item = el("button", "hub-search-result-item");
+              item.type = "button";
+              item.append(el("span", "hub-search-result-title", m.title), el("span", "hub-search-result-sub", m.sub));
+              lifecycle.on(item, "click", () => {
+                els.globalSearchResults.hidden = true;
+                els.globalSearchInput.value = "";
+                m.action();
+              });
+              els.globalSearchResults.appendChild(item);
+            }
+            els.globalSearchResults.hidden = false;
+          } else {
+            els.globalSearchResults.hidden = true;
           }
         }
-        if (matches.length > 0) {
-          els.globalSearchResults.replaceChildren();
-          for (const m of matches) {
-            const item = el("button", "hub-search-result-item");
-            item.type = "button";
-            item.append(el("span", "hub-search-result-title", m.title), el("span", "hub-search-result-sub", m.sub));
-            lifecycle.on(item, "click", () => {
-              els.globalSearchResults.hidden = true;
-              els.globalSearchInput.value = "";
-              m.action();
-            });
-            els.globalSearchResults.appendChild(item);
-          }
-          els.globalSearchResults.hidden = false;
-        } else {
-          els.globalSearchResults.hidden = true;
-        }
-      }, 150);
+      }, 180);
     });
 
     lifecycle.on(document, "click", (e) => {
@@ -1819,6 +1897,8 @@ export function mount(root, ctx) {
     els.chapters.replaceChildren();
     const chapters = catalog.chapters || [];
     for (const chapter of chapters) {
+      const group = el("div", "hub-chapter-group");
+
       const card = el("button", "hub-chapter");
       card.type = "button";
 
@@ -1826,9 +1906,10 @@ export function mount(root, ctx) {
       body.appendChild(el("span", "hub-chapter-name", chapter.name));
 
       const prereqs = chapter.prerequisites || [];
+      const topicsList = chapter.concepts || chapter.topics || [];
       const meta = [
         chapter.difficultyLabel || "Structured",
-        `${chapter.totalConcepts || 4} concepts`,
+        `${topicsList.length || chapter.totalConcepts || 4} topics`,
         `${chapter.estimatedMinutes || 45} min`
       ];
 
@@ -1840,12 +1921,58 @@ export function mount(root, ctx) {
       }
       body.appendChild(el("span", "hub-chapter-meta", meta.filter(Boolean).join(" · ")));
 
-      const arrow = el("span", "hub-chapter-arrow", "→");
-      arrow.setAttribute("aria-hidden", "true");
-      card.append(el("span", "hub-chapter-num", String(chapter.number)), body, arrow);
+      const actionsWrap = el("div", "hub-chapter-actions");
+      const toggleTopicsBtn = el("button", "hub-chapter-toggle-topics", `Topics (${topicsList.length || 4}) ▾`);
+      toggleTopicsBtn.type = "button";
 
-      lifecycle.on(card, "click", () => openChapter(chapter));
-      els.chapters.appendChild(card);
+      const arrow = el("span", "hub-chapter-arrow", "Start Chapter →");
+      arrow.setAttribute("aria-hidden", "true");
+
+      actionsWrap.append(toggleTopicsBtn, arrow);
+      card.append(el("span", "hub-chapter-num", String(chapter.number)), body, actionsWrap);
+
+      lifecycle.on(card, "click", (e) => {
+        if (e.target === toggleTopicsBtn || toggleTopicsBtn.contains(e.target)) return;
+        openChapter(chapter);
+      });
+
+      // Individual topics accordion
+      const topicsContainer = el("div", "hub-chapter-topic-list");
+      topicsContainer.hidden = true;
+
+      lifecycle.on(toggleTopicsBtn, "click", (e) => {
+        e.stopPropagation();
+        const willHide = !topicsContainer.hidden;
+        topicsContainer.hidden = willHide;
+        toggleTopicsBtn.textContent = willHide ? `Topics (${topicsList.length || 4}) ▾` : "Hide Topics ▴";
+      });
+
+      if (topicsList.length > 0) {
+        topicsList.forEach((top, idx) => {
+          const topItem = el("div", "hub-topic-row");
+          const topNum = el("span", "hub-topic-num", `${chapter.number}.${idx + 1}`);
+          const topInfo = el("div", "hub-topic-info");
+          topInfo.appendChild(el("span", "hub-topic-title", top.title || top.name));
+          if (top.description) {
+            topInfo.appendChild(el("span", "hub-topic-desc", top.description));
+          }
+          const topMeta = el("span", "hub-topic-meta", `${top.estimatedMinutes || 12} min · ${top.practiceType || "conceptual"}`);
+          topInfo.appendChild(topMeta);
+
+          const startTopicBtn = el("button", "btn btn-secondary btn-sm hub-start-topic-btn", "Start Topic →");
+          startTopicBtn.type = "button";
+          lifecycle.on(startTopicBtn, "click", (e) => {
+            e.stopPropagation();
+            openTopic(chapter, { ...top, index: idx + 1 });
+          });
+
+          topItem.append(topNum, topInfo, startTopicBtn);
+          topicsContainer.appendChild(topItem);
+        });
+      }
+
+      group.append(card, topicsContainer);
+      els.chapters.appendChild(group);
     }
     if (els.empty) els.empty.hidden = chapters.length > 0;
   }
@@ -1968,6 +2095,17 @@ export function mount(root, ctx) {
           : "This chapter could not be loaded. Please retry.";
       render();
     }
+  }
+
+  function openTopic(chapter, topic) {
+    state.selection = {
+      ...state.selection,
+      subject: chapter.subject || state.selection.subject,
+      query: "",
+    };
+    state.activeSubConceptId = topic.id;
+    state.activeConceptIndex = topic.index || 1;
+    void loadLesson(chapter.conceptId, { mode: "start", subConceptId: topic.id });
   }
 
   function openChapter(chapter) {

@@ -177,6 +177,34 @@ function getConcept(conceptId) {
           curriculumPaths: [`${trackId}.${match.conceptId}`],
           verificationStatus: match.verificationStatus || "officially_verified",
           academicYear: "2026-2027",
+          officialSource: match.officialSource || data.officialUrl || "",
+          estimatedMinutes: match.estimatedMinutes || 50,
+          learningObjectives: match.learningObjectives || [],
+          topics: match.topics || [],
+        };
+      }
+
+      // Check if idStr references a sub-topic / individual concept
+      const topicMatch = chList.find((ch) => ch.topics && ch.topics.some((t) => t.id === idStr || `${ch.conceptId}.${t.id}` === idStr || `${ch.conceptId}_${t.id}` === idStr));
+      if (topicMatch) {
+        const sub = topicMatch.topics.find((t) => t.id === idStr || `${topicMatch.conceptId}.${t.id}` === idStr || `${topicMatch.conceptId}_${t.id}` === idStr);
+        return {
+          conceptId: topicMatch.conceptId,
+          subConceptId: sub.id,
+          name: sub.title || topicMatch.name,
+          chapterName: topicMatch.name,
+          subject: topicMatch.subject,
+          topic: topicMatch.topic,
+          difficulty: topicMatch.difficulty,
+          prerequisites: topicMatch.prerequisites || [],
+          tags: [trackId],
+          curriculumPaths: [`${trackId}.${topicMatch.conceptId}`],
+          verificationStatus: topicMatch.verificationStatus || "officially_verified",
+          academicYear: "2026-2027",
+          officialSource: topicMatch.officialSource || data.officialUrl || "",
+          estimatedMinutes: sub.estimatedMinutes || 12,
+          learningObjectives: sub.learningObjectives ? [sub.learningObjectives] : topicMatch.learningObjectives,
+          topics: topicMatch.topics || [],
         };
       }
     }
@@ -657,6 +685,148 @@ function getPrerequisiteInfo(concept) {
     .map((c) => ({ conceptId: c.conceptId, name: c.name, subject: c.subject }));
 }
 
+function searchCurriculum({ query, countryCode, limit = 25 } = {}) {
+  const q = String(query || "").trim().toLowerCase();
+  if (!q || q.length < 2) return [];
+
+  const results = [];
+  const ccFilter = countryCode ? String(countryCode).toUpperCase() : null;
+
+  // 1. Search Countries
+  for (const c of listCountries()) {
+    if (ccFilter && c.code !== ccFilter) continue;
+    if (c.name.toLowerCase().includes(q) || c.code.toLowerCase() === q) {
+      results.push({
+        type: "country",
+        id: c.code,
+        title: `${c.flagEmoji || "🌍"} ${c.name}`,
+        sub: `National Curriculum & Education Systems · ${c.region}`,
+        countryCode: c.code,
+        countryName: c.name,
+        flag: c.flagEmoji || "🌍",
+      });
+    }
+  }
+
+  // 2. Search Tracks / Boards
+  const allTracks = listTracks({ global: true });
+  for (const t of allTracks) {
+    if (ccFilter && t.countryCode !== ccFilter) continue;
+    if (t.label.toLowerCase().includes(q) || (t.short && t.short.toLowerCase().includes(q)) || t.id.toLowerCase().includes(q)) {
+      const country = getCountry(t.countryCode);
+      results.push({
+        type: "board",
+        id: t.id,
+        title: t.label,
+        sub: `${country?.flagEmoji || "🌍"} ${country?.name || t.countryCode} · Official Board Syllabus`,
+        countryCode: t.countryCode,
+        countryName: country?.name,
+        flag: country?.flagEmoji || "🌍",
+        trackId: t.id,
+        trackName: t.label,
+      });
+    }
+  }
+
+  // 3. Search International Subjects, Chapters & Subtopics
+  for (const [tId, trackData] of Object.entries(INTERNATIONAL_CURRICULUM)) {
+    const track = getTrack(tId);
+    if (ccFilter && track?.countryCode && track.countryCode !== ccFilter) continue;
+    const country = getCountry(track?.countryCode);
+    const flag = country?.flagEmoji || "🌍";
+
+    // Subjects
+    for (const subj of trackData.subjects || []) {
+      if (subj.name.toLowerCase().includes(q) || (subj.code && subj.code.toLowerCase().includes(q))) {
+        results.push({
+          type: "subject",
+          id: `${tId}.${subj.name}`,
+          title: subj.name,
+          sub: `${flag} ${track?.label || tId} · ${subj.code ? subj.code + " · " : ""}${subj.count || 5}+ Chapters`,
+          countryCode: track?.countryCode,
+          countryName: country?.name,
+          flag,
+          trackId: tId,
+          trackName: track?.label,
+          subject: subj.name,
+        });
+      }
+    }
+
+    // Chapters & Topics
+    for (const [sName, chList] of Object.entries(trackData.chapters || {})) {
+      for (const ch of chList) {
+        const chMatches = ch.name.toLowerCase().includes(q) || ch.topic.toLowerCase().includes(q);
+        if (chMatches) {
+          results.push({
+            type: "chapter",
+            id: ch.conceptId,
+            conceptId: ch.conceptId,
+            title: ch.name,
+            sub: `${flag} ${track?.short || track?.label || tId} · ${sName} · Ch ${ch.number}`,
+            countryCode: track?.countryCode,
+            countryName: country?.name,
+            flag,
+            trackId: tId,
+            trackName: track?.label,
+            subject: sName,
+            chapterId: ch.conceptId,
+            chapterName: ch.name,
+            difficultyLabel: ch.difficultyLabel,
+          });
+        }
+
+        // Subtopics / Topics
+        for (const top of ch.topics || []) {
+          if (top.title.toLowerCase().includes(q) || (top.description && top.description.toLowerCase().includes(q))) {
+            results.push({
+              type: "topic",
+              id: `${ch.conceptId}.${top.id}`,
+              conceptId: ch.conceptId,
+              subConceptId: top.id,
+              title: top.title,
+              sub: `Topic in ${ch.name} · ${sName} (${track?.short || tId})`,
+              countryCode: track?.countryCode,
+              countryName: country?.name,
+              flag,
+              trackId: tId,
+              trackName: track?.label,
+              subject: sName,
+              chapterId: ch.conceptId,
+              chapterName: ch.name,
+              topicName: top.title,
+            });
+          }
+        }
+      }
+    }
+  }
+
+  // 4. Search Indian Concepts in curriculum-data.js
+  for (const c of loadConcepts()) {
+    if (ccFilter && ccFilter !== "IN") continue;
+    const nameMatches = c.name.toLowerCase().includes(q) || c.topic.toLowerCase().includes(q);
+    if (nameMatches) {
+      results.push({
+        type: "chapter",
+        id: c.conceptId,
+        conceptId: c.conceptId,
+        title: c.name,
+        sub: `🇮🇳 India · ${c.subject} · ${c.topic}`,
+        countryCode: "IN",
+        countryName: "India",
+        flag: "🇮🇳",
+        subject: c.subject,
+        chapterId: c.conceptId,
+        chapterName: c.name,
+        difficultyLabel: difficultyLabel(c.difficulty),
+      });
+    }
+  }
+
+  return results.slice(0, limit);
+}
+
 function curriculumStats() {
   loadConcepts();
   return { concepts: conceptCache.length, tracks: Object.keys(TRACKS).length };
@@ -675,6 +845,7 @@ module.exports = {
   getPrerequisiteInfo,
   difficultyLabel,
   curriculumStats,
+  searchCurriculum,
   tokenize,
   stem,
   GENERIC_MODIFIERS,

@@ -24,6 +24,7 @@ const {
   matchConcept,
   getPrerequisiteInfo,
   curriculumStats,
+  searchCurriculum,
   tokenize,
   stem,
   GENERIC_MODIFIERS,
@@ -2751,6 +2752,21 @@ async function catalogAction(params = {}) {
   const query = clip(body.query, 80);
   const countryCode = body.countryCode ? String(body.countryCode).toUpperCase().trim() : null;
   const step = body.step || null;
+
+  if (body.globalSearch || step === "search") {
+    const searchQ = clip(body.globalSearch || body.query || "", 80);
+    const searchResults = searchCurriculum({ query: searchQ, countryCode, limit: 30 });
+    return {
+      status: "ok",
+      searchResults,
+      catalog: { step: "search", query: searchQ, searchResults },
+      hub: { last: (state && state.hub && state.hub.last) || null },
+      activeTrack: requestedTrack,
+      activeClass: classNum,
+      activeSubject: requestedSubject,
+    };
+  }
+
   const catalog = getCatalog({
     countryCode,
     trackId: requestedTrack,
