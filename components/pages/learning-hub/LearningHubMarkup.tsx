@@ -310,11 +310,59 @@ export function LearningHubMarkup() {
               <p id="hubTrackNotice" className="lh-notice" hidden />
 
               {/* Board / Class / Subject Selection */}
-              <div id="hubBoards" className="hub-grid hub-grid--boards" hidden />
-              <div id="hubClasses" className="hub-grid hub-grid--classes" hidden />
-              <div id="hubSubjects" className="hub-grid hub-grid--subjects" hidden />
+              {/* Dedicated Country Selection Experience */}
+              <div id="hubCountryView" className="hub-country-view" hidden>
+                <div className="hub-step-header">
+                  <span className="hub-step-badge">Step 1 of 4: Global Education System</span>
+                  <h2 className="hub-step-title">Choose Your Country or Education System</h2>
+                  <p className="hub-step-desc">
+                    Select your official national framework or examination board to align syllabi, terminology (BODMAS / PEMDAS / BIDMAS), and Socratic AI explanations.
+                  </p>
+                </div>
 
-              {/* Chapter Browser */}
+                <div className="hub-country-filter-bar">
+                  <input
+                    type="search"
+                    id="hubCountrySearchInput"
+                    className="hub-country-search-input"
+                    placeholder="Search 15 countries by name or region (e.g. United States, United Kingdom, Canada, Australia, India)..."
+                    aria-label="Filter countries"
+                  />
+                  <div id="hubRegionFilters" className="hub-region-filters" role="tablist" aria-label="Filter by region" />
+                </div>
+
+                <div id="hubCountryGrid" className="hub-grid hub-grid--countries" />
+              </div>
+
+              {/* Dynamic Education System / Board Selection */}
+              <div id="hubBoardStep" className="hub-step-container">
+                <div className="hub-board-header-row">
+                  <button type="button" id="hubChangeCountryBtn" className="hub-change-country-btn" hidden>
+                    🌍 Change Country
+                  </button>
+                </div>
+                <div id="hubBoards" className="hub-grid hub-grid--boards" hidden />
+              </div>
+
+              {/* Dedicated Grade / Qualification Level Selection */}
+              <div id="hubClasses" className="hub-grid hub-grid--classes" hidden />
+
+              {/* Dedicated Subject Selection */}
+              <div id="hubSubjectStep" className="hub-step-container">
+                <div className="hub-subject-filter-bar" id="hubSubjectFilterWrap" hidden>
+                  <input
+                    type="search"
+                    id="hubSubjectSearchInput"
+                    className="hub-subject-search-input"
+                    placeholder="Search subjects in this curriculum…"
+                    aria-label="Filter subjects"
+                  />
+                  <div id="hubSubjectCategoryFilters" className="hub-subject-category-filters" />
+                </div>
+                <div id="hubSubjects" className="hub-grid hub-grid--subjects" hidden />
+              </div>
+
+              {/* Chapter Browser & Topic Discovery */}
               <div id="hubChapterStep" hidden>
                 <div className="hub-chapter-header-bar">
                   <form id="hubSearchForm" className="hub-search" role="search">
@@ -331,6 +379,9 @@ export function LearningHubMarkup() {
                     <button type="submit" className="btn btn-secondary">Search</button>
                   </form>
                 </div>
+
+                {/* Cross-Curriculum Discovery Banner */}
+                <div id="hubCrossCurriculumBanner" className="hub-cross-curriculum-banner" hidden />
 
                 <div id="hubChapters" className="hub-chapters" />
                 <p id="hubEmpty" className="hub-empty" hidden>

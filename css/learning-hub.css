@@ -996,3 +996,289 @@ html.light-mode .lh-board-icon, html.light-mode .lh-sub-ico { background: rgba(v
 .page-learning-hub .hub-verif-link:hover {
   text-decoration: underline;
 }
+
+/* ── Dedicated Multi-Step International Experience ──────────────────── */
+
+.page-learning-hub .hub-step-container {
+  margin-bottom: 24px;
+}
+
+.page-learning-hub .hub-step-header {
+  margin-bottom: 20px;
+}
+
+.page-learning-hub .hub-step-badge {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--lh-accent, #38bdf8);
+  margin-bottom: 6px;
+}
+
+.page-learning-hub .hub-step-title {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--lh-text, #f8fafc);
+  margin: 0 0 6px 0;
+  letter-spacing: -0.02em;
+}
+
+.page-learning-hub .hub-step-desc {
+  font-size: 14px;
+  color: var(--lh-muted, #94a3b8);
+  margin: 0;
+  max-width: 680px;
+  line-height: 1.5;
+}
+
+/* Country Selection Experience */
+.page-learning-hub .hub-country-view {
+  margin-bottom: 32px;
+  animation: hubFadeIn 0.2s ease-out;
+}
+
+.page-learning-hub .hub-country-filter-bar {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.page-learning-hub .hub-country-search-input {
+  width: 100%;
+  padding: 12px 18px;
+  font-size: 14px;
+  background: var(--lh-surface, #0f172a);
+  border: 1px solid var(--lh-border, rgba(255, 255, 255, 0.12));
+  border-radius: 12px;
+  color: var(--lh-text, #f8fafc);
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+.page-learning-hub .hub-country-search-input:focus {
+  border-color: var(--lh-accent, #38bdf8);
+  box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.15);
+}
+
+.page-learning-hub .hub-region-filters {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.page-learning-hub .hub-region-pill {
+  padding: 6px 14px;
+  font-size: 12px;
+  font-weight: 600;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--lh-muted, #94a3b8);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.page-learning-hub .hub-region-pill:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #f8fafc;
+}
+
+.page-learning-hub .hub-region-pill.is-active {
+  background: var(--lh-accent, #38bdf8);
+  border-color: var(--lh-accent, #38bdf8);
+  color: #0f172a;
+  font-weight: 700;
+}
+
+/* Country Grid Cards */
+.page-learning-hub .hub-grid--countries {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
+}
+
+.page-learning-hub .hub-country-card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 20px;
+  background: var(--lh-surface, #0f172a);
+  border: 1px solid var(--lh-border, rgba(255, 255, 255, 0.1));
+  border-radius: 14px;
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.page-learning-hub .hub-country-card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(56, 189, 248, 0.5);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+  background: rgba(30, 41, 59, 0.9);
+}
+
+.page-learning-hub .hub-country-card.is-selected {
+  border-color: var(--lh-accent, #38bdf8);
+  background: rgba(56, 189, 248, 0.08);
+}
+
+.page-learning-hub .hub-country-card-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.page-learning-hub .hub-country-card-flag {
+  font-size: 28px;
+  line-height: 1;
+}
+
+.page-learning-hub .hub-country-card-name {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--lh-text, #f8fafc);
+  letter-spacing: -0.01em;
+}
+
+.page-learning-hub .hub-country-card-region {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--lh-muted, #94a3b8);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: 8px;
+}
+
+.page-learning-hub .hub-country-card-tracks {
+  font-size: 12px;
+  color: var(--lh-muted, #94a3b8);
+  margin-bottom: 14px;
+  line-height: 1.4;
+  flex: 1;
+}
+
+.page-learning-hub .hub-country-card-cta {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--lh-accent, #38bdf8);
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* Change Country Button */
+.page-learning-hub .hub-board-header-row {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 12px;
+}
+
+.page-learning-hub .hub-change-country-btn {
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 8px;
+  color: var(--lh-muted, #94a3b8);
+  padding: 6px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.page-learning-hub .hub-change-country-btn:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: #f8fafc;
+  border-color: var(--lh-accent, #38bdf8);
+}
+
+/* Subject Search & Filters */
+.page-learning-hub .hub-subject-filter-bar {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 18px;
+}
+
+.page-learning-hub .hub-subject-search-input {
+  width: 100%;
+  padding: 10px 16px;
+  font-size: 13px;
+  background: var(--lh-surface, #0f172a);
+  border: 1px solid var(--lh-border, rgba(255, 255, 255, 0.12));
+  border-radius: 10px;
+  color: var(--lh-text, #f8fafc);
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+.page-learning-hub .hub-subject-search-input:focus {
+  border-color: var(--lh-accent, #38bdf8);
+}
+
+.page-learning-hub .hub-subject-category-filters {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.page-learning-hub .hub-category-pill {
+  padding: 4px 12px;
+  font-size: 11px;
+  font-weight: 600;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--lh-muted, #94a3b8);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.page-learning-hub .hub-category-pill.is-active {
+  background: rgba(56, 189, 248, 0.2);
+  border-color: var(--lh-accent, #38bdf8);
+  color: var(--lh-accent, #38bdf8);
+}
+
+/* Cross-Curriculum Discovery Banner */
+.page-learning-hub .hub-cross-curriculum-banner {
+  padding: 12px 16px;
+  background: rgba(99, 102, 241, 0.08);
+  border: 1px solid rgba(99, 102, 241, 0.25);
+  border-radius: 10px;
+  margin-bottom: 16px;
+  font-size: 13px;
+  color: #c7d2fe;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.page-learning-hub .hub-cross-tag {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 6px;
+  background: rgba(99, 102, 241, 0.2);
+  color: #818cf8;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+@keyframes hubFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

@@ -153,107 +153,7 @@ function loadConcepts() {
   return concepts;
 }
 
-const INTERNATIONAL_CURRICULUM = {
-  us_ap: {
-    subjects: [
-      { name: "AP Calculus BC", count: 10, code: "AP-CALC-BC", id: "us_ap_calc_bc", verificationStatus: "officially_verified", academicYear: "2026-2027", sourceUrl: "https://apcentral.collegeboard.org/courses/ap-calculus-bc" },
-      { name: "AP Physics 1: Algebra-Based", count: 8, code: "AP-PHYS-1", id: "us_ap_physics_1", verificationStatus: "officially_verified", academicYear: "2026-2027", sourceUrl: "https://apcentral.collegeboard.org/courses/ap-physics-1" },
-    ],
-    chapters: {
-      "AP Calculus BC": [
-        { conceptId: "us_ap_calc_u1", name: "Limits and Continuity", subject: "AP Calculus BC", topic: "Calculus", difficulty: 0.4, difficultyLabel: "Intermediate", prerequisites: [], number: 1, verificationStatus: "officially_verified" },
-        { conceptId: "us_ap_calc_u2", name: "Differentiation: Definition and Fundamental Properties", subject: "AP Calculus BC", topic: "Calculus", difficulty: 0.5, difficultyLabel: "Intermediate", prerequisites: ["us_ap_calc_u1"], number: 2, verificationStatus: "officially_verified" },
-      ],
-      "AP Physics 1: Algebra-Based": [
-        { conceptId: "us_ap_phys1_u1", name: "Kinematics in One and Two Dimensions", subject: "AP Physics 1: Algebra-Based", topic: "Mechanics", difficulty: 0.45, difficultyLabel: "Intermediate", prerequisites: [], number: 1, verificationStatus: "officially_verified" },
-      ],
-    },
-  },
-  gb_gcse: {
-    subjects: [
-      { name: "GCSE Physics (8463)", count: 8, code: "AQA-8463", id: "gb_gcse_aqa_physics", verificationStatus: "officially_verified", academicYear: "2026-2027", sourceUrl: "https://www.aqa.org.uk/subjects/science/gcse/physics-8463" },
-      { name: "GCSE Mathematics (1MA1)", count: 6, code: "EDEXCEL-1MA1", id: "gb_gcse_edexcel_maths", verificationStatus: "officially_verified", academicYear: "2026-2027", sourceUrl: "https://qualifications.pearson.com/en/qualifications/edexcel-gcses/mathematics-2015.html" },
-    ],
-    chapters: {
-      "GCSE Physics (8463)": [
-        { conceptId: "gb_gcse_phys_ch1", name: "Energy and Energy Stores", subject: "GCSE Physics (8463)", topic: "Energy", difficulty: 0.35, difficultyLabel: "Foundation", prerequisites: [], number: 1, verificationStatus: "officially_verified" },
-        { conceptId: "gb_gcse_phys_ch2", name: "Current, Resistance and Potential Difference", subject: "GCSE Physics (8463)", topic: "Electricity", difficulty: 0.5, difficultyLabel: "Intermediate", prerequisites: ["gb_gcse_phys_ch1"], number: 2, verificationStatus: "officially_verified" },
-      ],
-    },
-  },
-  ca_ontario: {
-    subjects: [
-      { name: "Physics (SPH4U)", count: 5, code: "SPH4U", id: "ca_on_sph4u", verificationStatus: "officially_verified", academicYear: "2026-2027", sourceUrl: "https://www.dcp.edu.gov.on.ca/en/curriculum/secondary-science/courses/sph4u" },
-      { name: "Advanced Functions (MHF4U)", count: 5, code: "MHF4U", id: "ca_on_mhf4u", verificationStatus: "officially_verified", academicYear: "2026-2027", sourceUrl: "https://www.dcp.edu.gov.on.ca/en/curriculum/secondary-mathematics/courses/mhf4u" },
-    ],
-    chapters: {
-      "Physics (SPH4U)": [
-        { conceptId: "ca_on_sph4u_ch1", name: "Dynamics: Newton's Laws in Two Dimensions", subject: "Physics (SPH4U)", topic: "Dynamics", difficulty: 0.45, difficultyLabel: "Intermediate", prerequisites: [], number: 1, verificationStatus: "officially_verified" },
-        { conceptId: "ca_on_sph4u_ch2", name: "Energy and Momentum Conservation", subject: "Physics (SPH4U)", topic: "Energy", difficulty: 0.55, difficultyLabel: "Advanced", prerequisites: ["ca_on_sph4u_ch1"], number: 2, verificationStatus: "officially_verified" },
-      ],
-    },
-  },
-  au_vce: {
-    subjects: [
-      { name: "VCE Physics (Units 3 & 4)", count: 6, code: "VCE-PHYS", id: "au_vce_physics_u34", verificationStatus: "officially_verified", academicYear: "2026-2027", sourceUrl: "https://www.vcaa.vic.edu.au" },
-    ],
-    chapters: {
-      "VCE Physics (Units 3 & 4)": [
-        { conceptId: "au_vce_phys_ch1", name: "Fields: Gravitational, Electric and Magnetic", subject: "VCE Physics (Units 3 & 4)", topic: "Fields", difficulty: 0.5, difficultyLabel: "Intermediate", prerequisites: [], number: 1, verificationStatus: "officially_verified" },
-      ],
-    },
-  },
-  nz_ncea: {
-    subjects: [
-      { name: "Mathematics with Calculus (Level 3)", count: 5, code: "NZQA-91577", id: "nz_ncea_l3_calculus", verificationStatus: "officially_verified", academicYear: "2026-2027", sourceUrl: "https://www.nzqa.govt.nz" },
-    ],
-    chapters: {
-      "Mathematics with Calculus (Level 3)": [
-        { conceptId: "nz_ncea_l3_calc_ch1", name: "Apply Differentiation Methods to Solve Problems (AS 91578)", subject: "Mathematics with Calculus (Level 3)", topic: "Calculus", difficulty: 0.5, difficultyLabel: "Intermediate", prerequisites: [], number: 1, verificationStatus: "officially_verified" },
-      ],
-    },
-  },
-  sg_secondary: {
-    subjects: [
-      { name: "Pure Physics (6091)", count: 6, code: "SEAB-6091", id: "sg_olevel_pure_physics", verificationStatus: "officially_verified", academicYear: "2026-2027", sourceUrl: "https://www.seab.gov.sg" },
-    ],
-    chapters: {
-      "Pure Physics (6091)": [
-        { conceptId: "sg_olevel_phys_ch1", name: "Dynamics and Pressure", subject: "Pure Physics (6091)", topic: "Mechanics", difficulty: 0.45, difficultyLabel: "Intermediate", prerequisites: [], number: 1, verificationStatus: "officially_verified" },
-      ],
-    },
-  },
-  za_caps: {
-    subjects: [
-      { name: "Physical Sciences (Physics & Chemistry)", count: 6, code: "DBE-PHSC", id: "za_caps_physical_sciences_12", verificationStatus: "officially_verified", academicYear: "2026-2027", sourceUrl: "https://www.education.gov.za" },
-    ],
-    chapters: {
-      "Physical Sciences (Physics & Chemistry)": [
-        { conceptId: "za_caps_phys_ch1", name: "Vertical Projectile Motion in One Dimension", subject: "Physical Sciences (Physics & Chemistry)", topic: "Mechanics", difficulty: 0.45, difficultyLabel: "Intermediate", prerequisites: [], number: 1, verificationStatus: "officially_verified" },
-      ],
-    },
-  },
-  ng_waec_nerdc: {
-    subjects: [
-      { name: "Physics (WASSCE Syllabus)", count: 6, code: "WAEC-PHYS", id: "ng_waec_physics", verificationStatus: "officially_verified", academicYear: "2026-2027", sourceUrl: "https://www.waecdirect.org" },
-    ],
-    chapters: {
-      "Physics (WASSCE Syllabus)": [
-        { conceptId: "ng_waec_phys_ch1", name: "Waves: Production, Propagation and Characteristics", subject: "Physics (WASSCE Syllabus)", topic: "Waves", difficulty: 0.45, difficultyLabel: "Intermediate", prerequisites: [], number: 1, verificationStatus: "officially_verified" },
-      ],
-    },
-  },
-  ie_leaving_cert: {
-    subjects: [
-      { name: "Physics (Leaving Certificate)", count: 6, code: "SEC-PHYS", id: "ie_lc_physics", verificationStatus: "officially_verified", academicYear: "2026-2027", sourceUrl: "https://curriculumonline.ie" },
-    ],
-    chapters: {
-      "Physics (Leaving Certificate)": [
-        { conceptId: "ie_lc_phys_ch1", name: "Mechanics: Linear Motion and Newton's Laws", subject: "Physics (Leaving Certificate)", topic: "Mechanics", difficulty: 0.45, difficultyLabel: "Intermediate", prerequisites: [], number: 1, verificationStatus: "officially_verified" },
-      ],
-    },
-  },
-};
+const { INTERNATIONAL_CURRICULUM } = require("./_international-curriculum");
 
 function getConcept(conceptId) {
   loadConcepts();
@@ -546,7 +446,13 @@ function listSubjects({ trackId, classNum }) {
     .sort((a, b) => subjectRank(a.name) - subjectRank(b.name) || a.name.localeCompare(b.name));
 }
 
-function getCatalog({ countryCode, trackId, classNum, subject, query } = {}) {
+function getCatalog({ countryCode, trackId, classNum, subject, query, step } = {}) {
+  if (step === "country" || countryCode === "all") {
+    return {
+      step: "country",
+      countries: listCountries(),
+    };
+  }
   if (countryCode && !trackId) {
     return {
       step: "board",

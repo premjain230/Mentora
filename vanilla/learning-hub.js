@@ -23,21 +23,21 @@ import { renderTeaching } from "./shared/learning-blocks.js";
 const EMPTY_SELECTION = { track: "", classNum: null, subject: "", query: "" };
 
 export const GLOBAL_COUNTRIES = [
-  { code: "IN", name: "India", flag: "🇮🇳" },
-  { code: "US", name: "United States", flag: "🇺🇸" },
-  { code: "GB", name: "United Kingdom", flag: "🇬🇧" },
-  { code: "CA", name: "Canada", flag: "🇨🇦" },
-  { code: "AU", name: "Australia", flag: "🇦🇺" },
-  { code: "NZ", name: "New Zealand", flag: "🇳🇿" },
-  { code: "SG", name: "Singapore", flag: "🇸🇬" },
-  { code: "AE", name: "UAE", flag: "🇦🇪" },
-  { code: "SA", name: "Saudi Arabia", flag: "🇸🇦" },
-  { code: "MY", name: "Malaysia", flag: "🇲🇾" },
-  { code: "PK", name: "Pakistan", flag: "🇵🇰" },
-  { code: "BD", name: "Bangladesh", flag: "🇧🇩" },
-  { code: "ZA", name: "South Africa", flag: "🇿🇦" },
-  { code: "NG", name: "Nigeria", flag: "🇳🇬" },
-  { code: "IE", name: "Ireland", flag: "🇮🇪" },
+  { code: "IN", name: "India", flag: "🇮🇳", region: "South Asia", tracks: "CBSE · Maharashtra State Board · CISCE · JEE Main · NEET-UG" },
+  { code: "US", name: "United States", flag: "🇺🇸", region: "North America", tracks: "College Board AP Courses · CCSS Math · NGSS Sciences · SAT" },
+  { code: "GB", name: "United Kingdom", flag: "🇬🇧", region: "Europe", tracks: "GCSE (AQA & Edexcel) · GCE A-Levels · SQA Higher (Scotland)" },
+  { code: "CA", name: "Canada", flag: "🇨🇦", region: "North America", tracks: "Ontario (OSSD Grades 9–12 / SPH4U) · British Columbia Curriculum" },
+  { code: "AU", name: "Australia", flag: "🇦🇺", region: "Oceania", tracks: "VCE (Victoria Units 1–4) · NSW HSC · Australian Curriculum v9.0" },
+  { code: "NZ", name: "New Zealand", flag: "🇳🇿", region: "Oceania", tracks: "NZQA NCEA Levels 1, 2, 3 · Te Mātaiaho / NZC Framework" },
+  { code: "SG", name: "Singapore", flag: "🇸🇬", region: "Asia", tracks: "Singapore-Cambridge GCE O-Level · Full Subject-Based Banding (MOE)" },
+  { code: "AE", name: "UAE", flag: "🇦🇪", region: "Middle East", tracks: "Ministry of Education National Curriculum (Cycle 3 Advanced Stream)" },
+  { code: "SA", name: "Saudi Arabia", flag: "🇸🇦", region: "Middle East", tracks: "Ministry of Education Masarat Pathways (CS & Engineering)" },
+  { code: "MY", name: "Malaysia", flag: "🇲🇾", region: "Asia", tracks: "KPM KSSM Secondary · SPM (Sijil Pelajaran Malaysia Form 4 & 5)" },
+  { code: "PK", name: "Pakistan", flag: "🇵🇰", region: "South Asia", tracks: "Federal Board FBISE (SSC Matric Class 10 & HSSC Class 12)" },
+  { code: "BD", name: "Bangladesh", flag: "🇧🇩", region: "South Asia", tracks: "NCTB National Curriculum (SSC Class 10 & HSC Class 12)" },
+  { code: "ZA", name: "South Africa", flag: "🇿🇦", region: "Africa", tracks: "DBE CAPS (FET Phase Grades 10–12) · National Senior Certificate" },
+  { code: "NG", name: "Nigeria", flag: "🇳🇬", region: "Africa", tracks: "WAEC WASSCE Senior Secondary · NERDC National Curriculum" },
+  { code: "IE", name: "Ireland", flag: "🇮🇪", region: "Europe", tracks: "State Examinations Commission (Leaving Certificate Higher Level)" },
 ];
 
 const RAIL_STEPS = [
@@ -113,6 +113,11 @@ export function mount(root, ctx) {
     currentStage: 0,
     unlockedStage: 0,
     activeConceptIndex: 1,
+    viewMode: null,
+    countryFilter: "",
+    selectedRegion: "all",
+    subjectFilter: "",
+    subjectCategory: "all",
   };
 
   const els = {
@@ -195,6 +200,15 @@ export function mount(root, ctx) {
     verifBadge: qs(root, "#hubVerifBadge"),
     verifAuthority: qs(root, "#hubVerifAuthority"),
     verifSourceLink: qs(root, "#hubVerifSourceLink"),
+    countryView: qs(root, "#hubCountryView"),
+    countrySearchInput: qs(root, "#hubCountrySearchInput"),
+    regionFilters: qs(root, "#hubRegionFilters"),
+    countryGrid: qs(root, "#hubCountryGrid"),
+    changeCountryBtn: qs(root, "#hubChangeCountryBtn"),
+    subjectFilterWrap: qs(root, "#hubSubjectFilterWrap"),
+    subjectSearchInput: qs(root, "#hubSubjectSearchInput"),
+    subjectCategoryFilters: qs(root, "#hubSubjectCategoryFilters"),
+    crossCurriculumBanner: qs(root, "#hubCrossCurriculumBanner"),
   };
 
   let checkView = null;
@@ -290,6 +304,27 @@ export function mount(root, ctx) {
       if (state.continueTopic) resumeTopic(state.continueTopic);
     });
     lifecycle.on(els.back, "click", showBack);
+
+    if (els.changeCountryBtn) {
+      lifecycle.on(els.changeCountryBtn, "click", () => {
+        state.viewMode = "country";
+        render();
+      });
+    }
+
+    if (els.countrySearchInput) {
+      lifecycle.on(els.countrySearchInput, "input", () => {
+        state.countryFilter = els.countrySearchInput.value;
+        renderCountryView();
+      });
+    }
+
+    if (els.subjectSearchInput) {
+      lifecycle.on(els.subjectSearchInput, "input", () => {
+        state.subjectFilter = els.subjectSearchInput.value;
+        if (state.catalog) renderSubjects(state.catalog);
+      });
+    }
 
     if (els.countrySelect) {
       lifecycle.on(els.countrySelect, "change", () => {
@@ -1412,23 +1447,108 @@ export function mount(root, ctx) {
     }
   }
 
+  function renderCountryView() {
+    if (!els.countryGrid) return;
+    if (els.changeCountryBtn) els.changeCountryBtn.hidden = true;
+    if (els.boards) els.boards.hidden = true;
+    if (els.classes) els.classes.hidden = true;
+    if (els.subjects) els.subjects.hidden = true;
+    if (els.subjectFilterWrap) els.subjectFilterWrap.hidden = true;
+    if (els.chapterStep) els.chapterStep.hidden = true;
+
+    // Render region filter pills
+    if (els.regionFilters) {
+      els.regionFilters.replaceChildren();
+      const regions = ["All", "North America", "Europe", "Asia", "South Asia", "Middle East", "Africa", "Oceania"];
+      for (const reg of regions) {
+        const regKey = reg.toLowerCase();
+        const isCurrent =
+          (state.selectedRegion || "all") === regKey ||
+          (reg === "All" && (!state.selectedRegion || state.selectedRegion === "all"));
+        const pill = el("button", `hub-region-pill${isCurrent ? " is-active" : ""}`, reg);
+        pill.type = "button";
+        lifecycle.on(pill, "click", () => {
+          state.selectedRegion = regKey;
+          renderCountryView();
+        });
+        els.regionFilters.appendChild(pill);
+      }
+    }
+
+    // Filter countries by query and region
+    const q = (state.countryFilter || "").toLowerCase().trim();
+    const curReg = state.selectedRegion || "all";
+    const filtered = GLOBAL_COUNTRIES.filter((c) => {
+      const matchQuery =
+        !q ||
+        c.name.toLowerCase().includes(q) ||
+        c.code.toLowerCase().includes(q) ||
+        (c.tracks && c.tracks.toLowerCase().includes(q));
+      const matchRegion = curReg === "all" || (c.region && c.region.toLowerCase() === curReg);
+      return matchQuery && matchRegion;
+    });
+
+    els.countryGrid.replaceChildren();
+    for (const c of filtered) {
+      const card = el("button", `hub-country-card${state.selectedCountry === c.code ? " is-selected" : ""}`);
+      card.type = "button";
+
+      const head = el("div", "hub-country-card-header");
+      head.append(
+        el("span", "hub-country-card-flag", c.flag),
+        el("span", "hub-country-card-name", c.name)
+      );
+
+      const regSpan = el("span", "hub-country-card-region", c.region || "International");
+      const tracksSpan = el("span", "hub-country-card-tracks", c.tracks || "National & International Frameworks");
+      const cta = el("span", "hub-country-card-cta", "Select Country →");
+
+      card.append(head, regSpan, tracksSpan, cta);
+
+      lifecycle.on(card, "click", () => {
+        state.selectedCountry = c.code;
+        state.viewMode = null;
+        state.selection = { track: "", classNum: null, subject: "", query: "" };
+        if (els.countrySelect) els.countrySelect.value = c.code;
+        renderCountryBar();
+        void fetchCatalog({ countryCode: c.code, ...EMPTY_SELECTION });
+        try {
+          localStorage.setItem("learning_allied_country", c.code);
+        } catch (_) {}
+      });
+
+      els.countryGrid.appendChild(card);
+    }
+  }
+
   function renderPick() {
     if (!els.pick || els.pick.hidden) return;
+
+    const isCountryView = state.viewMode === "country" || state.catalog?.step === "country";
+
+    if (els.countryView) {
+      els.countryView.hidden = !isCountryView;
+      if (isCountryView) {
+        renderCountryView();
+      }
+    }
 
     const catalog = state.catalog;
     if (els.pickTitle) {
       els.pickTitle.textContent =
-        catalog?.step === "chapter"
+        isCountryView
+          ? "Choose Your Country or Education System"
+          : catalog?.step === "chapter"
           ? "Select a Chapter to Master"
           : catalog?.step === "subject"
           ? "Choose a Subject"
           : catalog?.step === "class"
-          ? "Select Your Class"
+          ? "Select Your Class or Stage"
           : "What do you want to master today?";
     }
 
     if (els.continue) {
-      if (state.continueTopic) {
+      if (state.continueTopic && !isCountryView) {
         if (els.continueTitle) els.continueTitle.textContent = state.continueTopic.name;
         if (els.continueMeta) els.continueMeta.textContent = `${state.continueTopic.subject || "General"} · In Progress`;
         els.continue.hidden = false;
@@ -1444,18 +1564,20 @@ export function mount(root, ctx) {
       if (state.catalogError && els.catalogErrorText) els.catalogErrorText.textContent = state.catalogError;
     }
 
-    if (els.catalog) els.catalog.hidden = !catalog;
-    if (!catalog) return;
+    if (els.catalog) els.catalog.hidden = !catalog && !isCountryView;
+    if (!catalog && !isCountryView) return;
 
-    const showBreadcrumb = catalog.step !== "board";
+    const showBreadcrumb = !isCountryView && catalog && (catalog.step !== "board" || state.selection.track);
     if (els.breadcrumb) els.breadcrumb.hidden = !showBreadcrumb;
     if (showBreadcrumb && els.back && els.breadcrumbText) {
       els.back.textContent = `← ${
         catalog.step === "chapter"
           ? state.selection.subject || "Subjects"
           : catalog.step === "subject"
-          ? `Class ${state.selection.classNum || ""}`
-          : "Boards"
+          ? (state.selection.classNum ? `Class ${state.selection.classNum}` : "Boards")
+          : catalog.step === "class"
+          ? "Boards"
+          : "Countries"
       }`;
       els.breadcrumbText.textContent = `${catalog.track ? catalog.track.label : ""}${
         catalog.classNum ? ` · Class ${catalog.classNum}` : ""
@@ -1463,7 +1585,7 @@ export function mount(root, ctx) {
     }
 
     if (els.trackNotice) {
-      if (catalog.track?.notice) {
+      if (!isCountryView && catalog?.track?.notice) {
         els.trackNotice.textContent = catalog.track.notice;
         els.trackNotice.hidden = false;
       } else {
@@ -1471,16 +1593,28 @@ export function mount(root, ctx) {
       }
     }
 
-    renderBoards(catalog);
-    renderClasses(catalog);
-    renderSubjects(catalog);
-    renderChapters(catalog);
+    if (!isCountryView && catalog) {
+      renderBoards(catalog);
+      renderClasses(catalog);
+      renderSubjects(catalog);
+      renderChapters(catalog);
+    } else {
+      if (els.boards) els.boards.hidden = true;
+      if (els.classes) els.classes.hidden = true;
+      if (els.subjects) els.subjects.hidden = true;
+      if (els.chapterStep) els.chapterStep.hidden = true;
+      if (els.changeCountryBtn) els.changeCountryBtn.hidden = true;
+      if (els.subjectFilterWrap) els.subjectFilterWrap.hidden = true;
+    }
   }
 
   function renderBoards(catalog) {
     if (!els.boards) return;
     const visible = catalog.step === "board";
     els.boards.hidden = !visible;
+    if (els.changeCountryBtn) {
+      els.changeCountryBtn.hidden = !visible;
+    }
     if (!visible) return;
 
     els.boards.replaceChildren();
@@ -1534,16 +1668,87 @@ export function mount(root, ctx) {
     if (!els.subjects) return;
     const visible = catalog.step === "subject";
     els.subjects.hidden = !visible;
+    if (els.subjectFilterWrap) els.subjectFilterWrap.hidden = !visible;
     if (!visible) return;
 
+    // Filter categories: All, STEM, Sciences, Mathematics, Humanities
+    if (els.subjectCategoryFilters) {
+      els.subjectCategoryFilters.replaceChildren();
+      const categories = ["All", "STEM", "Sciences", "Mathematics", "Humanities"];
+      for (const cat of categories) {
+        const catKey = cat.toLowerCase();
+        const isCurrent =
+          (state.subjectCategory || "all") === catKey ||
+          (cat === "All" && (!state.subjectCategory || state.subjectCategory === "all"));
+        const pill = el("button", `hub-category-pill${isCurrent ? " is-active" : ""}`, cat);
+        pill.type = "button";
+        lifecycle.on(pill, "click", () => {
+          state.subjectCategory = catKey;
+          renderSubjects(catalog);
+        });
+        els.subjectCategoryFilters.appendChild(pill);
+      }
+    }
+
+    const q = (state.subjectFilter || "").toLowerCase().trim();
+    const curCat = state.subjectCategory || "all";
+
+    const allSubjs = catalog.subjects || [];
+    const filtered = allSubjs.filter((s) => {
+      const matchQuery = !q || s.name.toLowerCase().includes(q) || (s.code && s.code.toLowerCase().includes(q));
+      let matchCat = true;
+      if (curCat === "sciences") {
+        matchCat =
+          s.name.toLowerCase().includes("phys") ||
+          s.name.toLowerCase().includes("chem") ||
+          s.name.toLowerCase().includes("bio") ||
+          s.name.toLowerCase().includes("sci");
+      } else if (curCat === "mathematics") {
+        matchCat =
+          s.name.toLowerCase().includes("math") ||
+          s.name.toLowerCase().includes("calc") ||
+          s.name.toLowerCase().includes("alg");
+      } else if (curCat === "humanities") {
+        matchCat =
+          s.name.toLowerCase().includes("hist") ||
+          s.name.toLowerCase().includes("geog") ||
+          s.name.toLowerCase().includes("pol") ||
+          s.name.toLowerCase().includes("eng");
+      } else if (curCat === "stem") {
+        matchCat = s.category === "stem" || !s.name.toLowerCase().includes("hist");
+      }
+      return matchQuery && matchCat;
+    });
+
     els.subjects.replaceChildren();
-    for (const subject of catalog.subjects || []) {
+    for (const subject of filtered) {
       const card = el("button", "hub-subject-card");
       card.type = "button";
-      card.append(
-        el("span", "hub-subject-name", subject.name),
-        el("span", "hub-subject-count", `${subject.count} chapters`)
+
+      // Subject Icon
+      let icon = "📖";
+      const lower = subject.name.toLowerCase();
+      if (lower.includes("phys")) icon = "⚛️";
+      else if (lower.includes("calc") || lower.includes("math")) icon = "📐";
+      else if (lower.includes("chem")) icon = "🧪";
+      else if (lower.includes("bio") || lower.includes("life")) icon = "🧬";
+      else if (lower.includes("comput") || lower.includes("csa")) icon = "💻";
+      else if (lower.includes("hist") || lower.includes("pol")) icon = "🏛️";
+      else if (lower.includes("geog") || lower.includes("earth")) icon = "🌍";
+
+      const nameRow = el("div", "hub-subject-head");
+      nameRow.append(
+        el("span", "hub-subject-icon", icon),
+        el("span", "hub-subject-name", subject.name)
       );
+
+      const metaRow = el("div", "hub-subject-meta-row");
+      if (subject.code) {
+        metaRow.appendChild(el("span", "hub-subject-code-tag", subject.code));
+      }
+      metaRow.appendChild(el("span", "hub-subject-count", `${subject.count || 5}+ chapters`));
+
+      card.append(nameRow, metaRow);
       lifecycle.on(card, "click", () => {
         state.selection = { ...state.selection, subject: subject.name, query: "" };
         void fetchCatalog({ ...state.selection, subject: subject.name, query: "" });
@@ -1562,6 +1767,21 @@ export function mount(root, ctx) {
       els.searchInput.value = state.query;
     }
     if (els.searchClear) els.searchClear.hidden = !state.selection.query;
+
+    if (els.crossCurriculumBanner) {
+      els.crossCurriculumBanner.replaceChildren();
+      const currentSubj = state.selection.subject || "";
+      let crossNote = "💡 Compare this topic across international curricula: Also covered in US AP, UK GCSE, and CBSE.";
+      if (currentSubj.toLowerCase().includes("phys")) {
+        crossNote = "💡 Cross-Curriculum Discovery: Newton's Laws and Kinematics are also covered in US AP Physics 1, UK GCSE Physics (8463), and CBSE Science.";
+      } else if (currentSubj.toLowerCase().includes("calc") || currentSubj.toLowerCase().includes("math")) {
+        crossNote = "💡 Cross-Curriculum Discovery: Calculus and Functions are also covered in US AP Calculus BC, UK A-Level Maths, and Ontario MHF4U.";
+      }
+      const tag = el("span", "hub-cross-tag", "Discovery");
+      const text = el("span", "hub-cross-text", crossNote);
+      els.crossCurriculumBanner.append(tag, text);
+      els.crossCurriculumBanner.hidden = false;
+    }
 
     els.chapters.replaceChildren();
     const chapters = catalog.chapters || [];
@@ -1598,19 +1818,30 @@ export function mount(root, ctx) {
   }
 
   function showBack() {
+    if (state.viewMode === "country") {
+      state.viewMode = null;
+      render();
+      return;
+    }
     if (state.selection.subject && state.catalog?.step === "chapter") {
       state.query = "";
+      state.subjectFilter = "";
       void fetchCatalog({ ...state.selection, subject: "", query: "" });
       return;
     }
     if (state.selection.classNum && state.catalog?.step === "subject") {
+      state.subjectFilter = "";
       void fetchCatalog({ ...state.selection, classNum: null, subject: "", query: "" });
       return;
     }
     if (state.selection.track) {
       state.query = "";
-      void fetchCatalog({ ...EMPTY_SELECTION });
+      state.subjectFilter = "";
+      void fetchCatalog({ countryCode: state.selectedCountry, ...EMPTY_SELECTION });
+      return;
     }
+    state.viewMode = "country";
+    render();
   }
 
   /* ── Lesson Lifecycle ───────────────────────────────────────────────── */
@@ -1635,6 +1866,7 @@ export function mount(root, ctx) {
       }
       const res = await callTutor(getToken, "lesson", {
         conceptId,
+        countryCode: state.selectedCountry || "IN",
         track: state.selection.track || undefined,
         classNum: state.selection.classNum || undefined,
         subject: state.selection.subject || undefined,
@@ -1648,6 +1880,18 @@ export function mount(root, ctx) {
         subConceptId: opts.subConceptId || state.activeSubConceptId || undefined,
       });
       if (lifecycle.disposed) return;
+
+      try {
+        const profile = {
+          country: state.selectedCountry || "IN",
+          track: state.selection.track || null,
+          classNum: state.selection.classNum || null,
+          subject: state.selection.subject || null,
+          lastConceptId: conceptId,
+          updatedAt: new Date().toISOString(),
+        };
+        localStorage.setItem("learning_allied_education_profile", JSON.stringify(profile));
+      } catch (_) {}
 
       state.lesson = res.lesson;
       state.check = res.lesson.check;

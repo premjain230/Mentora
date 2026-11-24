@@ -656,7 +656,7 @@ function buildReusableLesson({ pack, concept, level, attempts, mastery, mode, tr
     ),
     sections,
     keyTerms: [],
-    keyIdea: pack.keyIdea || null,
+    keyIdea: pack.keyIdea || (sections[0] ? sections[0].heading : "Core foundational principles"),
     teachingStrategy: assignedStrategy ? { id: assignedStrategy.id, label: assignedStrategy.label } : null,
     crossSubjectLink: crossSubject || null,
     workedExample: pack.workedExample
