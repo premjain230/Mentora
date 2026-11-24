@@ -179,7 +179,10 @@ export function mount(root, ctx) {
     state.loading = true;
     showLoading();
     try {
-      const profileSnap = await getDoc(doc(ctx.db, "users", uid));
+      const [profileSnap, learningProfileSnap] = await Promise.all([
+        getDoc(doc(ctx.db, "users", uid)).catch(() => null),
+        getDoc(doc(ctx.db, "users", uid, "learning", "profile")).catch(() => null),
+      ]);
       const planQuery = query(
         collection(ctx.db, "studyPlans"),
         where("userId", "==", uid),
@@ -193,7 +196,9 @@ export function mount(root, ctx) {
       ]);
       if (lifecycle.disposed || seq !== loadSeq) return;
 
-      state.profile = profileSnap.exists() ? profileSnap.data() : null;
+      const rootData = profileSnap?.exists() ? profileSnap.data() : {};
+      const learnData = learningProfileSnap?.exists() ? learningProfileSnap.data() : {};
+      state.profile = { ...rootData, ...learnData };
       state.progress = progress;
 
       if (planSnap.empty) {
@@ -270,7 +275,28 @@ export function mount(root, ctx) {
     els.content.replaceChildren(wrap);
   }
 
+  function updateHeroCard() {
+    const heroCard = root.querySelector("#plannerHeroCard");
+    if (!heroCard) return;
+    const { profile, plan, progress } = state;
+    const examTitle = root.querySelector("#plannerExamTitle");
+    const daysLeftEl = root.querySelector("#plannerDaysLeft");
+    const totalStudiedEl = root.querySelector("#plannerTotalStudied");
+
+    if (examTitle) {
+      examTitle.textContent = profile?.examType || plan?.targetExam || "Personalized Preparation Roadmap";
+    }
+    if (daysLeftEl) {
+      const dLeft = profile?.examDate ? daysUntil(profile.examDate) : (plan?.daysUntilExam ?? "—");
+      daysLeftEl.textContent = dLeft;
+    }
+    if (totalStudiedEl) {
+      totalStudiedEl.textContent = totalHours(progress);
+    }
+  }
+
   function renderTab(tab) {
+    updateHeroCard();
     if (!state.plan) {
       renderNoPlan();
       return;

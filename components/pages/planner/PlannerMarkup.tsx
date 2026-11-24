@@ -46,6 +46,73 @@ export function PlannerMarkup() {
             </p>
           </header>
 
+          {/* Interactive Exam Countdown & Velocity Pulse */}
+          <div
+            className="planner-hero-card ui-interactive-card"
+            id="plannerHeroCard"
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              flexWrap: "wrap",
+              gap: "16px",
+              padding: "16px 22px",
+              background: "linear-gradient(135deg, var(--bg-card) 0%, var(--bg-elevated) 100%)",
+              border: "1px solid var(--border)",
+              borderRadius: "var(--radius-lg, 10px)",
+              marginBottom: "18px",
+            }}
+          >
+            <div>
+              <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                <span className="ui-badge-pulse" style={{ fontSize: "12px", color: "var(--text-muted)" }}>
+                  Target Exam Countdown
+                </span>
+              </div>
+              <div
+                id="plannerExamTitle"
+                style={{ fontSize: "17px", fontWeight: 700, color: "var(--text-primary)", marginTop: "4px" }}
+              >
+                Personalized Preparation Roadmap
+              </div>
+            </div>
+            <div style={{ display: "flex", alignItems: "center", gap: "20px" }}>
+              <div style={{ textAlign: "center" }}>
+                <div
+                  id="plannerDaysLeft"
+                  style={{
+                    fontSize: "26px",
+                    fontWeight: 700,
+                    color: "var(--accent, #3b82f6)",
+                    fontFamily: "var(--font-mono, monospace)",
+                  }}
+                >
+                  —
+                </div>
+                <div style={{ fontSize: "11px", color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.06em" }}>
+                  Days Remaining
+                </div>
+              </div>
+              <div style={{ width: "1px", height: "32px", background: "var(--border)" }} />
+              <div style={{ textAlign: "center" }}>
+                <div
+                  id="plannerTotalStudied"
+                  style={{
+                    fontSize: "26px",
+                    fontWeight: 700,
+                    color: "var(--text-primary)",
+                    fontFamily: "var(--font-mono, monospace)",
+                  }}
+                >
+                  —
+                </div>
+                <div style={{ fontSize: "11px", color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.06em" }}>
+                  Hours Logged
+                </div>
+              </div>
+            </div>
+          </div>
+
           <div className="planner-tabs" id="plannerTabs" role="tablist">
             <button
               className="planner-tab active"

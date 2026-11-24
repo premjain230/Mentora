@@ -228,21 +228,38 @@ export function mount(root, ctx) {
   const initialSubject = urlParams ? urlParams.get("subject") : null;
 
   const savedCountry = typeof localStorage !== "undefined" ? localStorage.getItem("learning_allied_country") : null;
+  let savedEduProfile = null;
+  try {
+    const raw = typeof localStorage !== "undefined" ? localStorage.getItem("learning_allied_education_profile") : null;
+    if (raw) savedEduProfile = JSON.parse(raw);
+  } catch (_) {}
+
   if (initialCountry) state.selectedCountry = initialCountry;
   else if (savedCountry) state.selectedCountry = savedCountry;
+  else if (savedEduProfile?.country) state.selectedCountry = savedEduProfile.country;
   else state.selectedCountry = "IN";
 
   if (els.countrySelect) els.countrySelect.value = state.selectedCountry;
 
   if (initialTrack) state.selection.track = initialTrack;
+  else if (savedEduProfile?.track) state.selection.track = savedEduProfile.track;
+
   if (initialClass) state.selection.classNum = initialClass;
+  else if (savedEduProfile?.classNum) {
+    const parsed = parseInt(String(savedEduProfile.classNum).replace(/\D/g, ""), 10);
+    if (!isNaN(parsed)) state.selection.classNum = parsed;
+  }
+
   if (initialSubject) state.selection.subject = initialSubject;
+  else if (savedEduProfile?.subjects?.[0]) state.selection.subject = savedEduProfile.subjects[0];
 
   // Dedicated Country Selection on initial visit:
-  // When a student visits Learning Hub without a specific concept or track deep link,
+  // When a student visits Learning Hub without a specific concept or track,
   // present the dedicated country selection experience first!
-  if (!initialConceptId && !initialTrack) {
+  if (!initialConceptId && !state.selection.track) {
     state.viewMode = "country";
+  } else if (!initialConceptId && state.selection.track) {
+    state.viewMode = "catalog";
   }
 
   render();
@@ -251,7 +268,7 @@ export function mount(root, ctx) {
   if (initialConceptId) {
     state.activeSubConceptId = initialSubConceptId;
     void loadLesson(initialConceptId, { mode: "start", subConceptId: initialSubConceptId });
-  } else if (initialTrack) {
+  } else if (state.selection.track) {
     void fetchCatalog({ countryCode: state.selectedCountry, ...state.selection });
   } else {
     state.viewMode = "country";

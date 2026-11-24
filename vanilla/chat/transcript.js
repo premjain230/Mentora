@@ -324,6 +324,15 @@ export function createTranscript(app) {
       ),
       chip("Real-world example", () =>
         app.askFollowUp("Connect this to a real-world example", lastAssistant)
+      ),
+      chip("Misconception check", () =>
+        app.askFollowUp("What common misconception do students have about this topic?", lastAssistant)
+      ),
+      chip("First principles", () =>
+        app.askFollowUp("Can you break down the first principles behind this derivation?", lastAssistant)
+      ),
+      chip("Socratic hint", () =>
+        app.askFollowUp("Give me a Socratic hint to test my own understanding without revealing the answer", lastAssistant)
       )
     );
     els.quickbar.hidden = false;

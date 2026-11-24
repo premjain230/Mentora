@@ -281,17 +281,29 @@ export function mount(root, ctx) {
     if (!els.battleGrid) return;
     els.battleGrid.innerHTML = "";
 
+    let userTrack = null;
+    try {
+      const raw = localStorage.getItem("learning_allied_education_profile");
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        userTrack = parsed.track ? parsed.track.replace(/^in_/, "").toLowerCase() : null;
+      }
+    } catch (_) {}
+
     for (const track of getTracks()) {
+      const isUserTrack = userTrack && (track.id.includes(userTrack) || userTrack.includes(track.id));
       const button = document.createElement("button");
-      button.className = "battle-card";
+      button.className = `battle-card ${isUserTrack ? "user-focus-battlefield" : ""}`;
       button.type = "button";
       button.setAttribute("role", "listitem");
       button.setAttribute("aria-label", track.label);
       button.innerHTML = `
         <div class="bg-glow" style="--track-bg:${track.bg}"></div>
-        <div class="head"><div class="icon" style="--track-bg:${track.bg}">${track.icon}</div><h3>${escapeHtml(
-        track.label
-      )}</h3></div>
+        <div class="head">
+          <div class="icon" style="--track-bg:${track.bg}">${track.icon}</div>
+          <h3>${escapeHtml(track.label)}</h3>
+          ${isUserTrack ? '<span class="user-focus-tag" style="margin-left:auto;font-size:11px;padding:2px 8px;border-radius:999px;background:rgba(59,130,246,0.22);color:#60a5fa;font-weight:600;">Your Focus</span>' : ""}
+        </div>
         <div class="meta">${escapeHtml(track.subtitle)}</div>
         <div class="cta">Enter battlefield</div>
       `;

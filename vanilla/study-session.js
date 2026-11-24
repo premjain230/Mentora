@@ -12,6 +12,7 @@ import {
 import { createLifecycle } from "./shared/lifecycle.js";
 import { mountToast } from "./shared/toast.js";
 import { formatDate } from "./shared/format.js";
+import { focusAudio } from "../lib/focus-audio";
 
 const DURATION_DEFAULT = 25;
 
@@ -517,6 +518,26 @@ export function mount(root, ctx) {
       els.history.appendChild(empty);
     }
   }
+
+  const audioSelector = root.querySelector("#ssAudioSelector");
+  const audioStrip = root.querySelector("#ssAudioStrip");
+  if (audioSelector) {
+    lifecycle.on(audioSelector, "click", (event) => {
+      const chip = event.target.closest(".study-audio-chip");
+      if (!chip) return;
+      audioSelector.querySelectorAll(".study-audio-chip").forEach((c) => c.classList.remove("active"));
+      chip.classList.add("active");
+      const soundMode = chip.getAttribute("data-sound") || "off";
+      focusAudio.play(soundMode);
+      if (audioStrip) {
+        audioStrip.classList.toggle("playing", soundMode !== "off");
+      }
+    });
+  }
+
+  lifecycle.add(() => {
+    focusAudio.stop();
+  });
 
   lifecycle.on(els.durations, "click", (event) => {
     const chip = event.target.closest(".study-duration-chip");

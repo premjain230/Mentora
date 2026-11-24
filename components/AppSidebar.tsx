@@ -93,6 +93,42 @@ export function AppSidebar() {
           </button>
         </div>
 
+        <div className="sidebar-search-wrap" style={{ padding: "0 10px 10px" }}>
+          <button
+            type="button"
+            className="sidebar-search-trigger"
+            onClick={() => {
+              window.dispatchEvent(new CustomEvent("open-command-palette"));
+            }}
+            aria-label="Search and quick commands (Cmd+K)"
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              width: "100%",
+              padding: "7px 10px",
+              background: "var(--bg-card, #0A0A0A)",
+              border: "1px solid var(--border, #262626)",
+              borderRadius: "var(--radius-md, 8px)",
+              color: "var(--text-muted, #737373)",
+              fontSize: "12px",
+              cursor: "pointer",
+              transition: "all 0.15s ease",
+            }}
+          >
+            <span style={{ display: "flex", alignItems: "center", gap: "7px" }}>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <circle cx="11" cy="11" r="8" />
+                <path d="m21 21-4.35-4.35" />
+              </svg>
+              <span>Search &amp; Jump...</span>
+            </span>
+            <span style={{ fontSize: "10px", padding: "1px 5px", background: "var(--bg-elevated, #111111)", border: "1px solid var(--border, #262626)", borderRadius: "3px", color: "var(--text-muted, #737373)" }}>
+              ⌘K
+            </span>
+          </button>
+        </div>
+
         <nav className="nav-section" id="navSection">
           <div className="nav-label">
             <span>Study</span>

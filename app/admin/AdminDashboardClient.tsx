@@ -42,7 +42,7 @@ function Centered({ children }: { children: React.ReactNode }) {
   );
 }
 
-type TabType = "overview" | "inbox" | "ai_quality" | "learning" | "bugs" | "features" | "reports" | "seo_growth";
+type TabType = "overview" | "inbox" | "ai_quality" | "learning" | "bugs" | "features" | "reports" | "seo_growth" | "ai_ceo";
 
 export function AdminDashboardClient() {
   const router = useRouter();
@@ -78,6 +78,10 @@ export function AdminDashboardClient() {
   const [generatedReport, setGeneratedReport] = useState<any | null>(null);
   const [reportLoading, setReportLoading] = useState(false);
 
+  // AI CEO Department State
+  const [ceoData, setCeoData] = useState<any | null>(null);
+  const [loadingCeo, setLoadingCeo] = useState(false);
+
   const getAuthToken = useCallback(async () => {
     if (!user) return "";
     return await user.getIdToken();
@@ -98,6 +102,11 @@ export function AdminDashboardClient() {
         const pData = await resPlatform.json();
         setPlatformStats(pData);
       }
+      // Pre-load AI CEO telemetry
+      fetch("/api/admin/ceo", { headers })
+        .then((r) => r.ok ? r.json() : null)
+        .then((res) => { if (res && res.data) setCeoData(res.data); })
+        .catch(() => {});
       if (resFeedback && resFeedback.ok) {
         const fData = await resFeedback.json();
         setFeedbackStats(fData);
@@ -354,6 +363,13 @@ export function AdminDashboardClient() {
           onClick={() => setActiveTab("seo_growth")}
         >
           SEO &amp; Organic Growth (28 Pages)
+        </button>
+        <button
+          type="button"
+          className={`tab-btn ${activeTab === "ai_ceo" ? "active" : ""}`}
+          onClick={() => setActiveTab("ai_ceo")}
+        >
+          🏢 AI CEO Department OS
         </button>
       </nav>
 
@@ -1095,6 +1111,159 @@ export function AdminDashboardClient() {
                   <li><strong>GA4 Measurement ID:</strong> Connected via <code>NEXT_PUBLIC_GA_MEASUREMENT_ID</code> (Vercel Web Analytics is currently active).</li>
                   <li><strong>IndexNow Protocol:</strong> Fully active with verification key <code>d7e891c94b7e4f169cb4812f8649ab01</code>.</li>
                 </ul>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* 9. AI CEO DEPARTMENT OS TAB */}
+        {activeTab === "ai_ceo" && (
+          <div className="tab-pane">
+            <div className="pane-header">
+              <h1>AI CEO — Autonomous Department System &amp; Roadmap</h1>
+              <p>Real-time orchestration of 12 specialized AI departments, prioritized improvement roadmap, and decision audit logs.</p>
+            </div>
+
+            {/* Executive Status Overview */}
+            <div className="stats-grid">
+              <div className="stat-card">
+                <div className="stat-label">Active AI Departments</div>
+                <div className="stat-val accent">{ceoData?.departmentCount || 12}</div>
+                <div className="stat-sub">100% operational roster</div>
+              </div>
+              <div className="stat-card">
+                <div className="stat-label">Roadmap Initiatives</div>
+                <div className="stat-val">{ceoData?.roadmapMetrics?.total || 7}</div>
+                <div className="stat-sub">{ceoData?.roadmapMetrics?.completed || 4} Completed, {ceoData?.roadmapMetrics?.inProgress || 2} In Progress</div>
+              </div>
+              <div className="stat-card">
+                <div className="stat-label">Execution Velocity</div>
+                <div className="stat-val success">{ceoData?.roadmapMetrics?.velocityPercent || 71}%</div>
+                <div className="stat-sub">Autonomous delivery rate</div>
+              </div>
+              <div className="stat-card">
+                <div className="stat-label">Strategic Decisions Logged</div>
+                <div className="stat-val">{ceoData?.recentDecisions?.length || 2}</div>
+                <div className="stat-sub">Full audit history preserved</div>
+              </div>
+            </div>
+
+            {/* Department Roster */}
+            <div className="data-card" style={{ marginTop: "24px" }}>
+              <div className="card-head">
+                <h2>12 Autonomous Specialized AI Departments</h2>
+                <span className="badge success">Active Operating System</span>
+              </div>
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", gap: "14px", padding: "16px" }}>
+                {(ceoData?.departments || []).map((dep: any) => (
+                  <div
+                    key={dep.id}
+                    style={{
+                      background: "var(--bg-elevated, #111111)",
+                      border: "1px solid var(--border, #262626)",
+                      borderRadius: "8px",
+                      padding: "14px",
+                      display: "flex",
+                      flexDirection: "column",
+                      justifyContent: "space-between",
+                      gap: "8px",
+                    }}
+                  >
+                    <div>
+                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                        <strong style={{ fontSize: "14px", color: "var(--text-primary)" }}>{dep.name}</strong>
+                        <span style={{ fontSize: "11px", padding: "2px 6px", borderRadius: "4px", background: "var(--accent-soft, rgba(59, 130, 246, 0.12))", color: "var(--accent, #3b82f6)", fontWeight: 600 }}>
+                          {dep.priority}
+                        </span>
+                      </div>
+                      <p style={{ fontSize: "12px", color: "var(--text-muted)", marginTop: "6px", lineHeight: "1.5" }}>
+                        {dep.mandate}
+                      </p>
+                    </div>
+                    <div style={{ fontSize: "11px", color: "var(--text-secondary)", borderTop: "1px solid var(--border, #262626)", paddingTop: "8px" }}>
+                      <strong>KPI:</strong> {dep.kpi}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Strategic Improvement Roadmap */}
+            <div className="data-card" style={{ marginTop: "24px" }}>
+              <div className="card-head">
+                <h2>Company-Wide Prioritized Improvement Roadmap</h2>
+                <span className="badge accent">Prioritized P0 - P2</span>
+              </div>
+              <div style={{ padding: "8px 16px 16px" }}>
+                {(ceoData?.roadmap || []).map((item: any) => (
+                  <div
+                    key={item.id}
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "space-between",
+                      flexWrap: "wrap",
+                      gap: "12px",
+                      padding: "12px 0",
+                      borderBottom: "1px solid var(--border, #262626)",
+                    }}
+                  >
+                    <div style={{ flex: 1, minWidth: "240px" }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                        <span style={{ fontSize: "11px", padding: "2px 6px", borderRadius: "4px", background: item.priority === "P0" ? "rgba(239, 68, 68, 0.15)" : "rgba(245, 158, 11, 0.15)", color: item.priority === "P0" ? "#ef4444" : "#f59e0b", fontWeight: 700 }}>
+                          {item.priority}
+                        </span>
+                        <strong style={{ fontSize: "13.5px", color: "var(--text-primary)" }}>{item.title}</strong>
+                      </div>
+                      <div style={{ fontSize: "12px", color: "var(--text-muted)", marginTop: "4px" }}>
+                        {item.userValue}
+                      </div>
+                    </div>
+                    <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                      <span style={{
+                        fontSize: "11.5px",
+                        padding: "3px 8px",
+                        borderRadius: "999px",
+                        fontWeight: 600,
+                        textTransform: "capitalize",
+                        background: item.status === "completed" ? "rgba(16, 185, 129, 0.15)" : item.status === "in_progress" ? "rgba(59, 130, 246, 0.15)" : "rgba(255, 255, 255, 0.08)",
+                        color: item.status === "completed" ? "#10b981" : item.status === "in_progress" ? "#3b82f6" : "var(--text-secondary)",
+                      }}>
+                        {item.status.replace("_", " ")}
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Strategic Decision Log */}
+            <div className="data-card" style={{ marginTop: "24px" }}>
+              <div className="card-head">
+                <h2>Strategic Decision History &amp; Tradeoff Audit Log</h2>
+                <span className="badge success">Verified Decisions</span>
+              </div>
+              <div style={{ padding: "8px 16px 16px" }}>
+                {(ceoData?.recentDecisions || []).map((dec: any) => (
+                  <div
+                    key={dec.id}
+                    style={{
+                      padding: "14px 0",
+                      borderBottom: "1px solid var(--border, #262626)",
+                    }}
+                  >
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                      <strong style={{ fontSize: "13.5px", color: "var(--text-primary)" }}>{dec.title}</strong>
+                      <span style={{ fontSize: "11px", color: "var(--text-muted)" }}>{new Date(dec.timestamp).toLocaleDateString()}</span>
+                    </div>
+                    <p style={{ fontSize: "12.5px", color: "var(--text-secondary)", margin: "6px 0 2px" }}>
+                      <strong>Rationale:</strong> {dec.rationale}
+                    </p>
+                    <div style={{ fontSize: "11.5px", color: "var(--text-muted)" }}>
+                      <strong>Impact:</strong> {dec.impact} &bull; <span style={{ color: "var(--accent, #3b82f6)" }}>{dec.approvedBy}</span>
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
           </div>

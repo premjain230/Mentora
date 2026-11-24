@@ -73,9 +73,79 @@ export function HomeMarkup() {
 
       <div className="chat-area" id="homeChatArea">
         <div id="homeHub" className="hub-grid">
+          {/* Cognitive Pulse & Quick Diagnostic Bar */}
+          <div
+            className="hub-pulse-banner ui-interactive-card"
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              flexWrap: "wrap",
+              gap: "14px",
+              padding: "16px 20px",
+              background: "linear-gradient(135deg, var(--bg-card) 0%, var(--bg-elevated) 100%)",
+              border: "1px solid var(--border)",
+              borderRadius: "var(--radius-lg, 10px)",
+              marginBottom: "8px",
+            }}
+          >
+            <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+              <div
+                style={{
+                  width: "36px",
+                  height: "36px",
+                  borderRadius: "8px",
+                  background: "var(--accent-soft, rgba(59, 130, 246, 0.12))",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  color: "var(--accent, #3b82f6)",
+                  fontSize: "18px",
+                }}
+              >
+                ⚡
+              </div>
+              <div>
+                <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                  <strong style={{ fontSize: "14px", color: "var(--text-primary)" }}>Daily Learning Pulse</strong>
+                  <span className="ui-badge-pulse green" style={{ fontSize: "11px", color: "var(--text-muted)" }}>
+                    Personal AI Active
+                  </span>
+                </div>
+                <div style={{ fontSize: "12px", color: "var(--text-muted)", marginTop: "2px" }}>
+                  Socratic tutoring, spaced recall &amp; syllabus mastery calibrated to your curriculum.
+                </div>
+              </div>
+            </div>
+
+            <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+              <Link
+                href="/learning-hub"
+                className="btn btn-secondary"
+                style={{ fontSize: "12.5px", padding: "6px 14px", borderRadius: "6px" }}
+              >
+                Explore Concepts →
+              </Link>
+              <Link
+                href="/quiz"
+                className="btn btn-primary"
+                style={{
+                  fontSize: "12.5px",
+                  padding: "6px 14px",
+                  borderRadius: "6px",
+                  background: "var(--accent, #3b82f6)",
+                  color: "#ffffff",
+                  border: "none",
+                }}
+              >
+                Quick Diagnostic
+              </Link>
+            </div>
+          </div>
+
           {/* Quick-Action Command Strip */}
           <div className="hub-action-strip">
-            <Link href="/arena" className="hub-quick-action hub-action-primary">
+            <Link href="/arena" className="hub-quick-action ui-interactive-card hub-action-primary">
               <span className="hub-action-icon">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="18" height="18" aria-hidden="true">
                   <path d="M4 4l11 11M12.5 17.5l5-5M16 16l3.5 3.5M20 4 9 15M11.5 17.5l-5-5M8 16l-3.5 3.5" />
@@ -87,7 +157,7 @@ export function HomeMarkup() {
               </div>
             </Link>
 
-            <Link href="/chat" className="hub-quick-action">
+            <Link href="/chat" className="hub-quick-action ui-interactive-card">
               <span className="hub-action-icon">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="18" height="18" aria-hidden="true">
                   <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
@@ -99,7 +169,7 @@ export function HomeMarkup() {
               </div>
             </Link>
 
-            <Link href="/study-session" className="hub-quick-action">
+            <Link href="/study-session" className="hub-quick-action ui-interactive-card">
               <span className="hub-action-icon">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="18" height="18" aria-hidden="true">
                   <circle cx="12" cy="12" r="10" />
@@ -112,7 +182,7 @@ export function HomeMarkup() {
               </div>
             </Link>
 
-            <Link href="/quiz" className="hub-quick-action">
+            <Link href="/quiz" className="hub-quick-action ui-interactive-card">
               <span className="hub-action-icon">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="18" height="18" aria-hidden="true">
                   <path d="M9 11l3 3L22 4" />
@@ -139,7 +209,7 @@ export function HomeMarkup() {
           </div>
 
           <div className="cere-grid-3">
-            <Link href="/arena" className="aq-graph-card hub-clickable">
+            <Link href="/arena" className="aq-graph-card ui-interactive-card hub-clickable">
               <div className="hub-eyebrow">Arena progress</div>
               <div id="hubMasteryGauge" className="hub-gauge-wrap">
                 Loading…
@@ -149,7 +219,7 @@ export function HomeMarkup() {
               </div>
             </Link>
 
-            <Link href="/study-session" className="aq-graph-card hub-clickable">
+            <Link href="/study-session" className="aq-graph-card ui-interactive-card hub-clickable">
               <div className="hub-eyebrow">Volume — study time</div>
               <div id="hubStudyTime" className="hub-big-number">
                 —
@@ -160,7 +230,7 @@ export function HomeMarkup() {
               </div>
             </Link>
 
-            <Link href="/review" className="aq-graph-card hub-clickable">
+            <Link href="/review" className="aq-graph-card ui-interactive-card hub-clickable">
               <div className="hub-eyebrow">Retention</div>
               <div className="hub-medium-label" id="hubSparksTitle">
                 Checking…
@@ -171,7 +241,7 @@ export function HomeMarkup() {
             </Link>
           </div>
 
-          <div className="aq-graph-card">
+          <div className="aq-graph-card ui-interactive-card">
             <div className="hub-row-head hub-row-head--tight">
               <span className="hub-eyebrow">Performance — trend</span>
               <span id="hubStockTag" className="hub-tag">
@@ -192,7 +262,7 @@ export function HomeMarkup() {
             />
           </div>
 
-          <div className="aq-graph-card">
+          <div className="aq-graph-card ui-interactive-card">
             <div className="hub-row-head hub-row-head--tight">
               <span className="hub-eyebrow">Next steps</span>
               <Link href="/review" className="hub-tag hub-tag-link">
@@ -206,7 +276,7 @@ export function HomeMarkup() {
             <div id="hubNextEmpty" className="hub-caption hub-hidden" />
           </div>
 
-          <div className="aq-graph-card">
+          <div className="aq-graph-card ui-interactive-card">
             <div className="hub-row-head hub-row-head--tight">
               <span className="hub-eyebrow">Holdings — by subject</span>
               <span className="hub-tag">Real</span>
@@ -220,7 +290,7 @@ export function HomeMarkup() {
             </div>
           </div>
 
-          <div className="aq-graph-card">
+          <div className="aq-graph-card ui-interactive-card">
             <div className="hub-eyebrow">Retention timeline</div>
             <div
               id="hubRetentionTimeline"

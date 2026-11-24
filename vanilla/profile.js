@@ -8,6 +8,16 @@ import {
 } from "firebase/firestore";
 import { createLifecycle } from "./shared/lifecycle.js";
 import { mountToast } from "./shared/toast.js";
+import {
+  COUNTRY_OPTIONS,
+  GOAL_OPTIONS,
+  LANGUAGE_OPTIONS,
+  getTracksForCountry,
+  getGradesForTrack,
+  getSubjectsForTrack,
+  getCountryOption,
+  getTrackInfo,
+} from "../lib/learning/curriculum-options";
 
 const PERSONALITY_NAMES = {
   mentor: "Mentor",
@@ -44,9 +54,38 @@ export function mount(root, ctx) {
     letterDate: root.querySelector("#letterDate"),
     letterBtn: root.querySelector("#generateLetterBtn"),
     letterBtnText: root.querySelector("#letterBtnText"),
+
+    // Academic Profile Elements
+    countryFlag: root.querySelector("#profileCountryFlag"),
+    countryName: root.querySelector("#profileCountryName"),
+    boardName: root.querySelector("#profileBoardName"),
+    boardBadge: root.querySelector("#profileBoardBadge"),
+    gradeVal: root.querySelector("#profileGradeVal"),
+    dailyHoursVal: root.querySelector("#profileDailyHoursVal"),
+    goalBadge: root.querySelector("#profileGoalBadge"),
+    goalName: root.querySelector("#profileGoalName"),
+    languageVal: root.querySelector("#profileLanguageVal"),
+    subjectsContainer: root.querySelector("#profileSubjectsContainer"),
+    editAcademicBtn: root.querySelector("#editAcademicBtn"),
+
+    // Academic Modal Elements
+    academicModal: root.querySelector("#academicModal"),
+    closeModalBtn: root.querySelector("#closeAcademicModalBtn"),
+    cancelModalBtn: root.querySelector("#cancelAcademicBtn"),
+    saveModalBtn: root.querySelector("#saveAcademicBtn"),
+    editCountrySelect: root.querySelector("#editCountrySelect"),
+    editTrackSelect: root.querySelector("#editTrackSelect"),
+    editGradeSelect: root.querySelector("#editGradeSelect"),
+    editSubjectsList: root.querySelector("#editSubjectsList"),
+    editGoalSelect: root.querySelector("#editGoalSelect"),
+    editDailyHours: root.querySelector("#editDailyHours"),
+    editDailyHoursVal: root.querySelector("#editDailyHoursVal"),
+    editLanguageSelect: root.querySelector("#editLanguageSelect"),
   };
 
   const userRef = doc(ctx.db, "users", uid);
+  const learningProfileRef = doc(ctx.db, "users", uid, "learning", "profile");
+
   const defaultProfile = {
     displayName: ctx.user.displayName || "",
     email: ctx.user.email || "",
@@ -54,15 +93,26 @@ export function mount(root, ctx) {
     plan: "free",
     streak: 0,
     topics: [],
+    country: "IN",
+    board: "in_cbse",
+    trackId: "in_cbse",
+    grade: "Class 12",
+    subjects: ["Physics", "Chemistry", "Mathematics"],
+    academicGoal: "top_percentile",
+    dailyHours: 4,
+    preferredLanguage: "en",
+    personality: "mentor",
   };
 
   let profileData = defaultProfile;
   let personalityBusy = false;
   let letterRequest = null;
+  let modalSubjects = ["Physics", "Chemistry", "Mathematics"];
 
   hydrateTopbar(root, ctx.user);
   initTheme();
   loadProfile();
+  initAcademicModal();
 
   return () => lifecycle.dispose();
 
@@ -104,6 +154,7 @@ export function mount(root, ctx) {
 
   async function loadProfile() {
     try {
+      // 1. Load root user document
       const snap = await getDoc(userRef).catch(() => null);
       if (snap?.exists()) {
         profileData = { ...defaultProfile, ...snap.data() };
@@ -114,12 +165,35 @@ export function mount(root, ctx) {
           displayName: ctx.user.displayName || "",
           email: ctx.user.email || "",
           photoURL: ctx.user.photoURL || "",
-          exam: "",
+          exam: "CBSE Class 12",
           createdAt: serverTimestamp(),
           plan: "free",
         }).catch(() => {});
       }
 
+      // 2. Load dedicated learning profile
+      try {
+        const learnSnap = await getDoc(learningProfileRef);
+        if (learnSnap.exists()) {
+          const lData = learnSnap.data();
+          profileData = {
+            ...profileData,
+            country: lData.country || profileData.country || "IN",
+            board: lData.board || lData.trackId || profileData.board || "in_cbse",
+            trackId: lData.trackId || lData.board || profileData.trackId || "in_cbse",
+            grade: lData.grade || profileData.grade || "Class 12",
+            subjects: Array.isArray(lData.subjects) && lData.subjects.length > 0 ? lData.subjects : profileData.subjects,
+            academicGoal: lData.academicGoal || profileData.academicGoal || "top_percentile",
+            dailyHours: lData.dailyHours ? Number(lData.dailyHours) : (profileData.dailyHours || 4),
+            preferredLanguage: lData.preferredLanguage || profileData.preferredLanguage || "en",
+            personality: lData.personality || profileData.personality || "mentor",
+          };
+        }
+      } catch (err) {
+        console.warn("[profile] learning profile load error:", err);
+      }
+
+      // 3. Count user chats
       try {
         const chats = await getDocs(collection(ctx.db, "users", uid, "chats"));
         profileData._chatCount = chats.size;
@@ -167,6 +241,313 @@ export function mount(root, ctx) {
     setStat("statChats", profileData._chatCount ?? 0);
     setStat("statStreak", profileData.streak ?? 0);
     setStat("statTopics", topics.length);
+
+    // Render Academic Details
+    const countryCode = profileData.country || "IN";
+    const countryObj = getCountryOption(countryCode);
+    setText(els.countryFlag, countryObj.flag);
+    setText(els.countryName, countryObj.name);
+
+    const trackId = profileData.board || profileData.trackId || "in_cbse";
+    const trackObj = getTrackInfo(trackId);
+    setText(els.boardName, trackObj?.name || profileData.exam || "CBSE");
+    setText(els.boardBadge, trackObj?.shortName || "National");
+
+    setText(els.gradeVal, profileData.grade || "Class 12");
+    setText(els.dailyHoursVal, `${profileData.dailyHours || 4} hours / day`);
+
+    const goalObj = GOAL_OPTIONS.find((g) => g.id === profileData.academicGoal) || GOAL_OPTIONS[0];
+    setText(els.goalBadge, goalObj.badge);
+    setText(els.goalName, goalObj.title);
+
+    const langObj = LANGUAGE_OPTIONS.find((l) => l.code === profileData.preferredLanguage) || LANGUAGE_OPTIONS[0];
+    setText(els.languageVal, `${langObj.name} (${langObj.nativeName})`);
+
+    // Priority Subjects Chips
+    if (els.subjectsContainer) {
+      els.subjectsContainer.innerHTML = "";
+      const subs = Array.isArray(profileData.subjects) && profileData.subjects.length > 0
+        ? profileData.subjects
+        : ["Physics", "Chemistry", "Mathematics"];
+      for (const s of subs) {
+        const chip = document.createElement("span");
+        chip.className = "academic-chip";
+        chip.textContent = s;
+        els.subjectsContainer.appendChild(chip);
+      }
+    }
+  }
+
+  function initAcademicModal() {
+    if (!els.academicModal || !els.editAcademicBtn) return;
+
+    // Open Modal
+    lifecycle.on(els.editAcademicBtn, "click", () => {
+      openModal();
+    });
+
+    // Close Modal buttons
+    if (els.closeModalBtn) {
+      lifecycle.on(els.closeModalBtn, "click", closeModal);
+    }
+    if (els.cancelModalBtn) {
+      lifecycle.on(els.cancelModalBtn, "click", closeModal);
+    }
+
+    // Close on backdrop click
+    lifecycle.on(els.academicModal, "click", (e) => {
+      if (e.target === els.academicModal) closeModal();
+    });
+
+    // Populate Country dropdown
+    if (els.editCountrySelect) {
+      els.editCountrySelect.innerHTML = "";
+      for (const c of COUNTRY_OPTIONS) {
+        const opt = document.createElement("option");
+        opt.value = c.code;
+        opt.textContent = `${c.flag} ${c.name} (${c.region})`;
+        els.editCountrySelect.appendChild(opt);
+      }
+
+      lifecycle.on(els.editCountrySelect, "change", () => {
+        const newCountry = els.editCountrySelect.value;
+        populateTracks(newCountry);
+      });
+    }
+
+    // Track dropdown listener
+    if (els.editTrackSelect) {
+      lifecycle.on(els.editTrackSelect, "change", () => {
+        const newTrack = els.editTrackSelect.value;
+        populateGrades(newTrack);
+        populateSubjects(newTrack);
+      });
+    }
+
+    // Populate Goals dropdown
+    if (els.editGoalSelect) {
+      els.editGoalSelect.innerHTML = "";
+      for (const g of GOAL_OPTIONS) {
+        const opt = document.createElement("option");
+        opt.value = g.id;
+        opt.textContent = `${g.badge} — ${g.title}`;
+        els.editGoalSelect.appendChild(opt);
+      }
+    }
+
+    // Populate Languages dropdown
+    if (els.editLanguageSelect) {
+      els.editLanguageSelect.innerHTML = "";
+      for (const l of LANGUAGE_OPTIONS) {
+        const opt = document.createElement("option");
+        opt.value = l.code;
+        opt.textContent = `${l.nativeName} (${l.name})`;
+        els.editLanguageSelect.appendChild(opt);
+      }
+    }
+
+    // Daily hours slider listener
+    if (els.editDailyHours) {
+      lifecycle.on(els.editDailyHours, "input", () => {
+        if (els.editDailyHoursVal) {
+          els.editDailyHoursVal.textContent = els.editDailyHours.value;
+        }
+      });
+    }
+
+    // Save button
+    if (els.saveModalBtn) {
+      lifecycle.on(els.saveModalBtn, "click", saveAcademicProfile);
+    }
+  }
+
+  function openModal() {
+    const curCountry = profileData.country || "IN";
+    const curTrack = profileData.board || profileData.trackId || "in_cbse";
+    const curGrade = profileData.grade || "Class 12";
+    modalSubjects = Array.isArray(profileData.subjects) && profileData.subjects.length > 0
+      ? [...profileData.subjects]
+      : ["Physics", "Chemistry", "Mathematics"];
+
+    if (els.editCountrySelect) els.editCountrySelect.value = curCountry;
+    populateTracks(curCountry, curTrack);
+    populateGrades(curTrack, curGrade);
+    populateSubjects(curTrack, modalSubjects);
+
+    if (els.editGoalSelect) els.editGoalSelect.value = profileData.academicGoal || "top_percentile";
+    if (els.editDailyHours) {
+      els.editDailyHours.value = profileData.dailyHours || 4;
+      if (els.editDailyHoursVal) els.editDailyHoursVal.textContent = String(profileData.dailyHours || 4);
+    }
+    if (els.editLanguageSelect) els.editLanguageSelect.value = profileData.preferredLanguage || "en";
+
+    els.academicModal.classList.add("open");
+  }
+
+  function closeModal() {
+    if (els.academicModal) els.academicModal.classList.remove("open");
+  }
+
+  function populateTracks(countryCode, selectTrackId) {
+    if (!els.editTrackSelect) return;
+    const tracks = getTracksForCountry(countryCode);
+    els.editTrackSelect.innerHTML = "";
+    for (const t of tracks) {
+      const opt = document.createElement("option");
+      opt.value = t.id;
+      opt.textContent = `${t.shortName} — ${t.name}`;
+      els.editTrackSelect.appendChild(opt);
+    }
+    const chosenTrack = selectTrackId && tracks.some((t) => t.id === selectTrackId)
+      ? selectTrackId
+      : (tracks[0]?.id || "in_cbse");
+    els.editTrackSelect.value = chosenTrack;
+
+    populateGrades(chosenTrack);
+    populateSubjects(chosenTrack);
+  }
+
+  function populateGrades(trackId, selectGrade) {
+    if (!els.editGradeSelect) return;
+    const grades = getGradesForTrack(trackId);
+    els.editGradeSelect.innerHTML = "";
+    for (const g of grades) {
+      const opt = document.createElement("option");
+      opt.value = g.id;
+      opt.textContent = g.label;
+      els.editGradeSelect.appendChild(opt);
+    }
+    if (selectGrade && grades.some((g) => g.id === selectGrade)) {
+      els.editGradeSelect.value = selectGrade;
+    } else {
+      els.editGradeSelect.value = grades[grades.length - 1]?.id || grades[0]?.id || "Class 12";
+    }
+  }
+
+  function populateSubjects(trackId, selectedList) {
+    if (!els.editSubjectsList) return;
+    const available = getSubjectsForTrack(trackId);
+    if (!selectedList) {
+      modalSubjects = available.slice(0, 3);
+    }
+    renderModalSubjectChips(available);
+  }
+
+  function renderModalSubjectChips(available) {
+    if (!els.editSubjectsList) return;
+    els.editSubjectsList.innerHTML = "";
+    for (const sub of available) {
+      const isSel = modalSubjects.includes(sub);
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = `academic-chip-btn ${isSel ? "selected" : ""}`;
+      btn.innerHTML = `<span>${isSel ? "✓" : "+"}</span><span>${sub}</span>`;
+      btn.addEventListener("click", () => {
+        if (modalSubjects.includes(sub)) {
+          if (modalSubjects.length === 1) return; // Keep at least one
+          modalSubjects = modalSubjects.filter((s) => s !== sub);
+        } else {
+          modalSubjects.push(sub);
+        }
+        renderModalSubjectChips(available);
+      });
+      els.editSubjectsList.appendChild(btn);
+    }
+  }
+
+  async function saveAcademicProfile() {
+    if (!els.saveModalBtn || els.saveModalBtn.disabled) return;
+
+    const newCountry = els.editCountrySelect?.value || "IN";
+    const newTrack = els.editTrackSelect?.value || "in_cbse";
+    const newGrade = els.editGradeSelect?.value || "Class 12";
+    const newGoal = els.editGoalSelect?.value || "top_percentile";
+    const newDailyHours = Number(els.editDailyHours?.value || 4);
+    const newLanguage = els.editLanguageSelect?.value || "en";
+    const newSubjects = [...modalSubjects];
+
+    const trackObj = getTrackInfo(newTrack);
+
+    els.saveModalBtn.disabled = true;
+    setText(els.saveModalBtn, "Saving…");
+
+    try {
+      // 1. Save to users/{uid}/learning/profile
+      await setDoc(
+        learningProfileRef,
+        {
+          country: newCountry,
+          board: newTrack,
+          trackId: newTrack,
+          trackName: trackObj?.name || newTrack,
+          grade: newGrade,
+          subjects: newSubjects,
+          academicGoal: newGoal,
+          dailyHours: newDailyHours,
+          preferredLanguage: newLanguage,
+          onboardingComplete: true,
+          updatedAt: serverTimestamp(),
+        },
+        { merge: true }
+      );
+
+      // 2. Mirror to root user document
+      await setDoc(
+        userRef,
+        {
+          country: newCountry,
+          board: newTrack,
+          trackId: newTrack,
+          grade: newGrade,
+          exam: trackObj?.name || newTrack,
+          subjects: newSubjects,
+          academicGoal: newGoal,
+          dailyHours: newDailyHours,
+          preferredLanguage: newLanguage,
+          updatedAt: serverTimestamp(),
+        },
+        { merge: true }
+      );
+
+      // 3. Update localStorage for immediate cross-page sync
+      try {
+        localStorage.setItem("learning_allied_country", newCountry);
+        localStorage.setItem(
+          "learning_allied_education_profile",
+          JSON.stringify({
+            country: newCountry,
+            track: newTrack,
+            classNum: newGrade,
+            subjects: newSubjects,
+            academicGoal: newGoal,
+            dailyHours: newDailyHours,
+            preferredLanguage: newLanguage,
+            updatedAt: new Date().toISOString(),
+          })
+        );
+      } catch (_) {}
+
+      // 4. Update local state and UI
+      profileData.country = newCountry;
+      profileData.board = newTrack;
+      profileData.trackId = newTrack;
+      profileData.exam = trackObj?.name || newTrack;
+      profileData.grade = newGrade;
+      profileData.subjects = newSubjects;
+      profileData.academicGoal = newGoal;
+      profileData.dailyHours = newDailyHours;
+      profileData.preferredLanguage = newLanguage;
+
+      renderProfile();
+      closeModal();
+      toast.show("Academic profile updated successfully!", "success");
+    } catch (err) {
+      console.error("[profile] save failed", err);
+      toast.show("Could not save profile changes. Please try again.", "error");
+    } finally {
+      els.saveModalBtn.disabled = false;
+      setText(els.saveModalBtn, "Save Academic Profile");
+    }
   }
 
   function initPersonality() {
@@ -222,6 +603,12 @@ export function mount(root, ctx) {
             { personality: id, updatedAt: serverTimestamp() },
             { merge: true }
           );
+          await setDoc(
+            learningProfileRef,
+            { personality: id, updatedAt: serverTimestamp() },
+            { merge: true }
+          ).catch(() => {});
+
           if (lifecycle.disposed) return;
           profileData.personality = id;
           toast.show(

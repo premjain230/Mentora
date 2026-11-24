@@ -1,0 +1,423 @@
+{
+  "mission": "Transform Learning Allied into the world's most intelligent, interactive, accessible Personal AI Learning OS across 15 countries.",
+  "version": "2.0.0-ai-ceo",
+  "departments": [
+    {
+      "id": "product_manager",
+      "name": "Product Manager AI",
+      "mandate": "Discovers user opportunities, prioritizes features, and refines learning journeys.",
+      "kpi": "User engagement, completion rates, and curriculum progression",
+      "status": "active",
+      "headcount": 1,
+      "priority": "P0"
+    },
+    {
+      "id": "ui_ux_designer",
+      "name": "UI/UX Designer AI",
+      "mandate": "Designs cohesive Apple + Linear grade interfaces, micro-interactions, and visual feedback.",
+      "kpi": "Visual consistency, interaction responsiveness, and intuitive navigation",
+      "status": "active",
+      "headcount": 1,
+      "priority": "P0"
+    },
+    {
+      "id": "frontend_engineer",
+      "name": "Frontend Engineer AI",
+      "mandate": "Builds tactile, fluid Next.js/React components, command palette, and Web Audio synthesizers.",
+      "kpi": "Zero layout shift, 60fps animations, mobile/tablet responsiveness",
+      "status": "active",
+      "headcount": 1,
+      "priority": "P0"
+    },
+    {
+      "id": "backend_engineer",
+      "name": "Backend Engineer AI",
+      "mandate": "Scales server APIs, ensures atomic state transactions, and hardens session validation.",
+      "kpi": "API latency < 100ms, 99.99% uptime, zero unhandled exceptions",
+      "status": "active",
+      "headcount": 1,
+      "priority": "P0"
+    },
+    {
+      "id": "ai_engineer",
+      "name": "AI Engineer AI",
+      "mandate": "Develops Socratic cognitive scaffolding, misconception diagnosis, and dual-provider routing.",
+      "kpi": "Pedagogical fidelity, zero answer dumping, resilient fallback",
+      "status": "active",
+      "headcount": 1,
+      "priority": "P0"
+    },
+    {
+      "id": "qa_engineer",
+      "name": "QA Engineer AI",
+      "mandate": "Maintains 275+ automated test suites, validates regression barriers, and simulates user journeys.",
+      "kpi": "100% test pass rate, zero regression leaks to production",
+      "status": "active",
+      "headcount": 1,
+      "priority": "P0"
+    },
+    {
+      "id": "security_engineer",
+      "name": "Security Engineer AI",
+      "mandate": "Enforces token revocation, DPDP Act 2023 privacy standards, and prevents answer-key exposure.",
+      "kpi": "Zero secret leaks, zero client-authoritative privilege escalations",
+      "status": "active",
+      "headcount": 1,
+      "priority": "P0"
+    },
+    {
+      "id": "performance_engineer",
+      "name": "Performance Engineer AI",
+      "mandate": "Optimizes bundle size, manages offline asset generation, and ensures instantaneous page loads.",
+      "kpi": "Initial JS load < 100kB, sub-second route transitions",
+      "status": "active",
+      "headcount": 1,
+      "priority": "P1"
+    },
+    {
+      "id": "seo_specialist",
+      "name": "SEO Specialist AI",
+      "mandate": "Directs international structured data, anti-thin content gating, and dynamic indexing.",
+      "kpi": "100% valid Schema.org graphs, indexation coverage across 15 countries",
+      "status": "active",
+      "headcount": 1,
+      "priority": "P1"
+    },
+    {
+      "id": "accessibility_specialist",
+      "name": "Accessibility Specialist AI",
+      "mandate": "Guarantees WCAG 2.1 AA compliance, full keyboard navigability, and screen reader clarity.",
+      "kpi": "100% focus trapping, aria landmarks, and high contrast support",
+      "status": "active",
+      "headcount": 1,
+      "priority": "P1"
+    },
+    {
+      "id": "data_analyst",
+      "name": "Data Analyst AI",
+      "mandate": "Analyzes retention decay curves, cognitive heatmaps, and learning drop-off points.",
+      "kpi": "Ebbinghaus recall optimization, misconception clustering",
+      "status": "active",
+      "headcount": 1,
+      "priority": "P1"
+    },
+    {
+      "id": "growth_strategist",
+      "name": "Growth Strategist AI",
+      "mandate": "Drives sustainable international student adoption through transparent, ethical education.",
+      "kpi": "Organic referral quality, international student retention",
+      "status": "active",
+      "headcount": 1,
+      "priority": "P1"
+    }
+  ],
+  "roadmap": [
+    {
+      "id": "road-001",
+      "department": "frontend_engineer",
+      "title": "Global Command Palette (Cmd+K / Ctrl+K)",
+      "priority": "P0",
+      "status": "completed",
+      "userValue": "Instant, effortless navigation across tools, curricula and quick actions.",
+      "requiresHumanApproval": false,
+      "completedAt": "2026-11-24T13:42:43.508Z"
+    },
+    {
+      "id": "road-002",
+      "department": "ai_engineer",
+      "title": "Offline Focus Audio Engine (Web Audio API Synthesizer)",
+      "priority": "P0",
+      "status": "completed",
+      "userValue": "Deep brown noise, pink noise and 40Hz binaural beats with zero bandwidth consumption.",
+      "requiresHumanApproval": false,
+      "completedAt": "2026-11-24T13:42:43.509Z"
+    },
+    {
+      "id": "road-003",
+      "department": "ui_ux_designer",
+      "title": "Apple + Linear Unified Micro-Interactions",
+      "priority": "P0",
+      "status": "completed",
+      "userValue": "Tactile card hover lift, dynamic press feedback, and animated pulse badges.",
+      "requiresHumanApproval": false,
+      "completedAt": "2026-11-24T13:42:43.509Z"
+    },
+    {
+      "id": "road-004",
+      "department": "ai_engineer",
+      "title": "5-Tier Socratic Cognitive Scaffolding in AI Tutor",
+      "priority": "P0",
+      "status": "completed",
+      "userValue": "First principles derivation, misconception diagnosis, and Socratic hints without spoilers.",
+      "requiresHumanApproval": false,
+      "completedAt": "2026-11-24T13:42:43.509Z"
+    },
+    {
+      "id": "road-005",
+      "department": "backend_engineer",
+      "title": "AI CEO Autonomous Decision & Delegation Architecture",
+      "priority": "P0",
+      "status": "in_progress",
+      "userValue": "Centralized intelligence coordinating 12 departments with audit logging and human approval.",
+      "requiresHumanApproval": true
+    },
+    {
+      "id": "road-006",
+      "department": "product_manager",
+      "title": "Interactive Concept Relationship Maps & Visual Lesson Explanations",
+      "priority": "P0",
+      "status": "in_progress",
+      "userValue": "Visual formula calculators, prerequisite graph traversal, and step-by-step problem solver.",
+      "requiresHumanApproval": false
+    },
+    {
+      "id": "road-007",
+      "department": "data_analyst",
+      "title": "Metacognitive Calibration & Ebbinghaus Decay Alerts",
+      "priority": "P1",
+      "status": "approved",
+      "userValue": "Surfaces forgotten topics automatically before memory strength drops below 60%.",
+      "requiresHumanApproval": false
+    }
+  ],
+  "decisions": [
+    {
+      "id": "dec-001",
+      "timestamp": "2026-11-24T13:42:43.510Z",
+      "department": "ai_ceo",
+      "title": "Adopt Web Audio API Synthesizer over External Audio Assets",
+      "rationale": "External audio files cause unnecessary bandwidth drain and latency. Web Audio generates mathematically precise noise and binaural beats with 0 bytes network overhead.",
+      "impact": "High performance, zero asset hosting cost, instant playback.",
+      "approvedBy": "AI CEO (Autonomous)"
+    },
+    {
+      "id": "dec-002",
+      "timestamp": "2026-11-24T13:42:43.510Z",
+      "department": "ai_ceo",
+      "title": "Global Command Palette Integration into Core Shell",
+      "rationale": "Power students and international users require sub-second access to specific chapters and curricula without traversing multiple nested menus.",
+      "impact": "Major UX leap, 100% keyboard accessible, eliminates navigation friction.",
+      "approvedBy": "AI CEO (Autonomous)"
+    },
+    {
+      "id": "dec-mwuqvd4q",
+      "timestamp": "2026-11-24T13:42:43.514Z",
+      "department": "architecture",
+      "title": "Standardize on Web Audio Synth",
+      "rationale": "Eliminates bandwidth bottlenecks and provides zero-latency focus soundscapes",
+      "impact": "Zero bandwidth overhead, 100% offline capability",
+      "approvedBy": "AI CEO Autonomous"
+    },
+    {
+      "id": "dec-mwuqvd4u",
+      "timestamp": "2026-11-24T13:42:43.518Z",
+      "department": "governance",
+      "title": "Human Approval: Production Database Index Migration",
+      "rationale": "Create composite index on learning_events collection for timestamp and subject",
+      "impact": "Approved by authorized administrator",
+      "approvedBy": "admin@learningallied.world"
+    },
+    {
+      "id": "dec-mwuqzvav",
+      "timestamp": "2026-11-24T13:46:13.687Z",
+      "department": "architecture",
+      "title": "Standardize on Web Audio Synth",
+      "rationale": "Eliminates bandwidth bottlenecks and provides zero-latency focus soundscapes",
+      "impact": "Zero bandwidth overhead, 100% offline capability",
+      "approvedBy": "AI CEO Autonomous"
+    },
+    {
+      "id": "dec-mwuqzvax",
+      "timestamp": "2026-11-24T13:46:13.689Z",
+      "department": "governance",
+      "title": "Human Approval: Production Database Index Migration",
+      "rationale": "Create composite index on learning_events collection for timestamp and subject",
+      "impact": "Approved by authorized administrator",
+      "approvedBy": "admin@learningallied.world"
+    },
+    {
+      "id": "dec-mwur1yip",
+      "timestamp": "2026-11-24T13:47:51.169Z",
+      "department": "architecture",
+      "title": "Standardize on Web Audio Synth",
+      "rationale": "Eliminates bandwidth bottlenecks and provides zero-latency focus soundscapes",
+      "impact": "Zero bandwidth overhead, 100% offline capability",
+      "approvedBy": "AI CEO Autonomous"
+    },
+    {
+      "id": "dec-mwur1yis",
+      "timestamp": "2026-11-24T13:47:51.172Z",
+      "department": "governance",
+      "title": "Human Approval: Production Database Index Migration",
+      "rationale": "Create composite index on learning_events collection for timestamp and subject",
+      "impact": "Approved by authorized administrator",
+      "approvedBy": "admin@learningallied.world"
+    },
+    {
+      "id": "dec-mwurq4b3",
+      "timestamp": "2026-11-24T14:06:38.415Z",
+      "department": "architecture",
+      "title": "Standardize on Web Audio Synth",
+      "rationale": "Eliminates bandwidth bottlenecks and provides zero-latency focus soundscapes",
+      "impact": "Zero bandwidth overhead, 100% offline capability",
+      "approvedBy": "AI CEO Autonomous"
+    },
+    {
+      "id": "dec-mwurq4b6",
+      "timestamp": "2026-11-24T14:06:38.418Z",
+      "department": "governance",
+      "title": "Human Approval: Production Database Index Migration",
+      "rationale": "Create composite index on learning_events collection for timestamp and subject",
+      "impact": "Approved by authorized administrator",
+      "approvedBy": "admin@learningallied.world"
+    },
+    {
+      "id": "dec-mwusegi3",
+      "timestamp": "2026-11-24T14:25:33.963Z",
+      "department": "architecture",
+      "title": "Standardize on Web Audio Synth",
+      "rationale": "Eliminates bandwidth bottlenecks and provides zero-latency focus soundscapes",
+      "impact": "Zero bandwidth overhead, 100% offline capability",
+      "approvedBy": "AI CEO Autonomous"
+    },
+    {
+      "id": "dec-mwusegi6",
+      "timestamp": "2026-11-24T14:25:33.966Z",
+      "department": "governance",
+      "title": "Human Approval: Production Database Index Migration",
+      "rationale": "Create composite index on learning_events collection for timestamp and subject",
+      "impact": "Approved by authorized administrator",
+      "approvedBy": "admin@learningallied.world"
+    }
+  ],
+  "tasks": [
+    {
+      "id": "task-mwuqvd4o",
+      "departmentId": "ai_engineer",
+      "title": "Calibrate Misconception Confidence Threshold",
+      "objective": "Increase sensitivity of misconception detection from 75% to 85%",
+      "priority": "P0",
+      "status": "completed",
+      "createdAt": "2026-11-24T13:42:43.512Z",
+      "logs": [
+        "Delegated to ai_engineer by AI CEO.",
+        "Completed: Threshold successfully updated in _ai-intelligence.js"
+      ],
+      "completedAt": "2026-11-24T13:42:43.513Z"
+    },
+    {
+      "id": "task-mwuqzvas",
+      "departmentId": "ai_engineer",
+      "title": "Calibrate Misconception Confidence Threshold",
+      "objective": "Increase sensitivity of misconception detection from 75% to 85%",
+      "priority": "P0",
+      "status": "completed",
+      "createdAt": "2026-11-24T13:46:13.684Z",
+      "logs": [
+        "Delegated to ai_engineer by AI CEO.",
+        "Completed: Threshold successfully updated in _ai-intelligence.js"
+      ],
+      "completedAt": "2026-11-24T13:46:13.686Z"
+    },
+    {
+      "id": "task-mwur1yin",
+      "departmentId": "ai_engineer",
+      "title": "Calibrate Misconception Confidence Threshold",
+      "objective": "Increase sensitivity of misconception detection from 75% to 85%",
+      "priority": "P0",
+      "status": "completed",
+      "createdAt": "2026-11-24T13:47:51.167Z",
+      "logs": [
+        "Delegated to ai_engineer by AI CEO.",
+        "Completed: Threshold successfully updated in _ai-intelligence.js"
+      ],
+      "completedAt": "2026-11-24T13:47:51.168Z"
+    },
+    {
+      "id": "task-mwurq4ay",
+      "departmentId": "ai_engineer",
+      "title": "Calibrate Misconception Confidence Threshold",
+      "objective": "Increase sensitivity of misconception detection from 75% to 85%",
+      "priority": "P0",
+      "status": "completed",
+      "createdAt": "2026-11-24T14:06:38.410Z",
+      "logs": [
+        "Delegated to ai_engineer by AI CEO.",
+        "Completed: Threshold successfully updated in _ai-intelligence.js"
+      ],
+      "completedAt": "2026-11-24T14:06:38.411Z"
+    },
+    {
+      "id": "task-mwusegi0",
+      "departmentId": "ai_engineer",
+      "title": "Calibrate Misconception Confidence Threshold",
+      "objective": "Increase sensitivity of misconception detection from 75% to 85%",
+      "priority": "P0",
+      "status": "completed",
+      "createdAt": "2026-11-24T14:25:33.960Z",
+      "logs": [
+        "Delegated to ai_engineer by AI CEO.",
+        "Completed: Threshold successfully updated in _ai-intelligence.js"
+      ],
+      "completedAt": "2026-11-24T14:25:33.962Z"
+    }
+  ],
+  "approvalQueue": [
+    {
+      "id": "req-mwuqvd4s",
+      "title": "Production Database Index Migration",
+      "description": "Create composite index on learning_events collection for timestamp and subject",
+      "riskAssessment": "Low risk, non-blocking online index build",
+      "payload": {},
+      "status": "approved",
+      "requestedAt": "2026-11-24T13:42:43.516Z",
+      "approvedBy": "admin@learningallied.world",
+      "approvedAt": "2026-11-24T13:42:43.518Z"
+    },
+    {
+      "id": "req-mwuqzvaw",
+      "title": "Production Database Index Migration",
+      "description": "Create composite index on learning_events collection for timestamp and subject",
+      "riskAssessment": "Low risk, non-blocking online index build",
+      "payload": {},
+      "status": "approved",
+      "requestedAt": "2026-11-24T13:46:13.688Z",
+      "approvedBy": "admin@learningallied.world",
+      "approvedAt": "2026-11-24T13:46:13.689Z"
+    },
+    {
+      "id": "req-mwur1yir",
+      "title": "Production Database Index Migration",
+      "description": "Create composite index on learning_events collection for timestamp and subject",
+      "riskAssessment": "Low risk, non-blocking online index build",
+      "payload": {},
+      "status": "approved",
+      "requestedAt": "2026-11-24T13:47:51.171Z",
+      "approvedBy": "admin@learningallied.world",
+      "approvedAt": "2026-11-24T13:47:51.172Z"
+    },
+    {
+      "id": "req-mwurq4b5",
+      "title": "Production Database Index Migration",
+      "description": "Create composite index on learning_events collection for timestamp and subject",
+      "riskAssessment": "Low risk, non-blocking online index build",
+      "payload": {},
+      "status": "approved",
+      "requestedAt": "2026-11-24T14:06:38.417Z",
+      "approvedBy": "admin@learningallied.world",
+      "approvedAt": "2026-11-24T14:06:38.418Z"
+    },
+    {
+      "id": "req-mwusegi5",
+      "title": "Production Database Index Migration",
+      "description": "Create composite index on learning_events collection for timestamp and subject",
+      "riskAssessment": "Low risk, non-blocking online index build",
+      "payload": {},
+      "status": "approved",
+      "requestedAt": "2026-11-24T14:25:33.965Z",
+      "approvedBy": "admin@learningallied.world",
+      "approvedAt": "2026-11-24T14:25:33.965Z"
+    }
+  ],
+  "lastUpdated": "2026-11-24T14:25:33.966Z"
+}

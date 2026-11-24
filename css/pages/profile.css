@@ -724,3 +724,317 @@ html.light-mode .profile-page {
     transition-duration: 0.01ms !important;
   }
 }
+
+/* ───────── Academic Identity & Curriculum Section ───────── */
+.academic-card {
+  padding: 24px;
+  background: var(--p-surface);
+  border: 1px solid var(--p-border);
+  border-radius: var(--p-radius);
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  transition: border-color var(--p-dur) var(--p-ease);
+}
+
+.academic-card:hover {
+  border-color: var(--p-border-strong);
+}
+
+.academic-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+
+@media (max-width: 600px) {
+  .academic-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.academic-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 12px 14px;
+  background: var(--p-surface-2);
+  border: 1px solid var(--p-border);
+  border-radius: var(--p-radius-sm);
+}
+
+.academic-label {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--p-text-3);
+}
+
+.academic-value {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--p-text);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.academic-badge {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: var(--p-accent-soft);
+  color: var(--p-accent);
+}
+
+.academic-subjects-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px 14px;
+  background: var(--p-surface-2);
+  border: 1px solid var(--p-border);
+  border-radius: var(--p-radius-sm);
+}
+
+.academic-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.academic-chip {
+  font-size: 12px;
+  font-weight: 500;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid var(--p-border);
+  color: var(--p-text);
+}
+
+html.light-mode .academic-chip {
+  background: #eeeeee;
+  color: #222222;
+}
+
+.academic-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding-top: 8px;
+  border-top: 1px solid var(--p-border);
+}
+
+.academic-meta-hint {
+  font-size: 12px;
+  color: var(--p-text-3);
+}
+
+.btn-edit-academic {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border-radius: var(--p-radius-sm);
+  background: var(--p-surface-2);
+  border: 1px solid var(--p-border-strong);
+  color: var(--p-text);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--p-dur) var(--p-ease);
+}
+
+.btn-edit-academic:hover {
+  background: var(--p-accent);
+  border-color: var(--p-accent);
+  color: #ffffff;
+}
+
+/* ───────── Academic Edit Modal ───────── */
+.academic-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: rgba(0, 0, 0, 0.72);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s var(--p-ease);
+}
+
+.academic-modal-backdrop.open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.academic-modal-sheet {
+  width: 100%;
+  max-width: 580px;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--p-surface);
+  border: 1px solid var(--p-border-strong);
+  border-radius: var(--p-radius);
+  box-shadow: 0 24px 64px -12px rgba(0, 0, 0, 0.65);
+  overflow: hidden;
+  transform: translateY(12px) scale(0.98);
+  transition: transform 0.2s var(--p-ease);
+}
+
+.academic-modal-backdrop.open .academic-modal-sheet {
+  transform: translateY(0) scale(1);
+}
+
+.academic-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--p-border);
+}
+
+.academic-modal-title {
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--p-text);
+  margin: 0;
+}
+
+.academic-modal-close {
+  background: transparent;
+  border: none;
+  color: var(--p-text-2);
+  font-size: 18px;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 6px;
+  transition: color var(--p-dur) var(--p-ease);
+}
+
+.academic-modal-close:hover {
+  color: var(--p-text);
+}
+
+.academic-modal-body {
+  padding: 20px 24px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.academic-form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.academic-form-label {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--p-text-2);
+}
+
+.academic-select {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: var(--p-radius-sm);
+  background: var(--p-surface-2);
+  border: 1px solid var(--p-border);
+  color: var(--p-text);
+  font-family: inherit;
+  font-size: 13.5px;
+  outline: none;
+  cursor: pointer;
+}
+
+.academic-select:focus {
+  border-color: var(--p-accent);
+}
+
+.academic-chips-select {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.academic-chip-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 7px 14px;
+  border-radius: 999px;
+  font-size: 12.5px;
+  font-weight: 500;
+  background: var(--p-surface-2);
+  border: 1px solid var(--p-border);
+  color: var(--p-text-2);
+  cursor: pointer;
+  transition: all var(--p-dur) var(--p-ease);
+}
+
+.academic-chip-btn.selected {
+  background: var(--p-accent);
+  border-color: var(--p-accent);
+  color: #ffffff;
+}
+
+.academic-modal-footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+  padding: 16px 24px;
+  border-top: 1px solid var(--p-border);
+  background: var(--p-surface);
+}
+
+.academic-btn-cancel {
+  padding: 9px 18px;
+  border-radius: var(--p-radius-sm);
+  background: transparent;
+  border: 1px solid var(--p-border);
+  color: var(--p-text-2);
+  font-size: 13.5px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.academic-btn-cancel:hover {
+  color: var(--p-text);
+  border-color: var(--p-border-strong);
+}
+
+.academic-btn-save {
+  padding: 9px 20px;
+  border-radius: var(--p-radius-sm);
+  background: var(--p-accent);
+  border: none;
+  color: #ffffff;
+  font-size: 13.5px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 4px 14px var(--p-accent-soft);
+  transition: all var(--p-dur) var(--p-ease);
+}
+
+.academic-btn-save:hover {
+  filter: brightness(1.1);
+}
+
+.academic-btn-save:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+

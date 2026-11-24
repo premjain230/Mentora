@@ -104,6 +104,74 @@ export function ProfileMarkup() {
             </div>
           </section>
 
+          {/* Academic Identity & Curriculum Section */}
+          <section aria-labelledby="h-academic">
+            <h2 className="sec-h" id="h-academic">
+              Academic Identity & Curriculum
+            </h2>
+            <p className="sec-d">
+              Your syllabus origin, grade, target exam, and priority subjects. Learning Allied personalizes Learning Hub, Arena, and AI Tutor to match this.
+            </p>
+            <div className="academic-card">
+              <div className="academic-grid">
+                <div className="academic-item">
+                  <span className="academic-label">Country of Study</span>
+                  <div className="academic-value" id="profileCountryVal">
+                    <span id="profileCountryFlag">🇮🇳</span> <span id="profileCountryName">India</span>
+                  </div>
+                </div>
+                <div className="academic-item">
+                  <span className="academic-label">Education Board / Authority</span>
+                  <div className="academic-value" id="profileBoardVal">
+                    <span id="profileBoardName">CBSE</span>
+                    <span className="academic-badge" id="profileBoardBadge">National</span>
+                  </div>
+                </div>
+                <div className="academic-item">
+                  <span className="academic-label">Grade / Year</span>
+                  <div className="academic-value" id="profileGradeVal">Class 12</div>
+                </div>
+                <div className="academic-item">
+                  <span className="academic-label">Daily Target Study</span>
+                  <div className="academic-value" id="profileDailyHoursVal">4 hours / day</div>
+                </div>
+                <div className="academic-item">
+                  <span className="academic-label">Primary Academic Goal</span>
+                  <div className="academic-value" id="profileGoalVal">
+                    <span className="academic-badge" id="profileGoalBadge">Top 1%</span>
+                    <span id="profileGoalName">Competitive Exam Excellence</span>
+                  </div>
+                </div>
+                <div className="academic-item">
+                  <span className="academic-label">Tutoring Language</span>
+                  <div className="academic-value" id="profileLanguageVal">English</div>
+                </div>
+              </div>
+
+              <div className="academic-subjects-wrap">
+                <span className="academic-label">Priority Subjects</span>
+                <div className="academic-chips" id="profileSubjectsContainer">
+                  <span className="academic-chip">Physics</span>
+                  <span className="academic-chip">Chemistry</span>
+                  <span className="academic-chip">Mathematics</span>
+                </div>
+              </div>
+
+              <div className="academic-footer">
+                <span className="academic-meta-hint">
+                  Changes automatically synchronize with Learning Hub, Arena, AI Tutor, and Study Planner.
+                </span>
+                <button type="button" className="btn-edit-academic" id="editAcademicBtn">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                    <path d="M12 20h9"/>
+                    <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/>
+                  </svg>
+                  <span>Edit Academic Profile</span>
+                </button>
+              </div>
+            </div>
+          </section>
+
           <section aria-labelledby="h-appearance">
             <h2 className="sec-h" id="h-appearance">
               Appearance
@@ -226,6 +294,58 @@ export function ProfileMarkup() {
               </div>
             </div>
           </section>
+        </div>
+      </div>
+
+      {/* Edit Academic Profile Modal */}
+      <div className="academic-modal-backdrop" id="academicModal" role="dialog" aria-modal="true" aria-labelledby="modalAcademicTitle">
+        <div className="academic-modal-sheet">
+          <div className="academic-modal-header">
+            <h3 className="academic-modal-title" id="modalAcademicTitle">
+              Edit Academic Identity & Curriculum
+            </h3>
+            <button type="button" className="academic-modal-close" id="closeAcademicModalBtn" aria-label="Close dialog">
+              ✕
+            </button>
+          </div>
+          <div className="academic-modal-body">
+            <div className="academic-form-group">
+              <label className="academic-form-label" htmlFor="editCountrySelect">Country of Study</label>
+              <select id="editCountrySelect" className="academic-select"></select>
+            </div>
+            <div className="academic-form-group">
+              <label className="academic-form-label" htmlFor="editTrackSelect">Curriculum / Education Board</label>
+              <select id="editTrackSelect" className="academic-select"></select>
+            </div>
+            <div className="academic-form-group">
+              <label className="academic-form-label" htmlFor="editGradeSelect">Grade / Stage</label>
+              <select id="editGradeSelect" className="academic-select"></select>
+            </div>
+            <div className="academic-form-group">
+              <label className="academic-form-label">Priority Subjects (Tap to toggle)</label>
+              <div className="academic-chips-select" id="editSubjectsList"></div>
+            </div>
+            <div className="academic-form-group">
+              <label className="academic-form-label" htmlFor="editGoalSelect">Primary Academic Goal</label>
+              <select id="editGoalSelect" className="academic-select"></select>
+            </div>
+            <div className="academic-form-group">
+              <label className="academic-form-label" htmlFor="editDailyHours">Daily Study Hours (<span id="editDailyHoursVal">4</span> hours/day)</label>
+              <input type="range" id="editDailyHours" min={1} max={10} className="onboard-slider" />
+            </div>
+            <div className="academic-form-group">
+              <label className="academic-form-label" htmlFor="editLanguageSelect">Preferred Tutoring Language</label>
+              <select id="editLanguageSelect" className="academic-select"></select>
+            </div>
+          </div>
+          <div className="academic-modal-footer">
+            <button type="button" className="academic-btn-cancel" id="cancelAcademicBtn">
+              Cancel
+            </button>
+            <button type="button" className="academic-btn-save" id="saveAcademicBtn">
+              Save Academic Profile
+            </button>
+          </div>
         </div>
       </div>
     </div>

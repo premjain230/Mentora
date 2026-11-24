@@ -4,25 +4,51 @@ import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { onAuthStateChanged } from "firebase/auth";
-import { doc, setDoc, serverTimestamp } from "firebase/firestore";
+import { doc, getDoc, setDoc, serverTimestamp } from "firebase/firestore";
 import { initFirebase } from "../../lib/firebase";
+import {
+  COUNTRY_OPTIONS,
+  GOAL_OPTIONS,
+  LANGUAGE_OPTIONS,
+  getTracksForCountry,
+  getGradesForTrack,
+  getSubjectsForTrack,
+  getCountryOption,
+} from "../../lib/learning/curriculum-options";
+
+const PERSONA_OPTIONS = [
+  { id: "mentor", emoji: "🧭", name: "Mentor", desc: "Patient, first-principles guidance with deep insight" },
+  { id: "friendly", emoji: "🤝", name: "Companion", desc: "Supportive study partner who keeps you motivated" },
+  { id: "motivator", emoji: "⚡", name: "Motivator", desc: "High energy, celebrates streaks and crushes goals" },
+  { id: "deep-thinker", emoji: "🧠", name: "Deep Thinker", desc: "Explores why formulas work and mathematical intuition" },
+  { id: "coach", emoji: "🎯", name: "Coach", desc: "Structured, exam-oriented precision and rigorous feedback" },
+];
 
 export default function OnboardingPage() {
   const router = useRouter();
   const [loading, setLoading] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
   const [step, setStep] = useState(0);
   const [uid, setUid] = useState<string | null>(null);
 
-  // Form states
-  const [board, setBoard] = useState("CBSE");
+  // Form State: Cascading Curriculum
+  const [country, setCountry] = useState("IN");
+  const [trackId, setTrackId] = useState("in_cbse");
   const [grade, setGrade] = useState("Class 12");
-  const [targetExam, setTargetExam] = useState("JEE Main & Advanced");
+  const [prioritySubjects, setPrioritySubjects] = useState<string[]>(["Physics", "Chemistry", "Mathematics"]);
+  const [academicGoal, setAcademicGoal] = useState("top_percentile");
   const [dailyHours, setDailyHours] = useState(4);
-  const [prioritySubjects, setPrioritySubjects] = useState<string[]>(["Physics", "Chemistry"]);
+  const [preferredLanguage, setPreferredLanguage] = useState("en");
+  const [personality, setPersonality] = useState("mentor");
+
+  // Computed Cascades
+  const availableTracks = getTracksForCountry(country);
+  const availableGrades = getGradesForTrack(trackId);
+  const availableSubjects = getSubjectsForTrack(trackId);
 
   useEffect(() => {
     let unsubscribe: (() => void) | undefined;
-    initFirebase().then(({ auth }) => {
+    initFirebase().then(({ auth, db }) => {
       if (!auth) {
         setLoading(false);
         return;
@@ -33,6 +59,27 @@ export default function OnboardingPage() {
           return;
         }
         setUid(user.uid);
+
+        // Preload any existing profile data if returning
+        if (db) {
+          try {
+            const profileSnap = await getDoc(doc(db, "users", user.uid, "learning", "profile"));
+            if (profileSnap.exists()) {
+              const data = profileSnap.data();
+              if (data.country) setCountry(data.country);
+              if (data.board || data.trackId) setTrackId(data.board || data.trackId);
+              if (data.grade) setGrade(data.grade);
+              if (Array.isArray(data.subjects) && data.subjects.length > 0) setPrioritySubjects(data.subjects);
+              if (data.academicGoal) setAcademicGoal(data.academicGoal);
+              if (data.dailyHours) setDailyHours(Number(data.dailyHours));
+              if (data.preferredLanguage) setPreferredLanguage(data.preferredLanguage);
+              if (data.personality) setPersonality(data.personality);
+            }
+          } catch (e) {
+            console.warn("Could not preload profile:", e);
+          }
+        }
+
         setLoading(false);
       });
     });
@@ -41,8 +88,33 @@ export default function OnboardingPage() {
     };
   }, [router]);
 
+  // When Country changes, update track, grade, and subjects cascade
+  const handleCountryChange = (newCountry: string) => {
+    setCountry(newCountry);
+    const countryTracks = getTracksForCountry(newCountry);
+    const firstTrack = countryTracks[0]?.id || "in_cbse";
+    setTrackId(firstTrack);
+
+    const countryGrades = getGradesForTrack(firstTrack);
+    setGrade(countryGrades[countryGrades.length - 1]?.id || countryGrades[0]?.id || "Class 12");
+
+    const countrySubjects = getSubjectsForTrack(firstTrack);
+    setPrioritySubjects(countrySubjects.slice(0, 3));
+  };
+
+  // When Track changes, update grade and subjects cascade
+  const handleTrackChange = (newTrackId: string) => {
+    setTrackId(newTrackId);
+    const trackGrades = getGradesForTrack(newTrackId);
+    setGrade(trackGrades[trackGrades.length - 1]?.id || trackGrades[0]?.id || "Class 12");
+
+    const trackSubjects = getSubjectsForTrack(newTrackId);
+    setPrioritySubjects(trackSubjects.slice(0, 3));
+  };
+
   const toggleSubject = (sub: string) => {
     if (prioritySubjects.includes(sub)) {
+      if (prioritySubjects.length === 1) return; // Keep at least one subject
       setPrioritySubjects(prioritySubjects.filter((s) => s !== sub));
     } else {
       setPrioritySubjects([...prioritySubjects, sub]);
@@ -50,47 +122,82 @@ export default function OnboardingPage() {
   };
 
   const handleComplete = async () => {
-    if (!uid) return;
-    setLoading(true);
+    if (!uid || submitting) return;
+    setSubmitting(true);
     try {
       const { auth, db } = await initFirebase();
       if (!db) return;
       const currentUser = auth?.currentUser;
 
+      const trackInfo = availableTracks.find((t) => t.id === trackId) || availableTracks[0];
+
+      // 1. Save detailed profile in users/{uid}/learning/profile
       const profileRef = doc(db, "users", uid, "learning", "profile");
       await setDoc(
         profileRef,
         {
-          board,
+          country,
+          board: trackId,
+          trackId,
+          trackName: trackInfo?.name || trackId,
           grade,
-          targetExam,
-          dailyHours,
           subjects: prioritySubjects,
+          academicGoal,
+          dailyHours,
+          preferredLanguage,
+          personality,
           onboardingComplete: true,
           updatedAt: serverTimestamp(),
         },
         { merge: true }
       );
 
-      // Mirror high-level preferences to root user doc for global controller compatibility
+      // 2. Mirror high-level preferences to root user doc for platform-wide compatibility
       await setDoc(
         doc(db, "users", uid),
         {
           uid,
           displayName: currentUser?.displayName || "Student",
           email: currentUser?.email || null,
-          exam: targetExam,
+          country,
+          board: trackId,
+          trackId,
           grade,
+          exam: trackInfo?.name || trackId,
+          subjects: prioritySubjects,
+          academicGoal,
+          dailyHours,
+          preferredLanguage,
+          personality,
           onboardingComplete: true,
           updatedAt: serverTimestamp(),
         },
         { merge: true }
       );
 
+      // 3. Cache locally so immediate navigation across Learning Hub, Arena, and Tutor uses it
+      try {
+        localStorage.setItem("learning_allied_country", country);
+        localStorage.setItem(
+          "learning_allied_education_profile",
+          JSON.stringify({
+            country,
+            track: trackId,
+            classNum: grade,
+            subjects: prioritySubjects,
+            academicGoal,
+            preferredLanguage,
+            dailyHours,
+            updatedAt: new Date().toISOString(),
+          })
+        );
+        localStorage.setItem("learning-allied-personality", personality);
+      } catch (_) {}
+
       router.push("/home");
     } catch (err) {
-      console.error("Onboarding error:", err);
-      setLoading(false);
+      console.error("Onboarding completion error:", err);
+      setSubmitting(false);
     }
   };
 
@@ -99,7 +206,7 @@ export default function OnboardingPage() {
       <div className="onboard-viewport">
         <div className="onboard-loading-box">
           <div className="onboard-spinner" aria-hidden="true" />
-          <p className="onboard-loading-text">Preparing your learning environment…</p>
+          <p className="onboard-loading-text">Personalizing your learning environment…</p>
         </div>
         <style jsx>{`
           .onboard-viewport {
@@ -108,7 +215,7 @@ export default function OnboardingPage() {
             display: grid;
             place-items: center;
             background: var(--bg-base, #000000);
-            color: var(--text-primary, #FFFFFF);
+            color: var(--text-primary, #ffffff);
             font-family: var(--font-main, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif);
           }
           .onboard-loading-box {
@@ -127,20 +234,25 @@ export default function OnboardingPage() {
           }
           .onboard-loading-text {
             font-size: 14px;
-            color: var(--text-muted, #A3A3A3);
+            color: var(--text-muted, #a3a3a3);
           }
           @keyframes spin {
-            to { transform: rotate(360deg); }
+            to {
+              transform: rotate(360deg);
+            }
           }
         `}</style>
       </div>
     );
   }
 
+  const selectedCountryObj = getCountryOption(country);
+
   return (
     <div className="onboard-viewport">
       <div className="onboard-container">
-        <div className="onboard-header">
+        {/* Top Header */}
+        <header className="onboard-header">
           <Link href="/" className="onboard-brand">
             <img
               src="/learningallied-white.svg"
@@ -160,43 +272,69 @@ export default function OnboardingPage() {
           </Link>
           <div className="onboard-step-badge">
             <span className="step-dot" />
-            <span>Step {step + 1} of 3</span>
+            <span>Step {step + 1} of 4</span>
           </div>
-        </div>
+        </header>
 
-        <div className="onboard-card">
+        {/* Multi-step Progressive Card */}
+        <main className="onboard-card">
+          {/* ── STEP 1: Country & Educational Board ────────────────── */}
           {step === 0 && (
             <div className="onboard-step-content">
-              <div className="step-tag">Step 1 — Foundation</div>
-              <h1 className="step-title">What exam are you preparing for?</h1>
+              <div className="step-tag">Step 1 — Global Education Origin</div>
+              <h1 className="step-title">Where and what do you study?</h1>
               <p className="step-desc">
-                Your syllabus, adaptive questions, and daily AI tutor hints will match this target.
+                Select your country and educational curriculum. Learning Allied dynamically adapts concepts, terminologies, and exam patterns.
               </p>
 
-              <div className="option-list">
-                {[
-                  { id: "JEE Main & Advanced", title: "JEE Main & Advanced", sub: "Physics, Chemistry & Mathematics for Engineering" },
-                  { id: "NEET UG Medical", title: "NEET UG Medical", sub: "Physics, Chemistry & Biology for Medicine" },
-                  { id: "CBSE Board", title: "CBSE Board", sub: "Standardized NCERT Class 9-12 curriculum" },
-                  { id: "Maharashtra State Board", title: "Maharashtra State Board", sub: "State syllabus with full board alignment" },
-                  { id: "General Science & Maths", title: "Foundation & General Prep", sub: "Core STEM concepts and problem-solving skills" },
-                ].map((item) => {
-                  const selected = targetExam === item.id;
-                  return (
-                    <button
-                      key={item.id}
-                      type="button"
-                      onClick={() => setTargetExam(item.id)}
-                      className={`option-card ${selected ? "selected" : ""}`}
-                    >
-                      <div className="option-check">{selected ? "✓" : ""}</div>
-                      <div className="option-text">
-                        <span className="option-title">{item.title}</span>
-                        <span className="option-sub">{item.sub}</span>
-                      </div>
-                    </button>
-                  );
-                })}
+              {/* Country Selection Dropdown */}
+              <div className="field-group">
+                <label className="field-label" htmlFor="onboard-country-select">
+                  Country of Study
+                </label>
+                <div className="select-wrap">
+                  <select
+                    id="onboard-country-select"
+                    value={country}
+                    onChange={(e) => handleCountryChange(e.target.value)}
+                    className="onboard-select"
+                  >
+                    {COUNTRY_OPTIONS.map((c) => (
+                      <option key={c.code} value={c.code}>
+                        {c.flag} {c.name} ({c.region})
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              {/* Cascading Board / Curriculum List */}
+              <div className="field-group">
+                <label className="field-label">
+                  Curriculum / Education Board in {selectedCountryObj.name}
+                </label>
+                <div className="option-list">
+                  {availableTracks.map((item) => {
+                    const isSelected = trackId === item.id;
+                    return (
+                      <button
+                        key={item.id}
+                        type="button"
+                        onClick={() => handleTrackChange(item.id)}
+                        className={`option-card ${isSelected ? "selected" : ""}`}
+                      >
+                        <div className="option-check">{isSelected ? "✓" : ""}</div>
+                        <div className="option-text">
+                          <div className="option-title-row">
+                            <span className="option-title">{item.name}</span>
+                            <span className="option-badge">{item.shortName}</span>
+                          </div>
+                          <span className="option-sub">{item.description}</span>
+                        </div>
+                      </button>
+                    );
+                  })}
+                </div>
               </div>
 
               <div className="action-row">
@@ -205,53 +343,60 @@ export default function OnboardingPage() {
                   onClick={() => setStep(1)}
                   className="btn-onboard primary"
                 >
-                  Continue →
+                  Continue to Grade & Subjects →
                 </button>
               </div>
             </div>
           )}
 
+          {/* ── STEP 2: Grade Level & Priority Subjects ────────────── */}
           {step === 1 && (
             <div className="onboard-step-content">
-              <div className="step-tag">Step 2 — Curriculum</div>
-              <h1 className="step-title">Select your grade and board</h1>
+              <div className="step-tag">Step 2 — Grade & Curriculum Focus</div>
+              <h1 className="step-title">Select your grade and focus subjects</h1>
               <p className="step-desc">
-                We calibrate difficulty, topic prerequisites, and question style according to your level.
+                We calibrate topic depth, prerequisites, question banks, and Socratic hints to your stage.
               </p>
 
               <div className="field-group">
-                <label className="field-label" htmlFor="onboard-grade">Grade / Year</label>
+                <label className="field-label" htmlFor="onboard-grade-select">
+                  Current Grade / Level ({selectedCountryObj.flag} {selectedCountryObj.name})
+                </label>
                 <div className="select-wrap">
                   <select
-                    id="onboard-grade"
+                    id="onboard-grade-select"
                     value={grade}
                     onChange={(e) => setGrade(e.target.value)}
                     className="onboard-select"
                   >
-                    <option value="Class 9">Class 9</option>
-                    <option value="Class 10">Class 10</option>
-                    <option value="Class 11">Class 11</option>
-                    <option value="Class 12">Class 12</option>
-                    <option value="Dropper / Gap Year">Dropper / Gap Year</option>
-                    <option value="College / Other">College / Other</option>
+                    {availableGrades.map((g) => (
+                      <option key={g.id} value={g.id}>
+                        {g.label}
+                      </option>
+                    ))}
                   </select>
                 </div>
               </div>
 
               <div className="field-group">
-                <label className="field-label" htmlFor="onboard-board">Educational Board</label>
-                <div className="select-wrap">
-                  <select
-                    id="onboard-board"
-                    value={board}
-                    onChange={(e) => setBoard(e.target.value)}
-                    className="onboard-select"
-                  >
-                    <option value="CBSE">CBSE (Central Board)</option>
-                    <option value="Maharashtra State Board">Maharashtra State Board</option>
-                    <option value="ICSE / ISC">ICSE / ISC</option>
-                    <option value="Other State Board">Other State Board</option>
-                  </select>
+                <label className="field-label">
+                  Priority Subjects to Master First (Select 2 to 5)
+                </label>
+                <div className="subject-chip-cloud">
+                  {availableSubjects.map((sub) => {
+                    const isSelected = prioritySubjects.includes(sub);
+                    return (
+                      <button
+                        key={sub}
+                        type="button"
+                        onClick={() => toggleSubject(sub)}
+                        className={`subject-chip ${isSelected ? "selected" : ""}`}
+                      >
+                        <span className="chip-icon">{isSelected ? "✓" : "+"}</span>
+                        <span>{sub}</span>
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
 
@@ -268,32 +413,39 @@ export default function OnboardingPage() {
                   onClick={() => setStep(2)}
                   className="btn-onboard primary"
                 >
-                  Continue →
+                  Continue to Academic Goal →
                 </button>
               </div>
             </div>
           )}
 
+          {/* ── STEP 3: Academic Goal & Daily Schedule ─────────────── */}
           {step === 2 && (
             <div className="onboard-step-content">
-              <div className="step-tag">Step 3 — Schedule</div>
-              <h1 className="step-title">Priority subjects and daily focus</h1>
+              <div className="step-tag">Step 3 — Target & Daily Commitment</div>
+              <h1 className="step-title">What is your primary academic goal?</h1>
               <p className="step-desc">
-                Choose the subjects you want to tackle first, and set an achievable daily study target.
+                Set your standard of excellence. Your Study Planner and spaced review queues will align with this pace.
               </p>
 
-              <div className="subject-chip-cloud">
-                {["Physics", "Chemistry", "Mathematics", "Biology", "Computer Science"].map((sub) => {
-                  const isSelected = prioritySubjects.includes(sub);
+              <div className="option-list">
+                {GOAL_OPTIONS.map((goal) => {
+                  const isSelected = academicGoal === goal.id;
                   return (
                     <button
-                      key={sub}
+                      key={goal.id}
                       type="button"
-                      onClick={() => toggleSubject(sub)}
-                      className={`subject-chip ${isSelected ? "selected" : ""}`}
+                      onClick={() => setAcademicGoal(goal.id)}
+                      className={`option-card ${isSelected ? "selected" : ""}`}
                     >
-                      <span className="chip-icon">{isSelected ? "✓" : "+"}</span>
-                      <span>{sub}</span>
+                      <div className="option-check">{isSelected ? "✓" : ""}</div>
+                      <div className="option-text">
+                        <div className="option-title-row">
+                          <span className="option-title">{goal.title}</span>
+                          <span className="option-badge">{goal.badge}</span>
+                        </div>
+                        <span className="option-sub">{goal.description}</span>
+                      </div>
                     </button>
                   );
                 })}
@@ -307,17 +459,17 @@ export default function OnboardingPage() {
                 <input
                   type="range"
                   min={1}
-                  max={12}
+                  max={10}
                   value={dailyHours}
                   onChange={(e) => setDailyHours(Number(e.target.value))}
                   className="onboard-slider"
                   aria-label="Daily target study hours"
                 />
                 <div className="slider-ticks">
-                  <span>1h</span>
-                  <span>4h (Recommended)</span>
-                  <span>8h</span>
-                  <span>12h</span>
+                  <span>1h Light</span>
+                  <span>3h Standard</span>
+                  <span>5h Intensive</span>
+                  <span>8h+ Competitive</span>
                 </div>
               </div>
 
@@ -331,15 +483,85 @@ export default function OnboardingPage() {
                 </button>
                 <button
                   type="button"
-                  onClick={handleComplete}
+                  onClick={() => setStep(3)}
                   className="btn-onboard primary"
                 >
-                  Start Learning →
+                  Continue to Personalization →
                 </button>
               </div>
             </div>
           )}
-        </div>
+
+          {/* ── STEP 4: AI Companion Persona & Language ────────────── */}
+          {step === 3 && (
+            <div className="onboard-step-content">
+              <div className="step-tag">Step 4 — AI Tutoring Personalization</div>
+              <h1 className="step-title">Choose your learning companion & language</h1>
+              <p className="step-desc">
+                Your AI Tutor adapts its explanation style, socratic hints, and language to make learning intuitive.
+              </p>
+
+              <div className="field-group">
+                <label className="field-label" htmlFor="onboard-language-select">
+                  Preferred Tutoring Language
+                </label>
+                <div className="select-wrap">
+                  <select
+                    id="onboard-language-select"
+                    value={preferredLanguage}
+                    onChange={(e) => setPreferredLanguage(e.target.value)}
+                    className="onboard-select"
+                  >
+                    {LANGUAGE_OPTIONS.map((lang) => (
+                      <option key={lang.code} value={lang.code}>
+                        {lang.nativeName} — {lang.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              <div className="field-group">
+                <label className="field-label">AI Tutor Persona</label>
+                <div className="persona-grid">
+                  {PERSONA_OPTIONS.map((p) => {
+                    const isSelected = personality === p.id;
+                    return (
+                      <button
+                        key={p.id}
+                        type="button"
+                        onClick={() => setPersonality(p.id)}
+                        className={`persona-card ${isSelected ? "selected" : ""}`}
+                      >
+                        <div className="persona-emoji">{p.emoji}</div>
+                        <div className="persona-title">{p.name}</div>
+                        <div className="persona-desc">{p.desc}</div>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              <div className="action-row dual">
+                <button
+                  type="button"
+                  onClick={() => setStep(2)}
+                  className="btn-onboard secondary"
+                >
+                  ← Back
+                </button>
+                <button
+                  type="button"
+                  onClick={handleComplete}
+                  disabled={submitting}
+                  className="btn-onboard primary"
+                >
+                  {submitting ? "Launching Workspace…" : "Complete Setup & Launch →"}
+                </button>
+              </div>
+            </div>
+          )}
+        </main>
       </div>
 
       <style jsx>{`
@@ -352,14 +574,14 @@ export default function OnboardingPage() {
           align-items: center;
           padding: 32px 20px;
           background: var(--bg-base, #000000);
-          color: var(--text-primary, #FFFFFF);
+          color: var(--text-primary, #ffffff);
           font-family: var(--font-main, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif);
           -webkit-font-smoothing: antialiased;
         }
 
         .onboard-container {
           width: 100%;
-          max-width: 540px;
+          max-width: 600px;
         }
 
         .onboard-header {
@@ -374,7 +596,7 @@ export default function OnboardingPage() {
           align-items: center;
           gap: 10px;
           text-decoration: none;
-          color: var(--text-primary, #FFFFFF);
+          color: var(--text-primary, #ffffff);
           font-weight: 700;
           font-size: 15px;
           letter-spacing: -0.02em;
@@ -394,13 +616,13 @@ export default function OnboardingPage() {
           display: inline-flex;
           align-items: center;
           gap: 7px;
-          padding: 5px 12px;
+          padding: 6px 14px;
           border-radius: 999px;
-          background: var(--bg-card, #0A0A0A);
+          background: var(--bg-card, #0a0a0a);
           border: 1px solid var(--border, #262626);
           font-size: 12px;
           font-weight: 600;
-          color: var(--text-secondary, #A3A3A3);
+          color: var(--text-secondary, #a3a3a3);
         }
 
         .step-dot {
@@ -411,18 +633,18 @@ export default function OnboardingPage() {
         }
 
         .onboard-card {
-          background: var(--bg-card, #0A0A0A);
+          background: var(--bg-card, #0a0a0a);
           border: 1px solid var(--border, #262626);
-          border-radius: 14px;
-          padding: 40px 36px;
+          border-radius: 16px;
+          padding: 36px 32px;
           box-shadow: 0 16px 48px -12px rgba(0, 0, 0, 0.45);
           backdrop-filter: blur(16px);
         }
 
         :global(.light-mode) .onboard-card {
           background: #ffffff;
-          border-color: #E5E5E5;
-          box-shadow: 0 16px 48px -12px #E5E5E5;
+          border-color: #e5e5e5;
+          box-shadow: 0 16px 48px -12px rgba(0, 0, 0, 0.08);
         }
 
         .step-tag {
@@ -436,11 +658,11 @@ export default function OnboardingPage() {
 
         .step-title {
           font-family: var(--font-display, "Space Grotesk", sans-serif);
-          font-size: 24px;
+          font-size: 23px;
           font-weight: 700;
           letter-spacing: -0.03em;
           line-height: 1.25;
-          color: var(--text-primary, #FFFFFF);
+          color: var(--text-primary, #ffffff);
           margin: 0 0 8px 0;
         }
 
@@ -449,67 +671,111 @@ export default function OnboardingPage() {
         }
 
         .step-desc {
-          font-size: 14px;
+          font-size: 13.5px;
           line-height: 1.55;
-          color: var(--text-secondary, #A3A3A3);
-          margin: 0 0 28px 0;
+          color: var(--text-secondary, #a3a3a3);
+          margin: 0 0 24px 0;
+        }
+
+        .field-group {
+          margin-bottom: 20px;
+        }
+
+        .field-label {
+          display: block;
+          font-size: 12.5px;
+          font-weight: 600;
+          color: var(--text-secondary, #a3a3a3);
+          margin-bottom: 8px;
+        }
+
+        .select-wrap {
+          position: relative;
+        }
+
+        .onboard-select {
+          width: 100%;
+          padding: 12px 14px;
+          border-radius: 12px;
+          border: 1px solid var(--border-strong, #333333);
+          background: var(--bg-elevated, #141414);
+          color: var(--text-primary, #ffffff);
+          font-family: inherit;
+          font-size: 14px;
+          outline: none;
+          cursor: pointer;
+          transition: border-color 0.16s ease, box-shadow 0.16s ease;
+        }
+
+        :global(.light-mode) .onboard-select {
+          background: #ffffff;
+          border-color: #d4d4d4;
+          color: #111111;
+        }
+
+        .onboard-select:focus {
+          border-color: var(--accent, #3b82f6);
+          box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
         }
 
         .option-list {
           display: flex;
           flex-direction: column;
-          gap: 10px;
-          margin-bottom: 32px;
+          gap: 9px;
+          max-height: 290px;
+          overflow-y: auto;
+          padding-right: 4px;
         }
 
         .option-card {
           display: flex;
           align-items: flex-start;
-          gap: 14px;
-          padding: 14px 16px;
-          border-radius: 14px;
+          gap: 12px;
+          padding: 12px 14px;
+          border-radius: 12px;
           border: 1px solid var(--border, #262626);
           background: var(--bg-elevated, #111111);
-          color: var(--text-primary, #FFFFFF);
+          color: var(--text-primary, #ffffff);
           cursor: pointer;
           text-align: left;
           font-family: inherit;
-          transition: all 0.18s cubic-bezier(0.2, 0.7, 0.2, 1);
+          transition: all 0.16s cubic-bezier(0.2, 0.7, 0.2, 1);
         }
 
         :global(.light-mode) .option-card {
-          background: #FFFFFF;
-          border-color: #F0F0F0;
+          background: #fafafa;
+          border-color: #e5e5e5;
           color: #111111;
         }
 
         .option-card:hover {
-          border-color: var(--border-hover, rgba(255, 255, 255, 0.22));
+          border-color: var(--border-hover, rgba(255, 255, 255, 0.24));
           transform: translateY(-1px);
         }
 
         .option-card.selected {
           border-color: var(--accent, #3b82f6);
-          background: color-mix(in srgb, var(--accent, #3b82f6) 12%, var(--bg-elevated, #111111));
+          background: rgba(59, 130, 246, 0.12);
           box-shadow: 0 0 0 1px var(--accent, #3b82f6);
         }
 
         :global(.light-mode) .option-card.selected {
           background: rgba(37, 99, 235, 0.08);
+          border-color: #2563eb;
         }
 
         .option-check {
-          width: 20px;
-          height: 20px;
-          border-radius: 6px;
+          width: 18px;
+          height: 18px;
+          border-radius: 5px;
           border: 1.5px solid var(--border-strong, #525252);
           display: grid;
           place-items: center;
-          font-size: 12px;
+          font-size: 11px;
           font-weight: 700;
           color: #ffffff;
           flex-shrink: 0;
-          margin-top: 1px;
+          margin-top: 2px;
         }
 
         .option-card.selected .option-check {
@@ -520,93 +786,76 @@ export default function OnboardingPage() {
         .option-text {
           display: flex;
           flex-direction: column;
-          gap: 2px;
+          gap: 3px;
+          flex: 1;
+        }
+
+        .option-title-row {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 8px;
         }
 
         .option-title {
-          font-size: 14.5px;
+          font-size: 14px;
           font-weight: 600;
           letter-spacing: -0.01em;
         }
 
-        .option-sub {
-          font-size: 12.5px;
-          color: var(--text-muted, #A3A3A3);
-        }
-
-        .field-group {
-          margin-bottom: 22px;
-        }
-
-        .field-label {
-          display: block;
-          font-size: 12.5px;
+        .option-badge {
+          font-size: 11px;
           font-weight: 600;
-          color: var(--text-secondary, #A3A3A3);
-          margin-bottom: 8px;
+          padding: 2px 7px;
+          border-radius: 999px;
+          background: rgba(255, 255, 255, 0.08);
+          color: var(--text-secondary, #a3a3a3);
+          flex-shrink: 0;
         }
 
-        .select-wrap {
-          position: relative;
+        :global(.light-mode) .option-badge {
+          background: #eeeeee;
+          color: #555555;
         }
 
-        .onboard-select {
-          width: 100%;
-          padding: 13px 16px;
-          border-radius: 12px;
-          border: 1px solid var(--border-strong, #404040);
-          background: var(--bg-elevated, #111111);
-          color: var(--text-primary, #FFFFFF);
-          font-family: inherit;
-          font-size: 14.5px;
-          outline: none;
-          cursor: pointer;
-          transition: border-color 0.16s ease;
-        }
-
-        :global(.light-mode) .onboard-select {
-          background: #FFFFFF;
-          border-color: rgba(0, 0, 0, 0.12);
-          color: #111111;
-        }
-
-        .onboard-select:focus {
-          border-color: var(--accent, #3b82f6);
-          box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+        .option-sub {
+          font-size: 12px;
+          color: var(--text-muted, #888888);
+          line-height: 1.4;
         }
 
         .subject-chip-cloud {
           display: flex;
           flex-wrap: wrap;
-          gap: 10px;
-          margin-bottom: 28px;
+          gap: 8px;
+          margin-bottom: 24px;
         }
 
         .subject-chip {
           display: inline-flex;
           align-items: center;
-          gap: 7px;
-          padding: 10px 18px;
+          gap: 6px;
+          padding: 9px 16px;
           border-radius: 999px;
           border: 1px solid var(--border, rgba(255, 255, 255, 0.12));
           background: var(--bg-elevated, #111111);
-          color: var(--text-secondary, #A3A3A3);
+          color: var(--text-secondary, #a3a3a3);
           font-family: inherit;
-          font-size: 13.5px;
+          font-size: 13px;
           font-weight: 600;
           cursor: pointer;
           transition: all 0.16s ease;
         }
 
         :global(.light-mode) .subject-chip {
-          background: #FFFFFF;
-          border-color: #E5E5E5;
-          color: #666666;
+          background: #fafafa;
+          border-color: #e5e5e5;
+          color: #555555;
         }
 
         .subject-chip:hover {
           border-color: var(--border-hover, rgba(255, 255, 255, 0.25));
-          color: var(--text-primary, #FFFFFF);
+          color: var(--text-primary, #ffffff);
         }
 
         .subject-chip.selected {
@@ -617,37 +866,38 @@ export default function OnboardingPage() {
 
         .chip-icon {
           font-weight: 700;
-          font-size: 13px;
+          font-size: 12px;
         }
 
         .slider-card {
-          padding: 20px;
-          border-radius: 16px;
+          padding: 18px;
+          border-radius: 14px;
           background: var(--bg-elevated, #111111);
           border: 1px solid var(--border, #262626);
-          margin-bottom: 32px;
+          margin-top: 18px;
+          margin-bottom: 24px;
         }
 
         :global(.light-mode) .slider-card {
-          background: #FFFFFF;
-          border-color: #F0F0F0;
+          background: #fafafa;
+          border-color: #e5e5e5;
         }
 
         .slider-head {
           display: flex;
           align-items: center;
           justify-content: space-between;
-          margin-bottom: 14px;
+          margin-bottom: 12px;
         }
 
         .slider-label {
-          font-size: 13px;
+          font-size: 12.5px;
           font-weight: 600;
-          color: var(--text-secondary, #A3A3A3);
+          color: var(--text-secondary, #a3a3a3);
         }
 
         .slider-value {
-          font-size: 14px;
+          font-size: 13.5px;
           font-weight: 700;
           color: var(--accent, #3b82f6);
         }
@@ -670,8 +920,64 @@ export default function OnboardingPage() {
           margin-top: 8px;
         }
 
+        .persona-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+          gap: 10px;
+          margin-bottom: 24px;
+        }
+
+        .persona-card {
+          display: flex;
+          flex-direction: column;
+          align-items: flex-start;
+          padding: 14px;
+          border-radius: 12px;
+          border: 1px solid var(--border, #262626);
+          background: var(--bg-elevated, #111111);
+          color: var(--text-primary, #ffffff);
+          cursor: pointer;
+          text-align: left;
+          transition: all 0.16s ease;
+        }
+
+        :global(.light-mode) .persona-card {
+          background: #fafafa;
+          border-color: #e5e5e5;
+          color: #111111;
+        }
+
+        .persona-card:hover {
+          border-color: var(--border-hover, rgba(255, 255, 255, 0.24));
+          transform: translateY(-1px);
+        }
+
+        .persona-card.selected {
+          border-color: var(--accent, #3b82f6);
+          background: rgba(59, 130, 246, 0.12);
+          box-shadow: 0 0 0 1px var(--accent, #3b82f6);
+        }
+
+        .persona-emoji {
+          font-size: 20px;
+          margin-bottom: 6px;
+        }
+
+        .persona-title {
+          font-size: 13.5px;
+          font-weight: 600;
+          margin-bottom: 4px;
+        }
+
+        .persona-desc {
+          font-size: 11.5px;
+          color: var(--text-muted, #888888);
+          line-height: 1.35;
+        }
+
         .action-row {
           display: flex;
+          margin-top: 10px;
         }
 
         .action-row.dual {
@@ -683,13 +989,18 @@ export default function OnboardingPage() {
           align-items: center;
           justify-content: center;
           font-family: inherit;
-          font-size: 14.5px;
+          font-size: 14px;
           font-weight: 600;
           border-radius: 12px;
-          padding: 13px 24px;
+          padding: 12px 20px;
           cursor: pointer;
           transition: all 0.16s cubic-bezier(0.2, 0.7, 0.2, 1);
           border: none;
+        }
+
+        .btn-onboard:disabled {
+          opacity: 0.6;
+          cursor: not-allowed;
         }
 
         .btn-onboard.primary {
@@ -699,20 +1010,20 @@ export default function OnboardingPage() {
           box-shadow: 0 4px 16px rgba(59, 130, 246, 0.32);
         }
 
-        .btn-onboard.primary:hover {
+        .btn-onboard.primary:hover:not(:disabled) {
           background: var(--accent-strong, #60a5fa);
           transform: translateY(-1px);
           box-shadow: 0 6px 20px rgba(59, 130, 246, 0.42);
         }
 
-        .btn-onboard.primary:active {
+        .btn-onboard.primary:active:not(:disabled) {
           transform: translateY(0);
         }
 
         .btn-onboard.secondary {
           background: transparent;
           border: 1px solid var(--border-strong, rgba(255, 255, 255, 0.16));
-          color: var(--text-secondary, #A3A3A3);
+          color: var(--text-secondary, #a3a3a3);
         }
 
         :global(.light-mode) .btn-onboard.secondary {
@@ -721,17 +1032,20 @@ export default function OnboardingPage() {
         }
 
         .btn-onboard.secondary:hover {
-          border-color: var(--text-primary, #FFFFFF);
-          color: var(--text-primary, #FFFFFF);
+          border-color: var(--text-primary, #ffffff);
+          color: var(--text-primary, #ffffff);
         }
 
         @media (max-width: 600px) {
           .onboard-card {
-            padding: 28px 20px;
-            border-radius: 20px;
+            padding: 24px 18px;
+            border-radius: 16px;
           }
           .step-title {
-            font-size: 21px;
+            font-size: 20px;
+          }
+          .persona-grid {
+            grid-template-columns: 1fr;
           }
         }
       `}</style>

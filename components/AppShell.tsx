@@ -6,6 +6,7 @@ import { AuthProvider, useAuth } from "./AuthContext";
 import { AppSidebar } from "./AppSidebar";
 import { UpgradeModal } from "./UpgradeModal";
 import { FeedbackModal } from "./feedback/FeedbackModal";
+import { CommandPalette } from "./CommandPalette";
 
 function ShellInner({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth();
@@ -38,6 +39,7 @@ function ShellInner({ children }: { children: React.ReactNode }) {
       </main>
       <UpgradeModal />
       <FeedbackModal />
+      <CommandPalette />
     </div>
   );
 }

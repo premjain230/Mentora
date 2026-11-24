@@ -128,6 +128,28 @@ export function StudySessionMarkup() {
                   Finish Session
                 </button>
               </div>
+
+              {/* Focus Audio Soundscape */}
+              <div className="study-audio-strip" id="ssAudioStrip">
+                <div className="study-audio-left">
+                  <div className="study-audio-soundwaves" id="ssSoundwaves" aria-hidden="true">
+                    <div className="study-audio-bar" />
+                    <div className="study-audio-bar" />
+                    <div className="study-audio-bar" />
+                    <div className="study-audio-bar" />
+                  </div>
+                  <div style={{ textAlign: "left" }}>
+                    <div style={{ fontSize: "12.5px", fontWeight: 600, color: "var(--text-primary)" }}>Focus Soundscape</div>
+                    <div style={{ fontSize: "11px", color: "var(--text-muted)" }}>Synthesized neural noise</div>
+                  </div>
+                </div>
+                <div className="study-audio-selector" id="ssAudioSelector">
+                  <button type="button" className="study-audio-chip active" data-sound="off">Off</button>
+                  <button type="button" className="study-audio-chip" data-sound="brown">Brown</button>
+                  <button type="button" className="study-audio-chip" data-sound="pink">Pink</button>
+                  <button type="button" className="study-audio-chip" data-sound="gamma40">40Hz Beat</button>
+                </div>
+              </div>
             </div>
 
             <div className="study-card fade-up">

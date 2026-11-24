@@ -35,14 +35,34 @@ export function createContext(app) {
   function readSavedContext() {
     try {
       const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
-      if (!saved || typeof saved !== "object") return;
-      if (typeof saved.board === "string") state.context.board = saved.board;
-      if (saved.classNum != null && Number.isFinite(Number(saved.classNum))) {
-        state.context.classNum = Number(saved.classNum);
+      let eduProfile = null;
+      try {
+        eduProfile = JSON.parse(localStorage.getItem("learning_allied_education_profile") || "{}");
+      } catch (_) {}
+
+      if (typeof saved?.board === "string" && saved.board) {
+        state.context.board = saved.board;
+      } else if (eduProfile?.track) {
+        state.context.board = eduProfile.track;
       }
-      if (typeof saved.subject === "string") state.context.subject = saved.subject;
-      if (typeof saved.language === "string") {
+
+      if (saved?.classNum != null && Number.isFinite(Number(saved.classNum))) {
+        state.context.classNum = Number(saved.classNum);
+      } else if (eduProfile?.classNum != null) {
+        const parsed = parseInt(String(eduProfile.classNum).replace(/\D/g, ""), 10);
+        if (!isNaN(parsed)) state.context.classNum = parsed;
+      }
+
+      if (typeof saved?.subject === "string" && saved.subject) {
+        state.context.subject = saved.subject;
+      } else if (Array.isArray(eduProfile?.subjects) && eduProfile.subjects[0]) {
+        state.context.subject = eduProfile.subjects[0];
+      }
+
+      if (typeof saved?.language === "string" && saved.language) {
         state.context.language = saved.language;
+      } else if (eduProfile?.preferredLanguage) {
+        state.context.language = eduProfile.preferredLanguage;
       }
     } catch (_) {
       /* ignore malformed local settings */
