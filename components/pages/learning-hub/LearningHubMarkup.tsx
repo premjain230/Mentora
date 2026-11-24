@@ -221,7 +221,33 @@ export function LearningHubMarkup() {
             {/* Global Curriculum Switcher & Country Selector */}
             <div className="hub-country-bar-wrap">
               <div className="hub-country-bar-header">
-                <span className="hub-country-bar-label">🌍 Select Education System / Country</span>
+                <div className="hub-country-select-group">
+                  <label htmlFor="hubCountrySelect" className="hub-country-bar-label">
+                    🌍 Select Country:
+                  </label>
+                  <select
+                    id="hubCountrySelect"
+                    className="hub-country-select"
+                    aria-label="Select Country or Education System"
+                    defaultValue="IN"
+                  >
+                    <option value="IN">🇮🇳 India (CBSE, Maharashtra, JEE, NEET)</option>
+                    <option value="US">🇺🇸 United States (AP, CCSS, NGSS)</option>
+                    <option value="GB">🇬🇧 United Kingdom (GCSE, AQA, Edexcel, A-Levels)</option>
+                    <option value="CA">🇨🇦 Canada (Ontario OSSD, SPH4U, MHF4U)</option>
+                    <option value="AU">🇦🇺 Australia (VCE, HSC, Australian Curriculum)</option>
+                    <option value="NZ">🇳🇿 New Zealand (NCEA Levels 1–3)</option>
+                    <option value="SG">🇸🇬 Singapore (O-Level, A-Level, SEAB/MOE)</option>
+                    <option value="AE">🇦🇪 United Arab Emirates (MoE National Curriculum)</option>
+                    <option value="SA">🇸🇦 Saudi Arabia (MoE Masarat Pathways)</option>
+                    <option value="MY">🇲🇾 Malaysia (KSSM, SPM)</option>
+                    <option value="PK">🇵🇰 Pakistan (FBISE, Federal Board)</option>
+                    <option value="BD">🇧🇩 Bangladesh (NCTB SSC & HSC)</option>
+                    <option value="ZA">🇿🇦 South Africa (CAPS, NSC Matric)</option>
+                    <option value="NG">🇳🇬 Nigeria (WAEC WASSCE, NERDC)</option>
+                    <option value="IE">🇮🇪 Ireland (Leaving Certificate, SEC)</option>
+                  </select>
+                </div>
                 <div className="hub-global-search-wrap">
                   <input
                     type="search"

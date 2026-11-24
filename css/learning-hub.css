@@ -807,6 +807,37 @@ html.light-mode .lh-board-icon, html.light-mode .lh-sub-ico { background: rgba(v
   margin-bottom: 12px;
 }
 
+.page-learning-hub .hub-country-select-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.page-learning-hub .hub-country-select {
+  padding: 8px 14px;
+  font-size: 13px;
+  font-weight: 500;
+  background: var(--lh-surface, #0f172a);
+  border: 1px solid var(--lh-border, rgba(255, 255, 255, 0.16));
+  border-radius: 9px;
+  color: var(--lh-text, #f8fafc);
+  cursor: pointer;
+  outline: none;
+  transition: all 0.15s ease;
+}
+
+.page-learning-hub .hub-country-select:focus,
+.page-learning-hub .hub-country-select:hover {
+  border-color: var(--lh-accent, #38bdf8);
+}
+
+.page-learning-hub .hub-country-select option {
+  background: #0f172a;
+  color: #f8fafc;
+  padding: 8px 12px;
+}
+
 .page-learning-hub .hub-country-bar-label {
   font-size: 13px;
   font-weight: 600;

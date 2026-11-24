@@ -22,6 +22,24 @@ import { renderTeaching } from "./shared/learning-blocks.js";
 
 const EMPTY_SELECTION = { track: "", classNum: null, subject: "", query: "" };
 
+export const GLOBAL_COUNTRIES = [
+  { code: "IN", name: "India", flag: "🇮🇳" },
+  { code: "US", name: "United States", flag: "🇺🇸" },
+  { code: "GB", name: "United Kingdom", flag: "🇬🇧" },
+  { code: "CA", name: "Canada", flag: "🇨🇦" },
+  { code: "AU", name: "Australia", flag: "🇦🇺" },
+  { code: "NZ", name: "New Zealand", flag: "🇳🇿" },
+  { code: "SG", name: "Singapore", flag: "🇸🇬" },
+  { code: "AE", name: "UAE", flag: "🇦🇪" },
+  { code: "SA", name: "Saudi Arabia", flag: "🇸🇦" },
+  { code: "MY", name: "Malaysia", flag: "🇲🇾" },
+  { code: "PK", name: "Pakistan", flag: "🇵🇰" },
+  { code: "BD", name: "Bangladesh", flag: "🇧🇩" },
+  { code: "ZA", name: "South Africa", flag: "🇿🇦" },
+  { code: "NG", name: "Nigeria", flag: "🇳🇬" },
+  { code: "IE", name: "Ireland", flag: "🇮🇪" },
+];
+
 const RAIL_STEPS = [
   "Explain",
   "Visualize",
@@ -169,6 +187,7 @@ export function mount(root, ctx) {
     adaptBody: qs(root, "#hubAdaptBody"),
     adaptText: qs(root, "#hubAdaptText"),
     plannerLink: qs(root, "#hubPlannerLink"),
+    countrySelect: qs(root, "#hubCountrySelect"),
     countryBar: qs(root, "#hubCountryBar"),
     globalSearchInput: qs(root, "#hubGlobalSearchInput"),
     globalSearchResults: qs(root, "#hubGlobalSearchResults"),
@@ -194,8 +213,12 @@ export function mount(root, ctx) {
   const initialClass = urlParams ? Number(urlParams.get("class") || urlParams.get("classNum")) : null;
   const initialSubject = urlParams ? urlParams.get("subject") : null;
 
+  const savedCountry = typeof localStorage !== "undefined" ? localStorage.getItem("learning_allied_country") : null;
   if (initialCountry) state.selectedCountry = initialCountry;
+  else if (savedCountry) state.selectedCountry = savedCountry;
   else state.selectedCountry = "IN";
+
+  if (els.countrySelect) els.countrySelect.value = state.selectedCountry;
 
   if (initialTrack) state.selection.track = initialTrack;
   if (initialClass) state.selection.classNum = initialClass;
@@ -267,6 +290,20 @@ export function mount(root, ctx) {
       if (state.continueTopic) resumeTopic(state.continueTopic);
     });
     lifecycle.on(els.back, "click", showBack);
+
+    if (els.countrySelect) {
+      lifecycle.on(els.countrySelect, "change", () => {
+        const code = els.countrySelect.value;
+        if (!code) return;
+        state.selectedCountry = code;
+        state.selection = { track: "", classNum: null, subject: "", query: "" };
+        renderCountryBar();
+        void fetchCatalog({ countryCode: code, ...EMPTY_SELECTION });
+        try {
+          localStorage.setItem("learning_allied_country", code);
+        } catch (_) {}
+      });
+    }
 
     lifecycle.on(els.searchForm, "submit", (event) => {
       event.preventDefault();
@@ -1254,25 +1291,10 @@ export function mount(root, ctx) {
     els.stageNav.appendChild(wrap);
   }
 
-  const GLOBAL_COUNTRIES = [
-    { code: "IN", name: "India", flag: "🇮🇳" },
-    { code: "US", name: "United States", flag: "🇺🇸" },
-    { code: "GB", name: "United Kingdom", flag: "🇬🇧" },
-    { code: "CA", name: "Canada", flag: "🇨🇦" },
-    { code: "AU", name: "Australia", flag: "🇦🇺" },
-    { code: "NZ", name: "New Zealand", flag: "🇳🇿" },
-    { code: "SG", name: "Singapore", flag: "🇸🇬" },
-    { code: "AE", name: "UAE", flag: "🇦🇪" },
-    { code: "SA", name: "Saudi Arabia", flag: "🇸🇦" },
-    { code: "MY", name: "Malaysia", flag: "🇲🇾" },
-    { code: "PK", name: "Pakistan", flag: "🇵🇰" },
-    { code: "BD", name: "Bangladesh", flag: "🇧🇩" },
-    { code: "ZA", name: "South Africa", flag: "🇿🇦" },
-    { code: "NG", name: "Nigeria", flag: "🇳🇬" },
-    { code: "IE", name: "Ireland", flag: "🇮🇪" },
-  ];
-
   function renderCountryBar() {
+    if (els.countrySelect && els.countrySelect.value !== state.selectedCountry) {
+      els.countrySelect.value = state.selectedCountry;
+    }
     if (!els.countryBar) return;
     els.countryBar.replaceChildren();
     for (const c of GLOBAL_COUNTRIES) {
@@ -1283,9 +1305,13 @@ export function mount(root, ctx) {
       pill.setAttribute("aria-selected", isCurrent ? "true" : "false");
       lifecycle.on(pill, "click", () => {
         state.selectedCountry = c.code;
+        if (els.countrySelect) els.countrySelect.value = c.code;
         state.selection = { track: "", classNum: null, subject: "", query: "" };
         renderCountryBar();
         void fetchCatalog({ countryCode: c.code, ...EMPTY_SELECTION });
+        try {
+          localStorage.setItem("learning_allied_country", c.code);
+        } catch (_) {}
       });
       els.countryBar.appendChild(pill);
     }
@@ -1310,8 +1336,12 @@ export function mount(root, ctx) {
           if (c.name.toLowerCase().includes(q)) {
             matches.push({ title: `${c.flag} ${c.name}`, sub: "Country Curriculum", action: () => {
               state.selectedCountry = c.code;
+              if (els.countrySelect) els.countrySelect.value = c.code;
               renderCountryBar();
               void fetchCatalog({ countryCode: c.code, ...EMPTY_SELECTION });
+              try {
+                localStorage.setItem("learning_allied_country", c.code);
+              } catch (_) {}
             }});
           }
         }
