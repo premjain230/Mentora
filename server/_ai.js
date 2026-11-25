@@ -32,6 +32,10 @@ const GEMINI_FALLBACK_MODELS = ["gemini-3.8-flash"];
 const KNOWN_GROQ_MODELS = new Set([
   "llama-3.3-70b-versatile",
   "llama-3.1-8b-instant",
+  "openai/gpt-oss-120b",
+  "openai/gpt-oss-20b",
+  "meta-llama/llama-4-scout-17b-16e-instruct",
+  "qwen/qwen3-32b",
   "mixtral-8x7b-32768",
   "gemma2-9b-it",
 ]);
@@ -324,6 +328,7 @@ async function geminiComplete({
   apiRoute,
   _isRetry = false,
   _triedModels = null,
+  _retryCount = 0,
 }) {
   const diag = { requestId: requestId || undefined, apiRoute: apiRoute || undefined };
   const apiKey = cleanEnvValue(process.env.GEMINI_API_KEY);
@@ -990,6 +995,7 @@ async function groqComplete({
   apiRoute,
   _isRetry = false,
   _triedModels = null,
+  _retryCount = 0,
 }) {
   const diag = { requestId: requestId || undefined, apiRoute: apiRoute || undefined };
   const apiKey = cleanEnvValue(process.env.GROQ_API_KEY);
@@ -1020,7 +1026,7 @@ async function groqComplete({
   const timeoutId = setTimeout(() => localController.abort(), effectiveTimeout);
   const combinedSignal = combineSignals(signal, localController.signal);
 
-  const targetModel = resolveGroqModel(model);
+  const targetModel = _isRetry && model ? model : resolveGroqModel(model);
   const startTime = Date.now();
   let resp;
 
@@ -1092,14 +1098,15 @@ async function groqComplete({
     const failureCategory = classifyFailure(status, { message: safeError });
 
     // Automatic resilience: If Groq returns 404 (model decommissioned or not allowed), discover & retry with an allowed model
-    const triedSet = _triedModels instanceof Set ? _triedModels : new Set([targetModel]);
+    const triedSet = _triedModels instanceof Set ? new Set(_triedModels) : new Set();
     triedSet.add(targetModel);
-    if (status === 404 && triedSet.size < 3) {
+    if (status === 404 && _retryCount < 2 && triedSet.size < 3) {
       const staticFallback = targetModel !== GROQ_DEFAULT_MODEL ? GROQ_DEFAULT_MODEL : GROQ_FAST_MODEL;
-      const fallbackTarget = !triedSet.has(staticFallback) && triedSet.size === 1
+      const fallbackTarget = !triedSet.has(staticFallback) && _retryCount === 0
         ? staticFallback
         : await discoverGroqFallbackModel(apiKey, triedSet, signal);
       if (fallbackTarget && !triedSet.has(fallbackTarget)) {
+        triedSet.add(fallbackTarget);
         logAiEvent("warn", "GROQ_MODEL_RETRY", {
           ...diag,
           selectedProvider: "auto",
@@ -1123,6 +1130,7 @@ async function groqComplete({
           apiRoute,
           _isRetry: true,
           _triedModels: triedSet,
+          _retryCount: _retryCount + 1,
         });
       }
     }
@@ -1320,6 +1328,7 @@ async function groqStream({
   apiRoute,
   _isRetry = false,
   _triedModels = null,
+  _retryCount = 0,
 }) {
   const diag = { requestId: requestId || undefined, apiRoute: apiRoute || undefined };
   const apiKey = cleanEnvValue(process.env.GROQ_API_KEY);
@@ -1347,7 +1356,7 @@ async function groqStream({
   const timeoutId = setTimeout(() => localController.abort(), effectiveTimeout);
   const combinedSignal = combineSignals(signal, localController.signal);
 
-  const targetModel = resolveGroqModel(model);
+  const targetModel = _isRetry && model ? model : resolveGroqModel(model);
   const startTime = Date.now();
   let resp;
 
@@ -1411,14 +1420,15 @@ async function groqStream({
     const status = resp.status;
     const failureCategory = classifyFailure(status, { message: safeError });
 
-    const triedSet = _triedModels instanceof Set ? _triedModels : new Set([targetModel]);
+    const triedSet = _triedModels instanceof Set ? new Set(_triedModels) : new Set();
     triedSet.add(targetModel);
-    if (status === 404 && triedSet.size < 3) {
+    if (status === 404 && _retryCount < 2 && triedSet.size < 3) {
       const staticFallback = targetModel !== GROQ_DEFAULT_MODEL ? GROQ_DEFAULT_MODEL : GROQ_FAST_MODEL;
-      const fallbackTarget = !triedSet.has(staticFallback) && triedSet.size === 1
+      const fallbackTarget = !triedSet.has(staticFallback) && _retryCount === 0
         ? staticFallback
         : await discoverGroqFallbackModel(apiKey, triedSet, signal);
       if (fallbackTarget && !triedSet.has(fallbackTarget)) {
+        triedSet.add(fallbackTarget);
         logAiEvent("warn", "GROQ_MODEL_RETRY", {
           ...diag,
           selectedProvider: "auto",
@@ -1442,6 +1452,7 @@ async function groqStream({
           apiRoute,
           _isRetry: true,
           _triedModels: triedSet,
+          _retryCount: _retryCount + 1,
         });
       }
     }

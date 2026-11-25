@@ -452,6 +452,35 @@ async function runTests() {
     else process.env.GEMINI_MODEL = prevGeminiModel;
     console.log("  ✓ Invalid GEMINI_MODEL ignored and Groq /models discovery succeeded.");
 
+    // ── 8. Groq 404 retry must be bounded (no infinite loop when discovered model also 404s) ──
+    console.log("[8] Testing Groq 404 retry loop protection...");
+    let groqAttempts = 0;
+    global.fetch = async (url) => {
+      const u = String(url);
+      if (u.includes("generativelanguage.googleapis.com")) {
+        return new Response(JSON.stringify({ error: { message: "API key not valid." } }), { status: 401 });
+      }
+      if (u === "https://api.groq.com/openai/v1/models") {
+        return new Response(JSON.stringify({ data: [{ id: "openai/gpt-oss-120b" }] }), { status: 200 });
+      }
+      if (u.includes("api.groq.com/openai/v1/chat/completions")) {
+        groqAttempts++;
+        return new Response(JSON.stringify({ error: { message: "model_not_found" } }), { status: 404 });
+      }
+      throw new Error(`Unexpected fetch to ${u}`);
+    };
+    {
+      const { req, res, result } = createMockReqRes({
+        body: { action: "chat", question: "What is inertia?" },
+      });
+      await captureLogs(() => tutorHandler(req, res));
+      const r = result();
+      assert(groqAttempts <= 3, `Groq retries must be bounded (got ${groqAttempts})`);
+      assert.strictEqual(r.statusCode, 200);
+      assert.strictEqual(r.jsonBody.reply.kind, "fallback");
+    }
+    console.log("  ✓ Groq 404 retries bounded (no infinite loop / 504).");
+
     console.log("\n============================================================");
     console.log("ALL E2E FALLBACK, STREAMING & DIAGNOSTIC TESTS PASSED!");
     console.log("============================================================");
