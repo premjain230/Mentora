@@ -83,7 +83,7 @@ export function QuizMarkup() {
                 <input
                   type="text"
                   id="aiSubject"
-                  placeholder="e.g. Physics, JEE, NEET, Class 10 Maths"
+                  placeholder="e.g. Physics, Calculus, Organic Chemistry, World History"
                 />
               </div>
               <div className="field">

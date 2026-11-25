@@ -5,6 +5,7 @@
  */
 
 import { el } from "../shared/dom.js";
+import { renderInlineMarkdown } from "../shared/learning-blocks.js";
 import { emitLearningEvent } from "../../lib/learning/types";
 import { VERDICT_META } from "./messages.js";
 
@@ -22,7 +23,9 @@ export function createCheck(app) {
       el("span", "learn-check-difficulty", `Level ${check.difficulty}/3`)
     );
     card.appendChild(head);
-    card.appendChild(el("p", "learn-check-prompt", check.prompt));
+    const promptEl = el("p", "learn-check-prompt");
+    renderInlineMarkdown(promptEl, check.prompt);
+    card.appendChild(promptEl);
 
     const form = el("form");
     const inputId = `answer-${String(message.id).replace(/[^a-zA-Z0-9_-]/g, "")}`;
@@ -45,7 +48,7 @@ export function createCheck(app) {
 
     const hint = check.hint ? el("p", "learn-hint") : null;
     if (hint) {
-      hint.textContent = check.hint;
+      renderInlineMarkdown(hint, check.hint);
       hint.hidden = true;
       const hintBtn = el("button", "btn btn-secondary", "Show hint");
       hintBtn.type = "button";
@@ -142,7 +145,9 @@ export function createCheck(app) {
     wrap.appendChild(head);
 
     if (evaluation.feedback) {
-      wrap.appendChild(el("p", "learn-feedback-text", evaluation.feedback));
+      const fb = el("p", "learn-feedback-text");
+      renderInlineMarkdown(fb, evaluation.feedback);
+      wrap.appendChild(fb);
     }
 
     wrap.appendChild(
@@ -151,7 +156,9 @@ export function createCheck(app) {
     if (evaluation.actualMistake) {
       const mb = el("div", "learn-feedback-group learn-mistake");
       mb.appendChild(el("span", "learn-feedback-label", "What needs correction"));
-      mb.appendChild(el("p", null, evaluation.actualMistake));
+      const mbP = el("p");
+      renderInlineMarkdown(mbP, evaluation.actualMistake);
+      mb.appendChild(mbP);
       wrap.appendChild(mb);
     }
     wrap.appendChild(
@@ -160,7 +167,9 @@ export function createCheck(app) {
     if (evaluation.correctReasoning) {
       const cr = el("div", "learn-feedback-group learn-correct-reasoning");
       cr.appendChild(el("span", "learn-feedback-label", "Correct method"));
-      cr.appendChild(el("p", null, evaluation.correctReasoning));
+      const crP = el("p");
+      renderInlineMarkdown(crP, evaluation.correctReasoning);
+      cr.appendChild(crP);
       wrap.appendChild(cr);
     }
 
@@ -180,14 +189,14 @@ export function createCheck(app) {
       );
       box.appendChild(label);
       if (misconception.explanation) {
-        box.appendChild(el("p", null, misconception.explanation));
+        const expP = el("p");
+        renderInlineMarkdown(expP, misconception.explanation);
+        box.appendChild(expP);
       }
       if (misconception.remediation) {
         const remediation = el("p");
-        remediation.appendChild(el("strong", null, "Try this:"));
-        remediation.appendChild(
-          document.createTextNode(` ${misconception.remediation}`)
-        );
+        remediation.appendChild(el("strong", null, "Try this: "));
+        renderInlineMarkdown(remediation, misconception.remediation);
         box.appendChild(remediation);
       }
       wrap.appendChild(box);
@@ -199,12 +208,16 @@ export function createCheck(app) {
     ) {
       const details = el("details", "learn-advanced learn-advanced--tight");
       details.appendChild(el("summary", null, "Key idea"));
-      details.appendChild(el("p", null, evaluation.packExplanation));
+      const expDetails = el("p");
+      renderInlineMarkdown(expDetails, evaluation.packExplanation);
+      details.appendChild(expDetails);
       wrap.appendChild(details);
     }
 
     if (evaluation.next?.message) {
-      wrap.appendChild(el("p", "learn-next-hint", evaluation.next.message));
+      const nextP = el("p", "learn-next-hint");
+      renderInlineMarkdown(nextP, evaluation.next.message);
+      wrap.appendChild(nextP);
     }
 
     if (evaluation.verdict !== "correct") {

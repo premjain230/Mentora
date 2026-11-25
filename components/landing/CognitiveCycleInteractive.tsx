@@ -39,7 +39,7 @@ const PHASES: PhaseData[] = [
     step: "03",
     name: "Practice",
     title: "Exam-calibrated retrieval under real test conditions.",
-    lede: "Practice shouldn't be random drills. Every question is rigorously calibrated to official JEE Main & Advanced, NEET UG, CBSE, and Maharashtra Board schemas. Timed retrieval forces effortful cognitive recall under realistic exam constraints.",
+    lede: "Practice shouldn't be random drills. Every question is rigorously calibrated to your selected curriculum — from AP, GCSE, and A-Levels to CBSE, JEE, and NEET. Timed retrieval forces effortful cognitive recall under realistic constraints.",
     tagline: "Curriculum-Calibrated Retrieval",
     citation: "Retrieval Practice Paradigm — Roediger & Butler, 2011",
     researchBasis: "Testing is not merely an assessment tool—the act of retrieving information from memory reorganizes and strengthens neural connectivity.",

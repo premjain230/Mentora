@@ -888,3 +888,54 @@
     grid-template-columns: 1fr;
   }
 }
+
+
+/* ── KaTeX Global Math Rendering (Light & Dark Themes + Mobile) ── */
+.katex {
+  color: inherit;
+  font-size: 1.04em;
+  line-height: 1.35;
+}
+
+.katex-display {
+  margin: 0.65em 0;
+  padding: 6px 4px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  max-width: 100%;
+  -webkit-overflow-scrolling: touch;
+}
+
+.learn-inline-math {
+  display: inline;
+  padding: 0 2px;
+  color: inherit;
+}
+
+.learn-math-block {
+  margin: 12px 0;
+  padding: 12px 16px;
+  text-align: center;
+  background: var(--bg-input, var(--la-surface-2, rgba(128, 128, 128, 0.08)));
+  border: 1px solid var(--border, var(--la-line, rgba(128, 128, 128, 0.2)));
+  border-radius: var(--radius-md, 8px);
+  overflow-x: auto;
+  overflow-y: hidden;
+  max-width: 100%;
+  color: var(--text-primary, var(--la-text, inherit));
+  -webkit-overflow-scrolling: touch;
+}
+
+.learn-math-block .katex-display {
+  margin: 0;
+  padding: 0;
+}
+
+@media (max-width: 640px) {
+  .katex {
+    font-size: 0.96em;
+  }
+  .learn-math-block {
+    padding: 10px 10px;
+  }
+}

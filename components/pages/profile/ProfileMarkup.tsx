@@ -117,19 +117,19 @@ export function ProfileMarkup() {
                 <div className="academic-item">
                   <span className="academic-label">Country of Study</span>
                   <div className="academic-value" id="profileCountryVal">
-                    <span id="profileCountryFlag">🇮🇳</span> <span id="profileCountryName">India</span>
+                    <span id="profileCountryFlag">🌍</span> <span id="profileCountryName">Global</span>
                   </div>
                 </div>
                 <div className="academic-item">
                   <span className="academic-label">Education Board / Authority</span>
                   <div className="academic-value" id="profileBoardVal">
-                    <span id="profileBoardName">CBSE</span>
-                    <span className="academic-badge" id="profileBoardBadge">National</span>
+                    <span id="profileBoardName">Curriculum</span>
+                    <span className="academic-badge" id="profileBoardBadge">Standard</span>
                   </div>
                 </div>
                 <div className="academic-item">
                   <span className="academic-label">Grade / Year</span>
-                  <div className="academic-value" id="profileGradeVal">Class 12</div>
+                  <div className="academic-value" id="profileGradeVal">—</div>
                 </div>
                 <div className="academic-item">
                   <span className="academic-label">Daily Target Study</span>

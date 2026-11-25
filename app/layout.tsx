@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import "@/lib/dom-guard";
+import "katex/dist/katex.min.css";
 import "./globals.css";
 import { SHARED_JSONLD_GRAPH, SITE_URL } from "@/lib/seo";
 
@@ -18,23 +19,21 @@ export const viewport: Viewport = {
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: "Learning Allied — AI Study Partner for JEE, NEET & Board Exams",
+    default: "Learning Allied — Global AI Study Partner for Every Curriculum",
     template: "%s | Learning Allied",
   },
   description:
-    "Learning Allied is an AI study partner for Indian students preparing for JEE, NEET and Board exams. Socratic tutoring, active recall, prerequisite mapping, chapter-wise practice quizzes and personalized study plans.",
+    "Learning Allied is a global AI study partner for students worldwide. Socratic tutoring, active recall, prerequisite mapping, adaptive quizzes, and personalized study plans across 15+ countries and curricula.",
   keywords: [
     "best study tools",
     "best ai study tools",
-    "top 10 study websites",
-    "best learning platforms for students",
-    "best ai tools for students in india",
+    "global learning platform",
     "ai study assistant",
+    "socratic ai tutor",
     "chatgpt alternatives for studying",
-    "jee preparation ai",
-    "neet preparation ai",
-    "cbse study tools",
-    "maharashtra board study tools",
+    "ap exam prep ai",
+    "gcse a-level revision ai",
+    "cbse jee neet study tools",
     "how to study smarter using ai",
     "learning allied",
   ],
@@ -49,15 +48,14 @@ export const metadata: Metadata = {
   alternates: {
     canonical: SITE_URL,
     languages: {
-      "en-IN": SITE_URL,
       "en": SITE_URL,
       "x-default": SITE_URL,
     },
   },
   openGraph: {
-    title: "Learning Allied — AI Study Partner for JEE, NEET & Board Exams",
+    title: "Learning Allied — Global AI Study Partner for Every Curriculum",
     description:
-      "Socratic tutoring, active recall, prerequisite mapping and chapter-wise practice quizzes for JEE Main/Advanced, NEET UG, CBSE, and Maharashtra State Board.",
+      "Socratic tutoring, active recall, prerequisite mapping, and adaptive quizzes tailored to your country, curriculum, and learning goals.",
     url: SITE_URL,
     siteName: "Learning Allied",
     images: [
@@ -68,7 +66,7 @@ export const metadata: Metadata = {
         alt: "Learning Allied AI Study Platform",
       },
     ],
-    locale: "en_IN",
+    locale: "en_US",
     type: "website",
   },
   twitter: {

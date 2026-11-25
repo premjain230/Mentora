@@ -7,7 +7,7 @@ import "@/css/pages/chat.css";
 export const metadata: Metadata = constructMetadata({
   title: "AI Tutor Chat — 24/7 Socratic Learning Assistant | Learning Allied",
   description:
-    "Ask doubts, solve multi-concept problems, and receive step-by-step Socratic guidance tailored to JEE, NEET, and Board curricula.",
+    "Ask doubts, solve multi-concept problems, and receive step-by-step Socratic guidance tailored to your curriculum and learning goals.",
   path: "/chat",
 });
 
@@ -18,7 +18,7 @@ const JSON_LD = {
       "@type": "WebPage",
       name: "AI Tutor Chat — Learning Allied",
       description:
-        "Instant Socratic AI tutor for Indian secondary and senior secondary students.",
+        "Instant Socratic AI tutor for students across global curricula, school coursework, and competitive exams.",
       url: `${SITE_URL}/chat`,
       breadcrumb: {
         "@type": "BreadcrumbList",

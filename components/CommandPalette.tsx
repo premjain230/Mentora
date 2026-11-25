@@ -137,38 +137,30 @@ export function CommandPalette() {
       badge: "Practice",
       action: () => router.push("/quiz"),
     },
-    // Curricula & Exam Tracks
-    {
-      id: "exam-jee",
-      title: "JEE Main & Advanced Preparation",
-      desc: "Rigorous physics, chemistry and advanced calculus syllabus",
-      category: "Curriculum",
-      badge: "India",
-      action: () => router.push("/arena"),
-    },
-    {
-      id: "exam-neet",
-      title: "NEET UG Medical Preparation",
-      desc: "NCERT biology, chemical equilibrium and optics practice",
-      category: "Curriculum",
-      badge: "Medical",
-      action: () => router.push("/arena"),
-    },
-    {
-      id: "exam-cbse",
-      title: "CBSE Classes 9–12",
-      desc: "Official NCERT syllabus, exemplar drills and board patterns",
-      category: "Curriculum",
-      badge: "National",
-      action: () => router.push("/learning-hub"),
-    },
+    // Curricula & Learning Tracks
     {
       id: "exam-global",
-      title: "Global International Curricula",
-      desc: "US AP & SAT, UK GCSE / A-Levels, IB, Canada, Australia & more",
+      title: "Global Curriculum Directory",
+      desc: "US AP & SAT, UK GCSE / A-Levels, Canada, Australia, Singapore, India & more",
       category: "Curriculum",
       badge: "15 Countries",
       action: () => router.push("/learning-hub"),
+    },
+    {
+      id: "exam-us-uk",
+      title: "AP, SAT, GCSE & A-Levels",
+      desc: "Adaptive chapter mastery and practice tailored to your selected track",
+      category: "Curriculum",
+      badge: "International",
+      action: () => router.push("/learning-hub"),
+    },
+    {
+      id: "exam-arena",
+      title: "Curriculum Quiz Arena",
+      desc: "Timed chapter battles calibrated to your active curriculum and grade",
+      category: "Curriculum",
+      badge: "Practice",
+      action: () => router.push("/arena"),
     },
   ];
 

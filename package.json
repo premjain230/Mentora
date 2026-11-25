@@ -38,12 +38,14 @@
     "@vercel/speed-insights": "^2.0.0",
     "firebase": "^10.12.0",
     "firebase-admin": "^12.7.0",
+    "katex": "^0.19.1",
     "next": "14.2.15",
     "react": "^18.3.1",
     "react-dom": "^18.3.1"
   },
   "devDependencies": {
     "@firebase/rules-unit-testing": "^3.0.4",
+    "@types/katex": "^0.16.8",
     "@types/node": "^20.14.0",
     "@types/react": "^18.3.1",
     "@types/react-dom": "^18.3.1",

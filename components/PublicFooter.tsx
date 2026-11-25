@@ -12,20 +12,21 @@ export function PublicFooter() {
               <span>Learning Allied</span>
             </div>
             <p className="footer-blurb">
-              AI study partner for Indian students preparing for JEE, NEET and
-              Board exams with Socratic cognitive scaffolding and spaced retention.
+              Global AI study partner for students across international curricula,
+              school boards, university courses, and competitive exams with Socratic
+              cognitive scaffolding and spaced retention.
             </p>
           </div>
 
           <div>
-            <h4 className="footer-col-title">Exams &amp; boards</h4>
+            <h4 className="footer-col-title">Global &amp; Regional Curricula</h4>
             <ul className="footer-links">
-              <li><Link href="/jee-preparation">JEE Main &amp; Advanced</Link></li>
-              <li><Link href="/neet-preparation">NEET UG Medical</Link></li>
-              <li><Link href="/cbse-board">CBSE Class 9–12</Link></li>
-              <li><Link href="/maharashtra-board">Maharashtra State Board</Link></li>
-              <li><Link href="/study-tools-cbse">CBSE Study Tools</Link></li>
-              <li><Link href="/study-tools-maharashtra-board">Maharashtra Board Tools</Link></li>
+              <li><Link href="/curriculum">All Global Curricula</Link></li>
+              <li><Link href="/for-parents">For Parents &amp; Families</Link></li>
+              <li><Link href="/jee-preparation">India: JEE Main &amp; Advanced</Link></li>
+              <li><Link href="/neet-preparation">India: NEET UG Medical</Link></li>
+              <li><Link href="/cbse-board">India: CBSE Class 9–12</Link></li>
+              <li><Link href="/maharashtra-board">India: Maharashtra Board</Link></li>
             </ul>
           </div>
 

@@ -2,6 +2,7 @@
 
 import React, { useId, useState } from "react";
 import type { CheckQuestion, Evaluation, LessonSection, MasterySummary, SessionSummary, WorkedExample } from "../../lib/learning/types";
+import { MathText } from "./MathText";
 
 const LEVEL_LABEL: Record<string, string> = {
   foundation: "Foundation",
@@ -47,15 +48,15 @@ export function TeachingContent({
       <div className="learn-example-head">
         <span className="learn-badge learn-badge--soft">Worked example</span>
       </div>
-      {example.problem && <p className="learn-example-problem">{example.problem}</p>}
+      {example.problem && <p className="learn-example-problem"><MathText text={example.problem} /></p>}
       {example.steps.length > 0 && (
         <ol className="learn-steps">
           {example.steps.map((step, index) => (
-            <li key={index}>{step}</li>
+            <li key={index}><MathText text={step} /></li>
           ))}
         </ol>
       )}
-      {example.answer && <p className="learn-answer"><strong>Answer:</strong> {example.answer}</p>}
+      {example.answer && <p className="learn-answer"><strong>Answer:</strong> <MathText text={example.answer} /></p>}
     </div>
   ) : null;
 
@@ -83,19 +84,19 @@ export function TeachingContent({
 
       {keyIdea && (
         <div className="learn-key-idea">
-          <strong>Key Takeaway:</strong> {keyIdea}
+          <strong>Key Takeaway:</strong> <MathText text={keyIdea} />
         </div>
       )}
 
       {exampleFirst && exampleBlock}
 
-      {directAnswer && <p className="learn-lead">{directAnswer}</p>}
+      {directAnswer && <p className="learn-lead"><MathText text={directAnswer} /></p>}
 
       {sections.map((section, index) => (
         <section key={`${section.heading}-${index}`} className="learn-section">
           <h4>{section.heading}</h4>
-          <p>{section.body}</p>
-          {section.equation && <pre className="learn-equation"><code>{section.equation}</code></pre>}
+          <p><MathText text={section.body} /></p>
+          {section.equation && <MathText text={section.equation} displayMode />}
         </section>
       ))}
 
@@ -104,7 +105,7 @@ export function TeachingContent({
       {advanced && (
         <details className="learn-advanced">
           <summary>{advanced.heading || "Go deeper"}</summary>
-          <p>{advanced.body}</p>
+          <p><MathText text={advanced.body} /></p>
         </details>
       )}
     </div>

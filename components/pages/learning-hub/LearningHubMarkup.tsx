@@ -229,7 +229,6 @@ export function LearningHubMarkup() {
                     id="hubCountrySelect"
                     className="hub-country-select"
                     aria-label="Select Country or Education System"
-                    defaultValue="IN"
                   >
                     <option value="IN">🇮🇳 India (CBSE, Maharashtra, JEE, NEET)</option>
                     <option value="US">🇺🇸 United States (AP, CCSS, NGSS)</option>

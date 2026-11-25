@@ -16,7 +16,7 @@ interface CountryContextType {
   formatPrice: (amount: number) => string;
 }
 
-const DEFAULT_COUNTRY_CODE = "IN";
+const DEFAULT_COUNTRY_CODE = "US";
 
 const CountryContext = createContext<CountryContextType>({
   selectedCountry: DEFAULT_COUNTRY_CODE,
@@ -26,7 +26,7 @@ const CountryContext = createContext<CountryContextType>({
   setCountry: () => {},
   dismissNotice: () => {},
   switchCountry: () => {},
-  formatPrice: (amt) => `₹${amt}`,
+  formatPrice: (amt) => `$${amt}`,
 });
 
 export function CountryProvider({ children }: { children: React.ReactNode }) {

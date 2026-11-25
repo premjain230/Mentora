@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import { MathText } from "@/components/learning/MathText";
 
 type Scenario = "horizontal" | "vertical" | "static";
 
@@ -22,7 +23,7 @@ export function HeroInteractiveDemo() {
       work: 0,
       formula: "W = F · d · cos(90°) = 400 · 50 · 0 = 0 J",
       insight: "Displacement is strictly perpendicular to the upward lift force. Zero mechanical work is done by the vertical lift force.",
-      examNote: "Frequently tested in JEE Main & CBSE Class 11 Physics Ch 6",
+      examNote: "Classical Mechanics · Work & Energy",
     },
     vertical: {
       label: "Vertical Lift",
@@ -289,7 +290,7 @@ export function HeroInteractiveDemo() {
                 >
                   {selectedOption === 0 ? (
                     <span>
-                      <strong>Distinction Mastered:</strong> You cleanly separated biological muscle physiology (internal biochemical ATP hydrolysis) from classical mechanical work ($W = \vec&#123;F&#125; \cdot \vec&#123;d&#125;$). This eliminates a classic JEE Main conceptual trap.
+                      <strong>Distinction Mastered:</strong> You cleanly separated biological muscle physiology (internal biochemical ATP hydrolysis) from classical mechanical work (<MathText text="$W = \vec{F} \cdot \vec{d}$" />). This eliminates a classic conceptual trap.
                     </span>
                   ) : (
                     <span>

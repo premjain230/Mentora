@@ -31,12 +31,12 @@ export default function OnboardingPage() {
   const [step, setStep] = useState(0);
   const [uid, setUid] = useState<string | null>(null);
 
-  // Form State: Cascading Curriculum
-  const [country, setCountry] = useState("IN");
-  const [trackId, setTrackId] = useState("in_cbse");
-  const [grade, setGrade] = useState("Class 12");
+  // Form State: Cascading Curriculum (detected from browser/storage, never hardcoded to a single country)
+  const [country, setCountry] = useState("US");
+  const [trackId, setTrackId] = useState("us_ap");
+  const [grade, setGrade] = useState("Grade 12");
   const [prioritySubjects, setPrioritySubjects] = useState<string[]>(["Physics", "Chemistry", "Mathematics"]);
-  const [academicGoal, setAcademicGoal] = useState("top_percentile");
+  const [academicGoal, setAcademicGoal] = useState("concept_mastery");
   const [dailyHours, setDailyHours] = useState(4);
   const [preferredLanguage, setPreferredLanguage] = useState("en");
   const [personality, setPersonality] = useState("mentor");
@@ -92,11 +92,11 @@ export default function OnboardingPage() {
   const handleCountryChange = (newCountry: string) => {
     setCountry(newCountry);
     const countryTracks = getTracksForCountry(newCountry);
-    const firstTrack = countryTracks[0]?.id || "in_cbse";
+    const firstTrack = countryTracks[0]?.id || "";
     setTrackId(firstTrack);
 
     const countryGrades = getGradesForTrack(firstTrack);
-    setGrade(countryGrades[countryGrades.length - 1]?.id || countryGrades[0]?.id || "Class 12");
+    setGrade(countryGrades[countryGrades.length - 1]?.id || countryGrades[0]?.id || "");
 
     const countrySubjects = getSubjectsForTrack(firstTrack);
     setPrioritySubjects(countrySubjects.slice(0, 3));

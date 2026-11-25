@@ -1899,11 +1899,11 @@ export function mount(root, ctx) {
     if (els.crossCurriculumBanner) {
       els.crossCurriculumBanner.replaceChildren();
       const currentSubj = state.selection.subject || "";
-      let crossNote = "💡 Compare this topic across international curricula: Also covered in US AP, UK GCSE, and CBSE.";
+      let crossNote = "💡 Compare this topic across international curricula to see how different education systems frame the same core concepts.";
       if (currentSubj.toLowerCase().includes("phys")) {
-        crossNote = "💡 Cross-Curriculum Discovery: Newton's Laws and Kinematics are also covered in US AP Physics 1, UK GCSE Physics (8463), and CBSE Science.";
+        crossNote = "💡 Cross-Curriculum Discovery: Mechanics, Waves, and Electromagnetism map directly across US AP Physics, UK A-Levels, IB Physics, and national science boards.";
       } else if (currentSubj.toLowerCase().includes("calc") || currentSubj.toLowerCase().includes("math")) {
-        crossNote = "💡 Cross-Curriculum Discovery: Calculus and Functions are also covered in US AP Calculus BC, UK A-Level Maths, and Ontario MHF4U.";
+        crossNote = "💡 Cross-Curriculum Discovery: Calculus and Functions map directly across US AP Calculus, UK A-Level Maths, IB Math AA, and national curricula.";
       }
       const tag = el("span", "hub-cross-tag", "Discovery");
       const text = el("span", "hub-cross-text", crossNote);

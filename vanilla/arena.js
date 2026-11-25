@@ -21,6 +21,7 @@ import {
   toSubjectKey,
 } from "../js/learning/arena-curriculum.js";
 import { createLifecycle, escapeHtml } from "./shared/lifecycle.js";
+import { renderTextWithMath } from "./shared/math-renderer.js";
 import { mountToast } from "./shared/toast.js";
 import {
   canBattle,
@@ -686,7 +687,8 @@ export function mount(root, ctx) {
       }
       if (els.continueBtn) {
         els.continueBtn.onclick = () => {
-          const trackId = saved.trackId || "jee";
+          const fallbackTrack = getTracks()[0]?.id || "general";
+          const trackId = saved.trackId || fallbackTrack;
           selectedTrack =
             getTracks().find((track) => track.id === trackId) || {
               id: trackId,
@@ -886,7 +888,7 @@ export function mount(root, ctx) {
     if (els.qFill) {
       els.qFill.style.width = `${((battleIdx + 1) / battleQs.length) * 100}%`;
     }
-    if (els.qText) els.qText.textContent = question.q;
+    if (els.qText) renderTextWithMath(els.qText, question.q);
     if (els.qOptions) els.qOptions.innerHTML = "";
     els.qFeedback?.classList.add("hidden");
     els.battleError?.classList.add("hidden");
@@ -908,7 +910,7 @@ export function mount(root, ctx) {
       key.className = "key";
       key.textContent = letter;
       const text = document.createElement("span");
-      text.textContent = label;
+      renderTextWithMath(text, label);
       button.append(key, text);
 
       button.addEventListener("click", async () => {
@@ -960,11 +962,14 @@ export function mount(root, ctx) {
         if (els.qFeedback) {
           els.qFeedback.classList.remove("hidden");
           els.qFeedback.className = `feedback ${isCorrect ? "correct" : "wrong"}`;
-          els.qFeedback.textContent = isCorrect
-            ? `Correct. ${result.explanation || ""}`
-            : `Incorrect. Correct answer: ${answerLetter}. ${
-                result.explanation || ""
-              }`;
+          renderTextWithMath(
+            els.qFeedback,
+            isCorrect
+              ? `Correct. ${result.explanation || ""}`
+              : `Incorrect. Correct answer: ${answerLetter}. ${
+                  result.explanation || ""
+                }`
+          );
         }
 
         if (els.nextQBtn) els.nextQBtn.disabled = false;
@@ -1209,7 +1214,7 @@ export function mount(root, ctx) {
     const fill = body.querySelector("#bossFill");
     if (fill) fill.style.width = `${((bossIdx + 1) / bossQs.length) * 100}%`;
     const questionEl = body.querySelector("#bossQ");
-    if (questionEl) questionEl.textContent = question.q;
+    if (questionEl) renderTextWithMath(questionEl, question.q);
     const options = body.querySelector("#bossOpts");
     if (options) options.innerHTML = "";
     body.querySelector("#bossFb")?.classList.add("hidden");
@@ -1230,7 +1235,7 @@ export function mount(root, ctx) {
       key.className = "key";
       key.textContent = letter;
       const text = document.createElement("span");
-      text.textContent = label;
+      renderTextWithMath(text, label);
       button.append(key, text);
 
       button.addEventListener("click", async () => {
@@ -1276,9 +1281,12 @@ export function mount(root, ctx) {
         if (feedback) {
           feedback.classList.remove("hidden");
           feedback.className = `feedback ${isCorrect ? "correct" : "wrong"}`;
-          feedback.textContent = isCorrect
-            ? result.explanation || "Correct!"
-            : `Correct answer: ${answerLetter}. ${result.explanation || ""}`;
+          renderTextWithMath(
+            feedback,
+            isCorrect
+              ? result.explanation || "Correct!"
+              : `Correct answer: ${answerLetter}. ${result.explanation || ""}`
+          );
         }
 
         if (next) {

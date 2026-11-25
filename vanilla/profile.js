@@ -86,6 +86,14 @@ export function mount(root, ctx) {
   const userRef = doc(ctx.db, "users", uid);
   const learningProfileRef = doc(ctx.db, "users", uid, "learning", "profile");
 
+  let storedCountry = "US";
+  try {
+    storedCountry = localStorage.getItem("learning_allied_country") || "US";
+  } catch {}
+  const initialTracks = getTracksForCountry(storedCountry);
+  const initialTrackId = initialTracks[0]?.id || "us_ap";
+  const initialGrade = initialTracks[0]?.defaultGrade || "Grade 12";
+
   const defaultProfile = {
     displayName: ctx.user.displayName || "",
     email: ctx.user.email || "",
@@ -93,12 +101,12 @@ export function mount(root, ctx) {
     plan: "free",
     streak: 0,
     topics: [],
-    country: "IN",
-    board: "in_cbse",
-    trackId: "in_cbse",
-    grade: "Class 12",
+    country: storedCountry,
+    board: initialTrackId,
+    trackId: initialTrackId,
+    grade: initialGrade,
     subjects: ["Physics", "Chemistry", "Mathematics"],
-    academicGoal: "top_percentile",
+    academicGoal: "concept_mastery",
     dailyHours: 4,
     preferredLanguage: "en",
     personality: "mentor",
@@ -165,7 +173,7 @@ export function mount(root, ctx) {
           displayName: ctx.user.displayName || "",
           email: ctx.user.email || "",
           photoURL: ctx.user.photoURL || "",
-          exam: "CBSE Class 12",
+          exam: initialTracks[0]?.shortName || "General Curriculum",
           createdAt: serverTimestamp(),
           plan: "free",
         }).catch(() => {});
@@ -178,12 +186,12 @@ export function mount(root, ctx) {
           const lData = learnSnap.data();
           profileData = {
             ...profileData,
-            country: lData.country || profileData.country || "IN",
-            board: lData.board || lData.trackId || profileData.board || "in_cbse",
-            trackId: lData.trackId || lData.board || profileData.trackId || "in_cbse",
-            grade: lData.grade || profileData.grade || "Class 12",
+            country: lData.country || profileData.country || storedCountry,
+            board: lData.board || lData.trackId || profileData.board || initialTrackId,
+            trackId: lData.trackId || lData.board || profileData.trackId || initialTrackId,
+            grade: lData.grade || profileData.grade || initialGrade,
             subjects: Array.isArray(lData.subjects) && lData.subjects.length > 0 ? lData.subjects : profileData.subjects,
-            academicGoal: lData.academicGoal || profileData.academicGoal || "top_percentile",
+            academicGoal: lData.academicGoal || profileData.academicGoal || "concept_mastery",
             dailyHours: lData.dailyHours ? Number(lData.dailyHours) : (profileData.dailyHours || 4),
             preferredLanguage: lData.preferredLanguage || profileData.preferredLanguage || "en",
             personality: lData.personality || profileData.personality || "mentor",
@@ -243,17 +251,18 @@ export function mount(root, ctx) {
     setStat("statTopics", topics.length);
 
     // Render Academic Details
-    const countryCode = profileData.country || "IN";
+    const countryCode = profileData.country || storedCountry;
     const countryObj = getCountryOption(countryCode);
     setText(els.countryFlag, countryObj.flag);
     setText(els.countryName, countryObj.name);
 
-    const trackId = profileData.board || profileData.trackId || "in_cbse";
+    const countryTracks = getTracksForCountry(countryCode);
+    const trackId = profileData.board || profileData.trackId || countryTracks[0]?.id || "";
     const trackObj = getTrackInfo(trackId);
-    setText(els.boardName, trackObj?.name || profileData.exam || "CBSE");
-    setText(els.boardBadge, trackObj?.shortName || "National");
+    setText(els.boardName, trackObj?.name || profileData.exam || "General Curriculum");
+    setText(els.boardBadge, trackObj?.shortName || "Standard");
 
-    setText(els.gradeVal, profileData.grade || "Class 12");
+    setText(els.gradeVal, profileData.grade || trackObj?.defaultGrade || "—");
     setText(els.dailyHoursVal, `${profileData.dailyHours || 4} hours / day`);
 
     const goalObj = GOAL_OPTIONS.find((g) => g.id === profileData.academicGoal) || GOAL_OPTIONS[0];
@@ -458,10 +467,11 @@ export function mount(root, ctx) {
   async function saveAcademicProfile() {
     if (!els.saveModalBtn || els.saveModalBtn.disabled) return;
 
-    const newCountry = els.editCountrySelect?.value || "IN";
-    const newTrack = els.editTrackSelect?.value || "in_cbse";
-    const newGrade = els.editGradeSelect?.value || "Class 12";
-    const newGoal = els.editGoalSelect?.value || "top_percentile";
+    const newCountry = els.editCountrySelect?.value || storedCountry;
+    const fallbackTrack = getTracksForCountry(newCountry)[0]?.id || "";
+    const newTrack = els.editTrackSelect?.value || fallbackTrack;
+    const newGrade = els.editGradeSelect?.value || "";
+    const newGoal = els.editGoalSelect?.value || "concept_mastery";
     const newDailyHours = Number(els.editDailyHours?.value || 4);
     const newLanguage = els.editLanguageSelect?.value || "en";
     const newSubjects = [...modalSubjects];

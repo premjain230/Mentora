@@ -35,8 +35,8 @@ export function ArenaMarkup() {
               <h1>Arena</h1>
               <p>Choose your battlefield</p>
               <div className="arena-sub">
-                The syllabus is the game. Defeat chapters, conquer the subject.
-                JEE · NEET · Maharashtra · CBSE
+                The syllabus is the game. Defeat chapters, conquer the subject —
+                calibrated to your curriculum.
               </div>
             </div>
             <div className="battle-grid" id="battleGrid" role="list" />

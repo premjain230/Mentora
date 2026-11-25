@@ -132,7 +132,7 @@ const PILLARS: PillarMeta[] = [
     number: "07",
     tabLabel: "Exam Engines",
     badge: "High-Stakes Prep",
-    headline: "Dedicated preparation engines engineered for India's hardest exams.",
+    headline: "Dedicated preparation engines engineered for global curricula and exams.",
     summary:
       "Each exam requires fundamentally different test stamina. We maintain dedicated tracks for JEE Main & Advanced (multi-concept physics & calculus), NEET UG (NCERT line-by-line bio speed), CBSE (step marks & proofs), and Maharashtra State Board.",
     keyPoints: [

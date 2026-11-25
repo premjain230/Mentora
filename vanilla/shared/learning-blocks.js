@@ -5,6 +5,11 @@
  */
 
 import { el } from "./dom.js";
+import {
+  splitTextWithMath,
+  createInlineMathNode,
+  createBlockMathNode,
+} from "./math-renderer.js";
 
 export const LEVEL_LABEL = {
   foundation: "Foundation",
@@ -13,11 +18,11 @@ export const LEVEL_LABEL = {
 };
 
 /**
- * Safely parses inline markdown into DOM nodes without innerHTML:
+ * Safely parses inline markdown + LaTeX math into DOM nodes:
+ * - Inline code: `code` (protected from math/markdown parsing)
+ * - Math: $formula$, \(formula\), $$formula$$, \[formula\], and bare LaTeX
  * - Bold: **text**
- * - Italic: *text* or _text_
- * - Inline code: `code`
- * - Inline math: $formula$
+ * - Italic: *text*
  * - Links: [label](https://...)
  * - Citations: [1], [2]
  */
@@ -25,8 +30,33 @@ export function renderInlineMarkdown(parent, text) {
   if (!text) return;
   const raw = String(text);
 
-  // Pattern matches: code, math, bold, italic, markdown link, citation [n]
-  const tokenRegex = /(`[^`]+`|\$[^\$\n]+\$|\*\*[^*]+\*\*|\*[^*]+\*|\[(?:cite-)?\d+\]|\[([^\]]+)\]\((https?:\/\/[^\s)]+)\))/g;
+  // Protect inline code spans first so code like `$HOME` or `\vec{F}` is never rendered as math
+  const codeRegex = /(`[^`]+`)/g;
+  const segments = raw.split(codeRegex);
+
+  for (const seg of segments) {
+    if (!seg) continue;
+    if (seg.startsWith("`") && seg.endsWith("`") && seg.length >= 2) {
+      parent.appendChild(el("code", "learn-inline-code", seg.slice(1, -1)));
+      continue;
+    }
+
+    const mathTokens = splitTextWithMath(seg);
+    for (const mTok of mathTokens) {
+      if (mTok.type === "block-math") {
+        parent.appendChild(createBlockMathNode(mTok.value, { isStreaming: mTok.streaming }));
+      } else if (mTok.type === "inline-math") {
+        parent.appendChild(createInlineMathNode(mTok.value, { isStreaming: mTok.streaming }));
+      } else {
+        renderPlainInlineTokens(parent, mTok.value);
+      }
+    }
+  }
+}
+
+function renderPlainInlineTokens(parent, raw) {
+  if (!raw) return;
+  const tokenRegex = /(\*\*[^*]+\*\*|\*[^*]+\*|\[(?:cite-)?\d+\]|\[([^\]]+)\]\((https?:\/\/[^\s)]+)\))/g;
   let lastIndex = 0;
   let match;
 
@@ -36,18 +66,10 @@ export function renderInlineMarkdown(parent, text) {
     }
 
     const token = match[0];
-    if (token.startsWith("`") && token.endsWith("`")) {
-      const codeNode = el("code", "learn-inline-code", token.slice(1, -1));
-      parent.appendChild(codeNode);
-    } else if (token.startsWith("$") && token.endsWith("$")) {
-      const mathNode = el("span", "learn-inline-math", token.slice(1, -1));
-      parent.appendChild(mathNode);
-    } else if (token.startsWith("**") && token.endsWith("**")) {
-      const strongNode = el("strong", null, token.slice(2, -2));
-      parent.appendChild(strongNode);
+    if (token.startsWith("**") && token.endsWith("**")) {
+      parent.appendChild(el("strong", null, token.slice(2, -2)));
     } else if (token.startsWith("*") && token.endsWith("*")) {
-      const emNode = el("em", null, token.slice(1, -1));
-      parent.appendChild(emNode);
+      parent.appendChild(el("em", null, token.slice(1, -1)));
     } else if (token.startsWith("[") && match[2] && match[3]) {
       const a = el("a", "learn-link", match[2]);
       a.href = match[3];
@@ -145,12 +167,20 @@ function renderTextBlocks(container, text, isLead) {
       continue;
     }
 
-    // Display / Block equation check: $$ ... $$
-    if (block.startsWith("$$") && block.endsWith("$$")) {
-      const eq = el("div", "learn-math-block");
-      const code = el("code", "learn-math-code", block.slice(2, -2).trim());
-      eq.appendChild(code);
-      container.appendChild(eq);
+    // Display / Block equation check: $$ ... $$ or \[ ... \] or \begin{...}...\end{...}
+    if (
+      (block.startsWith("$$") && block.endsWith("$$") && block.length > 4) ||
+      (block.startsWith("\\[") && block.endsWith("\\]") && block.length > 4)
+    ) {
+      container.appendChild(createBlockMathNode(block.slice(2, -2).trim()));
+      continue;
+    }
+    if (i === blocks.length - 1 && (block.startsWith("$$") || block.startsWith("\\["))) {
+      container.appendChild(createBlockMathNode(block.slice(2).trim(), { isStreaming: true }));
+      continue;
+    }
+    if (/^\\begin\{([a-zA-Z*]+)\}[\s\S]*\\end\{\1\}$/.test(block)) {
+      container.appendChild(createBlockMathNode(block));
       continue;
     }
 
@@ -375,9 +405,7 @@ export function renderTeaching(content) {
     block.appendChild(el("h4", null, section.heading));
     renderRichContent(block, section.body);
     if (section.equation) {
-      const pre = el("pre", "learn-equation");
-      pre.appendChild(el("code", null, section.equation));
-      block.appendChild(pre);
+      block.appendChild(createBlockMathNode(section.equation));
     }
     wrap.appendChild(block);
   }

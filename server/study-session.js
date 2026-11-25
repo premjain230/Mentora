@@ -58,8 +58,8 @@ async function studySession(req, res) {
 
     const minutes = Math.min(Math.max(parseInt(durationMinutes, 10) || 25, 5), 120);
 
-    const curriculumNote = `Curriculum guard: Only use key points that are plausible for ${subject} → ${topic} within standard NCERT/JEE/NEET/Board scope. Do not invent chapters beyond standard syllabus. Keep practice questions solvable within ${minutes} minutes.`;
-    const prompt = `Create an AI-guided study session for a ${subject} student preparing for JEE, NEET or board exams.
+    const curriculumNote = `Curriculum guard: Only use key points that are plausible for ${subject} → ${topic} within standard school or university-prep scope. Do not invent chapters beyond standard syllabus. Keep practice questions solvable within ${minutes} minutes. Use LaTeX ($...$) for mathematical expressions.`;
+    const prompt = `Create an AI-guided study session for a ${subject} student.
 
 Subject: ${subject}
 Topic: ${topic}

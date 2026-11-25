@@ -5,6 +5,7 @@ import {
   serverTimestamp,
 } from "firebase/firestore";
 import { escapeHtml } from "./lifecycle.js";
+import { renderTextWithMath } from "./math-renderer.js";
 
 const QUESTIONS = [
   "What is one thing you learned yesterday that you want to understand better today?",
@@ -89,7 +90,7 @@ function showModal(payload, lifecycle) {
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
           Daily Question
         </div>
-        <div class="dq-question">${escapeHtml(payload.question)}</div>
+        <div class="dq-question"></div>
         <textarea class="dq-textarea" id="dqAnswer" placeholder="Share your thoughts..." maxlength="500"></textarea>
         <div class="dq-counter" id="dqCounter">0/500</div>
         <div class="dq-actions">
@@ -106,6 +107,9 @@ function showModal(payload, lifecycle) {
     document.body.appendChild(portal);
   }
   portal.appendChild(modal);
+
+  const qEl = modal.querySelector(".dq-question");
+  if (qEl) renderTextWithMath(qEl, payload.question);
 
   const textarea = modal.querySelector("#dqAnswer");
   const counter = modal.querySelector("#dqCounter");

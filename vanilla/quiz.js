@@ -1,4 +1,5 @@
 import { createLifecycle } from "./shared/lifecycle.js";
+import { renderTextWithMath } from "./shared/math-renderer.js";
 
 // Canonical subjects and topics for quiz selection
 // The actual question bank with answers is strictly maintained on the server in server/_quiz.js
@@ -235,7 +236,7 @@ export function mount(root, ctx) {
     if (els.progressFill) {
       els.progressFill.style.width = `${((current + 1) / questions.length) * 100}%`;
     }
-    if (els.qText) els.qText.textContent = question.q;
+    if (els.qText) renderTextWithMath(els.qText, question.q);
 
     if (!els.optionsList) return;
     els.optionsList.replaceChildren();
@@ -253,7 +254,7 @@ export function mount(root, ctx) {
 
       const label = document.createElement("span");
       // Strip any existing prefix like "A) "
-      label.textContent = String(option).replace(/^[A-D][).]\s*/, "");
+      renderTextWithMath(label, String(option).replace(/^[A-D][).]\s*/, ""));
 
       button.append(key, label);
       lifecycle.on(button, "click", () => selectOption(index, button));
@@ -275,7 +276,7 @@ export function mount(root, ctx) {
     if (els.progressFill) {
       els.progressFill.style.width = `${((current + 1) / questions.length) * 100}%`;
     }
-    if (els.qText) els.qText.textContent = question.q;
+    if (els.qText) renderTextWithMath(els.qText, question.q);
     if (els.submitBtn) {
       els.submitBtn.hidden = false;
       els.submitBtn.disabled = true;
@@ -306,7 +307,7 @@ export function mount(root, ctx) {
       key.textContent = String.fromCharCode(65 + index);
 
       const label = document.createElement("span");
-      label.textContent = String(option).replace(/^[A-D][).]\s*/, "");
+      renderTextWithMath(label, String(option).replace(/^[A-D][).]\s*/, ""));
 
       button.append(key, label);
       lifecycle.on(button, "click", () => selectOption(index, button));
@@ -420,7 +421,7 @@ export function mount(root, ctx) {
         : "Incorrect";
 
     const body = document.createElement("div");
-    body.textContent = detail || explanation || "";
+    renderTextWithMath(body, detail || explanation || "");
 
     els.feedbackBox.append(label, body);
   }

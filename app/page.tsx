@@ -9,9 +9,9 @@ import { CognitiveCycleInteractive } from "../components/landing/CognitiveCycleI
 import { RetentionSimulator } from "../components/landing/RetentionSimulator";
 
 export const metadata = constructMetadata({
-  title: "Learning Allied — Premium AI Study Partner for JEE, NEET & Board Exams",
+  title: "Learning Allied — Global AI Study Partner for Every Curriculum",
   description:
-    "Learning Allied is an AI study partner for Indian students preparing for JEE, NEET and Board exams. Socratic tutoring, active recall, prerequisite mapping, misconception diagnosis, and spaced revision.",
+    "Learning Allied is a global AI study partner for students worldwide. Socratic tutoring, active recall, prerequisite mapping, misconception diagnosis, and spaced revision.",
   path: "/",
 });
 
@@ -20,32 +20,32 @@ const APK_URL =
 
 const EXAMS = [
   {
-    tag: "Engineering",
-    title: "JEE Main & Advanced",
+    tag: "United States",
+    title: "AP, SAT & High School",
+    href: "/curriculum",
+    desc: "College Board AP Physics, Calculus, Chemistry, and Digital SAT reasoning calibrated to US standards.",
+    topics: ["AP Physics 1 & C", "AP Calculus AB / BC", "Digital SAT Math", "NGSS Sciences"],
+  },
+  {
+    tag: "United Kingdom",
+    title: "GCSE & GCE A-Levels",
+    href: "/curriculum",
+    desc: "AQA, Edexcel, and OCR aligned revision with structured mark-scheme reasoning and active recall.",
+    topics: ["GCSE Science & Maths", "A-Level Physics", "A-Level Chemistry", "SQA Highers"],
+  },
+  {
+    tag: "Global & Commonwealth",
+    title: "Canada, Australia & Singapore",
+    href: "/curriculum",
+    desc: "Ontario OSSD, Australian VCE/ACARA, Singapore MOE O/A-Levels, and New Zealand NCEA pathways.",
+    topics: ["Ontario MHF4U / SPH4U", "VCE & HSC", "Singapore O-Level", "NCEA Levels 1–3"],
+  },
+  {
+    tag: "India",
+    title: "CBSE, JEE & NEET",
     href: "/jee-preparation",
-    desc: "Rigorous first-principles physics, physical chemistry, and multi-concept mathematics designed for high percentile targets.",
-    topics: ["Newtonian Mechanics", "Electromagnetism", "Organic Mechanisms", "Calculus & Coordinate Geometry"],
-  },
-  {
-    tag: "Medical",
-    title: "NEET UG Medical",
-    href: "/neet-preparation",
-    desc: "High-yield NCERT line-by-line active recall, biological classifications, chemical equilibrium, and numerical physics precision.",
-    topics: ["Human Physiology", "Genetics & Evolution", "Inorganic Coordination", "Kinematics & Optics"],
-  },
-  {
-    tag: "National Board",
-    title: "CBSE Class 9–12",
-    href: "/cbse-board",
-    desc: "NCERT-aligned curriculum for science and mathematics with step-by-step marking scheme rubrics and descriptive proofs.",
-    topics: ["Class 9-10 Foundations", "Class 11-12 Core Science", "NCERT Exemplar Drills", "Board Pattern Practice"],
-  },
-  {
-    tag: "State Board",
-    title: "Maharashtra State Board",
-    href: "/maharashtra-board",
-    desc: "Balbharati textbook curriculum mapping for SSC Class 10 and HSC Science Class 12 state board examinations.",
-    topics: ["Balbharati Syllabus", "SSC Board Question Bank", "HSC Physics & Chemistry", "Targeted State Pattern"],
+    desc: "NCERT-aligned CBSE (Classes 9–12), Maharashtra Board, JEE Main/Advanced, and NEET UG preparation.",
+    topics: ["CBSE & State Boards", "JEE Main & Advanced", "NEET UG Medical", "NCERT Exemplar"],
   },
 ];
 
@@ -87,11 +87,11 @@ const HONEST_LIMITATIONS = [
   },
   {
     title: "Always verify with core textbooks",
-    desc: "While strictly grounded in curriculum data, competitive exam students should cross-verify nuanced edge cases with NCERT and Balbharati texts.",
+    desc: "While strictly grounded in curriculum data, students should cross-verify nuanced edge cases with official curriculum guides and textbooks.",
   },
   {
     title: "Deliberate boundary on off-syllabus trivia",
-    desc: "We deliberately constrain the AI away from college-level tangents that waste valuable preparation time for JEE and NEET.",
+    desc: "We calibrate explanations to your grade level and curriculum so you focus on what truly matters for your coursework and goals.",
   },
 ];
 
@@ -102,15 +102,15 @@ const FAQ_ITEMS = [
   },
   {
     q: "How is Learning Allied fundamentally different from ChatGPT or other chatbots?",
-    a: "Standard AI chatbots behave like homework-copying machines: they instantly dump the final calculation, depriving your brain of the struggle required to form long-term memory. Learning Allied uses Socratic questioning, prerequisite diagnosis, curriculum-grounded quizzes, and Ebbinghaus spaced revision to ensure you can solve problems independently under exam pressure.",
+    a: "Standard AI chatbots behave like homework-copying machines: they instantly dump the final calculation, depriving your brain of the struggle required to form long-term memory. Learning Allied uses Socratic questioning, prerequisite diagnosis, curriculum-grounded quizzes, and Ebbinghaus spaced revision to ensure you can solve problems independently.",
   },
   {
-    q: "Does Learning Allied replace my teachers or coaching institute?",
+    q: "Does Learning Allied replace my teachers or school?",
     a: "No. Learning Allied is designed to be your 24/7 personal study partner for the hours between classes. It patiently answers late-night doubts, drills chapter-wise recall, and tracks memory decay. We advise students to continue attending classes and cross-referencing official textbooks.",
   },
   {
-    q: "Which boards and competitive examinations are supported?",
-    a: "We currently support NTA JEE (Main and Advanced), NEET UG (Medical), CBSE (Classes 9 to 12), and Maharashtra State Board (SSC Class 10 and HSC Science Class 12). All curricula follow official guidelines.",
+    q: "Which countries, curricula, and examinations are supported?",
+    a: "Learning Allied supports 15+ countries and major international frameworks including US AP & SAT, UK GCSE & A-Levels, Canadian Provincial curricula, Australian VCE/ACARA, Singapore MOE, IB, as well as Indian boards and exams (CBSE, ICSE, State Boards, JEE, NEET), and general self-paced learning.",
   },
   {
     q: "How does the spaced repetition and memory decay engine work?",
@@ -118,7 +118,7 @@ const FAQ_ITEMS = [
   },
   {
     q: "Is my personal study data and question history kept private?",
-    a: "Yes. Learning Allied is built with strict privacy standards compliant with India's DPDP Act 2023. We never sell student data, we do not host third-party advertisement trackers, and your queries remain private to your account.",
+    a: "Yes. Learning Allied is built with strict privacy standards. We never sell student data, we do not host third-party advertisement trackers, and your queries remain private to your account.",
   },
   {
     q: "Can I use Learning Allied on Android and mobile phones?",
@@ -136,10 +136,10 @@ const JSON_LD = {
       "@type": "WebPage",
       "@id": `${SITE_URL}/#webpage`,
       url: `${SITE_URL}/`,
-      name: "Learning Allied — Premium AI Study Partner for JEE, NEET & Board Exams",
+      name: "Learning Allied — Global AI Study Partner for Every Curriculum",
       isPartOf: { "@id": `${SITE_URL}/#website` },
       about: { "@id": `${SITE_URL}/#organization` },
-      inLanguage: "en-IN",
+      inLanguage: "en",
     },
     {
       "@type": "FAQPage",
@@ -210,7 +210,7 @@ export default function HomePage() {
             <div className="prem-hero-intro">
               <div className="prem-badge">
                 <span className="prem-badge-tag">Cognitive AI</span>
-                <span>Designed from neuroscience for serious Indian exam prep</span>
+                <span>Built on cognitive science for learners worldwide</span>
               </div>
 
               <h1 id="hero-heading" className="prem-hero-title">
@@ -220,8 +220,8 @@ export default function HomePage() {
               </h1>
 
               <p className="prem-hero-lede">
-                Learning Allied is a Socratic AI study partner for JEE, NEET, and Board
-                examinations. Instead of spoon-feeding answers, it prompts your reasoning,
+                Learning Allied is a Socratic AI study partner calibrated to your country
+                and curriculum. Instead of spoon-feeding answers, it prompts your reasoning,
                 diagnoses misconceptions, and schedules recall before memory decays.
               </p>
 
@@ -240,7 +240,7 @@ export default function HomePage() {
                 <i className="sep" aria-hidden="true" />
                 <span>No credit card required</span>
                 <i className="sep" aria-hidden="true" />
-                <span>NTA JEE &amp; NEET aligned</span>
+                <span>15+ global curricula</span>
                 <i className="sep" aria-hidden="true" />
                 <span>Also on <a href={APK_URL}>Android</a></span>
               </div>
@@ -285,11 +285,11 @@ export default function HomePage() {
                 <span>Curriculum Precision</span>
               </div>
               <h2 id="exams-heading" className="prem-heading">
-                Tailored for high-stakes Indian exams.
+                Calibrated for global curricula &amp; exams.
               </h2>
               <p className="prem-lede">
                 Zero hallucinated topics or off-syllabus trivia. Every concept, formula, and
-                diagnostic question is strictly calibrated to official board and NTA standards.
+                diagnostic question adapts to your selected country, board, and learning goal.
               </p>
             </div>
 

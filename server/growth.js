@@ -443,7 +443,7 @@ async function adminContent(req, res, id, sub) {
 
 function contentPrompt(type, topic, audience, instructions) {
   const intro =
-    "You are the content strategist for Learning Allied, a study companion for Indian school students (JEE, NEET, boards). " +
+    "You are the content strategist for Learning Allied, a global AI study companion for students worldwide. " +
     "Create genuinely useful, honest student content. NEVER invent statistics, testimonials, or exam claims. " +
     `Format: a ready-to-share piece. Type: ${type}. Topic: ${topic}. Audience: ${audience || "students"}. ` +
     (instructions ? `Extra guidance: ${instructions}` : "");
@@ -920,7 +920,7 @@ async function doResearch(topic, n) {
       {
         role: "system",
         content:
-          "You are Learning Allied's research analyst for educational content (Indian school students). " +
+          "You are Learning Allied's research analyst for global educational content. " +
           "Identify REAL, common study problems and content opportunities around a topic. " +
           "NEVER invent statistics, testimonials or false claims about apps/companies. " +
           'Return strict JSON: {"items":[{"topic","problem","audience","opportunityScore"(0-100 int),' +

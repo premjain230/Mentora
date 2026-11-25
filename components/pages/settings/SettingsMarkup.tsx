@@ -148,7 +148,7 @@ export function SettingsMarkup() {
                   className="form-input"
                   type="text"
                   id="memoryInput"
-                  placeholder="e.g. I'm preparing for JEE 2027 and find integration hardest"
+                  placeholder="e.g. I'm studying AP Calculus / A-Level Physics and find integration hardest"
                   maxLength={2000}
                 />
                 <button className="btn btn-primary" id="addMemoryBtn" type="button">

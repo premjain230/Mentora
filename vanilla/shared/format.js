@@ -19,7 +19,7 @@ export function toDate(value) {
 export function formatDate(value, options = {}) {
   const date = toDate(value);
   if (!date) return "";
-  return new Intl.DateTimeFormat("en-IN", {
+  return new Intl.DateTimeFormat(undefined, {
     day: "numeric",
     month: "short",
     year: "numeric",
@@ -30,7 +30,7 @@ export function formatDate(value, options = {}) {
 export function formatNumber(value, fallback = "—") {
   const number = Number(value);
   if (!Number.isFinite(number)) return fallback;
-  return new Intl.NumberFormat("en-IN").format(number);
+  return new Intl.NumberFormat(undefined).format(number);
 }
 
 export function formatDuration(totalSeconds) {
