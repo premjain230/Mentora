@@ -414,7 +414,7 @@ async function runTests() {
     assert.strictEqual(systemParts[0].text, "You are Learning Allied tutor.");
     assert.strictEqual(contents.length, 1);
     assert.strictEqual(contents[0].parts[0].text, "Explain Newton's third law.");
-    assert.strictEqual(GEMINI_DEFAULT_MODEL, "gemini-2.5-flash");
+    assert.strictEqual(GEMINI_DEFAULT_MODEL, "gemini-3.8-flash");
   });
 
   console.log("\n============================================================");

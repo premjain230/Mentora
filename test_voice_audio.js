@@ -442,7 +442,7 @@ async function runTests() {
   test("Existing server/_ai.js remains completely intact", () => {
     const { contents } = convertMessagesToGemini([{ role: "user", content: "Test prompt" }]);
     assert.strictEqual(contents.length, 1);
-    assert.strictEqual(GEMINI_DEFAULT_MODEL, "gemini-2.5-flash");
+    assert.strictEqual(GEMINI_DEFAULT_MODEL, "gemini-3.8-flash");
   });
 
   console.log("\n============================================================");

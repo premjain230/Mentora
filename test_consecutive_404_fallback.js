@@ -113,20 +113,18 @@ async function runConsecutive404Suite() {
     });
 
     assert.ok(res1, "Response must exist");
-    assert.strictEqual(requestedGeminiUrls.length, 3, "All 3 configured Gemini candidate models must be attempted");
-    assert.ok(requestedGeminiUrls[0].includes("gemini-2.5-flash"), "First attempt must be gemini-2.5-flash");
-    assert.ok(requestedGeminiUrls[1].includes("gemini-2.0-flash"), "Second attempt must be gemini-2.0-flash");
-    assert.ok(requestedGeminiUrls[2].includes("gemini-1.5-flash"), "Third attempt must be gemini-1.5-flash");
-    assert.strictEqual(groqCalls, 1, "Groq fallback must be called once candidate Gemini models are exhausted");
+    assert.strictEqual(requestedGeminiUrls.length, 1, "Must NOT silently downgrade gemini-3.8-flash to 2.5/2.0/1.5");
+    assert.ok(requestedGeminiUrls[0].includes("gemini-3.8-flash"), "Attempt must be gemini-3.8-flash");
+    assert.strictEqual(groqCalls, 1, "Groq fallback must be called immediately on gemini-3.8-flash 404");
     assert.strictEqual(meta1.provider, "groq", "Final provider must be groq");
-    console.log("  ✓ Confirmed: Standard endpoint sequenced gemini-2.5-flash -> gemini-2.0-flash -> gemini-1.5-flash -> Groq fallback.\n");
+    console.log("  ✓ Confirmed: Standard endpoint tried gemini-3.8-flash -> Groq fallback without downgrading to 2.5.\n");
 
-    // ── Test 2: Standard endpoint partial 404 recovery (gemini-2.5-flash 404, gemini-2.0-flash succeeds 200) ──
-    console.log("[Test 2] Standard endpoint: 1st model 404, 2nd model succeeds 200 -> Gemini returns successfully");
+    // ── Test 2: Standard endpoint partial 404 recovery (custom model 404, gemini-3.8-flash succeeds 200) ──
+    console.log("[Test 2] Standard endpoint: custom model 404, gemini-3.8-flash succeeds 200 -> Gemini returns successfully");
     requestedGeminiUrls = [];
     groqCalls = 0;
     geminiResponseHandler = (req, res) => {
-      if (req.url.includes("gemini-2.5-flash")) {
+      if (!req.url.includes("gemini-3.8-flash")) {
         res.writeHead(404, { "Content-Type": "application/json" });
         return res.end(JSON.stringify({ error: { code: 404, message: "Model not found" } }));
       }
@@ -137,16 +135,17 @@ async function runConsecutive404Suite() {
     const meta2 = {};
     const res2 = await aiComplete({
       messages: [{ role: "user", content: "Explain Newton's third law" }],
+      model: "gemini-custom-test",
       json: true,
       metaOut: meta2,
     });
 
     assert.ok(res2, "Response must exist");
-    assert.strictEqual(requestedGeminiUrls.length, 2, "Must stop retrying after gemini-2.0-flash succeeds");
-    assert.strictEqual(groqCalls, 0, "Groq must NOT be called when secondary Gemini model succeeds");
+    assert.strictEqual(requestedGeminiUrls.length, 2, "Must stop retrying after gemini-3.8-flash succeeds");
+    assert.strictEqual(groqCalls, 0, "Groq must NOT be called when gemini-3.8-flash succeeds");
     assert.strictEqual(meta2.provider, "gemini", "Provider must remain gemini");
-    assert.strictEqual(meta2.model, "gemini-2.0-flash", "Winning model must be gemini-2.0-flash");
-    console.log("  ✓ Confirmed: Standard endpoint recovered on gemini-2.0-flash without triggering Groq fallback.\n");
+    assert.strictEqual(meta2.model, "gemini-3.8-flash", "Winning model must be gemini-3.8-flash");
+    console.log("  ✓ Confirmed: Standard endpoint recovered on gemini-3.8-flash without triggering Groq fallback.\n");
 
     // ── Test 3: Streaming endpoint consecutive 404s (all 3 models fail -> Groq stream fallback) ──
     console.log("[Test 3] Streaming endpoint: all 3 Gemini models 404 -> Groq stream fallback");
@@ -163,20 +162,18 @@ async function runConsecutive404Suite() {
       onChunk: (chunk) => { chunks3.push(chunk); },
     });
 
-    assert.strictEqual(requestedGeminiUrls.length, 3, "Streaming must attempt all 3 Gemini candidate models");
-    assert.ok(requestedGeminiUrls[0].includes("gemini-2.5-flash"), "Stream attempt 1: gemini-2.5-flash");
-    assert.ok(requestedGeminiUrls[1].includes("gemini-2.0-flash"), "Stream attempt 2: gemini-2.0-flash");
-    assert.ok(requestedGeminiUrls[2].includes("gemini-1.5-flash"), "Stream attempt 3: gemini-1.5-flash");
-    assert.strictEqual(groqCalls, 1, "Groq stream must be invoked after 3rd Gemini 404");
+    assert.strictEqual(requestedGeminiUrls.length, 1, "Streaming must NOT silently downgrade gemini-3.8-flash to 2.5/2.0/1.5");
+    assert.ok(requestedGeminiUrls[0].includes("gemini-3.8-flash"), "Stream attempt 1: gemini-3.8-flash");
+    assert.strictEqual(groqCalls, 1, "Groq stream must be invoked after gemini-3.8-flash 404");
     assert.ok(chunks3.length > 0, "Stream must deliver tokens from Groq fallback");
-    console.log("  ✓ Confirmed: Streaming endpoint sequenced gemini-2.5-flash -> gemini-2.0-flash -> gemini-1.5-flash -> Groq stream.\n");
+    console.log("  ✓ Confirmed: Streaming endpoint tried gemini-3.8-flash -> Groq stream without downgrading.\n");
 
-    // ── Test 4: Streaming endpoint partial 404 recovery (1st model 404, 2nd model streams successfully) ──
-    console.log("[Test 4] Streaming endpoint: 1st model 404, 2nd model succeeds 200 -> Gemini streams successfully");
+    // ── Test 4: Streaming endpoint partial 404 recovery (custom model 404, gemini-3.8-flash streams successfully) ──
+    console.log("[Test 4] Streaming endpoint: custom model 404, gemini-3.8-flash succeeds 200 -> Gemini streams successfully");
     requestedGeminiUrls = [];
     groqCalls = 0;
     geminiResponseHandler = (req, res) => {
-      if (req.url.includes("gemini-2.5-flash")) {
+      if (!req.url.includes("gemini-3.8-flash")) {
         res.writeHead(404, { "Content-Type": "application/json" });
         return res.end(JSON.stringify({ error: { code: 404, message: "Model not found" } }));
       }
@@ -194,13 +191,14 @@ async function runConsecutive404Suite() {
     const chunks4 = [];
     await aiStream({
       messages: [{ role: "user", content: "Explain Newton's third law" }],
+      model: "gemini-custom-test",
       onChunk: (chunk) => { chunks4.push(chunk); },
     });
 
-    assert.strictEqual(requestedGeminiUrls.length, 2, "Stream must stop on 2nd model once 200 OK");
-    assert.strictEqual(groqCalls, 0, "Groq stream must NOT be called when secondary Gemini stream succeeds");
+    assert.strictEqual(requestedGeminiUrls.length, 2, "Stream must stop on gemini-3.8-flash once 200 OK");
+    assert.strictEqual(groqCalls, 0, "Groq stream must NOT be called when gemini-3.8-flash stream succeeds");
     assert.ok(chunks4.join("").includes("Action and reaction are equal"), "Tokens must be from Gemini");
-    console.log("  ✓ Confirmed: Streaming endpoint recovered on gemini-2.0-flash without Groq fallback.\n");
+    console.log("  ✓ Confirmed: Streaming endpoint recovered on gemini-3.8-flash without Groq fallback.\n");
 
     console.log("============================================================");
     console.log("ALL MULTI-MODEL CONSECUTIVE 404 FALLBACK TESTS PASSED!");

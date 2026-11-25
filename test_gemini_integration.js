@@ -95,12 +95,12 @@ async function runTests() {
     assert.strictEqual(contents[0].parts[1].text, "Second part of my question.");
   });
 
-  test("verified default model is gemini-2.5-flash", () => {
-    assert.strictEqual(GEMINI_DEFAULT_MODEL, "gemini-2.5-flash");
+  test("verified default model is gemini-3.8-flash", () => {
+    assert.strictEqual(GEMINI_DEFAULT_MODEL, "gemini-3.8-flash");
   });
 
   test("OpenAI format adapter converts Gemini output cleanly", () => {
-    const formatted = geminiToOpenAiResponse("Photosynthesis is energy conversion.", "gemini-2.5-flash", {
+    const formatted = geminiToOpenAiResponse("Photosynthesis is energy conversion.", "gemini-3.8-flash", {
       prompt_tokens: 10,
       completion_tokens: 20,
       total_tokens: 30,

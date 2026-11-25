@@ -26,8 +26,8 @@ const crypto = require("crypto");
 const GROQ_DEFAULT_MODEL = "llama-3.3-70b-versatile";
 const GROQ_FAST_MODEL = "llama-3.1-8b-instant";
 const GROQ_MODEL = process.env.GROQ_MODEL || GROQ_DEFAULT_MODEL;
-const GEMINI_DEFAULT_MODEL = "gemini-2.5-flash";
-const GEMINI_FALLBACK_MODELS = ["gemini-2.5-flash", "gemini-2.0-flash", "gemini-1.5-flash"];
+const GEMINI_DEFAULT_MODEL = "gemini-3.8-flash";
+const GEMINI_FALLBACK_MODELS = ["gemini-3.8-flash"];
 
 const KNOWN_GROQ_MODELS = new Set([
   "llama-3.3-70b-versatile",
@@ -271,24 +271,39 @@ function convertMessagesToGemini(messages) {
   return { systemParts, contents };
 }
 
+function isValidGeminiModelName(name) {
+  if (!name || typeof name !== "string") return false;
+  const trimmed = name.trim();
+  if (trimmed.length > 64) return false;
+  if (/^(AQ\.|AIza|sk-|gsk_)/i.test(trimmed)) return false;
+  return /^gemini-[a-z0-9._-]+$/i.test(trimmed);
+}
+
+let _warnedInvalidGeminiModel = false;
+
 /**
  * Resolves the correct Gemini model identifier.
+ * Validates that GEMINI_MODEL is an actual Gemini model name (not an API key or placeholder).
  */
 function resolveGeminiModel(model) {
   let targetModel = GEMINI_DEFAULT_MODEL;
-  if (typeof model === "string" && model.toLowerCase().includes("gemini")) {
+  if (typeof model === "string" && isValidGeminiModelName(model)) {
     targetModel = model.trim();
   } else {
     const envModel = cleanEnvValue(process.env.GEMINI_MODEL);
     if (envModel && envModel !== "[SENSITIVE]") {
-      targetModel = envModel;
+      if (isValidGeminiModelName(envModel)) {
+        targetModel = envModel;
+      } else if (!_warnedInvalidGeminiModel) {
+        _warnedInvalidGeminiModel = true;
+        logAiEvent("warn", "INVALID_GEMINI_MODEL_CONFIG", {
+          reason: "GEMINI_MODEL env var is not a valid Gemini model name; falling back to default",
+          fallbackModel: GEMINI_DEFAULT_MODEL,
+        });
+      }
     }
   }
 
-  // gemini-3.8-flash is an internal assistant preset; map to active 2.5-flash
-  if (targetModel === "gemini-3.8-flash") {
-    targetModel = GEMINI_DEFAULT_MODEL;
-  }
   return targetModel;
 }
 
@@ -308,6 +323,7 @@ async function geminiComplete({
   requestId,
   apiRoute,
   _isRetry = false,
+  _triedModels = null,
 }) {
   const diag = { requestId: requestId || undefined, apiRoute: apiRoute || undefined };
   const apiKey = cleanEnvValue(process.env.GEMINI_API_KEY);
@@ -897,6 +913,65 @@ async function geminiStream({
   }
 }
 
+let _groqModelsCache = null;
+let _groqModelsCacheAt = 0;
+const GROQ_MODELS_CACHE_TTL_MS = 5 * 60 * 1000;
+
+async function discoverGroqFallbackModel(apiKey, excludeModels = new Set(), signal) {
+  const preferredOrder = [
+    GROQ_DEFAULT_MODEL,
+    GROQ_FAST_MODEL,
+    "meta-llama/llama-4-scout-17b-16e-instruct",
+    "openai/gpt-oss-120b",
+    "openai/gpt-oss-20b",
+    "qwen/qwen3-32b",
+    "gemma2-9b-it",
+    "mixtral-8x7b-32768",
+  ];
+
+  const now = Date.now();
+  let availableIds = _groqModelsCache && now - _groqModelsCacheAt < GROQ_MODELS_CACHE_TTL_MS
+    ? _groqModelsCache
+    : null;
+
+  if (!availableIds) {
+    try {
+      const resp = await fetch("https://api.groq.com/openai/v1/models", {
+        method: "GET",
+        headers: { Authorization: `Bearer ${apiKey}` },
+        signal,
+      });
+      if (resp.ok) {
+        const data = await resp.json().catch(() => null);
+        if (Array.isArray(data?.data)) {
+          availableIds = data.data
+            .map((m) => m && m.id)
+            .filter((id) => typeof id === "string" && !/whisper|guard|tts|safeguard|distil-whisper|orpheus/i.test(id));
+          _groqModelsCache = availableIds;
+          _groqModelsCacheAt = now;
+        }
+      }
+    } catch {
+      availableIds = null;
+    }
+  }
+
+  if (Array.isArray(availableIds) && availableIds.length > 0) {
+    for (const pref of preferredOrder) {
+      if (!excludeModels.has(pref) && availableIds.includes(pref)) {
+        return pref;
+      }
+    }
+    const firstAvailable = availableIds.find((id) => !excludeModels.has(id));
+    if (firstAvailable) return firstAvailable;
+  }
+
+  for (const pref of preferredOrder) {
+    if (!excludeModels.has(pref)) return pref;
+  }
+  return null;
+}
+
 /**
  * Direct Groq API completion (Fallback Provider).
  */
@@ -914,6 +989,7 @@ async function groqComplete({
   requestId,
   apiRoute,
   _isRetry = false,
+  _triedModels = null,
 }) {
   const diag = { requestId: requestId || undefined, apiRoute: apiRoute || undefined };
   const apiKey = cleanEnvValue(process.env.GROQ_API_KEY);
@@ -1015,10 +1091,15 @@ async function groqComplete({
     const status = resp.status;
     const failureCategory = classifyFailure(status, { message: safeError });
 
-    // Automatic resilience: If Groq returns 404 (model decommissioned or invalid), retry with fallback model once
-    if (status === 404 && !_isRetry) {
-      const fallbackTarget = targetModel !== GROQ_DEFAULT_MODEL ? GROQ_DEFAULT_MODEL : GROQ_FAST_MODEL;
-      if (fallbackTarget !== targetModel) {
+    // Automatic resilience: If Groq returns 404 (model decommissioned or not allowed), discover & retry with an allowed model
+    const triedSet = _triedModels instanceof Set ? _triedModels : new Set([targetModel]);
+    triedSet.add(targetModel);
+    if (status === 404 && triedSet.size < 3) {
+      const staticFallback = targetModel !== GROQ_DEFAULT_MODEL ? GROQ_DEFAULT_MODEL : GROQ_FAST_MODEL;
+      const fallbackTarget = !triedSet.has(staticFallback) && triedSet.size === 1
+        ? staticFallback
+        : await discoverGroqFallbackModel(apiKey, triedSet, signal);
+      if (fallbackTarget && !triedSet.has(fallbackTarget)) {
         logAiEvent("warn", "GROQ_MODEL_RETRY", {
           ...diag,
           selectedProvider: "auto",
@@ -1041,6 +1122,7 @@ async function groqComplete({
           requestId,
           apiRoute,
           _isRetry: true,
+          _triedModels: triedSet,
         });
       }
     }
@@ -1237,6 +1319,7 @@ async function groqStream({
   requestId,
   apiRoute,
   _isRetry = false,
+  _triedModels = null,
 }) {
   const diag = { requestId: requestId || undefined, apiRoute: apiRoute || undefined };
   const apiKey = cleanEnvValue(process.env.GROQ_API_KEY);
@@ -1328,9 +1411,14 @@ async function groqStream({
     const status = resp.status;
     const failureCategory = classifyFailure(status, { message: safeError });
 
-    if (status === 404 && !_isRetry) {
-      const fallbackTarget = targetModel !== GROQ_DEFAULT_MODEL ? GROQ_DEFAULT_MODEL : GROQ_FAST_MODEL;
-      if (fallbackTarget !== targetModel) {
+    const triedSet = _triedModels instanceof Set ? _triedModels : new Set([targetModel]);
+    triedSet.add(targetModel);
+    if (status === 404 && triedSet.size < 3) {
+      const staticFallback = targetModel !== GROQ_DEFAULT_MODEL ? GROQ_DEFAULT_MODEL : GROQ_FAST_MODEL;
+      const fallbackTarget = !triedSet.has(staticFallback) && triedSet.size === 1
+        ? staticFallback
+        : await discoverGroqFallbackModel(apiKey, triedSet, signal);
+      if (fallbackTarget && !triedSet.has(fallbackTarget)) {
         logAiEvent("warn", "GROQ_MODEL_RETRY", {
           ...diag,
           selectedProvider: "auto",
@@ -1353,6 +1441,7 @@ async function groqStream({
           requestId,
           apiRoute,
           _isRetry: true,
+          _triedModels: triedSet,
         });
       }
     }

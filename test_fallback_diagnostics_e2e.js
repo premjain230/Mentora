@@ -393,6 +393,65 @@ async function runTests() {
     }
     console.log("  ✓ Pre-token Gemini failure seamlessly streamed Groq.");
 
+    // ── 7. Invalid GEMINI_MODEL env var (e.g. API key pasted into GEMINI_MODEL) & Groq 404 model discovery ──
+    console.log("[7] Testing invalid GEMINI_MODEL env var & Groq /models discovery...");
+    const prevGeminiModel = process.env.GEMINI_MODEL;
+    process.env.GEMINI_MODEL = "AQ.Ab8RN6FakeKeyAccidentallyPastedInModel";
+    let sawGeminiUrl = "";
+    global.fetch = async (url, init) => {
+      const u = String(url);
+      if (u.includes("generativelanguage.googleapis.com")) {
+        sawGeminiUrl = u;
+        return new Response(JSON.stringify({ error: { message: "API key not valid." } }), { status: 401 });
+      }
+      if (u === "https://api.groq.com/openai/v1/models") {
+        return new Response(
+          JSON.stringify({ data: [{ id: "qwen/qwen3-32b" }, { id: "whisper-large-v3" }] }),
+          { status: 200 }
+        );
+      }
+      if (u.includes("api.groq.com/openai/v1/chat/completions")) {
+        const parsed = JSON.parse(init.body);
+        if (parsed.model === "qwen/qwen3-32b") {
+          return new Response(
+            JSON.stringify({
+              choices: [
+                {
+                  message: {
+                    content: JSON.stringify({
+                      kind: "short",
+                      title: "Gravity",
+                      directAnswer: "Gravity is the attraction between masses.",
+                      sections: [],
+                    }),
+                  },
+                },
+              ],
+            }),
+            { status: 200 }
+          );
+        }
+        return new Response(JSON.stringify({ error: { message: "model_not_found" } }), { status: 404 });
+      }
+      throw new Error(`Unexpected fetch to ${u}`);
+    };
+
+    {
+      const { req, res, result } = createMockReqRes({
+        body: { action: "chat", question: "What is gravity?" },
+      });
+      await captureLogs(() => tutorHandler(req, res));
+      const r = result();
+      assert(sawGeminiUrl.includes("/models/gemini-3.8-flash:generateContent"), "Must ignore API key in GEMINI_MODEL and use gemini-3.8-flash");
+      assert.strictEqual(r.statusCode, 200);
+      assert.strictEqual(r.jsonBody.meta.provider, "groq");
+      assert.strictEqual(r.jsonBody.meta.model, "qwen/qwen3-32b");
+      assert(r.jsonBody.reply.directAnswer.includes("attraction between masses"));
+    }
+    if (prevGeminiModel === undefined) delete process.env.GEMINI_MODEL;
+    else process.env.GEMINI_MODEL = prevGeminiModel;
+    console.log("  ✓ Invalid GEMINI_MODEL ignored and Groq /models discovery succeeded.");
+
     console.log("\n============================================================");
     console.log("ALL E2E FALLBACK, STREAMING & DIAGNOSTIC TESTS PASSED!");
     console.log("============================================================");

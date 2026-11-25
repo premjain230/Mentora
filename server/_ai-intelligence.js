@@ -268,7 +268,7 @@ function resolveModelRouting({ requestedModel, intent, needsResearch }) {
   // AUTO Mode: Primary provider is Google Gemini for every request, with automatic Groq failover
   return {
     provider: "gemini",
-    model: "gemini-2.5-flash",
+    model: "gemini-3.8-flash",
     fallbackProvider: "groq",
     fallbackModel: "llama-3.3-70b-versatile",
     isAuto: true,

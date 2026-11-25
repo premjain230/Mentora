@@ -6,7 +6,7 @@
  * Verifies connection to Google's official Gemini API.
  * Reads:
  *   - process.env.GEMINI_API_KEY
- *   - process.env.GEMINI_MODEL (defaults to "gemini-2.5-flash")
+ *   - process.env.GEMINI_MODEL (defaults to "gemini-3.8-flash")
  * 
  * Features:
  *   - 25-second request timeout with AbortSignal
@@ -32,7 +32,7 @@ for (const envPath of [".env.local", ".env"]) {
 
 const rawApiKey = (process.env.GEMINI_API_KEY ? process.env.GEMINI_API_KEY.trim() : "").replace(/^["']|["']$/g, "");
 const rawModel = (process.env.GEMINI_MODEL ? process.env.GEMINI_MODEL.trim() : "").replace(/^["']|["']$/g, "");
-const model = (!rawModel || rawModel === "[SENSITIVE]") ? "gemini-2.5-flash" : rawModel;
+const model = (!rawModel || rawModel === "[SENSITIVE]") ? "gemini-3.8-flash" : rawModel;
 const prompt = "Explain photosynthesis in two simple sentences for a Class 9 student.";
 const REQUEST_TIMEOUT_MS = 25000;
 
