@@ -21,6 +21,8 @@
 //   - No duplicate quota or database writes on fallback.
 // ─────────────────────────────────────────────────────────────
 
+const crypto = require("crypto");
+
 const GROQ_DEFAULT_MODEL = "llama-3.3-70b-versatile";
 const GROQ_FAST_MODEL = "llama-3.1-8b-instant";
 const GROQ_MODEL = process.env.GROQ_MODEL || GROQ_DEFAULT_MODEL;
@@ -199,18 +201,16 @@ function getTimeoutMs(provider, callerTimeout) {
   return provider === "gemini" ? DEFAULT_GEMINI_TIMEOUT_MS : DEFAULT_GROQ_TIMEOUT_MS;
 }
 
+function generateRequestId() {
+  if (typeof crypto.randomUUID === "function") {
+    return crypto.randomUUID();
+  }
+  return `req_${Date.now().toString(36)}_${crypto.randomBytes(4).toString("hex")}`;
+}
+
 /**
  * Structured server-side logging helper.
  * Logs provider lifecycle events WITHOUT exposing user prompts, messages, or secrets.
- * Provides the required diagnostics:
- *   - selectedProvider
- *   - providerAttempted
- *   - status
- *   - failureCategory
- *   - durationMs
- *   - fallbackTriggered
- *   - fallbackSucceeded
- *   - finalProvider
  */
 function logAiEvent(level, event, meta = {}) {
   const timestamp = new Date().toISOString();
@@ -304,12 +304,17 @@ async function geminiComplete({
   signal,
   timeoutMs,
   usageOut,
+  metaOut,
+  requestId,
+  apiRoute,
   _isRetry = false,
 }) {
+  const diag = { requestId: requestId || undefined, apiRoute: apiRoute || undefined };
   const apiKey = cleanEnvValue(process.env.GEMINI_API_KEY);
   if (!isUsableKey(apiKey)) {
     throw Object.assign(new Error("GEMINI_API_KEY is not configured or is a placeholder."), {
       statusCode: 500,
+      httpStatus: 500,
       provider: "gemini",
       failureCategory: "auth_error",
       retryable: true,
@@ -366,18 +371,30 @@ async function geminiComplete({
       : sanitizeKey(err?.message || String(err), apiKey);
 
     logAiEvent("warn", isTimeout ? "TIMEOUT" : "CONNECT_ERROR", {
+      ...diag,
       selectedProvider: "auto",
       providerAttempted: "gemini",
       model: targetModel,
       durationMs,
       timeoutMs: effectiveTimeout,
       status: isTimeout ? 504 : 502,
+      httpStatus: isTimeout ? 504 : 502,
       failureCategory,
       error: msg.slice(0, 150),
     });
 
+    if (metaOut && typeof metaOut === "object") {
+      metaOut.model = targetModel;
+      metaOut.durationMs = durationMs;
+      metaOut.httpStatus = isTimeout ? 504 : 502;
+      metaOut.failureCategory = failureCategory;
+    }
+
     throw Object.assign(new Error(`Gemini connection error: ${msg}`), {
       statusCode: isTimeout ? 504 : 502,
+      httpStatus: isTimeout ? 504 : 502,
+      model: targetModel,
+      durationMs,
       provider: "gemini",
       failureCategory,
       retryable: true,
@@ -403,6 +420,7 @@ async function geminiComplete({
 
       if (nextModel && nextModel !== targetModel) {
         logAiEvent("warn", "MODEL_RETRY", {
+          ...diag,
           selectedProvider: "auto",
           providerAttempted: "gemini",
           fromModel: targetModel,
@@ -418,6 +436,9 @@ async function geminiComplete({
           signal,
           timeoutMs,
           usageOut,
+          metaOut,
+          requestId,
+          apiRoute,
           _isRetry: true,
         });
       }
@@ -429,17 +450,29 @@ async function geminiComplete({
     const failureCategory = classifyFailure(status, { message: safeError });
 
     logAiEvent("warn", "HTTP_ERROR", {
+      ...diag,
       selectedProvider: "auto",
       providerAttempted: "gemini",
       model: targetModel,
       status,
+      httpStatus: status,
       failureCategory,
       durationMs,
       error: safeError.slice(0, 150),
     });
 
+    if (metaOut && typeof metaOut === "object") {
+      metaOut.model = targetModel;
+      metaOut.durationMs = durationMs;
+      metaOut.httpStatus = status;
+      metaOut.failureCategory = failureCategory;
+    }
+
     throw Object.assign(new Error(`Gemini error (${status}): ${safeError.slice(0, 300)}`), {
-      statusCode: status === 429 ? 429 : status === 404 ? 404 : 502,
+      statusCode: status === 429 ? 429 : status === 404 ? 404 : status === 401 ? 401 : status === 403 ? 403 : status >= 500 ? status : 502,
+      httpStatus: status,
+      model: targetModel,
+      durationMs,
       provider: "gemini",
       failureCategory,
       retryable: true,
@@ -469,16 +502,27 @@ async function geminiComplete({
   if (!content || !content.trim()) {
     const reasonMsg = finishReason ? ` (finishReason: ${finishReason})` : "";
     logAiEvent("warn", "EMPTY_RESPONSE", {
+      ...diag,
       selectedProvider: "auto",
       providerAttempted: "gemini",
       model: targetModel,
       status: resp.status,
+      httpStatus: resp.status,
       failureCategory: "empty_response",
       durationMs,
       error: `Gemini returned an empty response${reasonMsg}`,
     });
+    if (metaOut && typeof metaOut === "object") {
+      metaOut.model = targetModel;
+      metaOut.durationMs = durationMs;
+      metaOut.httpStatus = resp.status;
+      metaOut.failureCategory = "empty_response";
+    }
     throw Object.assign(new Error(`Gemini returned an empty response${reasonMsg}`), {
       statusCode: 502,
+      httpStatus: resp.status,
+      model: targetModel,
+      durationMs,
       provider: "gemini",
       failureCategory: "empty_response",
       retryable: true,
@@ -489,26 +533,44 @@ async function geminiComplete({
     const parsed = extractJson(content);
     if (parsed !== null) {
       logAiEvent("info", "SUCCESS", {
+        ...diag,
         selectedProvider: "auto",
         providerAttempted: "gemini",
         model: targetModel,
         status: 200,
+        httpStatus: resp.status,
         durationMs,
         finalProvider: "gemini",
       });
+      if (metaOut && typeof metaOut === "object") {
+        metaOut.model = targetModel;
+        metaOut.durationMs = durationMs;
+        metaOut.httpStatus = resp.status;
+      }
       return parsed;
     }
     logAiEvent("warn", "PARSE_ERROR", {
+      ...diag,
       selectedProvider: "auto",
       providerAttempted: "gemini",
       model: targetModel,
       status: resp.status,
+      httpStatus: resp.status,
       failureCategory: "parse_error",
       durationMs,
       error: "Gemini did not return valid JSON",
     });
+    if (metaOut && typeof metaOut === "object") {
+      metaOut.model = targetModel;
+      metaOut.durationMs = durationMs;
+      metaOut.httpStatus = resp.status;
+      metaOut.failureCategory = "parse_error";
+    }
     throw Object.assign(new Error("Gemini did not return valid JSON."), {
       statusCode: 502,
+      httpStatus: resp.status,
+      model: targetModel,
+      durationMs,
       provider: "gemini",
       failureCategory: "parse_error",
       retryable: true,
@@ -516,13 +578,20 @@ async function geminiComplete({
   }
 
   logAiEvent("info", "SUCCESS", {
+    ...diag,
     selectedProvider: "auto",
     providerAttempted: "gemini",
     model: targetModel,
     status: 200,
+    httpStatus: resp.status,
     durationMs,
     finalProvider: "gemini",
   });
+  if (metaOut && typeof metaOut === "object") {
+    metaOut.model = targetModel;
+    metaOut.durationMs = durationMs;
+    metaOut.httpStatus = resp.status;
+  }
   return content;
 }
 
@@ -538,11 +607,16 @@ async function geminiStream({
   signal,
   timeoutMs,
   onChunk,
+  metaOut,
+  requestId,
+  apiRoute,
 }) {
+  const diag = { requestId: requestId || undefined, apiRoute: apiRoute || undefined };
   const apiKey = cleanEnvValue(process.env.GEMINI_API_KEY);
   if (!isUsableKey(apiKey)) {
     throw Object.assign(new Error("GEMINI_API_KEY is not configured or is a placeholder."), {
       statusCode: 500,
+      httpStatus: 500,
       provider: "gemini",
       failureCategory: "auth_error",
       retryable: true,
@@ -593,18 +667,24 @@ async function geminiStream({
       : sanitizeKey(err?.message || String(err), apiKey);
 
     logAiEvent("warn", isTimeout ? "TIMEOUT" : "CONNECT_ERROR", {
+      ...diag,
       selectedProvider: "auto",
       providerAttempted: "gemini",
       model: targetModel,
       durationMs,
       timeoutMs: effectiveTimeout,
       status: isTimeout ? 504 : 502,
+      httpStatus: isTimeout ? 504 : 502,
       failureCategory,
+      stream: true,
       error: msg.slice(0, 150),
     });
 
     throw Object.assign(new Error(`Gemini stream connection error: ${msg}`), {
       statusCode: isTimeout ? 504 : 502,
+      httpStatus: isTimeout ? 504 : 502,
+      model: targetModel,
+      durationMs,
       provider: "gemini",
       failureCategory,
       retryable: true,
@@ -627,11 +707,13 @@ async function geminiStream({
 
       if (nextModel && nextModel !== targetModel) {
         logAiEvent("warn", "STREAM_MODEL_RETRY", {
+          ...diag,
           selectedProvider: "auto",
           providerAttempted: "gemini",
           fromModel: targetModel,
           toModel: nextModel,
           status: 404,
+          stream: true,
         });
         return geminiStream({
           messages,
@@ -641,23 +723,32 @@ async function geminiStream({
           signal,
           timeoutMs,
           onChunk,
+          metaOut,
+          requestId,
+          apiRoute,
           _isRetry: true,
         });
       }
     }
 
     logAiEvent("warn", "HTTP_ERROR", {
+      ...diag,
       selectedProvider: "auto",
       providerAttempted: "gemini",
       model: targetModel,
       status,
+      httpStatus: status,
       failureCategory,
       durationMs,
+      stream: true,
       error: safeError.slice(0, 150),
     });
 
     throw Object.assign(new Error(`Gemini stream error (${status}): ${safeError.slice(0, 200)}`), {
-      statusCode: status === 429 ? 429 : status === 404 ? 404 : 502,
+      statusCode: status === 429 ? 429 : status === 404 ? 404 : status === 401 ? 401 : status === 403 ? 403 : status >= 500 ? status : 502,
+      httpStatus: status,
+      model: targetModel,
+      durationMs,
       provider: "gemini",
       failureCategory,
       retryable: true,
@@ -693,19 +784,35 @@ async function geminiStream({
         const jsonStr = trimmed.slice(5).trim();
         if (!jsonStr || jsonStr === "[DONE]") continue;
 
+        let parsed;
         try {
-          const parsed = JSON.parse(jsonStr);
-          const candidate = parsed?.candidates?.[0];
-          const parts = candidate?.content?.parts;
-          if (Array.isArray(parts) && typeof onChunk === "function") {
-            for (const part of parts) {
-              if (part?.text) {
-                onChunk(part.text);
-              }
-            }
-          }
+          parsed = JSON.parse(jsonStr);
         } catch {
           // ignore unparseable partial SSE chunk
+          continue;
+        }
+        if (parsed?.error) {
+          const errStatus = Number(parsed.error.code) || 502;
+          const safeMsg = sanitizeKey(parsed.error.message || "Gemini stream error payload", apiKey);
+          const failureCategory = classifyFailure(errStatus, { message: safeMsg });
+          throw Object.assign(new Error(`Gemini stream error (${errStatus}): ${safeMsg.slice(0, 200)}`), {
+            statusCode: errStatus,
+            httpStatus: errStatus,
+            model: targetModel,
+            durationMs: Date.now() - startTime,
+            provider: "gemini",
+            failureCategory,
+            retryable: true,
+          });
+        }
+        const candidate = parsed?.candidates?.[0];
+        const parts = candidate?.content?.parts;
+        if (Array.isArray(parts) && typeof onChunk === "function") {
+          for (const part of parts) {
+            if (part?.text) {
+              onChunk(part.text);
+            }
+          }
         }
       }
     }
@@ -715,23 +822,76 @@ async function geminiStream({
       if (trimmed.startsWith("data:")) {
         const jsonStr = trimmed.slice(5).trim();
         if (jsonStr && jsonStr !== "[DONE]") {
+          let parsed = null;
           try {
-            const parsed = JSON.parse(jsonStr);
-            const candidate = parsed?.candidates?.[0];
-            const parts = candidate?.content?.parts;
-            if (Array.isArray(parts) && typeof onChunk === "function") {
-              for (const part of parts) {
-                if (part?.text) {
-                  onChunk(part.text);
-                }
-              }
-            }
+            parsed = JSON.parse(jsonStr);
           } catch {
             // ignore unparseable
+          }
+          if (parsed?.error) {
+            const errStatus = Number(parsed.error.code) || 502;
+            const safeMsg = sanitizeKey(parsed.error.message || "Gemini stream error payload", apiKey);
+            const failureCategory = classifyFailure(errStatus, { message: safeMsg });
+            throw Object.assign(new Error(`Gemini stream error (${errStatus}): ${safeMsg.slice(0, 200)}`), {
+              statusCode: errStatus,
+              httpStatus: errStatus,
+              model: targetModel,
+              durationMs: Date.now() - startTime,
+              provider: "gemini",
+              failureCategory,
+              retryable: true,
+            });
+          }
+          const candidate = parsed?.candidates?.[0];
+          const parts = candidate?.content?.parts;
+          if (Array.isArray(parts) && typeof onChunk === "function") {
+            for (const part of parts) {
+              if (part?.text) {
+                onChunk(part.text);
+              }
+            }
           }
         }
       }
     }
+    if (metaOut && typeof metaOut === "object") {
+      metaOut.model = targetModel;
+      metaOut.durationMs = Date.now() - startTime;
+      metaOut.httpStatus = resp.status;
+    }
+  } catch (streamErr) {
+    const streamDurationMs = Date.now() - startTime;
+    if (streamErr?.provider === "gemini") {
+      throw streamErr;
+    }
+    const isTimeout = streamErr?.name === "AbortError" || streamErr?.name === "TimeoutError" || localController.signal.aborted;
+    const failureCategory = isTimeout ? "timeout" : classifyFailure(502, streamErr);
+    const msg = isTimeout
+      ? `Gemini stream timed out after ${effectiveTimeout}ms`
+      : sanitizeKey(streamErr?.message || String(streamErr), apiKey);
+
+    logAiEvent("warn", isTimeout ? "STREAM_TIMEOUT" : "STREAM_ERROR", {
+      ...diag,
+      selectedProvider: "auto",
+      providerAttempted: "gemini",
+      model: targetModel,
+      status: isTimeout ? 504 : 502,
+      httpStatus: isTimeout ? 504 : 502,
+      failureCategory,
+      durationMs: streamDurationMs,
+      stream: true,
+      error: msg.slice(0, 150),
+    });
+
+    throw Object.assign(new Error(msg), {
+      statusCode: isTimeout ? 504 : 502,
+      httpStatus: isTimeout ? 504 : 502,
+      model: targetModel,
+      durationMs: streamDurationMs,
+      provider: "gemini",
+      failureCategory,
+      retryable: true,
+    });
   } finally {
     clearTimeout(timeoutId);
   }
@@ -750,17 +910,25 @@ async function groqComplete({
   signal,
   timeoutMs,
   usageOut,
+  metaOut,
+  requestId,
+  apiRoute,
   _isRetry = false,
 }) {
+  const diag = { requestId: requestId || undefined, apiRoute: apiRoute || undefined };
   const apiKey = cleanEnvValue(process.env.GROQ_API_KEY);
   if (!isUsableKey(apiKey)) {
     throw Object.assign(new Error("GROQ_API_KEY is not configured or is a placeholder."), {
       statusCode: 500,
+      httpStatus: 500,
       provider: "groq",
       failureCategory: "auth_error",
       retryable: false,
     });
   }
+
+  // Groq requires the word "json" in messages when response_format=json_object is used.
+  const hasJsonWord = Array.isArray(messages) && messages.some((m) => typeof m?.content === "string" && /json/i.test(m.content));
 
   let extraBody = null;
   if (extra && typeof extra === "object") {
@@ -793,7 +961,7 @@ async function groqComplete({
         messages,
         temperature: Math.max(0, Math.min(2, Number(temperature) || 0.6)),
         max_tokens: Math.max(1, Math.min(4096, Number(maxTokens) || 3000)),
-        response_format: json ? { type: "json_object" } : undefined,
+        response_format: json && hasJsonWord ? { type: "json_object" } : undefined,
         ...(extraBody || {}),
       }),
     });
@@ -807,18 +975,30 @@ async function groqComplete({
       : sanitizeKey(networkErr?.message || String(networkErr), apiKey);
 
     logAiEvent("warn", isTimeout ? "TIMEOUT" : "CONNECT_ERROR", {
+      ...diag,
       selectedProvider: "auto",
       providerAttempted: "groq",
       model: targetModel,
       status: isTimeout ? 504 : 502,
+      httpStatus: isTimeout ? 504 : 502,
       failureCategory,
       durationMs,
       timeoutMs: effectiveTimeout,
       error: msg.slice(0, 150),
     });
 
+    if (metaOut && typeof metaOut === "object") {
+      metaOut.model = targetModel;
+      metaOut.durationMs = durationMs;
+      metaOut.httpStatus = isTimeout ? 504 : 502;
+      metaOut.failureCategory = failureCategory;
+    }
+
     throw Object.assign(new Error(`Groq connection error: ${msg}`), {
       statusCode: isTimeout ? 504 : 502,
+      httpStatus: isTimeout ? 504 : 502,
+      model: targetModel,
+      durationMs,
       provider: "groq",
       failureCategory,
       retryable: true,
@@ -840,6 +1020,7 @@ async function groqComplete({
       const fallbackTarget = targetModel !== GROQ_DEFAULT_MODEL ? GROQ_DEFAULT_MODEL : GROQ_FAST_MODEL;
       if (fallbackTarget !== targetModel) {
         logAiEvent("warn", "GROQ_MODEL_RETRY", {
+          ...diag,
           selectedProvider: "auto",
           providerAttempted: "groq",
           fromModel: targetModel,
@@ -856,20 +1037,32 @@ async function groqComplete({
           signal,
           timeoutMs,
           usageOut,
+          metaOut,
+          requestId,
+          apiRoute,
           _isRetry: true,
         });
       }
     }
 
     logAiEvent("warn", "HTTP_ERROR", {
+      ...diag,
       selectedProvider: "auto",
       providerAttempted: "groq",
       model: targetModel,
       status,
+      httpStatus: status,
       failureCategory,
       durationMs,
       error: safeError.slice(0, 150),
     });
+
+    if (metaOut && typeof metaOut === "object") {
+      metaOut.model = targetModel;
+      metaOut.durationMs = durationMs;
+      metaOut.httpStatus = status;
+      metaOut.failureCategory = failureCategory;
+    }
 
     throw Object.assign(new Error(`Groq error (${status}): ${safeError.slice(0, 300)}`), {
       statusCode:
@@ -879,11 +1072,16 @@ async function groqComplete({
           ? 503
           : status === 401
           ? 401
+          : status === 403
+          ? 403
           : status === 404
           ? 404
           : status >= 500
           ? status
           : 502,
+      httpStatus: status,
+      model: targetModel,
+      durationMs,
       provider: "groq",
       failureCategory,
       retryable: status === 429 || status >= 500,
@@ -895,16 +1093,27 @@ async function groqComplete({
     data = await resp.json();
   } catch (parseErr) {
     logAiEvent("warn", "MALFORMED_RESPONSE", {
+      ...diag,
       selectedProvider: "auto",
       providerAttempted: "groq",
       model: targetModel,
       status: resp.status,
+      httpStatus: resp.status,
       failureCategory: "malformed_response",
       durationMs,
       error: "Groq response was not valid JSON",
     });
+    if (metaOut && typeof metaOut === "object") {
+      metaOut.model = targetModel;
+      metaOut.durationMs = durationMs;
+      metaOut.httpStatus = resp.status;
+      metaOut.failureCategory = "malformed_response";
+    }
     throw Object.assign(new Error("Groq API response was malformed."), {
       statusCode: 502,
+      httpStatus: resp.status,
+      model: targetModel,
+      durationMs,
       provider: "groq",
       failureCategory: "malformed_response",
       retryable: true,
@@ -918,16 +1127,27 @@ async function groqComplete({
   const content = data?.choices?.[0]?.message?.content || "";
   if (!content || !content.trim()) {
     logAiEvent("warn", "EMPTY_RESPONSE", {
+      ...diag,
       selectedProvider: "auto",
       providerAttempted: "groq",
       model: targetModel,
       status: resp.status,
+      httpStatus: resp.status,
       failureCategory: "empty_response",
       durationMs,
       error: "Groq returned an empty response",
     });
+    if (metaOut && typeof metaOut === "object") {
+      metaOut.model = targetModel;
+      metaOut.durationMs = durationMs;
+      metaOut.httpStatus = resp.status;
+      metaOut.failureCategory = "empty_response";
+    }
     throw Object.assign(new Error("Groq returned an empty response."), {
       statusCode: 502,
+      httpStatus: resp.status,
+      model: targetModel,
+      durationMs,
       provider: "groq",
       failureCategory: "empty_response",
       retryable: true,
@@ -938,26 +1158,44 @@ async function groqComplete({
     const parsed = extractJson(content);
     if (parsed !== null) {
       logAiEvent("info", "SUCCESS", {
+        ...diag,
         selectedProvider: "auto",
         providerAttempted: "groq",
         model: targetModel,
         status: 200,
+        httpStatus: resp.status,
         durationMs,
         finalProvider: "groq",
       });
+      if (metaOut && typeof metaOut === "object") {
+        metaOut.model = targetModel;
+        metaOut.durationMs = durationMs;
+        metaOut.httpStatus = resp.status;
+      }
       return parsed;
     }
     logAiEvent("warn", "PARSE_ERROR", {
+      ...diag,
       selectedProvider: "auto",
       providerAttempted: "groq",
       model: targetModel,
       status: resp.status,
+      httpStatus: resp.status,
       failureCategory: "parse_error",
       durationMs,
       error: "Groq response did not contain valid JSON",
     });
+    if (metaOut && typeof metaOut === "object") {
+      metaOut.model = targetModel;
+      metaOut.durationMs = durationMs;
+      metaOut.httpStatus = resp.status;
+      metaOut.failureCategory = "parse_error";
+    }
     throw Object.assign(new Error("Groq did not return valid JSON."), {
       statusCode: 502,
+      httpStatus: resp.status,
+      model: targetModel,
+      durationMs,
       provider: "groq",
       failureCategory: "parse_error",
       retryable: true,
@@ -965,13 +1203,20 @@ async function groqComplete({
   }
 
   logAiEvent("info", "SUCCESS", {
+    ...diag,
     selectedProvider: "auto",
     providerAttempted: "groq",
     model: targetModel,
     status: 200,
+    httpStatus: resp.status,
     durationMs,
     finalProvider: "groq",
   });
+  if (metaOut && typeof metaOut === "object") {
+    metaOut.model = targetModel;
+    metaOut.durationMs = durationMs;
+    metaOut.httpStatus = resp.status;
+  }
   return content;
 }
 
@@ -988,12 +1233,17 @@ async function groqStream({
   timeoutMs,
   onChunk,
   extra,
+  metaOut,
+  requestId,
+  apiRoute,
   _isRetry = false,
 }) {
+  const diag = { requestId: requestId || undefined, apiRoute: apiRoute || undefined };
   const apiKey = cleanEnvValue(process.env.GROQ_API_KEY);
   if (!isUsableKey(apiKey)) {
     throw Object.assign(new Error("GROQ_API_KEY is not configured or is a placeholder."), {
       statusCode: 500,
+      httpStatus: 500,
       provider: "groq",
       failureCategory: "auth_error",
       retryable: false,
@@ -1045,29 +1295,34 @@ async function groqStream({
       : sanitizeKey(err?.message || String(err), apiKey);
 
     logAiEvent("warn", isTimeout ? "TIMEOUT" : "CONNECT_ERROR", {
+      ...diag,
       selectedProvider: "auto",
       providerAttempted: "groq",
       model: targetModel,
       status: isTimeout ? 504 : 502,
+      httpStatus: isTimeout ? 504 : 502,
       failureCategory,
       durationMs,
       timeoutMs: effectiveTimeout,
+      stream: true,
       error: msg.slice(0, 150),
     });
 
     throw Object.assign(new Error(`Groq stream connection error: ${msg}`), {
       statusCode: isTimeout ? 504 : 502,
+      httpStatus: isTimeout ? 504 : 502,
+      model: targetModel,
+      durationMs,
       provider: "groq",
       failureCategory,
       retryable: true,
     });
-  } finally {
-    clearTimeout(timeoutId);
   }
 
   const durationMs = Date.now() - startTime;
 
   if (!resp.ok) {
+    clearTimeout(timeoutId);
     const errText = await resp.text().catch(() => "");
     const safeError = sanitizeKey(errText, apiKey);
     const status = resp.status;
@@ -1077,11 +1332,13 @@ async function groqStream({
       const fallbackTarget = targetModel !== GROQ_DEFAULT_MODEL ? GROQ_DEFAULT_MODEL : GROQ_FAST_MODEL;
       if (fallbackTarget !== targetModel) {
         logAiEvent("warn", "GROQ_MODEL_RETRY", {
+          ...diag,
           selectedProvider: "auto",
           providerAttempted: "groq",
           fromModel: targetModel,
           toModel: fallbackTarget,
           status: 404,
+          stream: true,
         });
         return groqStream({
           messages,
@@ -1092,23 +1349,32 @@ async function groqStream({
           timeoutMs,
           onChunk,
           extra,
+          metaOut,
+          requestId,
+          apiRoute,
           _isRetry: true,
         });
       }
     }
 
     logAiEvent("warn", "HTTP_ERROR", {
+      ...diag,
       selectedProvider: "auto",
       providerAttempted: "groq",
       model: targetModel,
       status,
+      httpStatus: status,
       failureCategory,
       durationMs,
+      stream: true,
       error: safeError.slice(0, 150),
     });
 
     throw Object.assign(new Error(`Groq stream error (${status}): ${safeError.slice(0, 200)}`), {
-      statusCode: status === 429 ? 429 : 502,
+      statusCode: status === 429 ? 429 : status === 404 ? 404 : status === 401 ? 401 : status === 403 ? 403 : status >= 500 ? status : 502,
+      httpStatus: status,
+      model: targetModel,
+      durationMs,
       provider: "groq",
       failureCategory,
       retryable: true,
@@ -1116,8 +1382,12 @@ async function groqStream({
   }
 
   if (!resp.body || typeof resp.body.getReader !== "function") {
+    clearTimeout(timeoutId);
     throw Object.assign(new Error("Groq stream did not return a readable body."), {
       statusCode: 502,
+      httpStatus: resp.status,
+      model: targetModel,
+      durationMs,
       provider: "groq",
       failureCategory: "generation_failure",
       retryable: true,
@@ -1127,55 +1397,163 @@ async function groqStream({
   const reader = resp.body.getReader();
   const decoder = new TextDecoder("utf-8");
   let buffer = "";
+  let tokenCount = 0;
 
-  while (true) {
-    const { done, value } = await reader.read();
-    if (done) break;
+  try {
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
 
-    buffer += decoder.decode(value, { stream: true });
-    const lines = buffer.split("\n");
-    buffer = lines.pop() ?? "";
+      buffer += decoder.decode(value, { stream: true });
+      const lines = buffer.split("\n");
+      buffer = lines.pop() ?? "";
 
-    for (const line of lines) {
-      const trimmed = line.trim();
-      if (!trimmed || !trimmed.startsWith("data:")) continue;
-      const jsonStr = trimmed.slice(5).trim();
-      if (!jsonStr || jsonStr === "[DONE]") continue;
+      for (const line of lines) {
+        const trimmed = line.trim();
+        if (!trimmed || !trimmed.startsWith("data:")) continue;
+        const jsonStr = trimmed.slice(5).trim();
+        if (!jsonStr || jsonStr === "[DONE]") continue;
 
-      try {
-        const parsed = JSON.parse(jsonStr);
-        const delta = parsed?.choices?.[0]?.delta?.content;
-        if (delta && typeof onChunk === "function") {
-          onChunk(delta);
-        }
-      } catch {
-        // ignore unparseable partial chunk
-      }
-    }
-  }
-
-  if (buffer.trim()) {
-    const trimmed = buffer.trim();
-    if (trimmed.startsWith("data:")) {
-      const jsonStr = trimmed.slice(5).trim();
-      if (jsonStr && jsonStr !== "[DONE]") {
+        let parsed;
         try {
-          const parsed = JSON.parse(jsonStr);
-          const delta = parsed?.choices?.[0]?.delta?.content;
-          if (delta && typeof onChunk === "function") {
+          parsed = JSON.parse(jsonStr);
+        } catch {
+          // ignore unparseable partial chunk
+          continue;
+        }
+        if (parsed?.error) {
+          const errStatus = Number(parsed.error.code) || 502;
+          const safeMsg = sanitizeKey(parsed.error.message || "Groq stream error payload", apiKey);
+          const failureCategory = classifyFailure(errStatus, { message: safeMsg });
+          throw Object.assign(new Error(`Groq stream error (${errStatus}): ${safeMsg.slice(0, 200)}`), {
+            statusCode: errStatus,
+            httpStatus: errStatus,
+            model: targetModel,
+            durationMs: Date.now() - startTime,
+            provider: "groq",
+            failureCategory,
+            retryable: true,
+          });
+        }
+        const delta = parsed?.choices?.[0]?.delta?.content;
+        if (delta) {
+          tokenCount++;
+          if (typeof onChunk === "function") {
             onChunk(delta);
           }
-        } catch {}
+        }
       }
     }
+
+    if (buffer.trim()) {
+      const trimmed = buffer.trim();
+      if (trimmed.startsWith("data:")) {
+        const jsonStr = trimmed.slice(5).trim();
+        if (jsonStr && jsonStr !== "[DONE]") {
+          let parsed = null;
+          try {
+            parsed = JSON.parse(jsonStr);
+          } catch {}
+          if (parsed?.error) {
+            const errStatus = Number(parsed.error.code) || 502;
+            const safeMsg = sanitizeKey(parsed.error.message || "Groq stream error payload", apiKey);
+            const failureCategory = classifyFailure(errStatus, { message: safeMsg });
+            throw Object.assign(new Error(`Groq stream error (${errStatus}): ${safeMsg.slice(0, 200)}`), {
+              statusCode: errStatus,
+              httpStatus: errStatus,
+              model: targetModel,
+              durationMs: Date.now() - startTime,
+              provider: "groq",
+              failureCategory,
+              retryable: true,
+            });
+          }
+          const delta = parsed?.choices?.[0]?.delta?.content;
+          if (delta) {
+            tokenCount++;
+            if (typeof onChunk === "function") {
+              onChunk(delta);
+            }
+          }
+        }
+      }
+    }
+
+    if (tokenCount === 0) {
+      throw Object.assign(new Error("Groq stream completed with zero tokens."), {
+        statusCode: 502,
+        httpStatus: resp.status,
+        model: targetModel,
+        durationMs: Date.now() - startTime,
+        provider: "groq",
+        failureCategory: "empty_response",
+        retryable: true,
+      });
+    }
+  } catch (streamErr) {
+    const streamDurationMs = Date.now() - startTime;
+    if (streamErr?.provider === "groq") {
+      logAiEvent("warn", "STREAM_ERROR", {
+        ...diag,
+        selectedProvider: "auto",
+        providerAttempted: "groq",
+        model: targetModel,
+        status: streamErr.statusCode || 502,
+        httpStatus: streamErr.httpStatus || 502,
+        failureCategory: streamErr.failureCategory || "generation_failure",
+        durationMs: streamDurationMs,
+        stream: true,
+        error: String(streamErr.message || "").slice(0, 150),
+      });
+      throw streamErr;
+    }
+    const isTimeout = streamErr?.name === "AbortError" || streamErr?.name === "TimeoutError" || localController.signal.aborted;
+    const failureCategory = isTimeout ? "timeout" : classifyFailure(502, streamErr);
+    const msg = isTimeout
+      ? `Groq stream timed out after ${effectiveTimeout}ms`
+      : sanitizeKey(streamErr?.message || String(streamErr), apiKey);
+
+    logAiEvent("warn", isTimeout ? "STREAM_TIMEOUT" : "STREAM_ERROR", {
+      ...diag,
+      selectedProvider: "auto",
+      providerAttempted: "groq",
+      model: targetModel,
+      status: isTimeout ? 504 : 502,
+      httpStatus: isTimeout ? 504 : 502,
+      failureCategory,
+      durationMs: streamDurationMs,
+      stream: true,
+      error: msg.slice(0, 150),
+    });
+
+    throw Object.assign(new Error(msg), {
+      statusCode: isTimeout ? 504 : 502,
+      httpStatus: isTimeout ? 504 : 502,
+      model: targetModel,
+      durationMs: streamDurationMs,
+      provider: "groq",
+      failureCategory,
+      retryable: true,
+    });
+  } finally {
+    clearTimeout(timeoutId);
+  }
+
+  const totalDurationMs = Date.now() - startTime;
+  if (metaOut && typeof metaOut === "object") {
+    metaOut.model = targetModel;
+    metaOut.durationMs = totalDurationMs;
+    metaOut.httpStatus = resp.status;
   }
 
   logAiEvent("info", "SUCCESS", {
+    ...diag,
     selectedProvider: "auto",
     providerAttempted: "groq",
     model: targetModel,
     status: 200,
-    durationMs: Date.now() - startTime,
+    httpStatus: resp.status,
+    durationMs: totalDurationMs,
     stream: true,
     finalProvider: "groq",
   });
@@ -1193,82 +1571,173 @@ async function groqStream({
  * network issues, empty responses, and parse errors.
  */
 async function aiComplete(options = {}) {
+  const requestId = options.requestId || generateRequestId();
+  const apiRoute = options.apiRoute || "unknown";
   const hasGemini = isUsableKey(process.env.GEMINI_API_KEY);
   const hasGroq = isUsableKey(process.env.GROQ_API_KEY);
+  const diagnostics = {
+    requestId,
+    apiRoute,
+    stream: false,
+    gemini: { attempted: false, status: null, httpStatus: null, model: null, durationMs: null, failureCategory: null },
+    fallbackTriggered: false,
+    groq: { attempted: false, status: null, httpStatus: null, model: null, durationMs: null, failureCategory: null },
+    finalProvider: "none",
+  };
+
+  const attachDiagnostics = (target) => {
+    if (target && typeof target === "object") {
+      target.diagnostics = diagnostics;
+    }
+  };
 
   // Manual provider selection: respect user choice without silent rerouting
   const isExplicitGroq = (options.provider === "groq" || (options.manual === true && options.model && !String(options.model).toLowerCase().includes("gemini"))) && options.allowFallback !== true;
   if (isExplicitGroq) {
     if (!hasGroq) {
-      throw Object.assign(new Error("Groq provider is requested but GROQ_API_KEY is not configured."), { statusCode: 500, retryable: false });
+      throw Object.assign(new Error("Groq provider is requested but GROQ_API_KEY is not configured."), { statusCode: 500, retryable: false, diagnostics });
     }
-    logAiEvent("info", "ATTEMPT", { selectedProvider: "groq", providerAttempted: "groq", isManual: true });
+    logAiEvent("info", "ATTEMPT", { requestId, apiRoute, selectedProvider: "groq", providerAttempted: "groq", isManual: true });
     const model = resolveGroqModel(options.model);
-    const result = await groqComplete({ ...options, model });
-    if (options.metaOut && typeof options.metaOut === "object") {
-      options.metaOut.provider = "groq";
-      options.metaOut.model = model;
+    const groqMeta = {};
+    const groqStart = Date.now();
+    try {
+      const result = await groqComplete({
+        ...options,
+        model,
+        timeoutMs: options.groqTimeoutMs ?? options.timeoutMs,
+        metaOut: groqMeta,
+        requestId,
+        apiRoute,
+      });
+      diagnostics.groq = { attempted: true, status: "ok", httpStatus: groqMeta.httpStatus || 200, model: groqMeta.model || model, durationMs: groqMeta.durationMs ?? (Date.now() - groqStart), failureCategory: null };
+      diagnostics.finalProvider = "groq";
+      if (options.metaOut && typeof options.metaOut === "object") {
+        options.metaOut.provider = "groq";
+        options.metaOut.model = model;
+        attachDiagnostics(options.metaOut);
+      }
+      return result;
+    } catch (err) {
+      diagnostics.groq = { attempted: true, status: "error", httpStatus: err.httpStatus || err.statusCode || 502, model: err.model || model, durationMs: err.durationMs ?? (Date.now() - groqStart), failureCategory: err.failureCategory || "api_error" };
+      attachDiagnostics(err);
+      throw err;
     }
-    return result;
   }
 
   const isExplicitGemini = (options.provider === "gemini" || (options.manual === true && options.model && String(options.model).toLowerCase().includes("gemini"))) && options.allowFallback !== true;
   if (isExplicitGemini) {
     if (!hasGemini) {
-      throw Object.assign(new Error("Gemini provider is requested but GEMINI_API_KEY is not configured."), { statusCode: 500, retryable: false });
+      throw Object.assign(new Error("Gemini provider is requested but GEMINI_API_KEY is not configured."), { statusCode: 500, retryable: false, diagnostics });
     }
-    logAiEvent("info", "ATTEMPT", { selectedProvider: "gemini", providerAttempted: "gemini", isManual: true });
+    logAiEvent("info", "ATTEMPT", { requestId, apiRoute, selectedProvider: "gemini", providerAttempted: "gemini", isManual: true });
     const model = resolveGeminiModel(options.model);
-    const result = await geminiComplete({ ...options, model });
-    if (options.metaOut && typeof options.metaOut === "object") {
-      options.metaOut.provider = "gemini";
-      options.metaOut.model = model;
+    const geminiMeta = {};
+    const geminiStart = Date.now();
+    try {
+      const result = await geminiComplete({
+        ...options,
+        model,
+        timeoutMs: options.geminiTimeoutMs ?? options.timeoutMs,
+        metaOut: geminiMeta,
+        requestId,
+        apiRoute,
+      });
+      diagnostics.gemini = { attempted: true, status: "ok", httpStatus: geminiMeta.httpStatus || 200, model: geminiMeta.model || model, durationMs: geminiMeta.durationMs ?? (Date.now() - geminiStart), failureCategory: null };
+      diagnostics.finalProvider = "gemini";
+      if (options.metaOut && typeof options.metaOut === "object") {
+        options.metaOut.provider = "gemini";
+        options.metaOut.model = model;
+        attachDiagnostics(options.metaOut);
+      }
+      return result;
+    } catch (err) {
+      diagnostics.gemini = { attempted: true, status: "error", httpStatus: err.httpStatus || err.statusCode || 502, model: err.model || model, durationMs: err.durationMs ?? (Date.now() - geminiStart), failureCategory: err.failureCategory || "api_error" };
+      attachDiagnostics(err);
+      throw err;
     }
-    return result;
   }
 
   if (!hasGemini && !hasGroq) {
     logAiEvent("error", "NO_CONFIG", {
+      requestId,
+      apiRoute,
       error: "Neither GEMINI_API_KEY nor GROQ_API_KEY is configured.",
     });
     throw Object.assign(
       new Error("Neither GEMINI_API_KEY nor GROQ_API_KEY is configured in the environment."),
-      { statusCode: 500, retryable: false }
+      { statusCode: 500, retryable: false, diagnostics }
     );
   }
 
   // 1) Try Google Gemini first if configured
   if (hasGemini) {
     const geminiStart = Date.now();
+    const geminiMeta = {};
     try {
-      logAiEvent("info", "ATTEMPT", { selectedProvider: "auto", providerAttempted: "gemini", isPrimary: true });
+      logAiEvent("info", "ATTEMPT", { requestId, apiRoute, selectedProvider: "auto", providerAttempted: "gemini", isPrimary: true });
       const geminiUsage = options.usageOut || {};
       const result = await geminiComplete({
         ...options,
+        timeoutMs: options.geminiTimeoutMs ?? options.timeoutMs,
         usageOut: geminiUsage,
+        metaOut: geminiMeta,
+        requestId,
+        apiRoute,
       });
-      const geminiDurationMs = Date.now() - geminiStart;
+      const geminiDurationMs = geminiMeta.durationMs ?? (Date.now() - geminiStart);
+      const usedModel = geminiMeta.model || geminiUsage.model || resolveGeminiModel(options.model);
+      diagnostics.gemini = { attempted: true, status: "ok", httpStatus: geminiMeta.httpStatus || 200, model: usedModel, durationMs: geminiDurationMs, failureCategory: null };
+      diagnostics.finalProvider = "gemini";
       if (options.metaOut && typeof options.metaOut === "object") {
         options.metaOut.provider = "gemini";
-        options.metaOut.model = geminiUsage.model || resolveGeminiModel(options.model);
+        options.metaOut.model = usedModel;
         if (geminiUsage.usage) options.metaOut.usage = geminiUsage.usage;
+        attachDiagnostics(options.metaOut);
       }
+      logAiEvent("info", "REQUEST_SUMMARY", {
+        requestId,
+        apiRoute,
+        stream: false,
+        geminiStatus: "ok",
+        geminiHttpStatus: diagnostics.gemini.httpStatus,
+        geminiModel: usedModel,
+        geminiDurationMs,
+        fallbackTriggered: false,
+        finalProvider: "gemini",
+      });
       return result;
     } catch (geminiErr) {
-      const geminiDurationMs = Date.now() - geminiStart;
+      const geminiDurationMs = geminiErr?.durationMs ?? (Date.now() - geminiStart);
       const safeGeminiError = sanitizeKey(
         geminiErr?.message || "Unknown Gemini error",
         cleanEnvValue(process.env.GEMINI_API_KEY)
       );
       const failureCategory = geminiErr?.failureCategory || classifyFailure(geminiErr?.statusCode || 502, geminiErr);
+      const geminiHttpStatus = geminiErr?.httpStatus || geminiErr?.statusCode || 502;
+      const geminiModel = geminiErr?.model || geminiMeta.model || resolveGeminiModel(options.model);
+
+      diagnostics.gemini = {
+        attempted: true,
+        status: "error",
+        httpStatus: geminiHttpStatus,
+        model: geminiModel,
+        durationMs: geminiDurationMs,
+        failureCategory,
+      };
 
       // If Groq is configured, trigger automatic fallback
       if (hasGroq) {
+        diagnostics.fallbackTriggered = true;
         logAiEvent("warn", "FALLBACK_TRIGGERED", {
+          requestId,
+          apiRoute,
           selectedProvider: "auto",
           primary: "gemini",
           fallback: "groq",
           statusCode: geminiErr.statusCode || 502,
+          httpStatus: geminiHttpStatus,
+          model: geminiModel,
           failureCategory,
           durationMs: geminiDurationMs,
           reason: safeGeminiError.slice(0, 150),
@@ -1276,39 +1745,99 @@ async function aiComplete(options = {}) {
 
         const groqStart = Date.now();
         const fallbackModel = resolveGroqModel(options.model);
+        const groqMeta = {};
         try {
           const fallbackOptions = {
             ...options,
             model: fallbackModel,
+            timeoutMs: options.groqTimeoutMs ?? options.timeoutMs,
+            metaOut: groqMeta,
+            requestId,
+            apiRoute,
             // Never inherit an aborted signal from the failed Gemini call; give Groq a clean execution budget
             signal: options.signal && !options.signal.aborted ? options.signal : undefined,
           };
           const result = await groqComplete(fallbackOptions);
-          const groqDurationMs = Date.now() - groqStart;
+          const groqDurationMs = groqMeta.durationMs ?? (Date.now() - groqStart);
+          const usedGroqModel = groqMeta.model || fallbackModel;
+          diagnostics.groq = {
+            attempted: true,
+            status: "ok",
+            httpStatus: groqMeta.httpStatus || 200,
+            model: usedGroqModel,
+            durationMs: groqDurationMs,
+            failureCategory: null,
+          };
+          diagnostics.finalProvider = "groq";
+
           logAiEvent("info", "FALLBACK_SUCCESS", {
+            requestId,
+            apiRoute,
             selectedProvider: "auto",
             providerAttempted: "groq",
+            model: usedGroqModel,
             fallbackSucceeded: true,
             status: 200,
+            httpStatus: diagnostics.groq.httpStatus,
             durationMs: groqDurationMs,
+            finalProvider: "groq",
+          });
+          logAiEvent("info", "REQUEST_SUMMARY", {
+            requestId,
+            apiRoute,
+            stream: false,
+            geminiStatus: "error",
+            geminiHttpStatus,
+            geminiModel,
+            geminiDurationMs,
+            geminiFailureCategory: failureCategory,
+            fallbackTriggered: true,
+            groqStatus: "ok",
+            groqHttpStatus: diagnostics.groq.httpStatus,
+            groqModel: usedGroqModel,
+            groqDurationMs,
             finalProvider: "groq",
           });
           if (options.metaOut && typeof options.metaOut === "object") {
             options.metaOut.provider = "groq";
-            options.metaOut.model = fallbackModel;
+            options.metaOut.model = usedGroqModel;
+            attachDiagnostics(options.metaOut);
           }
           return result;
         } catch (groqErr) {
+          const groqDurationMs = groqErr?.durationMs ?? (Date.now() - groqStart);
           const safeGroqError = sanitizeKey(
             groqErr?.message || "Unknown Groq error",
             cleanEnvValue(process.env.GROQ_API_KEY)
           );
+          const groqFailureCategory = groqErr?.failureCategory || classifyFailure(groqErr?.statusCode || 502, groqErr);
+          const groqHttpStatus = groqErr?.httpStatus || groqErr?.statusCode || 502;
+          const groqModel = groqErr?.model || groqMeta.model || fallbackModel;
+
+          diagnostics.groq = {
+            attempted: true,
+            status: "error",
+            httpStatus: groqHttpStatus,
+            model: groqModel,
+            durationMs: groqDurationMs,
+            failureCategory: groqFailureCategory,
+          };
 
           logAiEvent("error", "ALL_FAILED", {
+            requestId,
+            apiRoute,
             selectedProvider: "auto",
             primary: "gemini",
             fallback: "groq",
             finalProvider: "none",
+            geminiHttpStatus,
+            geminiModel,
+            geminiFailureCategory: failureCategory,
+            geminiDurationMs,
+            groqHttpStatus,
+            groqModel,
+            groqFailureCategory,
+            groqDurationMs,
             geminiError: safeGeminiError.slice(0, 120),
             groqError: safeGroqError.slice(0, 120),
             statusCode: 503,
@@ -1318,32 +1847,56 @@ async function aiComplete(options = {}) {
             new Error(
               `AI providers unavailable: ${safeGeminiError.slice(0, 120)}; Groq fallback: ${safeGroqError.slice(0, 120)}`
             ),
-            { statusCode: 503, retryable: true }
+            { statusCode: 503, retryable: true, diagnostics }
           );
         }
       }
 
       // Gemini failed and no Groq fallback configured
       logAiEvent("error", "PROVIDER_FAILED_NO_FALLBACK", {
+        requestId,
+        apiRoute,
         selectedProvider: "auto",
         providerAttempted: "gemini",
         statusCode: geminiErr.statusCode || 502,
+        httpStatus: geminiHttpStatus,
+        model: geminiModel,
+        durationMs: geminiDurationMs,
         failureCategory,
         reason: safeGeminiError.slice(0, 150),
       });
+      attachDiagnostics(geminiErr);
       throw geminiErr;
     }
   }
 
   // 2) Default to Groq if Gemini is not configured
-  logAiEvent("info", "ATTEMPT", { selectedProvider: "auto", providerAttempted: "groq", reason: "Gemini unconfigured" });
+  logAiEvent("info", "ATTEMPT", { requestId, apiRoute, selectedProvider: "auto", providerAttempted: "groq", reason: "Gemini unconfigured" });
   const targetGroqModel = resolveGroqModel(options.model);
-  const result = await groqComplete({ ...options, model: targetGroqModel });
-  if (options.metaOut && typeof options.metaOut === "object") {
-    options.metaOut.provider = "groq";
-    options.metaOut.model = targetGroqModel;
+  const groqMeta = {};
+  const groqStart = Date.now();
+  try {
+    const result = await groqComplete({
+      ...options,
+      model: targetGroqModel,
+      timeoutMs: options.groqTimeoutMs ?? options.timeoutMs,
+      metaOut: groqMeta,
+      requestId,
+      apiRoute,
+    });
+    diagnostics.groq = { attempted: true, status: "ok", httpStatus: groqMeta.httpStatus || 200, model: groqMeta.model || targetGroqModel, durationMs: groqMeta.durationMs ?? (Date.now() - groqStart), failureCategory: null };
+    diagnostics.finalProvider = "groq";
+    if (options.metaOut && typeof options.metaOut === "object") {
+      options.metaOut.provider = "groq";
+      options.metaOut.model = targetGroqModel;
+      attachDiagnostics(options.metaOut);
+    }
+    return result;
+  } catch (groqErr) {
+    diagnostics.groq = { attempted: true, status: "error", httpStatus: groqErr.httpStatus || groqErr.statusCode || 502, model: groqErr.model || targetGroqModel, durationMs: groqErr.durationMs ?? (Date.now() - groqStart), failureCategory: groqErr.failureCategory || "api_error" };
+    attachDiagnostics(groqErr);
+    throw groqErr;
   }
-  return result;
 }
 
 /**
@@ -1368,44 +1921,83 @@ async function aiStream(options = {}) {
     allowFallback = true,
     signal,
     timeoutMs,
+    geminiTimeoutMs,
+    groqTimeoutMs,
     onChunk,
     onProviderSwitch,
+    metaOut,
   } = options;
 
+  const requestId = options.requestId || generateRequestId();
+  const apiRoute = options.apiRoute || "unknown";
   const hasGemini = isUsableKey(process.env.GEMINI_API_KEY);
   const hasGroq = isUsableKey(process.env.GROQ_API_KEY);
+  const diagnostics = {
+    requestId,
+    apiRoute,
+    stream: true,
+    gemini: { attempted: false, status: null, httpStatus: null, model: null, durationMs: null, failureCategory: null },
+    fallbackTriggered: false,
+    groq: { attempted: false, status: null, httpStatus: null, model: null, durationMs: null, failureCategory: null },
+    finalProvider: "none",
+  };
+
+  const attachDiagnostics = (target) => {
+    if (target && typeof target === "object") {
+      target.diagnostics = diagnostics;
+    }
+  };
 
   const isExplicitGroq = (provider === "groq" || (options.manual === true && model && !String(model).toLowerCase().includes("gemini"))) && allowFallback !== true;
   if (isExplicitGroq) {
     if (!hasGroq) {
-      throw Object.assign(new Error("Groq provider requested but GROQ_API_KEY is not configured."), { statusCode: 500, retryable: false });
+      throw Object.assign(new Error("Groq provider requested but GROQ_API_KEY is not configured."), { statusCode: 500, retryable: false, diagnostics });
     }
-    logAiEvent("info", "ATTEMPT", { selectedProvider: "groq", providerAttempted: "groq", isManual: true, stream: true });
-    return await groqStream({ ...options, model: resolveGroqModel(model) });
+    logAiEvent("info", "ATTEMPT", { requestId, apiRoute, selectedProvider: "groq", providerAttempted: "groq", isManual: true, stream: true });
+    return await groqStream({
+      ...options,
+      model: resolveGroqModel(model),
+      timeoutMs: groqTimeoutMs ?? timeoutMs,
+      requestId,
+      apiRoute,
+      metaOut,
+    });
   }
 
   const isExplicitGemini = (provider === "gemini" || (options.manual === true && model && String(model).toLowerCase().includes("gemini"))) && allowFallback !== true;
   if (isExplicitGemini) {
     if (!hasGemini) {
-      throw Object.assign(new Error("Gemini provider requested but GEMINI_API_KEY is not configured."), { statusCode: 500, retryable: false });
+      throw Object.assign(new Error("Gemini provider requested but GEMINI_API_KEY is not configured."), { statusCode: 500, retryable: false, diagnostics });
     }
-    logAiEvent("info", "ATTEMPT", { selectedProvider: "gemini", providerAttempted: "gemini", isManual: true, stream: true });
-    return await geminiStream(options);
+    logAiEvent("info", "ATTEMPT", { requestId, apiRoute, selectedProvider: "gemini", providerAttempted: "gemini", isManual: true, stream: true });
+    return await geminiStream({
+      ...options,
+      timeoutMs: geminiTimeoutMs ?? timeoutMs,
+      requestId,
+      apiRoute,
+      metaOut,
+    });
   }
 
   if (!hasGemini && !hasGroq) {
     logAiEvent("error", "NO_CONFIG", {
+      requestId,
+      apiRoute,
+      stream: true,
       error: "Neither GEMINI_API_KEY nor GROQ_API_KEY is configured.",
     });
-    throw Object.assign(new Error("Neither GEMINI_API_KEY nor GROQ_API_KEY is configured in the environment."), { statusCode: 500, retryable: false });
+    throw Object.assign(new Error("Neither GEMINI_API_KEY nor GROQ_API_KEY is configured in the environment."), { statusCode: 500, retryable: false, diagnostics });
   }
 
   // Auto mode: Priority 1 Gemini -> Priority 2 Groq
   if (hasGemini) {
     let tokenCount = 0;
     const geminiStart = Date.now();
+    const geminiMeta = {};
     try {
       logAiEvent("info", "ATTEMPT", {
+        requestId,
+        apiRoute,
         selectedProvider: "auto",
         providerAttempted: "gemini",
         isPrimary: true,
@@ -1414,6 +2006,10 @@ async function aiStream(options = {}) {
 
       await geminiStream({
         ...options,
+        timeoutMs: geminiTimeoutMs ?? timeoutMs,
+        metaOut: geminiMeta,
+        requestId,
+        apiRoute,
         onChunk: (chunkText) => {
           tokenCount++;
           if (typeof onChunk === "function") {
@@ -1426,35 +2022,71 @@ async function aiStream(options = {}) {
       if (tokenCount === 0) {
         throw Object.assign(new Error("Gemini stream completed with zero tokens."), {
           statusCode: 502,
+          httpStatus: geminiMeta.httpStatus || 200,
+          model: geminiMeta.model || resolveGeminiModel(model),
+          durationMs: Date.now() - geminiStart,
           provider: "gemini",
           failureCategory: "empty_response",
           retryable: true,
         });
       }
 
+      const geminiDurationMs = geminiMeta.durationMs ?? (Date.now() - geminiStart);
+      const usedGeminiModel = geminiMeta.model || resolveGeminiModel(model);
+      diagnostics.gemini = {
+        attempted: true,
+        status: "ok",
+        httpStatus: geminiMeta.httpStatus || 200,
+        model: usedGeminiModel,
+        durationMs: geminiDurationMs,
+        failureCategory: null,
+      };
+      diagnostics.finalProvider = "gemini";
+      attachDiagnostics(metaOut);
+
       logAiEvent("info", "SUCCESS", {
+        requestId,
+        apiRoute,
         selectedProvider: "auto",
         providerAttempted: "gemini",
+        model: usedGeminiModel,
         status: 200,
-        durationMs: Date.now() - geminiStart,
+        httpStatus: diagnostics.gemini.httpStatus,
+        durationMs: geminiDurationMs,
         stream: true,
         finalProvider: "gemini",
       });
       return;
     } catch (geminiErr) {
-      const geminiDurationMs = Date.now() - geminiStart;
+      const geminiDurationMs = geminiErr?.durationMs ?? (Date.now() - geminiStart);
       const safeGeminiError = sanitizeKey(
         geminiErr?.message || "Unknown Gemini stream error",
         cleanEnvValue(process.env.GEMINI_API_KEY)
       );
       const failureCategory = geminiErr?.failureCategory || classifyFailure(geminiErr?.statusCode || 502, geminiErr);
+      const geminiHttpStatus = geminiErr?.httpStatus || geminiErr?.statusCode || 502;
+      const usedGeminiModel = geminiErr?.model || geminiMeta.model || resolveGeminiModel(model);
+
+      diagnostics.gemini = {
+        attempted: true,
+        status: "error",
+        httpStatus: geminiHttpStatus,
+        model: usedGeminiModel,
+        durationMs: geminiDurationMs,
+        failureCategory,
+      };
 
       if (hasGroq) {
+        diagnostics.fallbackTriggered = true;
         logAiEvent("warn", "FALLBACK_TRIGGERED", {
+          requestId,
+          apiRoute,
           selectedProvider: "auto",
           primary: "gemini",
           fallback: "groq",
           statusCode: geminiErr.statusCode || 502,
+          httpStatus: geminiHttpStatus,
+          model: usedGeminiModel,
           failureCategory,
           durationMs: geminiDurationMs,
           stream: true,
@@ -1474,34 +2106,80 @@ async function aiStream(options = {}) {
 
         const groqStart = Date.now();
         const fallbackModel = resolveGroqModel(model);
+        const groqMeta = {};
         try {
           const fallbackOptions = {
             ...options,
             model: fallbackModel,
+            timeoutMs: groqTimeoutMs ?? timeoutMs,
+            metaOut: groqMeta,
+            requestId,
+            apiRoute,
             signal: options.signal && !options.signal.aborted ? options.signal : undefined,
           };
           await groqStream(fallbackOptions);
 
+          const groqDurationMs = groqMeta.durationMs ?? (Date.now() - groqStart);
+          const usedGroqModel = groqMeta.model || fallbackModel;
+          diagnostics.groq = {
+            attempted: true,
+            status: "ok",
+            httpStatus: groqMeta.httpStatus || 200,
+            model: usedGroqModel,
+            durationMs: groqDurationMs,
+            failureCategory: null,
+          };
+          diagnostics.finalProvider = "groq";
+          attachDiagnostics(metaOut);
+
           logAiEvent("info", "FALLBACK_SUCCESS", {
+            requestId,
+            apiRoute,
             selectedProvider: "auto",
             providerAttempted: "groq",
+            model: usedGroqModel,
             fallbackSucceeded: true,
             status: 200,
-            durationMs: Date.now() - groqStart,
+            httpStatus: diagnostics.groq.httpStatus,
+            durationMs: groqDurationMs,
             stream: true,
             finalProvider: "groq",
           });
           return;
         } catch (groqErr) {
+          const groqDurationMs = groqErr?.durationMs ?? (Date.now() - groqStart);
           const safeGroqError = sanitizeKey(
             groqErr?.message || "Unknown Groq stream error",
             cleanEnvValue(process.env.GROQ_API_KEY)
           );
+          const groqFailureCategory = groqErr?.failureCategory || classifyFailure(groqErr?.statusCode || 502, groqErr);
+          const groqHttpStatus = groqErr?.httpStatus || groqErr?.statusCode || 502;
+          const usedGroqModel = groqErr?.model || groqMeta.model || fallbackModel;
+
+          diagnostics.groq = {
+            attempted: true,
+            status: "error",
+            httpStatus: groqHttpStatus,
+            model: usedGroqModel,
+            durationMs: groqDurationMs,
+            failureCategory: groqFailureCategory,
+          };
+
           logAiEvent("error", "ALL_FAILED", {
+            requestId,
+            apiRoute,
             selectedProvider: "auto",
             primary: "gemini",
             fallback: "groq",
             finalProvider: "none",
+            geminiHttpStatus,
+            geminiModel: usedGeminiModel,
+            geminiFailureCategory: failureCategory,
+            geminiDurationMs,
+            groqHttpStatus,
+            groqModel: usedGroqModel,
+            groqFailureCategory,
+            groqDurationMs,
             geminiError: safeGeminiError.slice(0, 120),
             groqError: safeGroqError.slice(0, 120),
             statusCode: 503,
@@ -1509,19 +2187,27 @@ async function aiStream(options = {}) {
           });
           throw Object.assign(
             new Error(`AI providers unavailable: ${safeGeminiError.slice(0, 120)}; Groq fallback: ${safeGroqError.slice(0, 120)}`),
-            { statusCode: 503, retryable: true }
+            { statusCode: 503, retryable: true, diagnostics }
           );
         }
       }
 
       // No Groq fallback
+      attachDiagnostics(geminiErr);
       throw geminiErr;
     }
   }
 
   // Gemini unconfigured -> use Groq directly
-  logAiEvent("info", "ATTEMPT", { selectedProvider: "auto", providerAttempted: "groq", reason: "Gemini unconfigured", stream: true });
-  return await groqStream({ ...options, model: resolveGroqModel(model) });
+  logAiEvent("info", "ATTEMPT", { requestId, apiRoute, selectedProvider: "auto", providerAttempted: "groq", reason: "Gemini unconfigured", stream: true });
+  return await groqStream({
+    ...options,
+    model: resolveGroqModel(model),
+    timeoutMs: groqTimeoutMs ?? timeoutMs,
+    requestId,
+    apiRoute,
+    metaOut,
+  });
 }
 
 /**
@@ -1600,6 +2286,7 @@ module.exports = {
   groqStream,
   classifyFailure,
   logAiEvent,
+  generateRequestId,
   geminiToOpenAiResponse,
   geminiChunkToOpenAiSse,
   openAiSseDone,

@@ -52,7 +52,7 @@ export async function runNodeHandler(
           resolve(new NextResponse(readable, { status: statusCode, headers: responseHeaders }));
         }
         const encoded = typeof chunk === "string" ? new TextEncoder().encode(chunk) : chunk;
-        streamWriter.write(encoded);
+        streamWriter.write(encoded).catch(() => {});
         return true;
       },
       json(data: any) {
@@ -72,9 +72,9 @@ export async function runNodeHandler(
         if (streamWriter) {
           if (data) {
             const encoded = typeof data === "string" ? new TextEncoder().encode(data) : data;
-            streamWriter.write(encoded);
+            streamWriter.write(encoded).catch(() => {});
           }
-          streamWriter.close();
+          streamWriter.close().catch(() => {});
           return;
         }
         if (isResolved) return;

@@ -26,6 +26,7 @@ const {
   cleanEnvValue,
   sanitizeKey,
   logAiEvent,
+  generateRequestId,
   geminiToOpenAiResponse,
   geminiChunkToOpenAiSse,
   openAiSseDone,
@@ -84,11 +85,15 @@ module.exports = async function handler(req, res) {
 
   if (!rateLimit(req, res, { name: "groq-proxy", limit: 30 })) return;
 
+  const requestId = (req.headers && req.headers["x-request-id"]) || generateRequestId();
+  const apiRoute = "/api/groq-proxy";
+  res.setHeader("X-Request-Id", requestId);
+
   const hasGemini = isUsableKey(process.env.GEMINI_API_KEY);
   const hasGroq = isUsableKey(process.env.GROQ_API_KEY);
 
   if (!hasGemini && !hasGroq) {
-    logAiEvent("error", "NO_API_KEYS", { endpoint: "groq-proxy" });
+    logAiEvent("error", "NO_API_KEYS", { requestId, apiRoute, endpoint: "groq-proxy" });
     return res.status(500).json({ error: "Server misconfiguration: missing AI provider key" });
   }
 
@@ -157,6 +162,8 @@ module.exports = async function handler(req, res) {
     const metaOut = {};
     try {
       logAiEvent("info", "PRIMARY_ATTEMPT", {
+        requestId,
+        apiRoute,
         provider,
         endpoint: "groq-proxy",
         stream: false,
@@ -171,6 +178,8 @@ module.exports = async function handler(req, res) {
         allowFallback,
         usageOut,
         metaOut,
+        requestId,
+        apiRoute,
       });
 
       const openAiFormat = geminiToOpenAiResponse(
@@ -181,10 +190,13 @@ module.exports = async function handler(req, res) {
       return res.status(200).json(openAiFormat);
     } catch (err) {
       logAiEvent("warn", "REQUEST_FAILED", {
+        requestId,
+        apiRoute,
         endpoint: "groq-proxy",
         provider,
         stream: false,
         status: err.statusCode || 502,
+        failureCategory: err.failureCategory || "upstream_error",
         error: err.message?.slice(0, 150),
       });
 
@@ -201,6 +213,8 @@ module.exports = async function handler(req, res) {
   let streamStarted = false;
   try {
     logAiEvent("info", "PRIMARY_ATTEMPT", {
+      requestId,
+      apiRoute,
       provider,
       endpoint: "groq-proxy",
       stream: true,
@@ -213,6 +227,8 @@ module.exports = async function handler(req, res) {
       model: requestedModel,
       provider,
       allowFallback,
+      requestId,
+      apiRoute,
       onChunk: (chunkText) => {
         if (!streamStarted) {
           streamStarted = true;
@@ -250,11 +266,29 @@ module.exports = async function handler(req, res) {
       res.end();
       return;
     }
+
+    logAiEvent("warn", "STREAM_EMPTY", {
+      requestId,
+      apiRoute,
+      endpoint: "groq-proxy",
+      provider,
+      streamStarted: false,
+    });
+    return res.status(502).json({
+      error: {
+        message: "AI stream completed with no output.",
+        code: "empty_response",
+      },
+    });
   } catch (err) {
     logAiEvent("warn", "STREAM_ERROR", {
+      requestId,
+      apiRoute,
       endpoint: "groq-proxy",
       provider,
       streamStarted,
+      status: err.statusCode || 502,
+      failureCategory: err.failureCategory || "stream_interrupted",
       error: err.message?.slice(0, 150),
     });
 

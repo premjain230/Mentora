@@ -14,7 +14,7 @@
 //  * No retries, no background loops. The caller decides whether to retry.
 
 const crypto = require("crypto");
-const { aiComplete, groqComplete } = require("./_ai");
+const { aiComplete, groqComplete, logAiEvent, getTimeoutMs, generateRequestId } = require("./_ai");
 const { firestore } = require("./_admin");
 const {
   getConcept,
@@ -976,12 +976,18 @@ async function writeContentCache(key, payload) {
 
 /* ── AI calls (one at a time, bounded) ───────────────────────────────────── */
 
-async function askJson(messages, { model, temperature = 0.4, maxTokens = 1200, timeoutMs = 28000 } = {}) {
+async function askJson(messages, { model, temperature = 0.4, maxTokens = 1200, timeoutMs = 28000, requestId, apiRoute = "/api/tutor" } = {}) {
+  const effectiveRequestId = requestId || (typeof generateRequestId === "function" ? generateRequestId() : `req_${Date.now()}`);
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), timeoutMs);
   const usage = {};
   const meta = {};
   const complete = aiComplete || groqComplete;
+  // Cap per-provider timeouts so Gemini never starves Groq fallback within the overall request budget
+  const halfBudget = Math.max(8000, Math.floor(timeoutMs * 0.5));
+  const geminiTimeoutMs = typeof getTimeoutMs === "function" ? Math.min(getTimeoutMs("gemini"), halfBudget) : halfBudget;
+  const groqTimeoutMs = typeof getTimeoutMs === "function" ? Math.min(getTimeoutMs("groq"), halfBudget) : halfBudget;
+
   try {
     const parsed = await complete({
       messages,
@@ -992,16 +998,41 @@ async function askJson(messages, { model, temperature = 0.4, maxTokens = 1200, t
       signal: controller.signal,
       usageOut: usage,
       metaOut: meta,
-      timeoutMs,
+      geminiTimeoutMs,
+      groqTimeoutMs,
+      requestId: effectiveRequestId,
+      apiRoute,
     });
     return {
       parsed,
       usage: usage.usage || null,
       model: meta.model || model,
       provider: meta.provider || "auto",
+      diagnostics: meta.diagnostics || null,
     };
   } catch (err) {
     const message = String((err && err.message) || "");
+    const diag = err && err.diagnostics ? err.diagnostics : null;
+    if (typeof logAiEvent === "function") {
+      logAiEvent("error", "AI_CALL_FAILED", {
+        requestId: effectiveRequestId,
+        apiRoute,
+        statusCode: err?.statusCode || 502,
+        failureCategory: err?.failureCategory || "api_error",
+        fallbackTriggered: Boolean(diag?.fallbackTriggered),
+        geminiStatus: diag?.gemini?.status || null,
+        geminiHttpStatus: diag?.gemini?.httpStatus || null,
+        geminiModel: diag?.gemini?.model || null,
+        geminiDurationMs: diag?.gemini?.durationMs ?? null,
+        geminiFailureCategory: diag?.gemini?.failureCategory || null,
+        groqStatus: diag?.groq?.status || null,
+        groqHttpStatus: diag?.groq?.httpStatus || null,
+        groqModel: diag?.groq?.model || null,
+        groqDurationMs: diag?.groq?.durationMs ?? null,
+        groqFailureCategory: diag?.groq?.failureCategory || null,
+        error: clip(message, 180),
+      });
+    }
     // Bounded model retry if a 404 occurred on model selection
     if (/error \(404\)/i.test(message) && model && model !== MODEL_STRONG) {
       try {
@@ -1014,6 +1045,10 @@ async function askJson(messages, { model, temperature = 0.4, maxTokens = 1200, t
           signal: controller.signal,
           usageOut: usage,
           metaOut: meta,
+          geminiTimeoutMs,
+          groqTimeoutMs,
+          requestId: effectiveRequestId,
+          apiRoute,
         });
         logMetric({ event: "model_fallback", from: model, to: MODEL_STRONG });
         return {
@@ -1021,6 +1056,7 @@ async function askJson(messages, { model, temperature = 0.4, maxTokens = 1200, t
           usage: usage.usage || null,
           model: meta.model || MODEL_STRONG,
           provider: meta.provider || "auto",
+          diagnostics: meta.diagnostics || null,
         };
       } catch (fallbackErr) {
         logMetric({ event: "ai_failed", model: MODEL_STRONG, message: clip(fallbackErr && fallbackErr.message, 180) });
@@ -1504,6 +1540,8 @@ async function chatTutor(params = {}) {
   const body = params.body || params || {};
   const conceptId = body.conceptId || params.conceptId || null;
   const state = params.state || (await loadStudentState(uid, { conceptId }));
+  const requestId = params.requestId || (typeof generateRequestId === "function" ? generateRequestId() : `req_${Date.now()}`);
+  const apiRoute = params.apiRoute || "/api/tutor";
   const startedAt = Date.now();
   const question = clipMultiline(body.question, MAX_QUESTION_CHARS);
   if (!question) throw fail(400, "A question is required.");
@@ -1627,6 +1665,8 @@ async function chatTutor(params = {}) {
     temperature: detailedIntent === "coding" || detailedIntent === "problem_solving" ? 0.2 : 0.35,
     maxTokens: 1800,
     timeoutMs: 28000,
+    requestId,
+    apiRoute,
   });
 
   if (result) {
@@ -1659,6 +1699,8 @@ Do NOT explain unrelated topics. Keep the explanation focused, clear, and direct
         temperature: 0.2,
         maxTokens: 1600,
         timeoutMs: 20000,
+        requestId,
+        apiRoute,
       });
       if (retryResult) {
         const retryReply = normalizeChatReply(retryResult.parsed, {
@@ -1937,6 +1979,8 @@ async function lessonTutor(params = {}) {
   const body = params.body || params || {};
   const conceptId = body.conceptId || params.conceptId || null;
   const state = params.state || (await loadStudentState(uid, { conceptId }));
+  const requestId = params.requestId || (typeof generateRequestId === "function" ? generateRequestId() : `req_${Date.now()}`);
+  const apiRoute = params.apiRoute || "/api/tutor";
   const startedAt = Date.now();
   const { concept, trackId, classNum, subject } = resolveTopic(body);
   if (!concept) throw fail(404, "That chapter is not in the curriculum dataset for this selection.");
@@ -2466,6 +2510,8 @@ async function evaluateTutor(params = {}) {
   const body = params.body || params || {};
   const conceptId = body.conceptId || params.conceptId || null;
   const state = params.state || (await loadStudentState(uid, { conceptId }));
+  const requestId = params.requestId || (typeof generateRequestId === "function" ? generateRequestId() : `req_${Date.now()}`);
+  const apiRoute = params.apiRoute || "/api/tutor";
   const startedAt = Date.now();
   const { concept } = resolveTopic(body);
   const studentAnswer = clipMultiline(body.answer, MAX_ANSWER_CHARS);

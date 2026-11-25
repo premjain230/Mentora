@@ -15,6 +15,7 @@
 
 const { applyCors, rateLimit, readJsonBody, sendError } = require("./_shared");
 const { verifyIdToken, checkAndIncrementChat } = require("./_admin");
+const { generateRequestId, logAiEvent } = require("./_ai");
 const {
   chatTutor,
   lessonTutor,
@@ -48,6 +49,11 @@ module.exports = async function handler(req, res) {
     res.setHeader("Allow", "POST, OPTIONS");
     return res.status(405).json({ error: "Method not allowed." });
   }
+
+  const requestId = (req.headers && req.headers["x-request-id"]) || generateRequestId();
+  const apiRoute = "/api/tutor";
+  res.setHeader("X-Request-Id", requestId);
+  const reqStart = Date.now();
 
   const authHeader = req.headers.authorization || "";
   const token = authHeader.startsWith("Bearer ") ? authHeader.slice(7).trim() : "";
@@ -115,19 +121,35 @@ module.exports = async function handler(req, res) {
       return res.status(200).json({ ok: true, ...payload });
     }
     if (action === "lesson") {
-      const payload = await lessonTutor({ uid, body, state });
+      const payload = await lessonTutor({ uid, body, state, requestId, apiRoute });
       return res.status(200).json({ ok: true, ...payload });
     }
     if (action === "evaluate") {
-      const payload = await evaluateTutor({ uid, body, state });
+      const payload = await evaluateTutor({ uid, body, state, requestId, apiRoute });
       return res.status(200).json({ ok: true, ...payload });
     }
 
-    const payload = await chatTutor({ uid, body, state });
+    const payload = await chatTutor({ uid, body, state, requestId, apiRoute });
+    logAiEvent("info", "TUTOR_RESPONSE", {
+      requestId,
+      apiRoute,
+      action,
+      source: payload?.meta?.source || "unknown",
+      provider: payload?.meta?.provider || "none",
+      model: payload?.meta?.model || "none",
+      latencyMs: Date.now() - reqStart,
+    });
     return res.status(200).json({ ok: true, ...payload });
   } catch (err) {
     const statusCode = err && err.statusCode ? err.statusCode : 500;
-    console.error(`[tutor] ${action} failed:`, err && err.message ? err.message : err);
+    logAiEvent("error", "TUTOR_ERROR", {
+      requestId,
+      apiRoute,
+      action,
+      statusCode,
+      latencyMs: Date.now() - reqStart,
+      error: String(err && err.message ? err.message : err).slice(0, 150),
+    });
     if (statusCode >= 500) {
       return res.status(statusCode).json({
         error: "The tutor could not complete that request. Nothing was saved. Please retry.",
