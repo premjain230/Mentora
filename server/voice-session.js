@@ -14,7 +14,14 @@ const { GoogleGenAI } = require("@google/genai");
 const { applyCors, rateLimit, readJsonBody, sendError } = require("./_shared");
 const { verifyIdToken } = require("./_admin");
 
-const DEFAULT_LIVE_MODEL = "models/gemini-3.8-live";
+const DEFAULT_LIVE_MODEL = "models/gemini-2.5-flash-native-audio-preview-12-2025";
+const CANDIDATE_LIVE_MODELS = [
+  process.env.GEMINI_LIVE_MODEL,
+  DEFAULT_LIVE_MODEL,
+  "models/gemini-2.0-flash-live-001",
+  "models/gemini-2.0-flash-exp",
+  "models/gemini-2.0-flash",
+].filter((m, idx, arr) => Boolean(m) && arr.indexOf(m) === idx);
 const VOICE_INIT_RATE_LIMIT = { name: "voice-session-init", limit: 5 }; // max 5 per minute per IP
 
 /**
@@ -52,66 +59,80 @@ async function createEphemeralToken({ apiKey, model, customGenAiClient } = {}) {
     throw err;
   }
 
-  const activeModel = model || process.env.GEMINI_LIVE_MODEL || DEFAULT_LIVE_MODEL;
+  const modelsToTry = model ? [model] : CANDIDATE_LIVE_MODELS;
   const now = Date.now();
   const expireTime = new Date(now + 30 * 60 * 1000).toISOString();          // 30-minute session duration ceiling
   const newSessionExpireTime = new Date(now + 2 * 60 * 1000).toISOString(); // 2-minute connection window
 
-  const ai = customGenAiClient || new GoogleGenAI({ apiKey: activeKey });
+  // Ephemeral authTokens.create() is only available on v1alpha
+  const ai = customGenAiClient || new GoogleGenAI({
+    apiKey: activeKey,
+    httpOptions: { apiVersion: "v1alpha" },
+  });
 
-  const tokenConfig = {
-    uses: 1, // Single initial use; resuming a Live API session does not count as a use per official API specs
-    expireTime: expireTime,
-    newSessionExpireTime: newSessionExpireTime,
-    liveConnectConstraints: {
-      model: activeModel,
-      config: {
-        responseModalities: ["AUDIO"],
-        speechConfig: {
-          voiceConfig: {
-            prebuiltVoiceConfig: {
-              voiceName: "Puck",
+  let lastRawErr = null;
+  for (const activeModel of modelsToTry) {
+    const tokenConfig = {
+      uses: 1, // Single initial use; resuming a Live API session does not count as a use per official API specs
+      expireTime: expireTime,
+      newSessionExpireTime: newSessionExpireTime,
+      liveConnectConstraints: {
+        model: activeModel,
+        config: {
+          responseModalities: ["AUDIO"],
+          speechConfig: {
+            voiceConfig: {
+              prebuiltVoiceConfig: {
+                voiceName: "Puck",
+              },
             },
           },
-        },
-        systemInstruction: {
-          parts: [
-            {
-              text: "You are Learning Allied voice tutor, a helpful, encouraging, and clear conversational tutor for students. Explain concepts step-by-step, answer student questions concisely, and encourage active learning.",
-            },
-          ],
-        },
-        sessionResumption: {},
-        contextWindowCompression: {
-          slidingWindow: {},
+          systemInstruction: {
+            parts: [
+              {
+                text: "You are Learning Allied voice tutor, a helpful, encouraging, and clear conversational tutor for students. Explain concepts step-by-step, answer student questions concisely, and encourage active learning.",
+              },
+            ],
+          },
+          sessionResumption: {},
+          contextWindowCompression: {
+            slidingWindow: {},
+          },
         },
       },
-    },
-  };
-
-  try {
-    const tokenResponse = await ai.authTokens.create({ config: tokenConfig });
-    const tokenName = tokenResponse && (tokenResponse.name || tokenResponse.token);
-    if (!tokenName) {
-      throw new Error("Gemini API responded without a valid token identifier.");
-    }
-
-    const wsUrl = `wss://generativelanguage.googleapis.com/ws/google.ai.generativelanguage.v1beta.GenerativeService.BidiGenerateContentConstrained?access_token=${encodeURIComponent(tokenName)}`;
-
-    return {
-      token: tokenName,
-      model: activeModel,
-      expiresAt: expireTime,
-      newSessionExpiresAt: newSessionExpireTime,
-      wsUrl: wsUrl,
     };
-  } catch (rawErr) {
-    const sanitizedMsg = sanitizeKey(rawErr && rawErr.message ? rawErr.message : String(rawErr), activeKey);
-    const err = new Error(sanitizedMsg);
-    err.statusCode = (rawErr && (rawErr.status || rawErr.statusCode)) || 503;
-    err.code = (rawErr && rawErr.code) || "TOKEN_GENERATION_FAILED";
-    throw err;
+
+    try {
+      const tokenResponse = await ai.authTokens.create({ config: tokenConfig });
+      const tokenName = tokenResponse && (tokenResponse.name || tokenResponse.token);
+      if (!tokenName) {
+        throw new Error("Gemini API responded without a valid token identifier.");
+      }
+
+      const wsUrl = `wss://generativelanguage.googleapis.com/ws/google.ai.generativelanguage.v1alpha.GenerativeService.BidiGenerateContentConstrained?access_token=${encodeURIComponent(tokenName)}`;
+
+      return {
+        token: tokenName,
+        model: activeModel,
+        expiresAt: expireTime,
+        newSessionExpiresAt: newSessionExpireTime,
+        wsUrl: wsUrl,
+      };
+    } catch (rawErr) {
+      lastRawErr = rawErr;
+      const status = rawErr && (rawErr.status || rawErr.statusCode);
+      // Only retry with fallback models when the failure looks model-specific (404 / 400); fail fast on auth/rate errors
+      if (status && status !== 404 && status !== 400) {
+        break;
+      }
+    }
   }
+
+  const sanitizedMsg = sanitizeKey(lastRawErr && lastRawErr.message ? lastRawErr.message : String(lastRawErr), activeKey);
+  const err = new Error(sanitizedMsg);
+  err.statusCode = (lastRawErr && (lastRawErr.status || lastRawErr.statusCode)) || 503;
+  err.code = (lastRawErr && lastRawErr.code) || "TOKEN_GENERATION_FAILED";
+  throw err;
 }
 
 /**
