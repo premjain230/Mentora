@@ -376,6 +376,7 @@ class VoiceUI {
     this.coordinator = null;
     this.elements = {};
     this.isOverlayOpen = false;
+    this._boundHandlers = null;
 
     this._initCoordinator();
   }
@@ -393,6 +394,9 @@ class VoiceUI {
   mount() {
     if (typeof document === "undefined") return;
 
+    // Clean up any previous mount bindings before re-attaching
+    this._detachListeners();
+
     // Inject styles once
     if (!document.getElementById("learning-allied-voice-styles")) {
       const styleEl = document.createElement("style");
@@ -401,15 +405,51 @@ class VoiceUI {
       document.head.appendChild(styleEl);
     }
 
+    this._boundHandlers = {
+      trigger: () => this.handleTriggerClick(),
+      mute: () => this.toggleMute(),
+      retry: () => this.start(),
+      end: () => this.stop(),
+      closeMini: () => this.hideOverlay(),
+      backdrop: (e) => {
+        if (e.target === this.elements.overlay) {
+          this.hideOverlay();
+        }
+      },
+    };
+
     // Bind trigger button
     const trigger = document.getElementById(this.triggerButtonId);
     if (trigger) {
-      trigger.addEventListener("click", () => this.handleTriggerClick());
+      trigger.addEventListener("click", this._boundHandlers.trigger);
       this.elements.triggerBtn = trigger;
     }
 
     // Build or attach overlay
     this._buildOverlay();
+  }
+
+  _detachListeners() {
+    if (!this._boundHandlers) return;
+    this.elements.triggerBtn?.removeEventListener("click", this._boundHandlers.trigger);
+    this.elements.muteBtn?.removeEventListener("click", this._boundHandlers.mute);
+    this.elements.retryBtn?.removeEventListener("click", this._boundHandlers.retry);
+    this.elements.endBtn?.removeEventListener("click", this._boundHandlers.end);
+    this.elements.closeMini?.removeEventListener("click", this._boundHandlers.closeMini);
+    this.elements.overlay?.removeEventListener("click", this._boundHandlers.backdrop);
+    this._boundHandlers = null;
+  }
+
+  unmount() {
+    if (this.coordinator && this.coordinator.state !== "idle") {
+      void this.coordinator.stop();
+    }
+    this._detachListeners();
+    if (this.elements.overlay && this.elements.overlay.parentNode) {
+      this.elements.overlay.parentNode.removeChild(this.elements.overlay);
+    }
+    this.elements = {};
+    this.isOverlayOpen = false;
   }
 
   _buildOverlay() {
@@ -497,17 +537,14 @@ class VoiceUI {
     this.elements.endBtn = document.getElementById("voiceEndBtn");
     this.elements.closeMini = document.getElementById("voiceCloseMini");
 
-    this.elements.muteBtn?.addEventListener("click", () => this.toggleMute());
-    this.elements.retryBtn?.addEventListener("click", () => this.start());
-    this.elements.endBtn?.addEventListener("click", () => this.stop());
-    this.elements.closeMini?.addEventListener("click", () => this.hideOverlay());
-
-    // Dismiss on clicking overlay backdrop
-    this.elements.overlay?.addEventListener("click", (e) => {
-      if (e.target === this.elements.overlay) {
-        this.hideOverlay();
-      }
-    });
+    const handlers = this._boundHandlers;
+    if (handlers) {
+      this.elements.muteBtn?.addEventListener("click", handlers.mute);
+      this.elements.retryBtn?.addEventListener("click", handlers.retry);
+      this.elements.endBtn?.addEventListener("click", handlers.end);
+      this.elements.closeMini?.addEventListener("click", handlers.closeMini);
+      this.elements.overlay?.addEventListener("click", handlers.backdrop);
+    }
   }
 
   async handleTriggerClick() {

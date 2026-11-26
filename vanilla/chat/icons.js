@@ -40,6 +40,7 @@ export const ICON_PATHS = {
   arrowDown: '<path d="M10 4v11M5.5 10.5 10 15l4.5-4.5" />',
   spark:
     '<path d="M10 2.5 11.6 8l5.4 2-5.4 2-1.6 5.5L8.4 12 3 10l5.4-2L10 2.5Z" />',
+  mic: '<rect x="7.5" y="3" width="5" height="9" rx="2.5" /><path d="M5 10a5 5 0 0 0 10 0M10 15v2.5M7.5 17.5h5" />',
 };
 
 export function iconMarkup(name, size = 15) {

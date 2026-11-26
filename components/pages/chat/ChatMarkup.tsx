@@ -429,6 +429,16 @@ export function ChatMarkup() {
                   className="chat-input"
                 />
                 <button
+                  type="button"
+                  id="voiceBtn"
+                  className="voice-btn chat-voice-btn"
+                  title="Start Live Voice"
+                  aria-label="Start Live Voice"
+                  aria-pressed="false"
+                >
+                  <Icon name="mic" size={17} />
+                </button>
+                <button
                   type="submit"
                   id="chatSend"
                   className="chat-send"

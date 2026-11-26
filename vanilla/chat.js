@@ -28,6 +28,7 @@ import { createTranscript } from "./chat/transcript.js";
 import { createCheck } from "./chat/check.js";
 import { createRail } from "./chat/rail.js";
 import { createComposer } from "./chat/composer.js";
+import { VoiceUI } from "./voice/voice-ui.js";
 
 const MESSAGE_PAGE = 40;
 
@@ -163,7 +164,21 @@ export function mount(root, ctx) {
   const resumeId = readResumeId();
   if (resumeId && user) void app.resumeSession(resumeId);
 
+  const voiceUI = new VoiceUI({
+    getAuthHeaders: async () => {
+      try {
+        const token = await getToken();
+        return token ? { Authorization: `Bearer ${token}` } : {};
+      } catch (_) {
+        return {};
+      }
+    },
+    triggerButtonId: "voiceBtn",
+  });
+  voiceUI.mount();
+
   lifecycle.add(() => {
+    voiceUI.unmount();
     try {
       abortController?.abort();
     } catch (_) {
