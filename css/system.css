@@ -702,8 +702,8 @@
 
 .footer-grid {
   display: grid;
-  grid-template-columns: minmax(0, 1.6fr) repeat(3, minmax(0, 1fr));
-  gap: 40px;
+  grid-template-columns: minmax(0, 1.5fr) repeat(4, minmax(0, 1fr));
+  gap: 32px;
   padding: 56px 0 44px;
 }
 
@@ -774,8 +774,25 @@
   font-size: 12.5px;
 }
 
+.footer-legal-links {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.footer-legal-links a {
+  color: var(--la-muted);
+  text-decoration: none;
+  transition: color 0.15s ease;
+}
+
+.footer-legal-links a:hover {
+  color: var(--la-text);
+}
+
 .footer-social {
   display: flex;
+  flex-wrap: wrap;
   gap: 18px;
 }
 

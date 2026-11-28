@@ -3,126 +3,158 @@ import Link from "next/link";
 import { constructMetadata, SITE_URL, SHARED_JSONLD_GRAPH } from "../lib/seo";
 import { PublicNavbar } from "../components/PublicNavbar";
 import { PublicFooter } from "../components/PublicFooter";
-import { HeroInteractiveDemo } from "../components/landing/HeroInteractiveDemo";
+import { HeroProductDeck } from "../components/landing/HeroProductDeck";
 import { ProductShowcase } from "../components/landing/ProductShowcase";
-import { CognitiveCycleInteractive } from "../components/landing/CognitiveCycleInteractive";
-import { RetentionSimulator } from "../components/landing/RetentionSimulator";
 
 export const metadata = constructMetadata({
   title: "Learning Allied — Global AI Study Partner for Every Curriculum",
   description:
-    "Learning Allied is a global AI study partner for students worldwide. Socratic tutoring, active recall, prerequisite mapping, misconception diagnosis, and spaced revision.",
+    "Learning Allied is a global AI study partner for students worldwide. Socratic tutoring, visual concept models, misconception diagnosis, adaptive practice, and spaced revision.",
   path: "/",
 });
 
 const APK_URL =
   "https://github.com/premjain230/Mentora/releases/download/v1.1.0/learningallied.apk";
 
-const EXAMS = [
+const CURRICULA_TRACKS = [
   {
-    tag: "United States",
+    region: "United States",
     title: "AP, SAT & High School",
-    href: "/curriculum",
-    desc: "College Board AP Physics, Calculus, Chemistry, and Digital SAT reasoning calibrated to US standards.",
-    topics: ["AP Physics 1 & C", "AP Calculus AB / BC", "Digital SAT Math", "NGSS Sciences"],
+    href: "/curriculum/us/us_ap",
+    linkLabel: "View AP curriculum track",
+    desc: "College Board AP Physics, Calculus, Chemistry, Digital SAT reasoning, and NGSS sciences.",
+    chips: ["AP Physics", "AP Calculus", "Digital SAT", "CCSS & NGSS"],
   },
   {
-    tag: "United Kingdom",
+    region: "United Kingdom",
     title: "GCSE & GCE A-Levels",
-    href: "/curriculum",
-    desc: "AQA, Edexcel, and OCR aligned revision with structured mark-scheme reasoning and active recall.",
-    topics: ["GCSE Science & Maths", "A-Level Physics", "A-Level Chemistry", "SQA Highers"],
+    href: "/curriculum/gb/gb_gcse",
+    linkLabel: "View GCSE curriculum track",
+    desc: "AQA, Edexcel, OCR, and Scotland SQA revision structured around mark-scheme reasoning.",
+    chips: ["GCSE Science & Maths", "A-Level Physics", "A-Level Chemistry", "SQA Highers"],
   },
   {
-    tag: "Global & Commonwealth",
-    title: "Canada, Australia & Singapore",
-    href: "/curriculum",
-    desc: "Ontario OSSD, Australian VCE/ACARA, Singapore MOE O/A-Levels, and New Zealand NCEA pathways.",
-    topics: ["Ontario MHF4U / SPH4U", "VCE & HSC", "Singapore O-Level", "NCEA Levels 1–3"],
-  },
-  {
-    tag: "India",
-    title: "CBSE, JEE & NEET",
+    region: "India",
+    title: "CBSE, State Boards, JEE & NEET",
     href: "/jee-preparation",
-    desc: "NCERT-aligned CBSE (Classes 9–12), Maharashtra Board, JEE Main/Advanced, and NEET UG preparation.",
-    topics: ["CBSE & State Boards", "JEE Main & Advanced", "NEET UG Medical", "NCERT Exemplar"],
+    linkLabel: "View JEE & Indian tracks",
+    desc: "NCERT-aligned CBSE (Classes 9–12), Maharashtra Board (Balbharati), JEE Main & Advanced, and NEET UG.",
+    chips: ["CBSE Class 9–12", "Maharashtra Board", "JEE Main & Adv", "NEET UG"],
+  },
+  {
+    region: "Global & Commonwealth",
+    title: "Canada, Australia, Singapore & More",
+    href: "/curriculum/sg/sg_secondary",
+    linkLabel: "View Singapore & global tracks",
+    desc: "Ontario OSSD, BC, Australian VCE & ACARA, Singapore MOE O-Levels, New Zealand NCEA, Ireland, UAE, South Africa & Nigeria.",
+    chips: ["Singapore MOE", "Ontario OSSD", "Australia VCE", "NZ NCEA"],
   },
 ];
 
-const CAPABILITIES = [
+const CHATBOT_LIMITS = [
   {
-    title: "Socratic Cognitive Scaffolding",
-    desc: "Guides you through the premise and derivation rather than dumping final answers that ruin exam stamina.",
+    title: "Dumps final answers immediately",
+    desc: "Creates an illusion of understanding that disappears during closed-book exams.",
   },
   {
-    title: "Prerequisite Knowledge Graph",
-    desc: "Identifies whether an advanced struggle is caused by an unaddressed gap in foundational topics.",
+    title: "Ignores prerequisite gaps",
+    desc: "Skips over missing foundational concepts in vectors, algebra, or basic mechanics.",
   },
   {
-    title: "Curriculum-Calibrated Question Bank",
-    desc: "Every concept, formula, and practice challenge is grounded strictly in official NTA and NCERT syllabi.",
+    title: "Generic off-syllabus explanations",
+    desc: "Blends college-level notation with high school topics without curriculum boundaries.",
   },
   {
-    title: "Deep Misconception Diagnosis",
-    desc: "Distinguishes between a quick algebraic slip and a dangerous conceptual misunderstanding.",
-  },
-  {
-    title: "Spaced Repetition Scheduler",
-    desc: "Models individual memory decay curves to resurface topics right when neural retention drops below threshold.",
-  },
-  {
-    title: "Metacognitive Calibration",
-    desc: "Compares your subjective self-confidence with objective accuracy to eliminate dangerous blind spots.",
+    title: "No memory or revision schedule",
+    desc: "Treats every question as isolated with zero tracking of what you will forget next week.",
   },
 ];
 
-const HONEST_LIMITATIONS = [
+const ALLIED_APPROACH = [
+  {
+    title: "Socratic step-by-step scaffolding",
+    desc: "Prompts your reasoning from first principles so your brain builds durable recall.",
+  },
+  {
+    title: "Prerequisite knowledge mapping",
+    desc: "Detects whether a struggle in a hard chapter comes from an unmastered foundation.",
+  },
+  {
+    title: "Root-cause misconception diagnosis",
+    desc: "Separates quick calculation slips from conceptual misunderstandings and drills the gap.",
+  },
+  {
+    title: "Adaptive planner & spaced revision",
+    desc: "Schedules short active-recall reviews before memory decays toward exam day.",
+  },
+];
+
+const PLATFORM_STRENGTHS = [
+  {
+    title: "Guided understanding",
+    desc: "Walks through derivations step by step and adapts explanations to your current level.",
+  },
+  {
+    title: "Visual concept models",
+    desc: "Interactive 2D/3D scenes, vector diagrams, and step-by-step derivations.",
+  },
+  {
+    title: "Curriculum-calibrated practice",
+    desc: "Timed questions and rubrics aligned to official board and entrance exam patterns.",
+  },
+  {
+    title: "Scheduled memory retention",
+    desc: "Tracks topic strength and places fading concepts into your daily review queue.",
+  },
+];
+
+const HONEST_BOUNDARIES = [
   {
     title: "Does not replace human teachers",
-    desc: "Learning Allied is built as an always-available personal study partner between classes, not a substitute for school or coaching faculty.",
+    desc: "Built as a calm 24/7 study partner between classes, not a substitute for school or faculty.",
   },
   {
-    title: "Requires genuine cognitive effort",
-    desc: "If you are looking for an AI to complete your homework without you thinking, Learning Allied will purposefully refuse to spoon-feed answers.",
+    title: "Refuses to spoon-feed homework",
+    desc: "Designed to prompt genuine thinking rather than letting you copy-paste finished answers.",
   },
   {
-    title: "Always verify with core textbooks",
-    desc: "While strictly grounded in curriculum data, students should cross-verify nuanced edge cases with official curriculum guides and textbooks.",
+    title: "Always verify with official textbooks",
+    desc: "Cross-check nuanced syllabus edge cases with your prescribed textbooks and board guides.",
   },
   {
-    title: "Deliberate boundary on off-syllabus trivia",
-    desc: "We calibrate explanations to your grade level and curriculum so you focus on what truly matters for your coursework and goals.",
+    title: "Stays within your syllabus scope",
+    desc: "Keeps explanations calibrated to your grade and curriculum rather than college trivia.",
   },
 ];
 
 const FAQ_ITEMS = [
   {
     q: "Is Learning Allied free to start?",
-    a: "Yes. You can create an account, ask questions, explore interactive concepts, and build a personalized study schedule at zero cost. No credit card or payment method is required.",
+    a: "Yes. You can create an account, ask questions, explore visual lessons, practice quizzes, and build a study schedule at zero cost with no credit card required.",
   },
   {
-    q: "How is Learning Allied fundamentally different from ChatGPT or other chatbots?",
-    a: "Standard AI chatbots behave like homework-copying machines: they instantly dump the final calculation, depriving your brain of the struggle required to form long-term memory. Learning Allied uses Socratic questioning, prerequisite diagnosis, curriculum-grounded quizzes, and Ebbinghaus spaced revision to ensure you can solve problems independently.",
+    q: "How is Learning Allied different from ChatGPT or standard AI chatbots?",
+    a: "Standard chatbots act as answer-dumping machines: they hand over the final calculation immediately, robbing your brain of active recall. Learning Allied uses Socratic questioning, prerequisite mapping, misconception diagnosis, and spaced revision so you can solve unfamiliar problems on your own.",
   },
   {
     q: "Does Learning Allied replace my teachers or school?",
-    a: "No. Learning Allied is designed to be your 24/7 personal study partner for the hours between classes. It patiently answers late-night doubts, drills chapter-wise recall, and tracks memory decay. We advise students to continue attending classes and cross-referencing official textbooks.",
+    a: "No. Learning Allied supports you during self-study hours between classes — answering late-night doubts, visualizing tough concepts, and keeping your revision organized alongside your classes and textbooks.",
   },
   {
-    q: "Which countries, curricula, and examinations are supported?",
-    a: "Learning Allied supports 15+ countries and major international frameworks including US AP & SAT, UK GCSE & A-Levels, Canadian Provincial curricula, Australian VCE/ACARA, Singapore MOE, IB, as well as Indian boards and exams (CBSE, ICSE, State Boards, JEE, NEET), and general self-paced learning.",
+    q: "Which countries, boards, and exams are supported?",
+    a: "Learning Allied supports 15 countries and 26 curriculum pathways including US AP, SAT & NGSS, UK GCSE & A-Levels, Canada OSSD/BC, Australia VCE/ACARA, Singapore MOE, New Zealand NCEA, Ireland Leaving Cert, and India CBSE, Maharashtra Board, CISCE, JEE & NEET.",
   },
   {
-    q: "How does the spaced repetition and memory decay engine work?",
-    a: "Based on Hermann Ebbinghaus's forgetting curve research and modern retrieval practice science, the system tracks how long ago and how accurately you answered questions on each topic. When a concept's memory strength nears decay threshold (around 50-60%), it is automatically placed in your daily revision queue.",
+    q: "How does spaced revision and memory tracking work?",
+    a: "Based on forgetting-curve and retrieval-practice research, Learning Allied tracks how recently and accurately you practiced each concept. When retention begins to drop, the topic is automatically scheduled into your daily Review queue and Study Planner.",
   },
   {
-    q: "Is my personal study data and question history kept private?",
-    a: "Yes. Learning Allied is built with strict privacy standards. We never sell student data, we do not host third-party advertisement trackers, and your queries remain private to your account.",
+    q: "Is student data kept private?",
+    a: "Yes. Learning Allied never sells student data, runs no third-party ad trackers, and encrypts learning records in transit and at rest in alignment with DPDP Act 2023 privacy standards.",
   },
   {
-    q: "Can I use Learning Allied on Android and mobile phones?",
-    a: "Yes. The platform is responsive across all mobile browsers, and you can also download the dedicated Learning Allied Android APK directly for native study sessions.",
+    q: "Can I use Learning Allied on mobile and Android?",
+    a: "Yes. Learning Allied works across desktop, tablet, and mobile browsers, and you can also install the dedicated Android APK.",
   },
 ];
 
@@ -156,39 +188,15 @@ const JSON_LD = {
   ],
 };
 
-function ArrowRightIcon() {
+function ArrowIcon() {
   return (
-    <svg viewBox="0 0 16 16" fill="none" className="prem-btn-icon" aria-hidden="true">
+    <svg viewBox="0 0 16 16" fill="none" className="land-btn-icon" aria-hidden="true">
       <path
         d="M3.5 8h9M8.8 4.3 12.5 8l-3.7 3.7"
         stroke="currentColor"
         strokeWidth="1.6"
         strokeLinecap="round"
         strokeLinejoin="round"
-      />
-    </svg>
-  );
-}
-
-function CheckmarkIcon() {
-  return (
-    <svg viewBox="0 0 20 20" fill="currentColor" className="prem-trust-icon check" aria-hidden="true">
-      <path
-        fillRule="evenodd"
-        d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z"
-        clipRule="evenodd"
-      />
-    </svg>
-  );
-}
-
-function InfoCircleIcon() {
-  return (
-    <svg viewBox="0 0 20 20" fill="currentColor" className="prem-trust-icon info" aria-hidden="true">
-      <path
-        fillRule="evenodd"
-        d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-5a.75.75 0 01.75.75v4.5a.75.75 0 01-1.5 0v-4.5A.75.75 0 0110 5zm0 10a1 1 0 100-2 1 1 0 000 2z"
-        clipRule="evenodd"
       />
     </svg>
   );
@@ -204,115 +212,139 @@ export default function HomePage() {
       <PublicNavbar />
 
       <main id="main" className="landing-root">
-        {/* ── HERO SECTION ────────────────────────────────────────────────────────── */}
-        <section className="prem-hero" aria-labelledby="hero-heading">
+        {/* ── GALLERY HERO ──────────────────────────────────────────────────────── */}
+        <section className="land-hero" aria-labelledby="hero-heading">
           <div className="landing-wrap">
-            <div className="prem-hero-intro">
-              <div className="prem-badge">
-                <span className="prem-badge-tag">Cognitive AI</span>
-                <span>Built on cognitive science for learners worldwide</span>
-              </div>
-
-              <h1 id="hero-heading" className="prem-hero-title">
-                Master the concept.
+            <div className="land-hero-header">
+              <h1 id="hero-heading" className="land-hero-title">
+                Understand every concept.
                 <br />
-                <span className="accent-blue">Not just the answer.</span>
+                Remember it when it counts.
               </h1>
+            </div>
 
-              <p className="prem-hero-lede">
-                Learning Allied is a Socratic AI study partner calibrated to your country
-                and curriculum. Instead of spoon-feeding answers, it prompts your reasoning,
-                diagnoses misconceptions, and schedules recall before memory decays.
+            {/* Signature Interactive Product Deck */}
+            <HeroProductDeck />
+
+            {/* Supporting Value & Pill CTAs */}
+            <div className="land-hero-sub-wrap">
+              <p className="land-hero-lede">
+                A Socratic AI study partner calibrated to your curriculum. Build real intuition,
+                visualize difficult ideas, diagnose misconceptions, and revise before memory fades.
               </p>
 
-              <div className="prem-hero-actions">
-                <Link href="/signup" className="prem-btn prem-btn-primary">
+              <div className="land-hero-actions">
+                <Link href="/signup" className="land-btn land-btn-primary">
                   <span>Start Learning Free</span>
-                  <ArrowRightIcon />
+                  <ArrowIcon />
                 </Link>
-                <a href="#product-showcase" className="prem-btn prem-btn-secondary">
+                <a href="#workspace" className="land-btn land-btn-secondary">
                   <span>Explore the Platform</span>
                 </a>
               </div>
 
-              <div className="prem-hero-trust-bar">
+              <div className="land-hero-meta">
                 <span>Free to start</span>
-                <i className="sep" aria-hidden="true" />
+                <i className="dot-sep" aria-hidden="true" />
                 <span>No credit card required</span>
-                <i className="sep" aria-hidden="true" />
-                <span>15+ global curricula</span>
-                <i className="sep" aria-hidden="true" />
-                <span>Also on <a href={APK_URL}>Android</a></span>
+                <i className="dot-sep" aria-hidden="true" />
+                <span>15 countries &amp; 26 curricula</span>
+                <i className="dot-sep" aria-hidden="true" />
+                <span>
+                  Also on <a href={APK_URL}>Android</a>
+                </span>
               </div>
             </div>
-
-            {/* Realistic Code-Built Hero Product Demonstration */}
-            <HeroInteractiveDemo />
           </div>
         </section>
 
-        {/* ── DEDICATED PRODUCT SHOWCASE: 7 CORE PILLARS ──────────────────────────── */}
+        {/* ── UNIFIED INTERACTIVE PRODUCT WORKBENCH ─────────────────────────────── */}
         <ProductShowcase />
 
-        {/* ── PRODUCT STORYTELLING: THE 6-STAGE COGNITIVE JOURNEY ────────────────── */}
-        <section id="platform-tour" className="prem-section" aria-labelledby="story-heading">
+        {/* ── WHY SOCRATIC LEARNING MATTERS ─────────────────────────────────────── */}
+        <section id="compare" className="land-section" aria-labelledby="compare-heading">
           <div className="landing-wrap">
-            <div className="prem-section-header">
-              <div className="prem-eyebrow">
-                <span className="dot" />
-                <span>Cognitive Architecture</span>
-              </div>
-              <h2 id="story-heading" className="prem-heading">
-                How students move from confusion to <span className="accent-blue">mastery</span>.
+            <div className="land-section-head">
+              <div className="land-eyebrow">Built for Real Mastery</div>
+              <h2 id="compare-heading" className="land-heading">
+                More than an AI chatbot. A structured learning system.
               </h2>
-              <p className="prem-lede">
-                Passive re-reading creates an illusion of competence. Learning Allied guides
-                you through the complete cognitive cycle: from Socratic inquiry to permanent
-                long-term memory consolidation.
+              <p className="land-lede">
+                Generic AI tools optimize for finishing homework fast. Learning Allied is engineered
+                so you can solve unfamiliar problems independently under exam pressure.
               </p>
             </div>
 
-            <CognitiveCycleInteractive />
+            <div className="compare-grid">
+              <div className="compare-card">
+                <div className="compare-head">
+                  <h3>Standard AI Chatbots</h3>
+                  <span className="compare-badge muted">Passive</span>
+                </div>
+                <ul className="compare-list">
+                  {CHATBOT_LIMITS.map((item) => (
+                    <li key={item.title}>
+                      <span className="compare-mark no" aria-hidden="true">✕</span>
+                      <div>
+                        <strong>{item.title}</strong> — {item.desc}
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              <div className="compare-card allied">
+                <div className="compare-head">
+                  <h3>Learning Allied</h3>
+                  <span className="compare-badge accent">Active Mastery</span>
+                </div>
+                <ul className="compare-list">
+                  {ALLIED_APPROACH.map((item) => (
+                    <li key={item.title}>
+                      <span className="compare-mark yes" aria-hidden="true">✓</span>
+                      <div>
+                        <strong>{item.title}</strong> — {item.desc}
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
           </div>
         </section>
 
-        {/* ── EXAM TRACKS & CURRICULUM GROUNDING ─────────────────────────────────── */}
-        <section id="exams" className="prem-section" aria-labelledby="exams-heading">
+        {/* ── GLOBAL CURRICULA & EXAM TRACKS ────────────────────────────────────── */}
+        <section id="curricula" className="land-section" aria-labelledby="curricula-heading">
           <div className="landing-wrap">
-            <div className="prem-section-header">
-              <div className="prem-eyebrow">
-                <span className="dot" />
-                <span>Curriculum Precision</span>
-              </div>
-              <h2 id="exams-heading" className="prem-heading">
-                Calibrated for global curricula &amp; exams.
+            <div className="land-section-head">
+              <div className="land-eyebrow">Curriculum Grounding</div>
+              <h2 id="curricula-heading" className="land-heading">
+                Calibrated to your board, syllabus, and exam pattern.
               </h2>
-              <p className="prem-lede">
-                Zero hallucinated topics or off-syllabus trivia. Every concept, formula, and
-                diagnostic question adapts to your selected country, board, and learning goal.
+              <p className="land-lede">
+                Select your country and academic pathway during onboarding so explanations,
+                conventions, and practice questions match your exact syllabus.
               </p>
             </div>
 
-            <div className="prem-exams-grid">
-              {EXAMS.map((exam) => (
-                <Link key={exam.href} href={exam.href} className="prem-exam-card">
+            <div className="curr-grid">
+              {CURRICULA_TRACKS.map((track) => (
+                <Link key={track.title} href={track.href} className="curr-card">
                   <div>
-                    <div className="prem-exam-head">
-                      <span className="prem-exam-badge">{exam.tag}</span>
-                    </div>
-                    <h3 className="prem-exam-title">{exam.title}</h3>
-                    <p className="prem-exam-desc">{exam.desc}</p>
-                    <div className="prem-exam-topics">
-                      {exam.topics.map((t) => (
-                        <span key={t} className="prem-exam-chip">
-                          {t}
+                    <span className="curr-region">{track.region}</span>
+                    <h3 className="curr-title">{track.title}</h3>
+                    <p className="curr-desc">{track.desc}</p>
+                    <div className="curr-chips">
+                      {track.chips.map((chip) => (
+                        <span key={chip} className="curr-chip">
+                          {chip}
                         </span>
                       ))}
                     </div>
                   </div>
-                  <span className="prem-exam-link">
-                    <span>View exam preparation guide</span>
-                    <ArrowRightIcon />
+                  <span className="curr-link-row">
+                    <span>{track.linkLabel}</span>
+                    <ArrowIcon />
                   </span>
                 </Link>
               ))}
@@ -320,252 +352,150 @@ export default function HomePage() {
           </div>
         </section>
 
-        {/* ── RETENTION SIMULATOR: MEMORY DECAY & SPACED REPETITION ──────────────── */}
-        <section className="prem-section" aria-labelledby="retention-heading">
+        {/* ── HONEST TRANSPARENCY, PRIVACY & FOUNDER MISSION ───────────────────── */}
+        <section id="trust" className="land-section" aria-labelledby="trust-heading">
           <div className="landing-wrap">
-            <div className="prem-section-header">
-              <div className="prem-eyebrow">
-                <span className="dot" />
-                <span>Neuroscience in Action</span>
-              </div>
-              <h2 id="retention-heading" className="prem-heading">
-                Study less time. Remember <span className="accent-cyan">more</span> of it.
+            <div className="land-section-head">
+              <div className="land-eyebrow">Transparency &amp; Trust</div>
+              <h2 id="trust-heading" className="land-heading">
+                Clear boundaries, private by design.
               </h2>
-              <p className="prem-lede">
-                Cramming produces rapid forgetting. By scheduling targeted active-recall sessions
-                at algorithmic decay intervals, Learning Allied preserves over 90% of your knowledge.
+              <p className="land-lede">
+                Students and parents deserve plain facts about what an AI learning platform does,
+                where human teachers remain essential, and how personal data is protected.
               </p>
             </div>
 
-            <RetentionSimulator />
-          </div>
-        </section>
-
-        {/* ── CAPABILITIES VS HONEST LIMITATIONS ──────────────────────────────────── */}
-        <section className="prem-section" aria-labelledby="capabilities-heading">
-          <div className="landing-wrap">
-            <div className="prem-section-header">
-              <div className="prem-eyebrow">
-                <span className="dot" />
-                <span>Honest Transparency</span>
-              </div>
-              <h2 id="capabilities-heading" className="prem-heading">
-                What Learning Allied does — and what it does not.
-              </h2>
-              <p className="prem-lede">
-                We believe in genuine trust over marketing hype. Here is an honest, plain-language
-                breakdown of our platform capabilities and boundaries.
-              </p>
-            </div>
-
-            <div className="prem-trust-grid">
-              {/* What it does */}
-              <div className="prem-trust-panel capabilities">
-                <h3 className="prem-trust-panel-title ok">
-                  <CheckmarkIcon />
-                  <span>Platform Strengths</span>
-                </h3>
-                <p className="prem-trust-panel-sub">
-                  Where Learning Allied provides an unfair cognitive advantage:
-                </p>
-                <ul className="prem-trust-list">
-                  {CAPABILITIES.map((cap) => (
-                    <li key={cap.title} className="prem-trust-item">
-                      <CheckmarkIcon />
-                      <div>
-                        <strong>{cap.title}</strong>
-                        <span> — {cap.desc}</span>
-                      </div>
+            <div className="trust-split">
+              <div className="trust-panel">
+                <h3 className="trust-panel-head">What Learning Allied does</h3>
+                <ul className="trust-panel-list">
+                  {PLATFORM_STRENGTHS.map((item) => (
+                    <li key={item.title}>
+                      <strong>{item.title}</strong> — {item.desc}
                     </li>
                   ))}
                 </ul>
               </div>
 
-              {/* What it does not do */}
-              <div className="prem-trust-panel limitations">
-                <h3 className="prem-trust-panel-title neutral">
-                  <InfoCircleIcon />
-                  <span>Honest Limitations</span>
-                </h3>
-                <p className="prem-trust-panel-sub">
-                  Clear boundaries on what our AI will never claim or attempt:
-                </p>
-                <ul className="prem-trust-list">
-                  {HONEST_LIMITATIONS.map((lim) => (
-                    <li key={lim.title} className="prem-trust-item">
-                      <InfoCircleIcon />
-                      <div>
-                        <strong>{lim.title}</strong>
-                        <span> — {lim.desc}</span>
-                      </div>
+              <div className="trust-panel boundaries">
+                <h3 className="trust-panel-head">Honest boundaries</h3>
+                <ul className="trust-panel-list">
+                  {HONEST_BOUNDARIES.map((item) => (
+                    <li key={item.title}>
+                      <strong>{item.title}</strong> — {item.desc}
                     </li>
                   ))}
                 </ul>
               </div>
             </div>
 
-            {/* Privacy & Security Guarantees */}
-            <div className="prem-privacy-banner">
-              <div className="prem-privacy-grid">
-                <div className="prem-privacy-copy">
-                  <div className="prem-eyebrow">
-                    <span className="dot" />
-                    <span>Data Ethics</span>
-                  </div>
-                  <h3>Student Privacy by Design</h3>
-                  <p>
-                    Your notes, study sessions, and mistakes are confidential.
-                    We adhere strictly to modern data governance frameworks.
-                  </p>
-                </div>
-                <div className="prem-privacy-features">
-                  <div className="prem-priv-item">
-                    <strong>DPDP Act 2023 Compliant</strong>
-                    <span>Full compliance with India&apos;s Digital Personal Data Protection standards.</span>
-                  </div>
-                  <div className="prem-priv-item">
-                    <strong>Zero Third-Party Data Selling</strong>
-                    <span>We never monetize student behavior, question logs, or profiles.</span>
-                  </div>
-                  <div className="prem-priv-item">
-                    <strong>No Intrusive Ad Tracking</strong>
-                    <span>Clean study environment free from commercial advertising networks.</span>
-                  </div>
-                  <div className="prem-priv-item">
-                    <strong>Encrypted Cloud Storage</strong>
-                    <span>Bank-grade encryption in transit and at rest for all learning records.</span>
-                  </div>
-                </div>
+            <div className="privacy-strip">
+              <div className="privacy-item">
+                <strong>DPDP Act 2023 Aligned</strong>
+                <span>Built around strict student data protection standards.</span>
+              </div>
+              <div className="privacy-item">
+                <strong>Zero Data Selling</strong>
+                <span>We never monetize student profiles, logs, or mistakes.</span>
+              </div>
+              <div className="privacy-item">
+                <strong>No Ad Trackers</strong>
+                <span>Distraction-free study space with zero ad networks.</span>
+              </div>
+              <div className="privacy-item">
+                <strong>Encrypted Records</strong>
+                <span>Learning progress protected in transit and at rest.</span>
               </div>
             </div>
-          </div>
-        </section>
 
-        {/* ── FOUNDER STORY & MISSION ────────────────────────────────────────────── */}
-        <section id="founder" className="prem-section" aria-labelledby="founder-heading">
-          <div className="landing-wrap">
-            <div className="prem-founder-card">
-              <div className="prem-founder-grid">
-                <div>
-                  <div className="prem-eyebrow">
-                    <span className="dot" />
-                    <span>Independent &amp; Student-First</span>
-                  </div>
-                  <blockquote className="prem-founder-quote" id="founder-heading">
-                    &ldquo;AI should never rob a student of the struggle to understand.
-                    Real mastery is earned through reasoning, not copy-pasting.&rdquo;
-                  </blockquote>
-                  <p className="prem-founder-body">
-                    Learning Allied was created by Prem Jain to eliminate the monopoly of
-                    rote-memorization coaching and generic AI answer-dump tools. Every feature
-                    is built around cognitive science to give every student an affordable,
-                    infinitely patient personal Socratic mentor.
-                  </p>
-                  <div className="prem-founder-author">
-                    <div className="prem-founder-avatar">PJ</div>
-                    <div className="prem-founder-meta">
-                      <strong>Prem Jain</strong>
-                      <span>Founder &amp; Student Entrepreneur, Learning Allied</span>
-                    </div>
+            <div className="founder-card">
+              <div>
+                <blockquote className="founder-quote">
+                  &ldquo;AI should never rob a student of the struggle to understand. Real mastery is
+                  earned through reasoning, not copy-pasting.&rdquo;
+                </blockquote>
+                <p className="founder-note">
+                  Learning Allied was built by Prem Jain so every student can access a patient,
+                  affordable Socratic study partner grounded in cognitive science.
+                </p>
+                <div className="founder-byline">
+                  <div className="founder-avatar" aria-hidden="true">PJ</div>
+                  <div>
+                    <strong>Prem Jain</strong>
+                    <span>Founder, Learning Allied</span>
                   </div>
                 </div>
-
-                <div className="prem-founder-links">
-                  <Link href="/founder" className="prem-founder-link-btn">
-                    <span>Read the Founder Story</span>
-                    <ArrowRightIcon />
-                  </Link>
-                  <Link href="/about" className="prem-founder-link-btn">
-                    <span>Our Educational Philosophy</span>
-                    <ArrowRightIcon />
-                  </Link>
-                  <Link href="/blog/how-to-make-a-jee-study-plan" className="prem-founder-link-btn">
-                    <span>JEE Study Plan Strategy Guide</span>
-                    <ArrowRightIcon />
-                  </Link>
-                </div>
               </div>
-            </div>
-          </div>
-        </section>
 
-        {/* ── FREQUENTLY ASKED QUESTIONS ─────────────────────────────────────────── */}
-        <section id="faq" className="prem-section" aria-labelledby="faq-heading">
-          <div className="landing-wrap">
-            <div className="prem-section-header">
-              <div className="prem-eyebrow">
-                <span className="dot" />
-                <span>FAQ</span>
-              </div>
-              <h2 id="faq-heading" className="prem-heading">
-                Questions, answered plainly.
-              </h2>
-              <p className="prem-lede">
-                Everything you need to know about getting started, our cognitive pedagogy,
-                and platform policies.
-              </p>
-            </div>
-
-            <div className="prem-faq-panel">
-              <div className="faq-list">
-                {FAQ_ITEMS.map((item, idx) => (
-                  <details key={idx} className="faq-item" style={{ padding: "16px 0", borderBottom: "1px solid var(--la-line, rgba(255,255,255,0.08))" }}>
-                    <summary
-                      style={{
-                        fontSize: 16,
-                        fontWeight: 600,
-                        cursor: "pointer",
-                        listStyle: "none",
-                        display: "flex",
-                        justifyContent: "space-between",
-                        alignItems: "center",
-                        color: "var(--la-text, #ffffff)",
-                      }}
-                    >
-                      <span>{item.q}</span>
-                      <span style={{ fontSize: 18, color: "var(--la-muted, #a1a1aa)", marginLeft: 12 }}>+</span>
-                    </summary>
-                    <p style={{ marginTop: 12, marginBottom: 0, fontSize: 14.5, lineHeight: 1.6, color: "var(--la-muted, #a1a1aa)" }}>
-                      {item.a}
-                    </p>
-                  </details>
-                ))}
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* ── FINAL HIGH-CONVERSION CTA ───────────────────────────────────────────── */}
-        <section className="prem-section" style={{ borderBottom: "none" }} aria-labelledby="cta-heading">
-          <div className="landing-wrap">
-            <div className="prem-final-cta">
-              <div className="prem-eyebrow">
-                <span className="dot" />
-                <span>Begin Your Journey</span>
-              </div>
-              <h2 id="cta-heading" className="prem-final-cta-title">
-                Start your first Socratic study session today.
-              </h2>
-              <p className="prem-final-cta-lede">
-                Create a free account in under 30 seconds. Ask your most difficult physics,
-                chemistry, or mathematics question and experience genuine understanding.
-              </p>
-
-              <div className="prem-final-cta-actions">
-                <Link href="/signup" className="prem-btn prem-btn-primary">
-                  <span>Start Learning Free</span>
-                  <ArrowRightIcon />
+              <div className="founder-links">
+                <Link href="/founder" className="founder-link">
+                  <span>Read the Founder Story</span>
+                  <span aria-hidden="true">→</span>
                 </Link>
-                <Link href="/login" className="prem-btn prem-btn-secondary">
+                <Link href="/for-parents" className="founder-link">
+                  <span>Guide for Parents &amp; Educators</span>
+                  <span aria-hidden="true">→</span>
+                </Link>
+                <Link href="/about" className="founder-link">
+                  <span>Our Educational Philosophy</span>
+                  <span aria-hidden="true">→</span>
+                </Link>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* ── FAQ ───────────────────────────────────────────────────────────────── */}
+        <section id="faq" className="land-section" aria-labelledby="faq-heading">
+          <div className="landing-wrap">
+            <div className="land-section-head">
+              <div className="land-eyebrow">FAQ</div>
+              <h2 id="faq-heading" className="land-heading">
+                Common questions, answered plainly.
+              </h2>
+            </div>
+
+            <div className="land-faq-box">
+              {FAQ_ITEMS.map((item) => (
+                <details key={item.q} className="land-faq-item">
+                  <summary className="land-faq-summary">
+                    <span>{item.q}</span>
+                    <span className="land-faq-plus" aria-hidden="true">+</span>
+                  </summary>
+                  <p className="land-faq-answer">{item.a}</p>
+                </details>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* ── FINAL CONVERSION CTA ──────────────────────────────────────────────── */}
+        <section className="land-section" aria-labelledby="cta-heading">
+          <div className="landing-wrap">
+            <div className="land-final-cta">
+              <div className="land-eyebrow">Begin Today</div>
+              <h2 id="cta-heading" className="land-final-title">
+                Start your first Socratic study session.
+              </h2>
+              <p className="land-final-lede">
+                Create a free account in under 30 seconds, bring your toughest concept, and
+                experience structured understanding.
+              </p>
+
+              <div className="land-final-actions">
+                <Link href="/signup" className="land-btn land-btn-primary">
+                  <span>Start Learning Free</span>
+                  <ArrowIcon />
+                </Link>
+                <Link href="/login" className="land-btn land-btn-secondary">
                   <span>Student Login</span>
                 </Link>
-                <a href={APK_URL} className="prem-btn prem-btn-secondary">
-                  <span>Download Android APK</span>
-                </a>
               </div>
 
-              <div className="prem-final-cta-note">
-                100% free to start · No card required · Instant access on web &amp; Android
+              <div className="land-final-note">
+                100% free to start · No card required · Also available as an{" "}
+                <a href={APK_URL}>Android APK</a>
               </div>
             </div>
           </div>

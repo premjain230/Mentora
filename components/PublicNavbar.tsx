@@ -44,7 +44,7 @@ export function PublicNavbar() {
           </Link>
 
           <nav className="nav-links" aria-label="Primary">
-            <Link href="/curriculum" className="nav-link" aria-current={pathname?.startsWith("/curriculum") ? "page" : undefined}>Curriculum</Link>
+            <Link href="/#curricula" className="nav-link">Curricula</Link>
             <Link href="/how-it-works" className="nav-link" aria-current={pathname === "/how-it-works" ? "page" : undefined}>How It Works</Link>
             <Link href="/best-ai-study-tools" className="nav-link" aria-current={pathname === "/best-ai-study-tools" ? "page" : undefined}>AI Tools</Link>
             <Link href="/for-parents" className="nav-link" aria-current={pathname === "/for-parents" ? "page" : undefined}>For Parents</Link>
@@ -98,7 +98,7 @@ export function PublicNavbar() {
         </div>
         <nav className="mnav-links">
           <div className="mnav-label">Global Curricula</div>
-          <Link href="/curriculum" onClick={() => setMobileMenuOpen(false)}>All Curricula (15+ Countries)</Link>
+          <Link href="/#curricula" onClick={() => setMobileMenuOpen(false)}>All Curricula (15+ Countries)</Link>
           <Link href="/for-parents" onClick={() => setMobileMenuOpen(false)}>For Parents &amp; Guardians</Link>
           <div className="mnav-label">AI Study Guides</div>
           <Link href="/best-ai-study-tools" onClick={() => setMobileMenuOpen(false)}>Best AI Study Tools</Link>

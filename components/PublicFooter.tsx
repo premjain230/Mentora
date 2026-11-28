@@ -8,7 +8,8 @@ export function PublicFooter() {
         <div className="footer-grid">
           <div>
             <div className="footer-brand-row">
-              <img src="/learningallied-white.svg" alt="" width={26} height={26} />
+              <img src="/learningallied-white.svg" alt="Learning Allied" className="logo-for-dark" width={26} height={26} />
+              <img src="/learningallied-black.svg" alt="Learning Allied" className="logo-for-light" width={26} height={26} />
               <span>Learning Allied</span>
             </div>
             <p className="footer-blurb">
@@ -21,7 +22,7 @@ export function PublicFooter() {
           <div>
             <h4 className="footer-col-title">Global &amp; Regional Curricula</h4>
             <ul className="footer-links">
-              <li><Link href="/curriculum">All Global Curricula</Link></li>
+              <li><Link href="/#curricula">All Global Curricula</Link></li>
               <li><Link href="/for-parents">For Parents &amp; Families</Link></li>
               <li><Link href="/jee-preparation">India: JEE Main &amp; Advanced</Link></li>
               <li><Link href="/neet-preparation">India: NEET UG Medical</Link></li>
