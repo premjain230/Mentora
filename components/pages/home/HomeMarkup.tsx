@@ -15,7 +15,15 @@ export function HomeMarkup() {
           <div className="brand-mark">
             <img
               src="/learningallied-white.svg"
-              alt=""
+              alt="Learning Allied"
+              className="logo-for-dark"
+              width={22}
+              height={22}
+            />
+            <img
+              src="/learningallied-black.svg"
+              alt="Learning Allied"
+              className="logo-for-light"
               width={22}
               height={22}
             />
@@ -82,24 +90,20 @@ export function HomeMarkup() {
               justifyContent: "space-between",
               flexWrap: "wrap",
               gap: "14px",
-              padding: "16px 20px",
-              background: "linear-gradient(135deg, var(--bg-card) 0%, var(--bg-elevated) 100%)",
-              border: "1px solid var(--border)",
-              borderRadius: "var(--radius-lg, 10px)",
+              padding: "18px 22px",
               marginBottom: "8px",
             }}
           >
             <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
               <div
+                className="hub-pulse-icon"
                 style={{
-                  width: "36px",
-                  height: "36px",
-                  borderRadius: "8px",
-                  background: "var(--accent-soft, rgba(59, 130, 246, 0.12))",
+                  width: "38px",
+                  height: "38px",
+                  borderRadius: "10px",
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
-                  color: "var(--accent, #3b82f6)",
                   fontSize: "18px",
                 }}
               >
@@ -107,12 +111,12 @@ export function HomeMarkup() {
               </div>
               <div>
                 <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                  <strong style={{ fontSize: "14px", color: "var(--text-primary)" }}>Daily Learning Pulse</strong>
-                  <span className="ui-badge-pulse green" style={{ fontSize: "11px", color: "var(--text-muted)" }}>
+                  <strong className="hub-pulse-title" style={{ fontSize: "14px" }}>Daily Learning Pulse</strong>
+                  <span className="ui-badge-pulse green hub-pulse-badge" style={{ fontSize: "11px" }}>
                     Personal AI Active
                   </span>
                 </div>
-                <div style={{ fontSize: "12px", color: "var(--text-muted)", marginTop: "2px" }}>
+                <div className="hub-pulse-subtitle" style={{ fontSize: "12px", marginTop: "2px" }}>
                   Socratic tutoring, spaced recall &amp; syllabus mastery calibrated to your curriculum.
                 </div>
               </div>
@@ -121,8 +125,8 @@ export function HomeMarkup() {
             <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
               <Link
                 href="/learning-hub"
-                className="btn btn-secondary"
-                style={{ fontSize: "12.5px", padding: "6px 14px", borderRadius: "6px" }}
+                className="btn btn-secondary hub-pulse-cta"
+                style={{ fontSize: "12.5px", padding: "7px 16px", borderRadius: "9999px" }}
               >
                 Explore Concepts →
               </Link>

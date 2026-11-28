@@ -154,7 +154,8 @@ export default function SignupPage() {
     >
       <div style={{ marginBottom: 32 }}>
         <Link href="/" style={{ display: "flex", alignItems: "center", gap: 10, textDecoration: "none" }}>
-          <img src="/learningallied-white.svg" alt="Learning Allied logo" width={38} height={38} style={{ width: 38, height: 38 }} />
+          <img src="/learningallied-white.svg" alt="Learning Allied logo" className="logo-for-dark" width={38} height={38} style={{ width: 38, height: 38 }} />
+          <img src="/learningallied-black.svg" alt="Learning Allied logo" className="logo-for-light" width={38} height={38} style={{ width: 38, height: 38 }} />
           <span style={{ fontSize: 20, fontWeight: 700, color: "var(--la-text, #fff)" }}>
             Learning Allied
           </span>

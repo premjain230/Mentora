@@ -1,31 +1,119 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../services/api_client.dart';
+import '../services/auth_service.dart';
+import '../services/firestore_service.dart';
+import '../services/learning_service.dart';
 import '../theme/design_tokens.dart';
-import '../theme/app_theme.dart';
 import '../widgets/app_components.dart';
-import '../widgets/app_drawer.dart';
+import '../widgets/learning_allied_logo.dart';
+import 'learning_hub_screen.dart';
+import 'planner_screen.dart';
+import 'profile_screen.dart';
+import 'study_session_screen.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+  final ValueChanged<int> onNavigateTab;
+
+  const HomeScreen({super.key, required this.onNavigateTab});
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  String _greetingName = 'there';
   bool _loading = true;
+  String? _error;
+
+  double? _avgMasteryPct;
+  int _masteredConcepts = 0;
+  int _totalTrackedConcepts = 0;
+  int _totalMinutesStudied = 0;
+  int _sessionCount = 0;
+  Map<String, dynamic>? _continueTopic;
+  List<Map<String, dynamic>> _recommendations = [];
+  List<Map<String, dynamic>> _recentAssessments = [];
 
   @override
   void initState() {
     super.initState();
-    _loadUser();
+    _loadDashboard();
   }
 
-  Future<void> _loadUser() async {
-    await Future.delayed(const Duration(milliseconds: 300));
-    if (mounted) {
+  Future<void> _loadDashboard() async {
+    setState(() {
+      _loading = true;
+      _error = null;
+    });
+    try {
+      final auth = context.read<AuthService>();
+      final uid = auth.user?.uid;
+      if (uid == null || uid.isEmpty) {
+        setState(() => _loading = false);
+        return;
+      }
+
+      final fs = FirestoreService(auth);
+      final svc = LearningService(ApiClient(auth));
+
+      final results = await Future.wait<dynamic>([
+        fs.listDocs('users/$uid/mastery', pageSize: 50).catchError((_) => <Map<String, dynamic>>[]),
+        fs.listDocs('users/$uid/studySessions', pageSize: 50).catchError((_) => <Map<String, dynamic>>[]),
+        fs.getDoc('users/$uid/learning/learningHub').catchError((_) => null),
+        fs.listDocs('users/$uid/quizAttempts', pageSize: 10).catchError((_) => <Map<String, dynamic>>[]),
+        svc.fetchRecommendations().catchError((_) => <String, dynamic>{}),
+      ]);
+
+      final masteryDocs = results[0] as List<Map<String, dynamic>>;
+      final sessionDocs = results[1] as List<Map<String, dynamic>>;
+      final hubDoc = results[2] as Map<String, dynamic>?;
+      final assessmentDocs = results[3] as List<Map<String, dynamic>>;
+      final recJson = results[4] as Map<String, dynamic>;
+
+      double masterySum = 0;
+      int mastered = 0;
+      for (final m in masteryDocs) {
+        final score = (m['masteryScore'] is num) ? (m['masteryScore'] as num).toDouble() : 0.0;
+        masterySum += score;
+        if (score >= 0.8 || m['masteryState'] == 'mastered' || m['masteryState'] == 'strong') {
+          mastered++;
+        }
+      }
+
+      int mins = 0;
+      for (final s in sessionDocs) {
+        final focused = s['timeFocused'];
+        if (focused is num && focused > 0) {
+          mins += (focused / 60).round();
+        } else if (s['durationMinutes'] is num && s['status'] == 'completed') {
+          mins += (s['durationMinutes'] as num).toInt();
+        }
+      }
+
+      final recsRaw = (recJson['recommendations'] as List<dynamic>?) ?? [];
+      final filteredRecs = recsRaw
+          .map((e) => Map<String, dynamic>.from(e as Map))
+          .where((r) => r['action'] != 'review')
+          .toList();
+
+      if (!mounted) return;
       setState(() {
-        _greetingName = 'Student';
+        _totalTrackedConcepts = masteryDocs.length;
+        _masteredConcepts = mastered;
+        _avgMasteryPct = masteryDocs.isEmpty ? null : (masterySum / masteryDocs.length) * 100;
+        _sessionCount = sessionDocs.length;
+        _totalMinutesStudied = mins;
+        _continueTopic = (hubDoc != null && hubDoc['last'] is Map)
+            ? Map<String, dynamic>.from(hubDoc['last'] as Map)
+            : null;
+        _recentAssessments = assessmentDocs.take(3).toList();
+        _recommendations = filteredRecs;
+        _loading = false;
+      });
+    } catch (e) {
+      if (!mounted) return;
+      setState(() {
+        _error = e.toString();
         _loading = false;
       });
     }
@@ -40,183 +128,512 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final dark = Theme.of(context).brightness == Brightness.dark;
+    final c = LAColors.of(context);
+    final auth = context.watch<AuthService>();
+    final fullName = (auth.user?.displayName ?? '').trim();
+    final firstName = fullName.isNotEmpty ? fullName.split(' ').first : 'Student';
+    final initial = firstName[0].toUpperCase();
+
     return Scaffold(
-      drawer: const AppDrawer(activeRoute: 'home'),
-      appBar: AppBar(
-        leading: Builder(builder: (ctx) => IconButton(icon: const Icon(Icons.menu_rounded), onPressed: () => Scaffold.of(ctx).openDrawer())),
-        title: const Row(mainAxisSize: MainAxisSize.min, children: [
-          Icon(Icons.auto_awesome_rounded, size: 20, color: LATokens.accent),
-          const SizedBox(width: 8),
-          Text('Learning Allied', style: TextStyle(fontFamily: LATokens.fontDisplay, fontWeight: FontWeight.w700)),
-        ]),
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        centerTitle: false,
-      ),
-      body: _loading
-          ? const Center(child: CircularProgressIndicator())
-          : ListView(
-              padding: const EdgeInsets.all(LATokens.space4),
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(LATokens.space5),
-                  decoration: BoxDecoration(
-                    color: dark ? LATokens.bgCard : LATokens.lightBgCard,
-                    borderRadius: BorderRadius.circular(LATokens.radiusXl),
-                    border: Border.all(color: (dark ? LATokens.border : LATokens.lightBorder)),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+      backgroundColor: c.bg,
+      body: RefreshIndicator(
+        onRefresh: _loadDashboard,
+        child: _loading
+            ? const Center(child: CircularProgressIndicator())
+            : _error != null
+                ? ListView(
                     children: [
-                      Row(
-                        children: [
-                          Container(
-                            width: 48,
-                            height: 48,
-                            decoration: BoxDecoration(
-                              color: LATokens.bgElevated,
-                              borderRadius: BorderRadius.circular(LATokens.radiusLg),
-                              border: Border.all(color: Colors.white.withOpacity(0.06)),
-                            ),
-                            child: const Icon(Icons.auto_awesome_rounded, color: LATokens.textMuted),
-                          ),
-                          const SizedBox(width: LATokens.space3),
-                          Expanded(
+                      ErrorStateView(message: _error!, onRetry: _loadDashboard),
+                    ],
+                  )
+                : ListView(
+                    padding: EdgeInsets.zero,
+                    children: [
+                      // Sky-blue atmospheric hero header matching reference
+                      Container(
+                        decoration: const BoxDecoration(
+                          gradient: LATokens.heroGradient,
+                        ),
+                        child: SafeArea(
+                          bottom: false,
+                          child: Padding(
+                            padding: const EdgeInsets.fromLTRB(20, 12, 20, 26),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text('$_greeting(), $_greetingName', style: const TextStyle(fontFamily: LATokens.fontDisplay, fontSize: LATokens.fsLg, fontWeight: FontWeight.w700, color: LATokens.textPrimary)),
-                                const SizedBox(height: LATokens.space1),
-                                Text('Your AI study companion for JEE, NEET & Board exams. Continue where you left off.', style: const TextStyle(color: LATokens.textSecondary, fontSize: LATokens.fsSm, height: LATokens.lhNormal)),
+                                // Top bar: official white logo + brand + profile button
+                                Row(
+                                  children: [
+                                    const LearningAlliedLogo(size: 24, color: Colors.white),
+                                    const SizedBox(width: 8),
+                                    const Expanded(
+                                      child: Text(
+                                        'Learning Allied',
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                        style: TextStyle(
+                                          fontSize: LATokens.fsLg,
+                                          fontWeight: FontWeight.w700,
+                                          letterSpacing: -0.3,
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                                    ),
+                                    InkWell(
+                                      borderRadius: BorderRadius.circular(LATokens.radiusFull),
+                                      onTap: () => Navigator.push(
+                                        context,
+                                        MaterialPageRoute(builder: (_) => const ProfileScreen()),
+                                      ),
+                                      child: Tooltip(
+                                        message: 'Profile & Settings',
+                                        child: Container(
+                                          width: 34,
+                                          height: 34,
+                                          decoration: BoxDecoration(
+                                            color: Colors.white.withValues(alpha: 0.22),
+                                            shape: BoxShape.circle,
+                                            border: Border.all(
+                                              color: Colors.white.withValues(alpha: 0.45),
+                                            ),
+                                          ),
+                                          child: Center(
+                                            child: Text(
+                                              initial,
+                                              style: const TextStyle(
+                                                fontSize: LATokens.fsSm,
+                                                fontWeight: FontWeight.w700,
+                                                color: Colors.white,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: 18),
+                                Text(
+                                  '${_greeting()}, $firstName',
+                                  style: const TextStyle(
+                                    fontSize: LATokens.fs2xl,
+                                    fontWeight: FontWeight.w700,
+                                    letterSpacing: -0.5,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                                const SizedBox(height: 4),
+                                Text(
+                                  "You're on track with your curriculum.",
+                                  style: TextStyle(
+                                    fontSize: LATokens.fsSm,
+                                    color: Colors.white.withValues(alpha: 0.85),
+                                  ),
+                                ),
+                                const SizedBox(height: 20),
+
+                                // Translucent frosted Mastery ring
+                                Center(
+                                  child: InkWell(
+                                    borderRadius: BorderRadius.circular(999),
+                                    onTap: () => widget.onNavigateTab(1),
+                                    child: Container(
+                                      width: 148,
+                                      height: 148,
+                                      decoration: BoxDecoration(
+                                        shape: BoxShape.circle,
+                                        color: Colors.white.withValues(alpha: 0.14),
+                                        border: Border.all(
+                                          color: Colors.white.withValues(alpha: 0.65),
+                                          width: 2,
+                                        ),
+                                      ),
+                                      child: Column(
+                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        children: [
+                                          Text(
+                                            'Mastery',
+                                            style: TextStyle(
+                                              fontSize: LATokens.fsXs,
+                                              fontWeight: FontWeight.w500,
+                                              color: Colors.white.withValues(alpha: 0.88),
+                                            ),
+                                          ),
+                                          const SizedBox(height: 4),
+                                          Text(
+                                            _avgMasteryPct == null
+                                                ? '—'
+                                                : '${_avgMasteryPct!.round()}%',
+                                            style: const TextStyle(
+                                              fontSize: 36,
+                                              fontWeight: FontWeight.w700,
+                                              letterSpacing: -1,
+                                              color: Colors.white,
+                                              height: 1.05,
+                                            ),
+                                          ),
+                                          const SizedBox(height: 4),
+                                          Text(
+                                            _totalTrackedConcepts > 0
+                                                ? '$_masteredConcepts/$_totalTrackedConcepts mastered'
+                                                : 'Start Learning Hub',
+                                            style: TextStyle(
+                                              fontSize: 11,
+                                              color: Colors.white.withValues(alpha: 0.82),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ),
                               ],
                             ),
                           ),
-                        ],
-                      ),
-                      const SizedBox(height: LATokens.space4),
-                      Row(
-                        children: [
-                          _statChip('Chats', '0', Icons.chat_bubble_rounded),
-                          const SizedBox(width: LATokens.space2),
-                          _statChip('Streak', '0 days', Icons.local_fire_department_rounded, color: LATokens.amber),
-                          const SizedBox(width: LATokens.space2),
-                          _statChip('Topics', '0', Icons.school_rounded),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: LATokens.space4),
-                const Text('Quick actions', style: TextStyle(fontWeight: FontWeight.w700, color: LATokens.textPrimary)),
-                const SizedBox(height: LATokens.space2),
-                GridView.count(
-                  crossAxisCount: 2,
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  mainAxisSpacing: LATokens.space2,
-                  crossAxisSpacing: LATokens.space2,
-                  childAspectRatio: 1.55,
-                  children: [
-                    _suggestionCard('Explain a concept', 'Get a clear explanation', Icons.lightbulb_rounded, LATokens.accent),
-                    _suggestionCard('Practice quiz', 'Test your knowledge', Icons.quiz_rounded, LATokens.green),
-                    _suggestionCard('Study plan', 'Personalized roadmap', Icons.calendar_month_rounded, LATokens.accent2),
-                    _suggestionCard('Arena', 'Enter the battlefield', Icons.sports_esports_rounded, LATokens.amber),
-                  ],
-                ),
-                const SizedBox(height: LATokens.space4),
-                const Text('Continue learning', style: TextStyle(fontWeight: FontWeight.w700, color: LATokens.textPrimary)),
-                const SizedBox(height: LATokens.space2),
-                Container(
-                  padding: const EdgeInsets.all(LATokens.space3),
-                  decoration: BoxDecoration(
-                    color: dark ? LATokens.bgCard : LATokens.lightBgCard,
-                    borderRadius: BorderRadius.circular(LATokens.radiusLg),
-                    border: Border.all(color: (dark ? LATokens.border : LATokens.lightBorder)),
-                  ),
-                  child: Row(
-                    children: [
-                      Container(
-                        width: 40,
-                        height: 40,
-                        decoration: BoxDecoration(color: LATokens.accent.withOpacity(0.12), borderRadius: BorderRadius.circular(LATokens.radiusMd)),
-                        child: const Icon(Icons.play_arrow_rounded, color: LATokens.accent),
-                      ),
-                      const SizedBox(width: LATokens.space3),
-                      const Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text('Science — Laws of Motion', style: TextStyle(fontWeight: FontWeight.w600, fontSize: LATokens.fsSm, color: LATokens.textPrimary)),
-                            Text('Continue • 40% completed', style: TextStyle(color: LATokens.textMuted, fontSize: LATokens.fsXs)),
-                          ],
                         ),
                       ),
-                      const Icon(Icons.arrow_forward_ios_rounded, size: 14, color: LATokens.textMuted),
+
+                      // White rounded-top content sheet
+                      Transform.translate(
+                        offset: const Offset(0, -16),
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: c.bg,
+                            borderRadius: const BorderRadius.vertical(
+                              top: Radius.circular(LATokens.radiusSheet),
+                            ),
+                          ),
+                          padding: LALayout.pagePadding(context, top: 22, bottom: 28),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              if (_continueTopic != null &&
+                                  (_continueTopic!['conceptId'] ?? '').toString().isNotEmpty) ...[
+                                LACard(
+                                  onTap: () => Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (_) => LearningHubScreen(
+                                        initialConceptId: _continueTopic!['conceptId'].toString(),
+                                      ),
+                                    ),
+                                  ),
+                                  borderColor: c.accent.withValues(alpha: 0.35),
+                                  padding: const EdgeInsets.all(LATokens.space4),
+                                  child: Row(
+                                    children: [
+                                      Container(
+                                        width: 40,
+                                        height: 40,
+                                        decoration: BoxDecoration(
+                                          color: c.accentSoft,
+                                          borderRadius: BorderRadius.circular(LATokens.radiusMd),
+                                        ),
+                                        child: Icon(Icons.play_arrow_rounded, color: c.accent),
+                                      ),
+                                      const SizedBox(width: LATokens.space3),
+                                      Expanded(
+                                        child: Column(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              'Continue learning',
+                                              style: TextStyle(
+                                                fontSize: LATokens.fsXs,
+                                                fontWeight: FontWeight.w600,
+                                                color: c.accent,
+                                              ),
+                                            ),
+                                            Text(
+                                              (_continueTopic!['name'] ?? 'Resume chapter').toString(),
+                                              maxLines: 1,
+                                              overflow: TextOverflow.ellipsis,
+                                              style: TextStyle(
+                                                fontSize: LATokens.fsMd,
+                                                fontWeight: FontWeight.w600,
+                                                color: c.text,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                      Icon(Icons.chevron_right_rounded, color: c.textMuted),
+                                    ],
+                                  ),
+                                ),
+                                const SizedBox(height: LATokens.space4),
+                              ],
+
+                              // Real Study Time & Sessions row
+                              Row(
+                                children: [
+                                  Expanded(
+                                    child: StatTile(
+                                      label: 'Study time',
+                                      value: _totalMinutesStudied > 0
+                                          ? '${_totalMinutesStudied}m'
+                                          : '—',
+                                      icon: Icons.timer_outlined,
+                                      color: c.green,
+                                      onTap: () => Navigator.push(
+                                        context,
+                                        MaterialPageRoute(builder: (_) => const StudySessionScreen()),
+                                      ),
+                                    ),
+                                  ),
+                                  const SizedBox(width: LATokens.space2),
+                                  Expanded(
+                                    child: StatTile(
+                                      label: 'Sessions',
+                                      value: '$_sessionCount',
+                                      icon: Icons.check_circle_outline_rounded,
+                                      color: c.accent,
+                                      onTap: () => Navigator.push(
+                                        context,
+                                        MaterialPageRoute(builder: (_) => const StudySessionScreen()),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+
+                              const SizedBox(height: LATokens.space5),
+
+                              const SectionHeader(
+                                icon: Icons.grid_view_rounded,
+                                title: 'Study workspace',
+                              ),
+                              const SizedBox(height: LATokens.space2),
+                              GridView.count(
+                                crossAxisCount: 2,
+                                shrinkWrap: true,
+                                physics: const NeverScrollableScrollPhysics(),
+                                mainAxisSpacing: LATokens.space2,
+                                crossAxisSpacing: LATokens.space2,
+                                childAspectRatio: 1.38,
+                                children: [
+                                  _actionTile(
+                                    c,
+                                    icon: Icons.chat_bubble_outline_rounded,
+                                    title: 'AI Tutor',
+                                    subtitle: 'Ask & solve step-by-step',
+                                    color: c.accent,
+                                    onTap: () => widget.onNavigateTab(2),
+                                  ),
+                                  _actionTile(
+                                    c,
+                                    icon: Icons.school_outlined,
+                                    title: 'Learning Hub',
+                                    subtitle: '7-stage adaptive lessons',
+                                    color: c.accent,
+                                    onTap: () => widget.onNavigateTab(1),
+                                  ),
+                                  _actionTile(
+                                    c,
+                                    icon: Icons.timer_outlined,
+                                    title: 'Study Session',
+                                    subtitle: 'Focus timer & AI plan',
+                                    color: c.green,
+                                    onTap: () => Navigator.push(
+                                      context,
+                                      MaterialPageRoute(builder: (_) => const StudySessionScreen()),
+                                    ),
+                                  ),
+                                  _actionTile(
+                                    c,
+                                    icon: Icons.calendar_today_rounded,
+                                    title: 'Study Planner',
+                                    subtitle: 'Schedule & AI replanning',
+                                    color: c.amber,
+                                    onTap: () => Navigator.push(
+                                      context,
+                                      MaterialPageRoute(builder: (_) => const PlannerScreen()),
+                                    ),
+                                  ),
+                                ],
+                              ),
+
+                              const SizedBox(height: LATokens.space5),
+
+                              SectionHeader(
+                                icon: Icons.track_changes_rounded,
+                                title: 'Recommended next',
+                                actionLabel: 'Learning Hub',
+                                onAction: () => widget.onNavigateTab(1),
+                              ),
+                              const SizedBox(height: LATokens.space2),
+                              if (_recommendations.isEmpty)
+                                EmptyStateView(
+                                  icon: Icons.explore_outlined,
+                                  title: 'No recommendations yet',
+                                  message:
+                                      'Complete a chapter in Learning Hub or finish a Study Session to unlock personalized next steps.',
+                                  actionLabel: 'Explore Learning Hub',
+                                  onAction: () => widget.onNavigateTab(1),
+                                )
+                              else
+                                Column(
+                                  children: _recommendations.take(3).map((rec) {
+                                    final topic = (rec['topic'] ?? rec['conceptId'] ?? 'Topic').toString();
+                                    final subject = (rec['subject'] ?? '').toString();
+                                    final reason = (rec['reason'] ?? '').toString();
+                                    final conceptId = rec['conceptId']?.toString();
+                                    return Padding(
+                                      padding: const EdgeInsets.only(bottom: LATokens.space2),
+                                      child: LACard(
+                                        onTap: () {
+                                          if (conceptId != null && conceptId.isNotEmpty) {
+                                            Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder: (_) => LearningHubScreen(initialConceptId: conceptId),
+                                              ),
+                                            );
+                                          } else {
+                                            widget.onNavigateTab(1);
+                                          }
+                                        },
+                                        padding: const EdgeInsets.all(LATokens.space3),
+                                        child: Row(
+                                          children: [
+                                            Container(
+                                              width: 36,
+                                              height: 36,
+                                              decoration: BoxDecoration(
+                                                color: c.accentSoft,
+                                                borderRadius: BorderRadius.circular(LATokens.radiusSm),
+                                              ),
+                                              child: Icon(Icons.school_outlined, size: 18, color: c.accent),
+                                            ),
+                                            const SizedBox(width: LATokens.space3),
+                                            Expanded(
+                                              child: Column(
+                                                crossAxisAlignment: CrossAxisAlignment.start,
+                                                children: [
+                                                  Text(
+                                                    topic,
+                                                    maxLines: 1,
+                                                    overflow: TextOverflow.ellipsis,
+                                                    style: TextStyle(fontSize: LATokens.fsBase, fontWeight: FontWeight.w600, color: c.text),
+                                                  ),
+                                                  Text(
+                                                    reason.isNotEmpty ? reason : subject,
+                                                    maxLines: 1,
+                                                    overflow: TextOverflow.ellipsis,
+                                                    style: TextStyle(fontSize: LATokens.fsXs, color: c.textSecondary),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                            Icon(Icons.chevron_right_rounded, size: 18, color: c.textMuted),
+                                          ],
+                                        ),
+                                      ),
+                                    );
+                                  }).toList(),
+                                ),
+
+                              if (_recentAssessments.isNotEmpty) ...[
+                                const SizedBox(height: LATokens.space5),
+                                const SectionHeader(
+                                  icon: Icons.assessment_outlined,
+                                  title: 'Recent assessments',
+                                ),
+                                const SizedBox(height: LATokens.space2),
+                                ..._recentAssessments.map((q) {
+                                  final title = (q['title'] ?? q['topic'] ?? q['subject'] ?? 'Assessment').toString();
+                                  final pct = (q['percentage'] is num) ? (q['percentage'] as num).round() : 0;
+                                  final passed = q['passed'] == true || pct >= 60;
+                                  return Padding(
+                                    padding: const EdgeInsets.only(bottom: LATokens.space2),
+                                    child: LACard(
+                                      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                                      child: Row(
+                                        children: [
+                                          Expanded(
+                                            child: Column(
+                                              crossAxisAlignment: CrossAxisAlignment.start,
+                                              children: [
+                                                Text(
+                                                  title,
+                                                  maxLines: 1,
+                                                  overflow: TextOverflow.ellipsis,
+                                                  style: TextStyle(fontWeight: FontWeight.w600, color: c.text),
+                                                ),
+                                                Text(
+                                                  '${q['correct'] ?? 0}/${q['totalQ'] ?? 0} correct · ${q['subject'] ?? ''}',
+                                                  style: TextStyle(fontSize: LATokens.fsXs, color: c.textMuted),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                          Container(
+                                            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                                            decoration: BoxDecoration(
+                                              color: passed ? c.greenSoft : c.redSoft,
+                                              borderRadius: BorderRadius.circular(LATokens.radiusFull),
+                                            ),
+                                            child: Text(
+                                              '$pct%',
+                                              style: TextStyle(
+                                                fontSize: LATokens.fsSm,
+                                                fontWeight: FontWeight.w700,
+                                                color: passed ? c.green : c.red,
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  );
+                                }),
+                              ],
+                            ],
+                          ),
+                        ),
+                      ),
                     ],
                   ),
-                ),
-                const SizedBox(height: LATokens.space6),
-              ],
-            ),
-          );
-  }
-
-  Widget _statChip(String label, String value, IconData icon, {Color? color}) {
-    final dark = Theme.of(context).brightness == Brightness.dark;
-    final c = color ?? LATokens.accent;
-    return Expanded(
-      child: Container(
-        padding: const EdgeInsets.all(LATokens.space2),
-        decoration: BoxDecoration(
-          color: dark ? LATokens.bgElevated : LATokens.lightBgCardHover,
-          borderRadius: BorderRadius.circular(LATokens.radiusMd),
-          border: Border.all(color: (dark ? LATokens.border : LATokens.lightBorder)),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Container(
-                  width: 28,
-                  height: 28,
-                  decoration: BoxDecoration(color: c.withOpacity(0.12), borderRadius: BorderRadius.circular(LATokens.radiusSm)),
-                  child: Icon(icon, size: 14, color: c),
-                ),
-                const Spacer(),
-                Text(value, style: const TextStyle(fontSize: LATokens.fsMd, fontWeight: FontWeight.w700, color: LATokens.textPrimary)),
-              ],
-            ),
-            const SizedBox(height: LATokens.space1),
-            Text(label, style: const TextStyle(fontSize: LATokens.fsXs, color: LATokens.textMuted)),
-          ],
-        ),
       ),
     );
   }
 
-  Widget _suggestionCard(String title, String desc, IconData icon, Color color) {
-    final dark = Theme.of(context).brightness == Brightness.dark;
-    return Container(
+  Widget _actionTile(
+    LAColors c, {
+    required IconData icon,
+    required String title,
+    required String subtitle,
+    required Color color,
+    required VoidCallback onTap,
+  }) {
+    return LACard(
+      onTap: onTap,
       padding: const EdgeInsets.all(LATokens.space3),
-      decoration: BoxDecoration(
-        color: dark ? LATokens.bgCard : LATokens.lightBgCard,
-        borderRadius: BorderRadius.circular(LATokens.radiusLg),
-        border: Border.all(color: (dark ? LATokens.border : LATokens.lightBorder)),
-      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
-            width: 28,
-            height: 28,
-            decoration: BoxDecoration(color: color.withOpacity(0.12), borderRadius: BorderRadius.circular(LATokens.radiusSm)),
-            child: Icon(icon, size: 14, color: color),
+            width: 32,
+            height: 32,
+            decoration: BoxDecoration(
+              color: color.withValues(alpha: 0.12),
+              borderRadius: BorderRadius.circular(LATokens.radiusSm),
+            ),
+            child: Icon(icon, size: 17, color: color),
           ),
           const Spacer(),
-          Text(title, style: const TextStyle(fontSize: LATokens.fsSm, fontWeight: FontWeight.w600, color: LATokens.textPrimary)),
-          Text(desc, style: const TextStyle(fontSize: LATokens.fsXs, color: LATokens.textMuted)),
+          Text(
+            title,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(fontSize: LATokens.fsBase, fontWeight: FontWeight.w600, color: c.text),
+          ),
+          Text(
+            subtitle,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(fontSize: LATokens.fsXs, color: c.textMuted),
+          ),
         ],
       ),
     );

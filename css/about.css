@@ -1,18 +1,18 @@
 ﻿/* Learning Allied: About and Founder pages.
    Uses the same --la-* tokens, theme classes and component patterns as index.html. */
 :root{
-  --la-bg:#000000; --la-surface:#111113; --la-surface-2:#17171a;
-  --la-line:rgba(255,255,255,.09); --la-line-strong:rgba(255,255,255,.16);
-  --la-text:#f4f4f5; --la-muted:#a1a1aa; --la-faint:#71717a;
-  --la-accent:#6b95ff; --la-accent-ink:#0a0a0b; --la-accent-soft:rgba(107,149,255,.14);
-  --la-r:10px; --la-r-sm:6px;
+  --la-bg:#07080A; --la-surface:#0E1014; --la-surface-2:#161920;
+  --la-line:#222630; --la-line-strong:#313644;
+  --la-text:#F4F5F7; --la-muted:#A1A8B8; --la-faint:#6E7687;
+  --la-accent:#38BDF8; --la-accent-ink:#07080A; --la-accent-soft:rgba(56,189,248,.12);
+  --la-r:14px; --la-r-sm:9999px;
   --la-font:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
 }
 .light-mode{
-  --la-bg:#fafaf9; --la-surface:#ffffff; --la-surface-2:#f3f3f1;
-  --la-line:rgba(0,0,0,.09); --la-line-strong:rgba(0,0,0,.18);
-  --la-text:#18181b; --la-muted:#52525b; --la-faint:#71717a;
-  --la-accent:#2c55d4; --la-accent-ink:#ffffff; --la-accent-soft:rgba(44,85,212,.09);
+  --la-bg:#F6F8FB; --la-surface:#FFFFFF; --la-surface-2:#F1F5F9;
+  --la-line:#E5EAF0; --la-line-strong:#D0D7E2;
+  --la-text:#141518; --la-muted:#5B6472; --la-faint:#8B94A2;
+  --la-accent:#0A7FF5; --la-accent-ink:#FFFFFF; --la-accent-soft:rgba(10,127,245,.10);
 }
 *{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth;scroll-padding-top:88px;-webkit-text-size-adjust:100%}
@@ -28,6 +28,10 @@ img{display:block;max-width:100%}
 .btn-primary:hover{filter:brightness(1.08);}
 .btn-secondary{background:transparent;color:var(--la-text);border-color:var(--la-line-strong)}
 .btn-secondary:hover{background:var(--la-surface-2)}
+.light-mode .btn-primary{background:#141518;color:#FFFFFF}
+.light-mode .btn-primary:hover{background:#23252A;filter:none}
+.light-mode .btn-secondary{background:#FFFFFF;color:#141518;border-color:var(--la-line-strong)}
+.light-mode .btn-secondary:hover{background:var(--la-surface-2)}
 .btn-lg{padding:15px 26px;font-size:15px}
 .btn-quiet{font:500 14px var(--la-font);color:var(--la-muted);padding:10px 14px;border-radius:var(--la-r-sm)}
 .btn-quiet:hover{color:var(--la-text)}

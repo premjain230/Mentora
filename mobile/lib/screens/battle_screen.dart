@@ -1,109 +1,307 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../services/api_client.dart';
+import '../services/arena_api.dart';
 import '../services/arena_curriculum.dart';
 import '../services/arena_progress.dart';
-import '../services/arena_api.dart';
-import '../widgets/app_drawer.dart';
+import '../services/auth_service.dart';
+import '../theme/design_tokens.dart';
+import '../widgets/app_components.dart';
+import '../widgets/markdown_math_text.dart';
 
 class BattleScreen extends StatefulWidget {
-  final String subjectKey; final Chapter chapter; final bool isBoss; final Function(double score) onComplete;
-  const BattleScreen({super.key, required this.subjectKey, required this.chapter, this.isBoss=false, required this.onComplete});
-  @override State<BattleScreen> createState()=> _BattleScreenState();
+  final String subjectKey;
+  final Chapter chapter;
+  final bool isBoss;
+  final List<String>? allTopics;
+  final void Function(bool passed, double score, ArenaProgress? progress) onComplete;
+
+  const BattleScreen({
+    super.key,
+    required this.subjectKey,
+    required this.chapter,
+    this.isBoss = false,
+    this.allTopics,
+    required this.onComplete,
+  });
+
+  @override
+  State<BattleScreen> createState() => _BattleScreenState();
 }
+
 class _BattleScreenState extends State<BattleScreen> {
-  late List<Map<String,dynamic>> qs;
-  int idx=0; int correct=0; int? selected; bool answered=false;
+  bool _loading = true;
+  bool _submitting = false;
+  String? _error;
+
+  String? _sessionId;
+  List<Map<String, dynamic>> _questions = [];
+  int _idx = 0;
+  int? _selected;
+  bool _answered = false;
+  bool _lastCorrect = false;
+  String _explanation = '';
+  int? _correctAnswerIdx;
 
   @override
-  void initState(){
+  void initState() {
     super.initState();
-    // Mock questions — in production fetch from /api/groq-proxy like web
-    qs = List.generate(widget.isBoss? 8:5, (i)=> {
-      'q': widget.isBoss? 'Final Boss Q${i+1}: Comprehensive ${widget.chapter.subject} — choose best answer' : '${widget.chapter.name} Q${i+1}: Key concept — choose correct option',
-      'options': ['Option A — Principle X','Option B — Principle Y','Option C — Principle Z','Option D — Principle W'],
-      'answer': ['A','B','C','D'][i%4],
-      'explanation': 'Explanation for Q${i+1}.',
+    _start();
+  }
+
+  ArenaApi get _api => ArenaApi(ApiClient(context.read<AuthService>()));
+
+  Future<void> _start() async {
+    setState(() {
+      _loading = true;
+      _error = null;
     });
+    try {
+      final res = await _api.startBattle(
+        subjectKey: widget.subjectKey,
+        mode: widget.isBoss ? 'final_boss' : 'chapter',
+        conceptId: widget.isBoss ? null : widget.chapter.conceptId,
+        subject: widget.chapter.subject,
+        name: widget.chapter.name,
+        topic: widget.chapter.topic,
+        topics: widget.allTopics,
+      );
+      final rawQs = (res['questions'] as List<dynamic>?) ?? [];
+      if (rawQs.isEmpty) throw Exception('No questions returned for this battle.');
+      if (!mounted) return;
+      setState(() {
+        _sessionId = res['sessionId']?.toString();
+        _questions = rawQs.map((e) => Map<String, dynamic>.from(e as Map)).toList();
+        _loading = false;
+      });
+    } catch (e) {
+      if (!mounted) return;
+      setState(() {
+        _error = e.toString();
+        _loading = false;
+      });
+    }
+  }
+
+  Future<void> _selectOption(int choice) async {
+    if (_answered || _submitting || _sessionId == null) return;
+    setState(() {
+      _selected = choice;
+      _submitting = true;
+    });
+    try {
+      final res = await _api.submitAnswer(
+        subjectKey: widget.subjectKey,
+        sessionId: _sessionId!,
+        questionIndex: _idx,
+        choice: choice,
+      );
+      if (!mounted) return;
+      setState(() {
+        _answered = true;
+        _submitting = false;
+        _lastCorrect = res['correct'] == true;
+        _explanation = (res['explanation'] ?? '').toString();
+        final ans = res['answer'];
+        _correctAnswerIdx = ans is num ? ans.toInt() : int.tryParse('$ans');
+      });
+    } catch (e) {
+      if (!mounted) return;
+      setState(() {
+        _submitting = false;
+        _selected = null;
+      });
+      LAToast.show(context, 'Submit failed: $e', isError: true);
+    }
+  }
+
+  Future<void> _nextOrFinish() async {
+    if (_idx < _questions.length - 1) {
+      setState(() {
+        _idx++;
+        _selected = null;
+        _answered = false;
+        _explanation = '';
+        _correctAnswerIdx = null;
+      });
+      return;
+    }
+
+    if (_sessionId == null) return;
+    setState(() => _submitting = true);
+    try {
+      final res = await _api.finishBattle(
+        subjectKey: widget.subjectKey,
+        sessionId: _sessionId!,
+      );
+      final passed = res['passed'] == true;
+      final score = ((res['score'] ?? 0) as num).toDouble();
+      ArenaProgress? prog;
+      if (res['progress'] is Map) {
+        prog = ArenaProgress.fromFirestore(Map<String, dynamic>.from(res['progress'] as Map));
+      }
+      if (!mounted) return;
+      Navigator.pop(context);
+      widget.onComplete(passed, score, prog);
+    } catch (e) {
+      if (!mounted) return;
+      setState(() => _submitting = false);
+      LAToast.show(context, 'Finish failed: $e', isError: true);
+    }
   }
 
   @override
-  Widget build(BuildContext context){
-    final q=qs[idx];
-    final total=qs.length;
+  Widget build(BuildContext context) {
+    final c = LAColors.of(context);
     return Scaffold(
-      drawer: const AppDrawer(activeRoute: 'arena'),
-      appBar: AppBar(leading: Builder(builder: (ctx) => IconButton(icon: const Icon(Icons.menu_rounded), onPressed: () => Scaffold.of(ctx).openDrawer())), title: Text(widget.isBoss? '🏆 FINAL BOSS':'⚔ ${widget.chapter.name}'), backgroundColor: Colors.transparent, elevation:0),
-      body: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children:[
-          Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children:[
-            Text('Question ${idx+1} / $total', style: const TextStyle(color: Colors.white54, fontFamily: 'monospace', fontSize:11)),
-            Text(widget.isBoss? 'Boss': ['Foundation','Foundation','Application','Challenge','Boss'][idx.clamp(0,4)], style: const TextStyle(color: Colors.white38, fontSize:11)),
-          ]),
-          const SizedBox(height:8),
-          LinearProgressIndicator(value: (idx+1)/total, backgroundColor: Colors.white10, color: const Color(0xFF0EA5E9), minHeight:4),
-          const SizedBox(height:16),
-          Text(q['q'], style: const TextStyle(fontWeight: FontWeight.w600, fontSize:14, height:1.5)),
-          const SizedBox(height:14),
-          ...List.generate(4, (i){
-            final letter=String.fromCharCode(65+i);
-            final isSelected=selected==i;
-            final showResult=answered;
-            final isCorrect=letter==q['answer'];
-            Color border=Colors.white10;
-            Color bg=const Color(0xFF0F1324);
-            if(showResult && isSelected){ border=isCorrect? const Color(0xFF10B981): const Color(0xFFEF4444); bg=isCorrect? const Color(0xFF10B981).withOpacity(0.12): const Color(0xFFEF4444).withOpacity(0.12); }
-            else if(showResult && isCorrect){ border=const Color(0xFF10B981); bg=const Color(0xFF10B981).withOpacity(0.08); }
-            else if(isSelected){ border=const Color(0xFF0EA5E9); bg=const Color(0xFF0EA5E9).withOpacity(0.12); }
-            return Padding(padding: const EdgeInsets.only(bottom:8), child: InkWell(
-              onTap: answered? null: ()=> _select(i),
-              borderRadius: BorderRadius.circular(12),
-              child: Container(
-                decoration: BoxDecoration(color: bg, borderRadius: BorderRadius.circular(12), border: Border.all(color: border)),
-                padding: const EdgeInsets.symmetric(horizontal:12, vertical:11),
-                child: Row(children:[
-                  Container(width:26,height:26,decoration: BoxDecoration(color: isSelected? const Color(0xFF0EA5E9): Colors.white10, borderRadius: BorderRadius.circular(8)), child: Center(child: Text(letter, style: TextStyle(color: isSelected? Colors.white: Colors.white70, fontSize:11, fontWeight: FontWeight.w700)))),
-                  const SizedBox(width:10),
-                  Expanded(child: Text(q['options'][i], style: const TextStyle(color: Colors.white, fontSize:13))),
-                ]),
-              ),
-            ));
-          }),
-          if(answered) Container(margin: const EdgeInsets.only(top:10), padding: const EdgeInsets.all(10), decoration: BoxDecoration(color: (String.fromCharCode(65+(selected??0))==q['answer']? const Color(0xFF10B981).withOpacity(0.08): const Color(0xFFEF4444).withOpacity(0.08)), borderRadius: BorderRadius.circular(10), border: Border.all(color: String.fromCharCode(65+(selected??0))==q['answer']? const Color(0xFF10B981).withOpacity(0.25): const Color(0xFFEF4444).withOpacity(0.25))), child: Text(String.fromCharCode(65+(selected??0))==q['answer']? '✓ Correct! ${q['explanation']}':'✗ Incorrect. Correct: ${q['answer']}. ${q['explanation']}', style: TextStyle(color: String.fromCharCode(65+(selected??0))==q['answer']? const Color(0xFF10B981): const Color(0xFFF87171), fontSize:12))),
-          const Spacer(),
-          SizedBox(width: double.infinity, child: FilledButton(
-            onPressed: !answered? null: () async {
-              if(idx < total-1){ setState(() { idx++; selected=null; answered=false; }); }
-              else {
-                final score= correct/total;
-                try{
-                  if(widget.isBoss){
-                    await ArenaApi.finalBossAttempt(subjectKey: widget.subjectKey, score: score);
-                  } else {
-                    await ArenaApi.defeatChapter(subjectKey: widget.subjectKey, conceptId: widget.chapter.conceptId, score: score);
-                  }
-                }catch(e){
-                  if(!mounted) return;
-                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Sync failed: $e')));
-                  Navigator.pop(context);
-                  widget.onComplete(score);
-                  return;
-                }
-                if(!mounted) return;
-                Navigator.pop(context);
-                widget.onComplete(score);
-              }
-            },
-            style: FilledButton.styleFrom(backgroundColor: const Color(0xFF0EA5E9), padding: const EdgeInsets.symmetric(vertical:12)),
-            child: Text(idx==total-1? 'Finish':'Next →', style: const TextStyle(fontWeight: FontWeight.w800)),
-          )),
-        ]),
+      appBar: AppBar(
+        title: Text(widget.isBoss ? 'Final Boss' : widget.chapter.name),
       ),
+      body: _loading
+          ? const Center(child: CircularProgressIndicator())
+          : _error != null
+              ? ErrorStateView(message: _error!, onRetry: _start)
+              : SafeArea(
+                  child: Padding(
+                    padding: const EdgeInsets.all(LATokens.space4),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              'Question ${_idx + 1} of ${_questions.length}',
+                              style: TextStyle(fontSize: LATokens.fsXs, fontWeight: FontWeight.w600, color: c.textMuted),
+                            ),
+                            Text(
+                              widget.isBoss ? 'Boss' : widget.chapter.difficultyLabel,
+                              style: TextStyle(fontSize: LATokens.fsXs, color: c.textMuted),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 8),
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(LATokens.radiusFull),
+                          child: LinearProgressIndicator(
+                            value: (_idx + 1) / _questions.length,
+                            backgroundColor: c.surfaceElevated,
+                            color: c.accent,
+                            minHeight: 5,
+                          ),
+                        ),
+                        const SizedBox(height: LATokens.space4),
+                        Expanded(
+                          child: ListView(
+                            children: [
+                              MarkdownMathText(
+                                text: (_questions[_idx]['q'] ?? '').toString(),
+                                baseStyle: TextStyle(fontSize: LATokens.fsMd, fontWeight: FontWeight.w600, color: c.text, height: 1.45),
+                              ),
+                              const SizedBox(height: LATokens.space4),
+                              ...List.generate(
+                                ((_questions[_idx]['options'] as List<dynamic>?) ?? []).length,
+                                (i) {
+                                  final opts = _questions[_idx]['options'] as List<dynamic>;
+                                  final letter = String.fromCharCode(65 + i);
+                                  final isSel = _selected == i;
+                                  final isRight = _answered && _correctAnswerIdx == i;
+                                  final isWrong = _answered && isSel && !_lastCorrect;
+
+                                  Color border = c.border;
+                                  Color bg = c.surface;
+                                  if (isRight) {
+                                    border = c.green;
+                                    bg = c.greenSoft;
+                                  } else if (isWrong) {
+                                    border = c.red;
+                                    bg = c.redSoft;
+                                  } else if (isSel) {
+                                    border = c.accent;
+                                    bg = c.accentSoft;
+                                  }
+
+                                  return Padding(
+                                    padding: const EdgeInsets.only(bottom: 10),
+                                    child: LACard(
+                                      onTap: _answered || _submitting ? null : () => _selectOption(i),
+                                      backgroundColor: bg,
+                                      borderColor: border,
+                                      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                                      child: Row(
+                                        children: [
+                                          Container(
+                                            width: 28,
+                                            height: 28,
+                                            decoration: BoxDecoration(
+                                              color: isSel ? c.accent : c.surfaceElevated,
+                                              borderRadius: BorderRadius.circular(8),
+                                            ),
+                                            child: Center(
+                                              child: Text(
+                                                letter,
+                                                style: TextStyle(
+                                                  color: isSel ? Colors.white : c.textSecondary,
+                                                  fontSize: LATokens.fsXs,
+                                                  fontWeight: FontWeight.w700,
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                          const SizedBox(width: 12),
+                                          Expanded(
+                                            child: Text(
+                                              opts[i].toString(),
+                                              style: TextStyle(fontSize: LATokens.fsBase, color: c.text),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  );
+                                },
+                              ),
+                              if (_answered && _explanation.isNotEmpty) ...[
+                                const SizedBox(height: 8),
+                                Container(
+                                  padding: const EdgeInsets.all(12),
+                                  decoration: BoxDecoration(
+                                    color: _lastCorrect ? c.greenSoft : c.redSoft,
+                                    borderRadius: BorderRadius.circular(LATokens.radiusMd),
+                                    border: Border.all(
+                                      color: (_lastCorrect ? c.green : c.red).withValues(alpha: 0.35),
+                                    ),
+                                  ),
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        _lastCorrect ? 'Correct' : 'Incorrect',
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.w700,
+                                          fontSize: LATokens.fsXs,
+                                          color: _lastCorrect ? c.green : c.red,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 4),
+                                      MarkdownMathText(text: _explanation),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: 12),
+                        LAButton(
+                          text: _idx == _questions.length - 1 ? 'Finish battle' : 'Next question',
+                          loading: _submitting,
+                          onPressed: _answered ? _nextOrFinish : null,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
     );
-  }
-  void _select(int i){
-    if(answered) return;
-    setState(() { selected=i; answered=true; });
-    final letter=String.fromCharCode(65+i);
-    if(letter==qs[idx]['answer']) correct++;
   }
 }

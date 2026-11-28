@@ -15,6 +15,15 @@ export function AppSidebar() {
     setMobileOpen(false);
   }, [pathname]);
 
+  useEffect(() => {
+    if (!mobileOpen) return;
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setMobileOpen(false);
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [mobileOpen]);
+
   const navKey = pathname?.split("/").filter(Boolean).pop() || "home";
 
   const displayName =
@@ -66,8 +75,16 @@ export function AppSidebar() {
             <img
               src="/learningallied-white.svg"
               alt="Learning Allied"
-              className="logo-img"
-              style={{ height: 34, width: 34 }}
+              className="logo-img logo-for-dark"
+              width={28}
+              height={28}
+            />
+            <img
+              src="/learningallied-black.svg"
+              alt="Learning Allied"
+              className="logo-img logo-for-light"
+              width={28}
+              height={28}
             />
             <span className="logo-text">Learning Allied</span>
           </Link>
@@ -93,7 +110,7 @@ export function AppSidebar() {
           </button>
         </div>
 
-        <div className="sidebar-search-wrap" style={{ padding: "0 10px 10px" }}>
+        <div className="sidebar-search-wrap">
           <button
             type="button"
             className="sidebar-search-trigger"
@@ -101,31 +118,15 @@ export function AppSidebar() {
               window.dispatchEvent(new CustomEvent("open-command-palette"));
             }}
             aria-label="Search and quick commands (Cmd+K)"
-            style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
-              width: "100%",
-              padding: "7px 10px",
-              background: "var(--bg-card, #0A0A0A)",
-              border: "1px solid var(--border, #262626)",
-              borderRadius: "var(--radius-md, 8px)",
-              color: "var(--text-muted, #737373)",
-              fontSize: "12px",
-              cursor: "pointer",
-              transition: "all 0.15s ease",
-            }}
           >
-            <span style={{ display: "flex", alignItems: "center", gap: "7px" }}>
+            <span className="sidebar-search-left">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                 <circle cx="11" cy="11" r="8" />
                 <path d="m21 21-4.35-4.35" />
               </svg>
               <span>Search &amp; Jump...</span>
             </span>
-            <span style={{ fontSize: "10px", padding: "1px 5px", background: "var(--bg-elevated, #111111)", border: "1px solid var(--border, #262626)", borderRadius: "3px", color: "var(--text-muted, #737373)" }}>
-              ⌘K
-            </span>
+            <kbd className="sidebar-search-kbd">⌘K</kbd>
           </button>
         </div>
 

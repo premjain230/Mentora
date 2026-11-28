@@ -4,68 +4,22 @@ import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-function SunIcon() {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <circle cx="12" cy="12" r="4" stroke="currentColor" strokeWidth="1.6" />
-      <path
-        d="M12 2v2.4M12 19.6V22M4.9 4.9l1.7 1.7M17.4 17.4l1.7 1.7M2 12h2.4M19.6 12H22M4.9 19.1l1.7-1.7M17.4 6.6l1.7-1.7"
-        stroke="currentColor"
-        strokeWidth="1.6"
-        strokeLinecap="round"
-      />
-    </svg>
-  );
-}
-
-function MoonIcon() {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <path
-        d="M20.5 14.3A8.5 8.5 0 019.7 3.5a8.5 8.5 0 1010.8 10.8z"
-        stroke="currentColor"
-        strokeWidth="1.6"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  );
-}
-
 export function PublicNavbar() {
   const pathname = usePathname();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [theme, setTheme] = useState<"dark" | "light">("dark");
-
-  useEffect(() => {
-    try {
-      const stored = localStorage.getItem("learning-allied-theme");
-      if (stored === "light") {
-        setTheme("light");
-        document.documentElement.classList.add("light-mode");
-      } else {
-        setTheme("dark");
-        document.documentElement.classList.remove("light-mode");
-      }
-    } catch {}
-  }, []);
 
   useEffect(() => {
     setMobileMenuOpen(false);
   }, [pathname]);
 
-  const toggleTheme = () => {
-    const nextTheme = theme === "dark" ? "light" : "dark";
-    setTheme(nextTheme);
-    try {
-      localStorage.setItem("learning-allied-theme", nextTheme);
-      if (nextTheme === "light") {
-        document.documentElement.classList.add("light-mode");
-      } else {
-        document.documentElement.classList.remove("light-mode");
-      }
-    } catch {}
-  };
+  useEffect(() => {
+    if (!mobileMenuOpen) return;
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setMobileMenuOpen(false);
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [mobileMenuOpen]);
 
   return (
     <>
@@ -75,8 +29,16 @@ export function PublicNavbar() {
             <img
               src="/learningallied-white.svg"
               alt="Learning Allied logo"
-              width={32}
-              height={32}
+              className="logo-for-dark"
+              width={30}
+              height={30}
+            />
+            <img
+              src="/learningallied-black.svg"
+              alt="Learning Allied logo"
+              className="logo-for-light"
+              width={30}
+              height={30}
             />
             <span className="nav-brand-title">Learning Allied</span>
           </Link>
@@ -91,14 +53,6 @@ export function PublicNavbar() {
           </nav>
 
           <div className="nav-actions">
-            <button
-              onClick={toggleTheme}
-              className="theme-toggle"
-              type="button"
-              aria-label={`Switch to ${theme === "dark" ? "light" : "dark"} theme`}
-            >
-              {theme === "dark" ? <SunIcon /> : <MoonIcon />}
-            </button>
             <Link href="/login" className="btn btn-secondary">
               Log in
             </Link>
@@ -127,7 +81,8 @@ export function PublicNavbar() {
       <aside className={`mnav-panel ${mobileMenuOpen ? "open" : ""}`} aria-label="Mobile navigation">
         <div className="mnav-head">
           <Link href="/" className="mnav-brand" onClick={() => setMobileMenuOpen(false)}>
-            <img src="/learningallied-white.svg" alt="" width={26} height={26} />
+            <img src="/learningallied-white.svg" alt="" className="logo-for-dark" width={26} height={26} />
+            <img src="/learningallied-black.svg" alt="" className="logo-for-light" width={26} height={26} />
             <span>Learning Allied</span>
           </Link>
           <button

@@ -811,7 +811,7 @@ String toSubjectKey(String trackId, String subject, int? classNum){
   final t = trackId.toLowerCase().replaceAll(RegExp(r'[^a-z0-9]+'), '_');
   final s = subject.toLowerCase().replaceAll(RegExp(r'[^a-z0-9]+'), '_');
   if(t=='maharashtra' || t=='cbse'){
-    return '${t}_${classNum ?? ''}_${s}'.replaceAll('__', '_');
+    return '${t}_${classNum ?? ''}_$s'.replaceAll('__', '_');
   }
   return '${t}_$s';
 }

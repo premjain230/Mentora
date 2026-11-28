@@ -7,83 +7,93 @@
 :root {
   color-scheme: dark;
 
-  /* ─── Surfaces (Dark theme: true black & neutral greys) ─────────────────────── */
-  --bg-base: #000000;
-  --bg-base-veil: #000000;
-  --bg-base-soft: #050505;
-  --bg-overlay: rgba(0, 0, 0, 0.88);
-  --bg-sidebar: #050505;
-  --bg-sidebar-hover: #111111;
-  --bg-card: #0A0A0A;
-  --bg-card-hover: #111111;
-  --bg-elevated: #111111;
-  --bg-input: #0A0A0A;
-  --bg-input-hover: #111111;
-  --bg-hover: #1A1A1A;
-  --bg-active: #1A1A1A;
+  /* ─── Surfaces (Dark theme: obsidian & layered graphite) ─────────────────── */
+  --bg-base: #07080A;
+  --bg-base-veil: #07080A;
+  --bg-base-soft: #0A0B0E;
+  --bg-overlay: rgba(7, 8, 10, 0.88);
+  --bg-sidebar: #0A0B0E;
+  --bg-sidebar-hover: #13151B;
+  --bg-card: #0E1014;
+  --bg-card-hover: #14171E;
+  --bg-elevated: #161920;
+  --bg-input: #111318;
+  --bg-input-hover: #161920;
+  --bg-hover: #1C2029;
+  --bg-active: #1D212B;
 
-  /* ─── Borders (Dark theme: neutral greys) ──────────────────────────────────── */
-  --border: #262626;
-  --border-subtle: #1A1A1A;
-  --border-strong: #404040;
-  --border-hover: #525252;
-  --border-active: #3b82f6;
+  /* ─── Borders (Dark theme: subtle graphite) ───────────────────────────────── */
+  --border: #222630;
+  --border-subtle: #181B22;
+  --border-strong: #313644;
+  --border-hover: #42495B;
+  --border-active: #38BDF8;
 
-  /* ─── Accent — restrained brand blue ───────────────────────────────────────── */
-  --accent: #3b82f6;
-  --accent-strong: #60a5fa;
-  --accent-soft: rgba(59, 130, 246, 0.12);
-  --accent-muted: rgba(59, 130, 246, 0.06);
-  --accent-cyan: #0ea5e9;
+  /* ─── Accent — refined luminous sky-azure ─────────────────────────────────── */
+  --accent: #38BDF8;
+  --accent-strong: #60A5FA;
+  --accent-soft: rgba(56, 189, 248, 0.12);
+  --accent-muted: rgba(56, 189, 248, 0.06);
+  --accent-cyan: #0EA5E9;
   --accent-cyan-soft: rgba(14, 165, 233, 0.12);
-  --accent2: #A3A3A3;
-  --accent2-soft: #1A1A1A;
-  --accent3: #ef4444;
-  --accent4: #f59e0b;
-  --green: #10b981;
-  --green-soft: rgba(16, 185, 129, 0.12);
-  --amber: #f59e0b;
-  --rose: #ef4444;
+  --accent2: #A1A8B8;
+  --accent2-soft: #161920;
+  --accent3: #F87171;
+  --accent4: #FBBF24;
+  --green: #34D399;
+  --green-soft: rgba(52, 211, 153, 0.12);
+  --amber: #FBBF24;
+  --rose: #F87171;
 
   /* Blue accent alias */
-  --accent-blue: #3b82f6;
-  --accent-blue-soft: rgba(59, 130, 246, 0.12);
+  --accent-blue: #38BDF8;
+  --accent-blue-soft: rgba(56, 189, 248, 0.12);
 
-  /* ─── Button surfaces (white on dark, black on light) ─────────────────────── */
-  --pill-bg: #FFFFFF;
-  --pill-fg: #000000;
-  --pill-soft-bg: #1A1A1A;
-  --pill-soft-fg: #FFFFFF;
+  /* ─── Button surfaces ─────────────────────────────────────────────────────── */
+  --pill-bg: #F4F5F7;
+  --pill-fg: #07080A;
+  --pill-soft-bg: #161920;
+  --pill-soft-fg: #F4F5F7;
   /* Semantic aliases */
-  --btn-primary-bg: #FFFFFF;
-  --btn-primary-fg: #000000;
-  --btn-secondary-bg: #1A1A1A;
-  --btn-secondary-fg: #FFFFFF;
+  --btn-primary-bg: #F4F5F7;
+  --btn-primary-fg: #07080A;
+  --btn-secondary-bg: #161920;
+  --btn-secondary-fg: #F4F5F7;
 
-  --glass: rgba(10, 10, 10, 0.9);
-  --glass-strong: rgba(5, 5, 5, 0.96);
-  --card-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
-  --card-shadow-hover: 0 2px 8px rgba(0, 0, 0, 0.5);
-  --personality-bg: rgba(10, 10, 10, 0.85);
-  --theme-icon: #f59e0b;
+  --glass: rgba(14, 16, 20, 0.9);
+  --glass-strong: rgba(10, 11, 14, 0.96);
+  --hero-gradient: linear-gradient(135deg, #0E1420 0%, #0E1014 100%);
+  --card-shadow: 0 1px 2px rgba(0, 0, 0, 0.45);
+  --card-shadow-hover: 0 4px 14px rgba(0, 0, 0, 0.55);
+  --personality-bg: rgba(14, 16, 20, 0.85);
+  --theme-icon: #FBBF24;
 
   /* ─── Legacy aliases ──────────────────────────────────────────────────────── */
-  --blue: #3b82f6;
-  --violet: #818cf8;
-  --spark: #f59e0b;
-  --line: #262626;
-  --surface: #0A0A0A;
+  --blue: #38BDF8;
+  --violet: #818CF8;
+  --spark: #FBBF24;
+  --line: #222630;
+  --surface: #0E1014;
 
   /* ─── Topbar ──────────────────────────────────────────────────────────────── */
   --topbar-bg: transparent;
   --topbar-border: var(--border);
 
-  /* ─── Text (Dark theme: pure white & neutral greys) ────────────────────────── */
-  --text-primary: #FFFFFF;
-  --text-secondary: #A3A3A3;
-  --text-muted: #737373;
-  --text-faint: #525252;
-  --text-accent: #3b82f6;
+  /* ─── Navigation surfaces (Sophisticated Obsidian Dark Navigation) ─────────── */
+  --nav-bg: #0A0B0E;
+  --nav-surface: #13151B;
+  --nav-active: #1D212B;
+  --nav-border: #222630;
+  --nav-muted: #6E7687;
+  --nav-secondary: #9CA3AF;
+  --nav-active-ink: #F4F5F7;
+
+  /* ─── Text (Dark theme: crisp off-white & cool slate) ─────────────────────── */
+  --text-primary: #F4F5F7;
+  --text-secondary: #A1A8B8;
+  --text-muted: #6E7687;
+  --text-faint: #4B5263;
+  --text-accent: #38BDF8;
 
   /* ─── Typography ──────────────────────────────────────────────────────────── */
   --font-display: 'Space Grotesk', system-ui, -apple-system, sans-serif;
@@ -116,16 +126,16 @@
   --space-7: 44px;
   --space-8: 64px;
 
-  /* ─── Radii — intentional, not over-rounded ────────────────────────────── */
-  --radius-xs: 4px;
-  --radius-sm: 6px;
-  --radius-md: 8px;
-  --radius-lg: 10px;
-  --radius-xl: 10px;
-  --radius-2xl: 12px;
-  --radius-full: 9999px;  /* only for progress bars and avatars */
-  --radius-card: 10px;
-  --radius-btn: 6px;
+  /* ─── Radii — cohesive with mobile (pill CTAs + clean rounded cards) ─────── */
+  --radius-xs: 6px;
+  --radius-sm: 10px;
+  --radius-md: 14px;
+  --radius-lg: 18px;
+  --radius-xl: 22px;
+  --radius-2xl: 28px;
+  --radius-full: 9999px;
+  --radius-card: 18px;
+  --radius-btn: 9999px;
 
   /* ─── Shadows (Extremely limited, no excessive glow) ───────────────────────── */
   --shadow-xs: none;
@@ -219,76 +229,86 @@
   --chat-sparkle-3: rgba(255, 255, 255, 0.2);
 }
 
-/* ─── Light theme: Clean, neutral Apple & Craft ──────────────────────────────── */
+/* ─── Light theme: Aligned 1:1 with the unified Mobile Application ──────────── */
 .light-mode {
   color-scheme: light;
 
-  /* ─── Surfaces (Light theme: pure white & neutral greys) ────────────────────── */
-  --bg-base: #FFFFFF;
-  --bg-base-veil: #FFFFFF;
-  --bg-base-soft: #FAFAFA;
-  --bg-overlay: rgba(255, 255, 255, 0.88);
-  --bg-sidebar: #FAFAFA;
-  --bg-sidebar-hover: #F5F5F5;
+  /* ─── Surfaces (Matches mobile LATokens) ──────────────────────────────────── */
+  --bg-base: #F6F8FB;
+  --bg-base-veil: #F6F8FB;
+  --bg-base-soft: #F1F5F9;
+  --bg-overlay: rgba(246, 248, 251, 0.90);
+  --bg-sidebar: #FFFFFF;
+  --bg-sidebar-hover: #F4F6FA;
   --bg-card: #FFFFFF;
-  --bg-card-hover: #FAFAFA;
-  --bg-elevated: #F7F7F7;
-  --bg-input: #FAFAFA;
-  --bg-input-hover: #F5F5F5;
-  --bg-hover: #F5F5F5;
-  --bg-active: #E5E5E5;
+  --bg-card-hover: #F8FAFC;
+  --bg-elevated: #F1F5F9;
+  --bg-input: #F4F6FA;
+  --bg-input-hover: #EBF0F7;
+  --bg-hover: #F1F5F9;
+  --bg-active: #E8F3FF;
 
-  /* ─── Borders (Light theme: neutral greys) ─────────────────────────────────── */
-  --border: #E5E5E5;
-  --border-subtle: #F0F0F0;
-  --border-strong: #D4D4D4;
-  --border-hover: #A3A3A3;
-  --border-active: #2563eb;
+  /* ─── Borders (Mobile hairline slate) ─────────────────────────────────────── */
+  --border: #E5EAF0;
+  --border-subtle: #F0F4F8;
+  --border-strong: #D0D7E2;
+  --border-hover: #B8C2D0;
+  --border-active: #0A7FF5;
 
-  /* ─── Accent — restrained royal blue ──────────────────────────────────────── */
-  --accent: #2563eb;
-  --accent-strong: #1d4ed8;
-  --accent-soft: rgba(37, 99, 235, 0.10);
-  --accent-muted: rgba(37, 99, 235, 0.05);
-  --accent-cyan: #0284c7;
-  --accent-cyan-soft: rgba(2, 132, 199, 0.10);
-  --accent2: #666666;
-  --accent2-soft: #F5F5F5;
-  --green: #059669;
-  --green-soft: rgba(5, 150, 105, 0.10);
-  --amber: #d97706;
-  --rose: #e11d48;
+  /* ─── Accent — Mobile Sky-Azure & Mint Progress ───────────────────────────── */
+  --accent: #0A7FF5;
+  --accent-strong: #0669CE;
+  --accent-soft: rgba(10, 127, 245, 0.10);
+  --accent-muted: rgba(10, 127, 245, 0.05);
+  --accent-cyan: #38BDF8;
+  --accent-cyan-soft: rgba(56, 189, 248, 0.12);
+  --accent2: #5B6472;
+  --accent2-soft: #F1F5F9;
+  --green: #22C58B;
+  --green-soft: rgba(34, 197, 139, 0.12);
+  --amber: #F59E0B;
+  --rose: #EF4444;
 
-  --accent-blue: #2563eb;
-  --accent-blue-soft: rgba(37, 99, 235, 0.10);
-  --theme-icon: #d97706;
+  --accent-blue: #0A7FF5;
+  --accent-blue-soft: rgba(10, 127, 245, 0.10);
+  --theme-icon: #F59E0B;
 
-  /* ─── Button surfaces ─────────────────────────────────────────────────────── */
-  --pill-bg: #111111;
+  /* ─── Button surfaces (Deep charcoal pill CTAs matching mobile) ───────────── */
+  --pill-bg: #141518;
   --pill-fg: #FFFFFF;
-  --pill-soft-bg: #F5F5F5;
-  --pill-soft-fg: #111111;
-  /* Semantic aliases */
-  --btn-primary-bg: #111111;
+  --pill-soft-bg: #F1F5F9;
+  --pill-soft-fg: #141518;
+  --btn-primary-bg: #141518;
   --btn-primary-fg: #FFFFFF;
-  --btn-secondary-bg: #F5F5F5;
-  --btn-secondary-fg: #111111;
+  --btn-secondary-bg: #FFFFFF;
+  --btn-secondary-fg: #141518;
+
+  --hero-gradient: linear-gradient(135deg, #0A7FF5 0%, #3E9BF7 55%, #83C0FA 100%);
 
   /* ─── Legacy aliases ──────────────────────────────────────────────────────── */
-  --blue: #2563eb;
-  --violet: #6366f1;
+  --blue: #0A7FF5;
+  --violet: #38BDF8;
   --surface: #FFFFFF;
 
   /* ─── Topbar ──────────────────────────────────────────────────────────────── */
   --topbar-bg: transparent;
   --topbar-border: var(--border);
 
-  /* ─── Text (Light theme: neutral greys) ────────────────────────────────────── */
-  --text-primary: #111111;
-  --text-secondary: #666666;
-  --text-muted: #888888;
-  --text-faint: #A3A3A3;
-  --text-accent: #2563eb;
+  /* ─── Navigation surfaces (Light theme) ───────────────────────────────────── */
+  --nav-bg: #FFFFFF;
+  --nav-surface: #F4F6FA;
+  --nav-active: #E8F3FF;
+  --nav-border: #E5EAF0;
+  --nav-muted: #8B94A2;
+  --nav-secondary: #5B6472;
+  --nav-active-ink: #141518;
+
+  /* ─── Text (Matches mobile LATokens) ──────────────────────────────────────── */
+  --text-primary: #141518;
+  --text-secondary: #5B6472;
+  --text-muted: #8B94A2;
+  --text-faint: #A6AFBC;
+  --text-accent: #0A7FF5;
 
   --glass: rgba(255, 255, 255, 0.9);
   --glass-strong: rgba(250, 250, 250, 0.98);
@@ -328,3 +348,9 @@
   --chat-sparkle-2: rgba(37, 99, 235, 0.35);
   --chat-sparkle-3: rgba(0, 0, 0, 0.12);
 }
+
+/* ─── Theme-aware brand logo visibility ─────────────────────────────────────── */
+.logo-for-light { display: none; }
+.logo-for-dark { display: block; }
+.light-mode .logo-for-light { display: block; }
+.light-mode .logo-for-dark { display: none; }

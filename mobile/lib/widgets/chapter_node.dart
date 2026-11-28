@@ -1,40 +1,125 @@
 import 'package:flutter/material.dart';
 import '../services/arena_curriculum.dart';
 import '../services/arena_progress.dart';
+import '../theme/design_tokens.dart';
 
 class ChapterNode extends StatelessWidget {
-  final Chapter chapter; final ChapterProgress? progress; final bool isCurrent; final VoidCallback onTap;
-  const ChapterNode({super.key, required this.chapter, required this.progress, required this.isCurrent, required this.onTap});
+  final Chapter chapter;
+  final ChapterProgress? progress;
+  final bool isCurrent;
+  final VoidCallback onTap;
+
+  const ChapterNode({
+    super.key,
+    required this.chapter,
+    required this.progress,
+    required this.isCurrent,
+    required this.onTap,
+  });
+
   @override
-  Widget build(BuildContext context){
-    final state=progress?.state ?? ArenaState.locked;
-    final icon = state==ArenaState.locked? '🔒': state==ArenaState.available? '⚔': state==ArenaState.inProgress? '🔥': state==ArenaState.mastered? '🏆':'✅';
-    Color border=Colors.white10;
-    Color? bg;
-    if(isCurrent){ border=const Color(0xFF0EA5E9).withOpacity(0.45); bg=const Color(0xFF0EA5E9).withOpacity(0.06); }
-    else if(state==ArenaState.defeated){ border=const Color(0xFF10B981).withOpacity(0.35); }
-    else if(state==ArenaState.mastered){ border=const Color(0xFFF59E0B).withOpacity(0.38); }
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(16),
-      child: Container(
-        decoration: BoxDecoration(color: bg?? const Color(0xFF0F1324), borderRadius: BorderRadius.circular(16), border: Border.all(color: border)),
-        padding: const EdgeInsets.symmetric(horizontal:12, vertical:11),
-        child: Row(children:[
-          Container(width:36,height:36,decoration: BoxDecoration(
-            color: state==ArenaState.locked? const Color(0xFF1E2436): state==ArenaState.available? const Color(0xFF0EA5E9): state==ArenaState.inProgress? const Color(0xFFF59E0B): state==ArenaState.mastered? const Color(0xFFF59E0B): const Color(0xFF10B981),
-            borderRadius: BorderRadius.circular(10),
-          ), child: Center(child: Text(icon, style: const TextStyle(fontSize:14)))),
-          const SizedBox(width:10),
-          Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children:[
-            Text(chapter.name, style: const TextStyle(fontWeight: FontWeight.w700, fontSize:12), maxLines:1, overflow: TextOverflow.ellipsis),
-            Text('${chapter.topic} · ${chapter.difficultyLabel}', style: const TextStyle(color: Colors.white54, fontSize:10), maxLines:1, overflow: TextOverflow.ellipsis),
-          ])),
-          Column(crossAxisAlignment: CrossAxisAlignment.end, children:[
-            Container(padding: const EdgeInsets.symmetric(horizontal:7, vertical:3), decoration: BoxDecoration(color: Colors.white10, borderRadius: BorderRadius.circular(20), border: Border.all(color: Colors.white10)), child: Text(chapter.difficultyLabel, style: const TextStyle(color: Colors.white54, fontSize:9, fontWeight: FontWeight.w700))),
-            if(progress!=null && progress!.bestScore>0) Padding(padding: const EdgeInsets.only(top:3), child: Text('${(progress!.bestScore*100).round()}%', style: const TextStyle(color: Colors.white38, fontSize:10, fontFamily: 'monospace'))),
-          ]),
-        ]),
+  Widget build(BuildContext context) {
+    final c = LAColors.of(context);
+    final state = progress?.state ?? ArenaState.locked;
+
+    late final IconData icon;
+    late final Color badgeColor;
+    switch (state) {
+      case ArenaState.available:
+        icon = Icons.play_arrow_rounded;
+        badgeColor = c.accent;
+        break;
+      case ArenaState.inProgress:
+        icon = Icons.local_fire_department_rounded;
+        badgeColor = c.amber;
+        break;
+      case ArenaState.mastered:
+        icon = Icons.workspace_premium_rounded;
+        badgeColor = c.amber;
+        break;
+      case ArenaState.defeated:
+        icon = Icons.check_rounded;
+        badgeColor = c.green;
+        break;
+      default:
+        icon = Icons.lock_outline_rounded;
+        badgeColor = c.textMuted;
+    }
+
+    Color border = c.border;
+    Color bg = c.surface;
+    if (isCurrent) {
+      border = c.accent.withValues(alpha: 0.55);
+      bg = c.accentSoft;
+    } else if (state == ArenaState.defeated) {
+      border = c.green.withValues(alpha: 0.4);
+    } else if (state == ArenaState.mastered) {
+      border = c.amber.withValues(alpha: 0.45);
+    }
+
+    return Material(
+      color: bg,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(LATokens.radiusLg),
+        side: BorderSide(color: border),
+      ),
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(LATokens.radiusLg),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 11),
+          child: Row(
+            children: [
+              Container(
+                width: 36,
+                height: 36,
+                decoration: BoxDecoration(
+                  color: state == ArenaState.locked
+                      ? c.surfaceElevated
+                      : badgeColor.withValues(alpha: 0.16),
+                  borderRadius: BorderRadius.circular(LATokens.radiusMd),
+                ),
+                child: Icon(icon, size: 18, color: badgeColor),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      chapter.name,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(fontWeight: FontWeight.w600, fontSize: LATokens.fsSm, color: c.text),
+                    ),
+                    Text(
+                      '${chapter.topic} · ${chapter.difficultyLabel}',
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(color: c.textMuted, fontSize: LATokens.fsXs),
+                    ),
+                  ],
+                ),
+              ),
+              if (progress != null && progress!.bestScore > 0)
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                  decoration: BoxDecoration(
+                    color: c.surfaceElevated,
+                    borderRadius: BorderRadius.circular(LATokens.radiusFull),
+                  ),
+                  child: Text(
+                    '${(progress!.bestScore * 100).round()}%',
+                    style: TextStyle(
+                      color: c.textSecondary,
+                      fontSize: LATokens.fsXs,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+            ],
+          ),
+        ),
       ),
     );
   }

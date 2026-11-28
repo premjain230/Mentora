@@ -1,10 +1,19 @@
-// Shared UI widgets — mirrors website base.css component styles:
-//   .btn, .btn-primary, .btn-secondary, .btn-ghost, .btn-danger
-//   .field, .card, .toast, .empty-state
 import 'package:flutter/material.dart';
 import '../theme/design_tokens.dart';
+import 'learning_allied_logo.dart';
 
-// ── Buttons ──────────────────────────────────────────────────────────────
+enum ButtonType { primary, secondary, ghost, danger }
+
+/// Official Learning Allied monogram mark, backed by [LearningAlliedLogo].
+class LALogoMark extends StatelessWidget {
+  final double size;
+  const LALogoMark({super.key, this.size = 28});
+
+  @override
+  Widget build(BuildContext context) {
+    return LearningAlliedLogo(size: size);
+  }
+}
 
 class LAButton extends StatelessWidget {
   final String text;
@@ -30,83 +39,101 @@ class LAButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final c = LAColors.of(context);
     final enabled = onPressed != null && !loading;
-    Widget child;
-    if (loading) {
-      child = SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2, color: _inkColor(context)));
-    } else {
-      child = Row(mainAxisSize: MainAxisSize.min, children: [
-        if (icon != null) ...[Icon(icon, size: 18), const SizedBox(width: LATokens.space2)],
-        Text(text, style: const TextStyle(fontSize: LATokens.fsSm, fontWeight: FontWeight.w500, letterSpacing: -0.01)),
-      ]);
-    }
 
-    late final Color bg, fg, bd;
+    late final Color bg;
+    late final Color fg;
+    late final Color bd;
+
     switch (type) {
       case ButtonType.primary:
-        bg = enabled ? _primaryBg(context) : _primaryBgDisabled(context);
-        fg = enabled ? _primaryFg(context) : _primaryFgDisabled(context);
-        bd = enabled ? _primaryBg(context) : _primaryBgDisabled(context);
+        bg = enabled ? c.text : c.text.withValues(alpha: 0.35);
+        fg = c.bg;
+        bd = bg;
         break;
       case ButtonType.secondary:
-        bg = enabled ? LATokens.bgCard : LATokens.bgElevated;
-        fg = enabled ? LATokens.textPrimary : LATokens.textMuted;
-        bd = enabled ? LATokens.borderStrong : LATokens.border;
+        bg = enabled ? c.surface : c.surfaceElevated;
+        fg = enabled ? c.text : c.textMuted;
+        bd = enabled ? c.borderStrong : c.border;
         break;
       case ButtonType.ghost:
         bg = Colors.transparent;
-        fg = enabled ? LATokens.textSecondary : LATokens.textMuted;
+        fg = enabled ? c.textSecondary : c.textMuted;
         bd = Colors.transparent;
         break;
       case ButtonType.danger:
-        bg = enabled ? LATokens.accent3.withOpacity(0.08) : LATokens.accent3.withOpacity(0.04);
-        fg = enabled ? LATokens.accent3 : LATokens.accent3.withOpacity(0.4);
-        bd = enabled ? LATokens.accent3.withOpacity(0.2) : LATokens.accent3.withOpacity(0.1);
+        bg = enabled ? c.redSoft : c.redSoft.withValues(alpha: 0.4);
+        fg = enabled ? c.red : c.red.withValues(alpha: 0.4);
+        bd = enabled ? c.red.withValues(alpha: 0.3) : c.red.withValues(alpha: 0.15);
         break;
     }
 
-    return AnimatedContainer(
-      duration: LATokens.durFast,
+    final content = loading
+        ? SizedBox(
+            width: 18,
+            height: 18,
+            child: CircularProgressIndicator(strokeWidth: 2, color: fg),
+          )
+        : Row(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              if (icon != null) ...[
+                Icon(icon, size: 17, color: fg),
+                const SizedBox(width: LATokens.space2),
+              ],
+              Flexible(
+                child: Text(
+                  text,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    fontSize: LATokens.fsBase,
+                    fontWeight: FontWeight.w600,
+                    letterSpacing: -0.1,
+                    color: fg,
+                  ),
+                ),
+              ),
+            ],
+          );
+
+    return SizedBox(
       width: fullWidth ? double.infinity : width,
-      height: 44,
-      padding: padding ?? const EdgeInsets.symmetric(horizontal: LATokens.space4),
-      decoration: BoxDecoration(
-        color: bg,
-        border: Border.all(color: bd, width: 1),
-        borderRadius: BorderRadius.circular(LATokens.radiusMd),
-      ),
+      height: 48,
       child: Material(
-        color: Colors.transparent,
+        color: bg,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(LATokens.radiusFull),
+          side: BorderSide(color: bd, width: 1),
+        ),
         child: InkWell(
-          borderRadius: BorderRadius.circular(LATokens.radiusMd),
+          borderRadius: BorderRadius.circular(LATokens.radiusFull),
           onTap: enabled ? onPressed : null,
-          child: Center(child: child),
+          child: Padding(
+            padding: padding ?? const EdgeInsets.symmetric(horizontal: LATokens.space5),
+            child: Center(child: content),
+          ),
         ),
       ),
     );
   }
-
-  Color _inkColor(BuildContext context) => Theme.of(context).brightness == Brightness.dark ? LATokens.bgBase : Colors.white;
-  Color _primaryBg(BuildContext context) => Theme.of(context).brightness == Brightness.dark ? LATokens.textPrimary : const Color(0xFF0F172A);
-  Color _primaryFg(BuildContext context) => Theme.of(context).brightness == Brightness.dark ? LATokens.bgBase : Colors.white;
-  Color _primaryBgDisabled(BuildContext context) => LATokens.textPrimary.withOpacity(0.45);
-  Color _primaryFgDisabled(BuildContext context) => LATokens.textPrimary.withOpacity(0.45);
 }
-
-enum ButtonType { primary, secondary, ghost, danger }
-
-// ── Input field ──────────────────────────────────────────────────────────
 
 class LAInput extends StatelessWidget {
   final TextEditingController? controller;
   final String? hint;
   final String? label;
   final IconData? prefixIcon;
+  final Widget? suffixIcon;
   final bool obscureText;
   final TextInputType? keyboardType;
+  final TextInputAction? textInputAction;
   final int? maxLines;
   final int? minLines;
   final ValueChanged<String>? onChanged;
+  final ValueChanged<String>? onSubmitted;
   final VoidCallback? onTap;
   final bool enabled;
   final String? errorText;
@@ -118,11 +145,14 @@ class LAInput extends StatelessWidget {
     this.hint,
     this.label,
     this.prefixIcon,
+    this.suffixIcon,
     this.obscureText = false,
     this.keyboardType,
+    this.textInputAction,
     this.maxLines,
     this.minLines,
     this.onChanged,
+    this.onSubmitted,
     this.onTap,
     this.enabled = true,
     this.errorText,
@@ -131,39 +161,69 @@ class LAInput extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final dark = Theme.of(context).brightness == Brightness.dark;
+    final c = LAColors.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
       children: [
         if (label != null) ...[
-          Text(label!, style: const TextStyle(fontSize: LATokens.fsSm, fontWeight: FontWeight.w500, color: LATokens.textSecondary)),
-          const SizedBox(height: LATokens.space1),
+          Text(
+            label!,
+            style: TextStyle(
+              fontSize: LATokens.fsSm,
+              fontWeight: FontWeight.w500,
+              color: c.textSecondary,
+            ),
+          ),
+          const SizedBox(height: 6),
         ],
         TextFormField(
           controller: controller,
           enabled: enabled,
           obscureText: obscureText,
           keyboardType: keyboardType,
-          maxLines: maxLines ?? 1,
+          textInputAction: textInputAction,
+          maxLines: obscureText ? 1 : (maxLines ?? 1),
           minLines: minLines,
           onChanged: onChanged,
+          onFieldSubmitted: onSubmitted,
           onTap: onTap,
           validator: validator,
-          style: const TextStyle(fontSize: LATokens.fsBase, color: LATokens.textPrimary),
+          style: TextStyle(fontSize: LATokens.fsBase, color: c.text),
           decoration: InputDecoration(
             hintText: hint,
-            hintStyle: const TextStyle(color: LATokens.textFaint, fontSize: LATokens.fsBase),
-            prefixIcon: prefixIcon != null ? Icon(prefixIcon, size: 20, color: LATokens.textMuted) : null,
+            hintStyle: TextStyle(color: c.textFaint, fontSize: LATokens.fsBase),
+            prefixIcon: prefixIcon != null
+                ? Icon(prefixIcon, size: 19, color: c.textMuted)
+                : null,
+            suffixIcon: suffixIcon,
             filled: true,
-            fillColor: dark ? LATokens.bgInput : LATokens.lightBgInput,
-            contentPadding: const EdgeInsets.symmetric(horizontal: LATokens.space4, vertical: LATokens.space2),
-            border: OutlineInputBorder(borderRadius: BorderRadius.circular(LATokens.radiusMd), borderSide: const BorderSide(color: LATokens.border)),
-            enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(LATokens.radiusMd), borderSide: BorderSide(color: errorText != null ? LATokens.accent3 : LATokens.border)),
-            focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(LATokens.radiusMd), borderSide: BorderSide(color: errorText != null ? LATokens.accent3 : LATokens.borderHover, width: 1.5)),
-            errorBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(LATokens.radiusMd), borderSide: const BorderSide(color: LATokens.accent3)),
-            focusedErrorBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(LATokens.radiusMd), borderSide: const BorderSide(color: LATokens.accent3, width: 1.5)),
+            fillColor: c.surfaceInput,
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: LATokens.space4,
+              vertical: LATokens.space3,
+            ),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(LATokens.radiusMd),
+              borderSide: BorderSide(color: c.border),
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(LATokens.radiusMd),
+              borderSide: BorderSide(color: errorText != null ? c.red : c.border),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(LATokens.radiusMd),
+              borderSide: BorderSide(
+                color: errorText != null ? c.red : c.accent,
+                width: 1.5,
+              ),
+            ),
+            errorBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(LATokens.radiusMd),
+              borderSide: BorderSide(color: c.red),
+            ),
             errorText: errorText,
-            errorStyle: const TextStyle(color: LATokens.accent3, fontSize: LATokens.fsXs),
+            errorStyle: TextStyle(color: c.red, fontSize: LATokens.fsXs),
           ),
         ),
       ],
@@ -171,124 +231,537 @@ class LAInput extends StatelessWidget {
   }
 }
 
-// ── Card ─────────────────────────────────────────────────────────────────
+/// Dedicated search field with optional clear action.
+class LASearchField extends StatelessWidget {
+  final TextEditingController controller;
+  final String hint;
+  final ValueChanged<String>? onChanged;
+  final ValueChanged<String>? onSubmitted;
+  final VoidCallback? onClear;
+
+  const LASearchField({
+    super.key,
+    required this.controller,
+    this.hint = 'Search...',
+    this.onChanged,
+    this.onSubmitted,
+    this.onClear,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final c = LAColors.of(context);
+    return ValueListenableBuilder<TextEditingValue>(
+      valueListenable: controller,
+      builder: (_, value, __) => LAInput(
+        controller: controller,
+        hint: hint,
+        prefixIcon: Icons.search_rounded,
+        textInputAction: TextInputAction.search,
+        onChanged: onChanged,
+        onSubmitted: onSubmitted,
+        suffixIcon: value.text.isNotEmpty
+            ? IconButton(
+                tooltip: 'Clear',
+                icon: Icon(Icons.close_rounded, size: 18, color: c.textMuted),
+                onPressed: () {
+                  controller.clear();
+                  onClear?.call();
+                  onChanged?.call('');
+                },
+              )
+            : null,
+      ),
+    );
+  }
+}
 
 class LACard extends StatelessWidget {
   final Widget child;
   final EdgeInsetsGeometry padding;
+  final VoidCallback? onTap;
+  final Color? backgroundColor;
+  final Color? borderColor;
+  final double radius;
 
-  const LACard({super.key, required this.child, this.padding = const EdgeInsets.all(LATokens.space5)});
-
-  @override
-  Widget build(BuildContext context) {
-    final dark = Theme.of(context).brightness == Brightness.dark;
-    return Container(
-      padding: padding,
-      decoration: BoxDecoration(
-        color: dark ? LATokens.bgCard : LATokens.lightBgCard,
-        borderRadius: BorderRadius.circular(LATokens.radiusLg),
-        border: Border.all(color: dark ? LATokens.border : LATokens.lightBorder),
-      ),
-      child: child,
-    );
-  }
-}
-
-// ── Toast ────────────────────────────────────────────────────────────────
-
-class LAToast {
-  static void show(BuildContext context, String message, {bool isError = false, bool isSuccess = false, Duration duration = const Duration(milliseconds: 3200)}) {
-    final overlay = Overlay.of(context);
-    final entry = OverlayEntry(
-      builder: (ctx) => _ToastWidget(message: message, isError: isError, isSuccess: isSuccess, duration: duration),
-    );
-    overlay.insert(entry);
-    Future.delayed(duration, () => entry.remove());
-  }
-}
-
-class _ToastWidget extends StatefulWidget {
-  final String message;
-  final bool isError;
-  final bool isSuccess;
-  final Duration duration;
-
-  const _ToastWidget({
-    required this.message,
-    required this.isError,
-    required this.isSuccess,
-    required this.duration,
+  const LACard({
+    super.key,
+    required this.child,
+    this.padding = const EdgeInsets.all(LATokens.space4),
+    this.onTap,
+    this.backgroundColor,
+    this.borderColor,
+    this.radius = LATokens.radiusLg,
   });
 
   @override
-  State<_ToastWidget> createState() => _ToastWidgetState();
+  Widget build(BuildContext context) {
+    final c = LAColors.of(context);
+    final bg = backgroundColor ?? c.surface;
+    final bd = borderColor ?? c.border;
+
+    return Material(
+      color: bg,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(radius),
+        side: BorderSide(color: bd, width: 1),
+      ),
+      child: onTap == null
+          ? Padding(padding: padding, child: child)
+          : InkWell(
+              borderRadius: BorderRadius.circular(radius),
+              onTap: onTap,
+              child: Padding(padding: padding, child: child),
+            ),
+    );
+  }
 }
 
-class _ToastWidgetState extends State<_ToastWidget> with SingleTickerProviderStateMixin {
-  late final AnimationController _controller;
-  late final Animation<double> _fade;
-  late final Animation<Offset> _slide;
-  bool _visible = true;
+/// Clean Apple/Linear-style grouped container with hairline dividers between rows.
+class LAGroupedList extends StatelessWidget {
+  final List<Widget> children;
+  final Color? backgroundColor;
+  final Color? borderColor;
+  final double radius;
 
-  @override
-  void initState() {
-    super.initState();
-    _controller = AnimationController(vsync: this, duration: LATokens.durMed);
-    _fade = CurvedAnimation(parent: _controller, curve: Curves.easeOut);
-    _slide = Tween<Offset>(begin: const Offset(0, 0.3), end: Offset.zero).animate(_controller);
-    _controller.forward();
-
-    Future.delayed(widget.duration, () {
-      if (mounted) {
-        _controller.reverse().then((_) {
-          if (mounted) setState(() => _visible = false);
-        });
-      }
-    });
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
+  const LAGroupedList({
+    super.key,
+    required this.children,
+    this.backgroundColor,
+    this.borderColor,
+    this.radius = LATokens.radiusLg,
+  });
 
   @override
   Widget build(BuildContext context) {
-    if (!_visible) return const SizedBox.shrink();
-    final dark = Theme.of(context).brightness == Brightness.dark;
-    return Positioned(
-      bottom: 24,
-      left: 0,
-      right: 0,
-      child: SlideTransition(
-        position: _slide,
-        child: FadeTransition(
-          opacity: _fade,
-          child: Center(
-            child: Container(
-              constraints: const BoxConstraints(maxWidth: 420),
-              padding: const EdgeInsets.symmetric(horizontal: LATokens.space4, vertical: LATokens.space3),
-              decoration: BoxDecoration(
-                color: widget.isError ? LATokens.accent3 : (widget.isSuccess ? LATokens.green : (dark ? LATokens.bgCard : LATokens.lightBgCard)),
-                border: Border.all(
-                  color: widget.isError ? LATokens.accent3.withOpacity(0.5) : (widget.isSuccess ? LATokens.green.withOpacity(0.5) : (dark ? LATokens.borderStrong : LATokens.lightBorderStrong)),
-                ),
-                borderRadius: BorderRadius.circular(LATokens.radiusMd),
-                boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.25), blurRadius: 24, offset: const Offset(0, 8))],
-              ),
-              child: Row(
+    final c = LAColors.of(context);
+    final nonEmpty = children;
+    return Material(
+      color: backgroundColor ?? c.surface,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(radius),
+        side: BorderSide(color: borderColor ?? c.border),
+      ),
+      clipBehavior: Clip.antiAlias,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          for (int i = 0; i < nonEmpty.length; i++) ...[
+            nonEmpty[i],
+            if (i != nonEmpty.length - 1)
+              Divider(height: 1, thickness: 1, indent: LATokens.space4, color: c.borderSubtle),
+          ],
+        ],
+      ),
+    );
+  }
+}
+
+/// Clean, restrained list row without decorative icon boxes.
+class LAListRow extends StatelessWidget {
+  final IconData? icon;
+  final Color? iconColor;
+  final String title;
+  final String? subtitle;
+  final Widget? trailing;
+  final VoidCallback? onTap;
+  final bool showChevron;
+  final EdgeInsetsGeometry? padding;
+
+  const LAListRow({
+    super.key,
+    this.icon,
+    this.iconColor,
+    required this.title,
+    this.subtitle,
+    this.trailing,
+    this.onTap,
+    this.showChevron = true,
+    this.padding,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final c = LAColors.of(context);
+    return InkWell(
+      onTap: onTap,
+      child: Padding(
+        padding: padding ?? const EdgeInsets.symmetric(horizontal: LATokens.space4, vertical: 14),
+        child: Row(
+          children: [
+            if (icon != null) ...[
+              Icon(icon, size: 20, color: iconColor ?? c.textSecondary),
+              const SizedBox(width: LATokens.space3),
+            ],
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Icon(widget.isError ? Icons.error_outline : (widget.isSuccess ? Icons.check_circle : Icons.info_outline), size: 16, color: widget.isError ? Colors.white : (widget.isSuccess ? Colors.white : LATokens.textPrimary)),
-                  const SizedBox(width: LATokens.space2),
-                  Flexible(child: Text(widget.message, style: TextStyle(fontSize: LATokens.fsSm, fontWeight: FontWeight.w500, color: widget.isError ? Colors.white : (widget.isSuccess ? Colors.white : LATokens.textPrimary)))),
+                  Text(
+                    title,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      fontSize: LATokens.fsBase,
+                      fontWeight: FontWeight.w500,
+                      color: c.text,
+                    ),
+                  ),
+                  if (subtitle != null && subtitle!.isNotEmpty) ...[
+                    const SizedBox(height: 2),
+                    Text(
+                      subtitle!,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        fontSize: LATokens.fsXs,
+                        color: c.textMuted,
+                      ),
+                    ),
+                  ],
                 ],
               ),
             ),
-          ),
+            if (trailing != null) ...[
+              const SizedBox(width: LATokens.space2),
+              trailing!,
+            ] else if (showChevron && onTap != null) ...[
+              const SizedBox(width: LATokens.space2),
+              Icon(Icons.chevron_right_rounded, size: 20, color: c.textFaint),
+            ],
+          ],
         ),
       ),
     );
+  }
+}
+
+/// Clean segmented control for switching between 2-3 modes.
+class LASegmentedControl<T> extends StatelessWidget {
+  final T value;
+  final List<(T, String)> items;
+  final ValueChanged<T> onChanged;
+
+  const LASegmentedControl({
+    super.key,
+    required this.value,
+    required this.items,
+    required this.onChanged,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final c = LAColors.of(context);
+    return Container(
+      padding: const EdgeInsets.all(3),
+      decoration: BoxDecoration(
+        color: c.surfaceElevated,
+        borderRadius: BorderRadius.circular(LATokens.radiusMd),
+        border: Border.all(color: c.borderSubtle),
+      ),
+      child: Row(
+        children: items.map((item) {
+          final selected = item.$1 == value;
+          return Expanded(
+            child: GestureDetector(
+              behavior: HitTestBehavior.opaque,
+              onTap: () => onChanged(item.$1),
+              child: AnimatedContainer(
+                duration: LATokens.durFast,
+                padding: const EdgeInsets.symmetric(vertical: 7, horizontal: 10),
+                decoration: BoxDecoration(
+                  color: selected ? c.surface : Colors.transparent,
+                  borderRadius: BorderRadius.circular(LATokens.radiusSm),
+                  border: selected ? Border.all(color: c.border) : null,
+                ),
+                child: Text(
+                  item.$2,
+                  textAlign: TextAlign.center,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    fontSize: LATokens.fsSm,
+                    fontWeight: selected ? FontWeight.w600 : FontWeight.w500,
+                    color: selected ? c.text : c.textMuted,
+                  ),
+                ),
+              ),
+            ),
+          );
+        }).toList(),
+      ),
+    );
+  }
+}
+
+class SectionHeader extends StatelessWidget {
+  final IconData? icon;
+  final String title;
+  final String? actionLabel;
+  final VoidCallback? onAction;
+
+  const SectionHeader({
+    super.key,
+    this.icon,
+    required this.title,
+    this.actionLabel,
+    this.onAction,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final c = LAColors.of(context);
+    return Row(
+      children: [
+        Expanded(
+          child: Text(
+            title,
+            style: TextStyle(
+              fontSize: LATokens.fsSm,
+              fontWeight: FontWeight.w600,
+              letterSpacing: 0.1,
+              color: c.textSecondary,
+            ),
+          ),
+        ),
+        if (actionLabel != null && onAction != null)
+          TextButton(
+            onPressed: onAction,
+            style: TextButton.styleFrom(
+              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+              minimumSize: Size.zero,
+              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+            ),
+            child: Text(
+              actionLabel!,
+              style: TextStyle(
+                fontSize: LATokens.fsSm,
+                fontWeight: FontWeight.w600,
+                color: c.accent,
+              ),
+            ),
+          ),
+      ],
+    );
+  }
+}
+
+class StatTile extends StatelessWidget {
+  final String label;
+  final String value;
+  final IconData icon;
+  final Color? color;
+  final VoidCallback? onTap;
+
+  const StatTile({
+    super.key,
+    required this.label,
+    required this.value,
+    required this.icon,
+    this.color,
+    this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final c = LAColors.of(context);
+    return LACard(
+      onTap: onTap,
+      padding: const EdgeInsets.symmetric(horizontal: LATokens.space3, vertical: LATokens.space3),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(icon, size: 15, color: color ?? c.textMuted),
+              const SizedBox(width: 6),
+              Expanded(
+                child: Text(
+                  label,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(fontSize: LATokens.fsXs, color: c.textMuted),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 6),
+          Text(
+            value,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(
+              fontSize: LATokens.fsXl,
+              fontWeight: FontWeight.w700,
+              letterSpacing: -0.4,
+              color: c.text,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class EmptyStateView extends StatelessWidget {
+  final IconData icon;
+  final String title;
+  final String message;
+  final String? actionLabel;
+  final VoidCallback? onAction;
+
+  const EmptyStateView({
+    super.key,
+    required this.icon,
+    required this.title,
+    required this.message,
+    this.actionLabel,
+    this.onAction,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final c = LAColors.of(context);
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: LATokens.space4, vertical: LATokens.space6),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 28, color: c.textMuted),
+          const SizedBox(height: LATokens.space3),
+          Text(
+            title,
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: LATokens.fsMd,
+              fontWeight: FontWeight.w600,
+              color: c.text,
+            ),
+          ),
+          const SizedBox(height: 6),
+          ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 320),
+            child: Text(
+              message,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: LATokens.fsSm,
+                color: c.textSecondary,
+                height: LATokens.lhNormal,
+              ),
+            ),
+          ),
+          if (actionLabel != null && onAction != null) ...[
+            const SizedBox(height: LATokens.space4),
+            LAButton(
+              text: actionLabel!,
+              onPressed: onAction,
+              fullWidth: false,
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+}
+
+class ErrorStateView extends StatelessWidget {
+  final String message;
+  final VoidCallback? onRetry;
+
+  const ErrorStateView({
+    super.key,
+    required this.message,
+    this.onRetry,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final c = LAColors.of(context);
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(LATokens.space5),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(Icons.error_outline_rounded, size: 28, color: c.red),
+            const SizedBox(height: LATokens.space3),
+            ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 320),
+              child: Text(
+                message,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: LATokens.fsSm,
+                  color: c.textSecondary,
+                  height: LATokens.lhNormal,
+                ),
+              ),
+            ),
+            if (onRetry != null) ...[
+              const SizedBox(height: LATokens.space4),
+              LAButton(
+                text: 'Try again',
+                icon: Icons.refresh_rounded,
+                onPressed: onRetry,
+                type: ButtonType.secondary,
+                fullWidth: false,
+              ),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class LAToast {
+  static void show(
+    BuildContext context,
+    String message, {
+    bool isError = false,
+    bool isSuccess = false,
+    Duration duration = const Duration(milliseconds: 2800),
+  }) {
+    if (!context.mounted) return;
+    final c = LAColors.of(context);
+    final bg = isError
+        ? c.red
+        : (isSuccess ? c.green : (c.isDark ? c.surfaceElevated : c.text));
+    const fg = Colors.white;
+
+    ScaffoldMessenger.of(context)
+      ..hideCurrentSnackBar()
+      ..showSnackBar(
+        SnackBar(
+          duration: duration,
+          backgroundColor: bg,
+          content: Row(
+            children: [
+              Icon(
+                isError
+                    ? Icons.error_outline_rounded
+                    : (isSuccess
+                        ? Icons.check_circle_outline_rounded
+                        : Icons.info_outline_rounded),
+                size: 18,
+                color: fg,
+              ),
+              const SizedBox(width: LATokens.space2),
+              Expanded(
+                child: Text(
+                  message,
+                  style: const TextStyle(
+                    color: fg,
+                    fontSize: LATokens.fsSm,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
   }
 }

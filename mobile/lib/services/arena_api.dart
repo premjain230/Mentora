@@ -1,54 +1,91 @@
-// Arena API client — server-authoritative, same endpoint as web (/api/arena)
+import 'api_client.dart';
 
-import 'dart:convert';
-import 'package:http/http.dart' as http;
-
+/// Arena API client — server-authoritative, same endpoint as web (`/api/arena`).
+/// Uses authenticated `ApiClient` with Firebase ID token.
 class ArenaApi {
-  static const baseUrl = 'https://www.learningallied.world';
-  static Future<Map<String, String>> _headers() async {
-    return {
-      'Content-Type':'application/json',
-    };
-  }
-  static Future<Map<String,dynamic>> initProgress({
+  final ApiClient api;
+
+  ArenaApi(this.api);
+
+  Future<Map<String, dynamic>> initProgress({
     required String subjectKey,
     required String trackId,
     required String subject,
     int? classNum,
-    required List<Map<String,dynamic>> chapters,
-  }) async {
-    final h=await _headers();
-    final r=await http.post(Uri.parse('$baseUrl/api/arena'), headers:h, body: jsonEncode({
-      'subjectKey': subjectKey, 'action':'init', 'trackId':trackId, 'subject':subject, 'classNum':classNum, 'chapters':chapters,
-    }));
-    final j=jsonDecode(r.body) as Map<String,dynamic>;
-    if(r.statusCode>=400) throw Exception(j['error']??'init failed ${r.statusCode}');
-    return j;
+    required List<Map<String, dynamic>> chapters,
+  }) {
+    return api.post('/api/arena', {
+      'subjectKey': subjectKey,
+      'action': 'init',
+      'trackId': trackId,
+      'subject': subject,
+      if (classNum != null) 'classNum': classNum,
+      'chapters': chapters,
+    });
   }
-  static Future<Map<String,dynamic>> defeatChapter({required String subjectKey, required String conceptId, required double score, double? masteryScore}) async {
-    final h=await _headers();
-    final r=await http.post(Uri.parse('$baseUrl/api/arena'), headers:h, body: jsonEncode({
-      'subjectKey': subjectKey, 'action':'defeat_chapter', 'conceptId': conceptId, 'score': score, 'masteryScore': masteryScore,
-    }));
-    final j=jsonDecode(r.body) as Map<String,dynamic>;
-    if(r.statusCode>=400) throw Exception(j['error']??'defeat failed');
-    return j;
+
+  Future<Map<String, dynamic>> heartbeat(String subjectKey) {
+    return api.post('/api/arena', {
+      'subjectKey': subjectKey,
+      'action': 'heartbeat',
+    });
   }
-  static Future<Map<String,dynamic>> finalBossAttempt({required String subjectKey, required double score}) async {
-    final h=await _headers();
-    final r=await http.post(Uri.parse('$baseUrl/api/arena'), headers:h, body: jsonEncode({
-      'subjectKey': subjectKey, 'action':'final_boss_attempt', 'score': score,
-    }));
-    final j=jsonDecode(r.body) as Map<String,dynamic>;
-    if(r.statusCode>=400) throw Exception(j['error']??'final boss failed');
-    return j;
+
+  Future<Map<String, dynamic>> startBattle({
+    required String subjectKey,
+    required String mode, // 'chapter' | 'final_boss'
+    String? conceptId,
+    String? subject,
+    String? name,
+    String? topic,
+    List<String>? topics,
+  }) {
+    return api.post('/api/arena', {
+      'subjectKey': subjectKey,
+      'action': 'start_battle',
+      'mode': mode,
+      if (conceptId != null) 'conceptId': conceptId,
+      if (subject != null) 'subject': subject,
+      if (name != null) 'name': name,
+      if (topic != null) 'topic': topic,
+      if (topics != null) 'topics': topics,
+    });
   }
-  static Future<Map<String,dynamic>?> fetchProgress(String subjectKey) async {
-    final h=await _headers();
-    final r=await http.get(Uri.parse('$baseUrl/api/arena?subjectKey=${Uri.encodeComponent(subjectKey)}'), headers:h);
-    if(r.statusCode==404) return null;
-    final j=jsonDecode(r.body) as Map<String,dynamic>;
-    if(r.statusCode>=400) throw Exception(j['error']??'fetch failed');
-    return j;
+
+  Future<Map<String, dynamic>> submitAnswer({
+    required String subjectKey,
+    required String sessionId,
+    required int questionIndex,
+    required int choice,
+  }) {
+    return api.post('/api/arena', {
+      'subjectKey': subjectKey,
+      'action': 'submit_answer',
+      'sessionId': sessionId,
+      'questionIndex': questionIndex,
+      'choice': choice,
+    });
+  }
+
+  Future<Map<String, dynamic>> finishBattle({
+    required String subjectKey,
+    required String sessionId,
+  }) {
+    return api.post('/api/arena', {
+      'subjectKey': subjectKey,
+      'action': 'finish_battle',
+      'sessionId': sessionId,
+    });
+  }
+
+  Future<Map<String, dynamic>?> fetchProgress(String subjectKey) async {
+    try {
+      return await api.get(
+        '/api/arena?subjectKey=${Uri.encodeComponent(subjectKey)}',
+      );
+    } on ApiException catch (e) {
+      if (e.statusCode == 404) return null;
+      rethrow;
+    }
   }
 }

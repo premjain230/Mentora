@@ -8,3 +8,6 @@ build/
 *.log
 .flutter-plugins
 .flutter-plugins-dependencies
+android/key.properties
+*.jks
+*.keystore

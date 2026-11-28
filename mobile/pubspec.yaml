@@ -1,7 +1,7 @@
 name: learning_allied_arena
-description: Learning Allied Arena — Flutter mobile twin for web Arena. Same syllabus, same progress, same backend.
+description: Learning Allied — Production Flutter mobile application with full website feature parity.
 publish_to: 'none'
-version: 1.1.0+10
+version: 2.0.0+20
 
 environment:
   sdk: ">=3.2.0 <4.0.0"
@@ -13,6 +13,9 @@ dependencies:
   http: ^1.2.0
   provider: ^6.1.0
   shared_preferences: ^2.2.0
+  url_launcher: ^6.2.5
+  record: ^6.0.0
+  flutter_pcm_sound: ^3.3.3
 
 dev_dependencies:
   flutter_test:
