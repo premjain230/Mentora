@@ -419,7 +419,7 @@ export function ProductShowcase() {
                           <>
                             <line x1="260" y1="70" x2="260" y2="20" stroke="var(--land-accent)" strokeWidth="2.5" />
                             <polygon points="260,13 255,23 265,23" fill="var(--land-accent)" />
-                            <text x="272" y="31" fill="var(--land-accent)" fontSize="11.5" fontWeight="700" fontFamily="monospace">
+                            <text x="274" y="29" fill="var(--land-accent)" fontSize="11.5" fontWeight="700" fontFamily="monospace">
                               F(lift) = 400 N ↑
                             </text>
 
@@ -429,8 +429,8 @@ export function ProductShowcase() {
                               d = 50 m →
                             </text>
 
-                            <path d="M 276 98 L 276 82 L 260 82" fill="none" stroke="var(--land-warn)" strokeWidth="1.6" />
-                            <text x="282" y="75" fill="var(--land-warn)" fontSize="11" fontWeight="700" fontFamily="sans-serif">
+                            <path d="M 276 70 L 276 54 L 260 54" fill="none" stroke="var(--land-warn)" strokeWidth="1.6" />
+                            <text x="284" y="59" fill="var(--land-warn)" fontSize="11" fontWeight="700" fontFamily="sans-serif">
                               θ = 90°
                             </text>
                           </>
@@ -456,11 +456,11 @@ export function ProductShowcase() {
                           <>
                             <line x1="260" y1="70" x2="260" y2="20" stroke="var(--land-accent)" strokeWidth="2.5" />
                             <polygon points="260,13 255,23 265,23" fill="var(--land-accent)" />
-                            <text x="272" y="31" fill="var(--land-accent)" fontSize="11.5" fontWeight="700" fontFamily="monospace">
+                            <text x="274" y="29" fill="var(--land-accent)" fontSize="11.5" fontWeight="700" fontFamily="monospace">
                               F = 400 N (Tension)
                             </text>
                             <circle cx="260" cy="128" r="4.5" fill="var(--land-danger)" />
-                            <text x="274" y="122" fill="var(--land-danger)" fontSize="11.5" fontWeight="700" fontFamily="monospace">
+                            <text x="314" y="114" fill="var(--land-danger)" fontSize="11.5" fontWeight="700" fontFamily="monospace">
                               d = 0 m (Stationary)
                             </text>
                           </>
